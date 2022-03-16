@@ -29,14 +29,14 @@ android {
 
     # These files are from the parent project:
     #ANDROID_PACKAGE_SOURCE_DIR = $${PWD}/android
-    #OTHER_FILES += $${PWD}/src/com/emeric/watchflower/QShareActivity.java \
-    #               $${PWD}/src/com/emeric/utils/QShareUtils.java \
-    #               $${PWD}/src/com/emeric/utils/QSharePathResolver.java
+    #OTHER_FILES += $${PWD}/src/com/theengs/app/QShareActivity.java \
+    #               $${PWD}/src/com/theengs/utils/QShareUtils.java \
+    #               $${PWD}/src/com/theengs/utils/QSharePathResolver.java
 
     # Rename these to match your project:
-    #com/emeric/utils
-    #com.emeric.watchflower
-    #com_emeric_watchflower
+    #com/theengs/utils
+    #com.theengs.app
+    #com_theengs_app
 }
 
 ios {
