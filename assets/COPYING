@@ -1,0 +1,43 @@
+
+# Application logo and icons:
+- assets/logos/logo.png                 //
+
+# Welcome screens:
+- assets/devices/welcome-*.svg          // Christian Díaz <christiandiaz.design@gmail.com> // CC BY-SA 4.0
+
+# Device icons:
+- docs/flowercare.svg                   // Emeric Grange // CC BY-SA 4.0
+- docs/flowercaremax.svg                // Emeric Grange // CC BY-SA 4.0
+- docs/flowerpower.svg                  // Emeric Grange // CC BY-SA 4.0
+- docs/higrow.svg                       // Emeric Grange // CC BY-SA 4.0
+- docs/hygrotemp_alarm.svg              // Emeric Grange // CC BY-SA 4.0
+- docs/hygrotemp_clock.svg              // Emeric Grange // CC BY-SA 4.0
+- docs/hygrotemp_cgdk2.svg              // Emeric Grange // CC BY-SA 4.0
+- docs/hygrotemp_cgg2.svg               // Emeric Grange // CC BY-SA 4.0
+- docs/hygrotemp_lcd.svg                // Emeric Grange // CC BY-SA 4.0
+- docs/hygrotemp_square_eink.svg        // Emeric Grange // CC BY-SA 4.0
+- docs/hygrotemp_square_lcd.svg         // Emeric Grange // CC BY-SA 4.0
+- docs/parrotpot.svg                    // Emeric Grange // CC BY-SA 4.0
+- docs/ropot.svg                        // Emeric Grange // CC BY-SA 4.0
+- docs/thermobeacon_round.svg           // Emeric Grange // CC BY-SA 4.0
+- docs/thermobeacon_square.svg          // Emeric Grange // CC BY-SA 4.0
+- docs/wp6003.svg                       // Emeric Grange // CC BY-SA 4.0
+
+# Google Material Design icons:
+- assets/icons_material/*               // Google // CC BY-SA 4.0
+
+# Based on Google Material Design icons:
+- assets/icons_custom/*-24px.svg        // Emeric Grange // CC BY-SA 4.0
+
+# Font Awesome icons:
+- assets/icons_fontawesome/*            // Font Awesome // CC BY 4.0
+- docs/bluetooth-brands.svg             // Font Awesome // CC BY 4.0
+- docs/cloud-sun-solid.svg              // Font Awesome // CC BY 4.0
+- docs/lungs-solid.svg                  // Font Awesome // CC BY 4.0
+- docs/radiation-alt-solid.svg          // Font Awesome // CC BY 4.0
+
+# Others:
+- assets/icons_custom/nuclear_icon.svg      // CC0
+- assets/icons_custom/nuclear_icon_big.svg  // CC0
+- assets/logos/github.svg                   // https://github.com/logos // proprietary
+- assets/logos/gitlab.png                   // https://about.gitlab.com/press // proprietary
