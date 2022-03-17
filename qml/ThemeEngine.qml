@@ -234,11 +234,16 @@ Item {
             colorRed = "#ff7657"
 
             themeStatusbar = Material.Dark
-            colorStatusbar = colorNeutralNight
+            colorStatusbar = "#0f295c"
 
-            colorHeader = "#ffcf00"
+            // theengs blue: "#0f295c"
+            // theengs orange: "#f7931e"
+
+            //colorHeader = "#ffc400" // orange
+            //colorHeaderHighlight = "#ffd800"
+            colorHeader = "#325da9" // blue
+            colorHeaderHighlight = "#0f295c"
             colorHeaderContent = "white"
-            colorHeaderHighlight = colorNeutralNight
 
             colorSidebar = "#ffcf00"
             colorSidebarContent = "white"
@@ -255,8 +260,10 @@ Item {
             colorBackground = "white"
             colorForeground = colorMaterialLightGrey
 
-            colorPrimary = "#f7931e"
+            colorPrimary = "#f7931e" // orange
             colorSecondary = "#ffa635"
+            //colorPrimary = "#0f295c" // blue
+            //colorSecondary = "#476cae"
             colorSuccess = colorGreen
             colorWarning = colorOrange
             colorError = colorRed
