@@ -260,7 +260,8 @@ Item {
             colorBackground = "white"
             colorForeground = colorMaterialLightGrey
 
-            colorPrimary = "#f7931e" // orange
+            //colorPrimary = "#f7931e" // orange
+            colorPrimary = "#fc9c2b"
             colorSecondary = "#ffa635"
             //colorPrimary = "#0f295c" // blue
             //colorSecondary = "#476cae"

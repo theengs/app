@@ -188,6 +188,10 @@ bool SettingsManager::readSettings()
             m_mqttUser = settings.value("mqtt/user").toString();
         if (settings.contains("mqtt/password"))
             m_mqttPassword = settings.value("mqtt/password").toString();
+        if (settings.contains("mqtt/topic_a"))
+            m_mqttTopicA = settings.value("mqtt/topic_a").toString();
+        if (settings.contains("mqtt/topic_b"))
+            m_mqttTopicB = settings.value("mqtt/topic_b").toString();
 
         status = true;
     }
@@ -242,6 +246,8 @@ bool SettingsManager::writeSettings()
         settings.setValue("mqtt/name", m_mqttName);
         settings.setValue("mqtt/user", m_mqttUser);
         settings.setValue("mqtt/password", m_mqttPassword);
+        settings.setValue("mqtt/topic_a", m_mqttTopicA);
+        settings.setValue("mqtt/topic_b", m_mqttTopicB);
 
         if (settings.status() == QSettings::NoError)
         {
@@ -332,7 +338,9 @@ void SettingsManager::resetSettings()
     m_mqttName = "theengs";
     m_mqttUser = "theengs";
     m_mqttPassword = "theengs";
-    Q_EMIT mysqlChanged();
+    m_mqttTopicA = "home";
+    m_mqttTopicB = "TheengsApp";
+    Q_EMIT mqttChanged();
 }
 
 /* ************************************************************************** */
@@ -649,6 +657,26 @@ void SettingsManager::setMqttPassword(const QString &value)
     if (m_mqttPassword != value)
     {
         m_mqttPassword = value;
+        writeSettings();
+        Q_EMIT mqttChanged();
+    }
+}
+
+void SettingsManager::setMqttTopicA(const QString &value)
+{
+    if (m_mqttTopicA != value)
+    {
+        m_mqttTopicA = value;
+        writeSettings();
+        Q_EMIT mqttChanged();
+    }
+}
+
+void SettingsManager::setMqttTopicB(const QString &value)
+{
+    if (m_mqttTopicB != value)
+    {
+        m_mqttTopicB = value;
         writeSettings();
         Q_EMIT mqttChanged();
     }

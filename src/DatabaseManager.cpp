@@ -407,56 +407,6 @@ void DatabaseManager::createDatabase()
             qWarning() << "> createData.exec() ERROR" << createData.lastError().type() << ":" << createData.lastError().text();
     }
 
-    if (!tableExists("plantLimits"))
-    {
-        qDebug() << "+ Adding 'plantLimits' table to local database";
-        QSqlQuery createLimits;
-        createLimits.prepare("CREATE TABLE plantLimits (" \
-                             "deviceAddr CHAR(38)," \
-                               "hygroMin INT," \
-                               "hygroMax INT," \
-                               "conduMin INT," \
-                               "conduMax INT," \
-                               "phMin FLOAT," \
-                               "phMax FLOAT," \
-                               "tempMin INT," \
-                               "tempMax INT," \
-                               "humiMin INT," \
-                               "humiMax INT," \
-                               "luxMin INT," \
-                               "luxMax INT," \
-                               "mmolMin INT," \
-                               "mmolMax INT," \
-                             " PRIMARY KEY(deviceAddr), " \
-                             " FOREIGN KEY(deviceAddr) REFERENCES devices(deviceAddr) ON DELETE CASCADE ON UPDATE NO ACTION " \
-                             ");");
-
-        if (createLimits.exec() == false)
-            qWarning() << "> createLimits.exec() ERROR" << createLimits.lastError().type() << ":" << createLimits.lastError().text();
-    }
-/*
-    if (!tableExists("sensorBias"))
-    {
-        qDebug() << "+ Adding 'sensorBias' table to local database";
-        QSqlQuery createBias;
-        createBias.prepare("CREATE TABLE sensorBias (" \
-                           "deviceAddr CHAR(38)," \
-                             "soilMoistureBias FLOAT," \
-                             "soilConduBias FLOAT," \
-                             "soilTempBias FLOAT," \
-                             "soilPhBias FLOAT," \
-                             "tempBias FLOAT," \
-                             "humiBias FLOAT," \
-                             "pressureBias FLOAT," \
-                             "luminosityBias FLOAT," \
-                           " PRIMARY KEY(deviceAddr), " \
-                           " FOREIGN KEY(deviceAddr) REFERENCES devices(deviceAddr) ON DELETE CASCADE ON UPDATE NO ACTION " \
-                           ");");
-
-        if (createBias.exec() == false)
-            qWarning() << "> createBias.exec() ERROR" << createBias.lastError().type() << ":" << createBias.lastError().text();
-    }
-*/
     if (!tableExists("sensorData"))
     {
         qDebug() << "+ Adding 'sensorData' table to local database";

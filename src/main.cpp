@@ -18,9 +18,10 @@
 
 #include "DatabaseManager.h"
 #include "SettingsManager.h"
+#include "MqttManager.h"
+#include "DeviceManager.h"
 #include "SystrayManager.h"
 #include "NotificationManager.h"
-#include "DeviceManager.h"
 #include "utils/utils_app.h"
 #include "utils/utils_screen.h"
 #include "utils/utils_language.h"
@@ -121,6 +122,7 @@ int main(int argc, char *argv[])
     SettingsManager *sm = SettingsManager::getInstance();
     SystrayManager *st = SystrayManager::getInstance();
     NotificationManager *nm = NotificationManager::getInstance();
+    MqttManager *mq = MqttManager::getInstance();
     DeviceManager *dm = new DeviceManager;
     if (!sm || !st || !nm || !dm)
     {
@@ -154,6 +156,7 @@ int main(int argc, char *argv[])
     engine_context->setContextProperty("deviceManager", dm);
     engine_context->setContextProperty("settingsManager", sm);
     engine_context->setContextProperty("systrayManager", st);
+    engine_context->setContextProperty("mqttManager", mq);
     engine_context->setContextProperty("utilsApp", utilsApp);
     engine_context->setContextProperty("utilsLanguage", utilsLanguage);
     engine_context->setContextProperty("utilsScreen", utilsScreen);

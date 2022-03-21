@@ -34,6 +34,7 @@ SOURCES  += src/main.cpp \
             src/SystrayManager.cpp \
             src/NotificationManager.cpp \
             src/AndroidService.cpp \
+            src/MqttManager.cpp \
             src/DeviceManager.cpp \
             src/device.cpp \
             src/device_infos.cpp \
@@ -65,6 +66,7 @@ HEADERS  += src/SettingsManager.h \
             src/SystrayManager.h \
             src/NotificationManager.h \
             src/AndroidService.h \
+            src/MqttManager.h \
             src/DeviceManager.h \
             src/device.h \
             src/device_utils.h \

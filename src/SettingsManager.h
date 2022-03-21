@@ -77,6 +77,8 @@ class SettingsManager: public QObject
     Q_PROPERTY(uint mqttPort READ getMqttPort WRITE setMqttPort NOTIFY mqttChanged)
     Q_PROPERTY(QString mqttUser READ getMqttUser WRITE setMqttUser NOTIFY mqttChanged)
     Q_PROPERTY(QString mqttPassword READ getMqttPassword WRITE setMqttPassword NOTIFY mqttChanged)
+    Q_PROPERTY(QString mqttTopicA READ getMqttTopicA WRITE setMqttTopicA NOTIFY mqttChanged)
+    Q_PROPERTY(QString mqttTopicB READ getMqttTopicB WRITE setMqttTopicB NOTIFY mqttChanged)
 
     bool m_firstlaunch = true;
 
@@ -124,6 +126,8 @@ class SettingsManager: public QObject
     QString m_mqttName = "theengs";
     QString m_mqttUser = "theengs";
     QString m_mqttPassword = "theengs";
+    QString m_mqttTopicA = "home";
+    QString m_mqttTopicB = "TheengsApp";
 
     // Singleton
     static SettingsManager *instance;
@@ -268,6 +272,12 @@ public:
 
     QString getMqttPassword() const { return m_mqttPassword; }
     void setMqttPassword(const QString &value);
+
+    QString getMqttTopicA() const { return m_mqttTopicA; }
+    void setMqttTopicA(const QString &value);
+
+    QString getMqttTopicB() const { return m_mqttTopicB; }
+    void setMqttTopicB(const QString &value);
 
     // Utils
     Q_INVOKABLE void resetSettings();
