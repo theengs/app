@@ -145,7 +145,7 @@ Item {
 
                     text: qsTr("WEBSITE")
                     source: "qrc:/assets/icons_material/baseline-insert_link-24px.svg"
-                    onClicked: Qt.openUrlExternally("https://github.com/theengs/app")
+                    onClicked: Qt.openUrlExternally("https://app.theengs.io")
                 }
                 ButtonWireframeIconCentered {
                     width: ((parent.width - 16) / 2)
@@ -319,66 +319,6 @@ Item {
                             Qt.openUrlExternally("itms-apps://itunes.apple.com/app/1234")
                     }
                 }
-            }
-
-            ////////
-
-            Item {
-                id: tuto
-                height: 48
-                anchors.left: parent.left
-                anchors.leftMargin: 0
-                anchors.right: parent.right
-                anchors.rightMargin: 0
-
-                IconSvg {
-                    width: 27
-                    height: 27
-                    anchors.left: parent.left
-                    anchors.leftMargin: 2
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    source: "qrc:/assets/icons_material/baseline-import_contacts-24px.svg"
-                    color: Theme.colorIcon
-                }
-
-                Text {
-                    id: tutoTxt
-                    anchors.left: parent.left
-                    anchors.leftMargin: 48
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: qsTr("Open the tutorial")
-                    textFormat: Text.PlainText
-                    font.pixelSize: Theme.fontSizeContent
-                    color: Theme.colorText
-                }
-
-                MouseArea {
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: singleColumn ? parent.right : tutoTxt.right
-                    anchors.rightMargin: singleColumn ? 0 : -24
-                    anchors.bottom: parent.bottom
-                    onClicked: screenTutorial.reopen()
-                }
-            }
-
-            ////////
-
-            IconSvg {
-                id: imageDevices
-                height: 96
-                anchors.left: parent.left
-                anchors.leftMargin: 48
-                anchors.right: parent.right
-                anchors.rightMargin: 8
-
-                visible: isPhone
-                source: isPhone ? "qrc:/assets/tutorial/welcome-devices.svg" : ""
-
-                color: Theme.colorPrimary
-                fillMode: Image.PreserveAspectFit
             }
 
             ////////

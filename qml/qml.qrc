@@ -10,7 +10,6 @@
         <file>About.qml</file>
         <file>SettingsMqtt.qml</file>
         <file>Settings.qml</file>
-        <file>Tutorial.qml</file>
         <file>DeviceWidget.qml</file>
         <file>DeviceList.qml</file>
         <file>DeviceBrowser.qml</file>
