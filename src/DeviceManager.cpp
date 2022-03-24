@@ -38,7 +38,8 @@
 
 #include "DatabaseManager.h"
 
-#include <theengs/decoder.h>
+//#include <theengs/decoder.h>
+#include <decoder.h>
 
 #include <QBluetoothLocalDevice>
 #include <QBluetoothDeviceDiscoveryAgent>

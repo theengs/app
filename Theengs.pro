@@ -133,8 +133,10 @@ CONTRIBS_DIR = $${PWD}/contribs/env/$${PLATFORM}_$${ARCH}/usr
 INCLUDEPATH     += $${CONTRIBS_DIR}/include/
 QMAKE_LIBDIR    += $${CONTRIBS_DIR}/lib/
 QMAKE_RPATHDIR  += $${CONTRIBS_DIR}/lib/
-LIBS            += -L$${CONTRIBS_DIR}/lib/
-LIBS            += -ldecoder
+
+INCLUDEPATH     += $${PWD}/src/thirdparty/TheengsDecoder/src/arduino_json/src/
+INCLUDEPATH     += $${PWD}/src/thirdparty/TheengsDecoder/src/
+SOURCES += $${PWD}/src/thirdparty/TheengsDecoder/src/decoder.cpp
 
 # Build settings ###############################################################
 
@@ -146,7 +148,6 @@ unix {
 }
 
 DEFINES += QT_DEPRECATED_WARNINGS
-QT_LOGGING_RULES="qt.qml.connections=false"
 
 CONFIG(release, debug|release) : DEFINES += NDEBUG QT_NO_DEBUG QT_NO_DEBUG_OUTPUT
 
