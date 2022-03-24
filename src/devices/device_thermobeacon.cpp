@@ -470,11 +470,11 @@ void DeviceThermoBeacon::parseAdvertisementData(const QByteArray &value)
         refreshDataFinished(true);
 
 #ifndef QT_NO_DEBUG
-        //qDebug() << "* DeviceThermoBeacon manufacturer data:" << getAddress();
-        //qDebug() << "- battery:" << m_deviceBattery;
-        //qDebug() << "- temperature:" << temp;
-        //qDebug() << "- humidity:" << hygro;
-        //qDebug() << "- device_time:" << m_device_time << "(" << (m_device_time / 3600.0 / 24.0) << "day)";
+        qDebug() << "* DeviceThermoBeacon manufacturer data:" << getAddress();
+        qDebug() << "- battery:" << m_deviceBattery;
+        qDebug() << "- temperature:" << temp;
+        qDebug() << "- humidity:" << hygro;
+        qDebug() << "- device_time:" << m_device_time << "(" << (m_device_time / 3600.0 / 24.0) << "day)";
 #endif
     }
 }

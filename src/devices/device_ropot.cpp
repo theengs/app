@@ -39,8 +39,8 @@ DeviceRopot::DeviceRopot(QString &deviceAddr, QString &deviceName, QObject *pare
     DeviceSensor(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR;
-    //m_deviceCapabilities += DeviceUtils::DEVICE_REALTIME;
-    //m_deviceCapabilities += DeviceUtils::DEVICE_HISTORY;
+    m_deviceCapabilities += DeviceUtils::DEVICE_REALTIME;
+    m_deviceCapabilities += DeviceUtils::DEVICE_HISTORY;
     m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
     m_deviceSensors += DeviceUtils::SENSOR_SOIL_MOISTURE;
     m_deviceSensors += DeviceUtils::SENSOR_SOIL_CONDUCTIVITY;
@@ -51,8 +51,8 @@ DeviceRopot::DeviceRopot(const QBluetoothDeviceInfo &d, QObject *parent):
     DeviceSensor(d, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR;
-    //m_deviceCapabilities += DeviceUtils::DEVICE_REALTIME;
-    //m_deviceCapabilities += DeviceUtils::DEVICE_HISTORY;
+    m_deviceCapabilities += DeviceUtils::DEVICE_REALTIME;
+    m_deviceCapabilities += DeviceUtils::DEVICE_HISTORY;
     m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
     m_deviceSensors += DeviceUtils::SENSOR_SOIL_MOISTURE;
     m_deviceSensors += DeviceUtils::SENSOR_SOIL_CONDUCTIVITY;
@@ -252,11 +252,21 @@ void DeviceRopot::serviceDetailsDiscovered_handshake(QLowEnergyService::ServiceS
             QByteArray mac = QByteArray::fromHex(addr.remove(':').toLatin1());
 
             // Generate token
-            uint8_t pid[2] = {0x01, 0x5d};
+            uint8_t pid[2] = {0x5d, 0x01};
             uint8_t magicend[4] = {0x92, 0xab, 0x54, 0xfa};
             uint8_t token1[12] = {0x1, 0x22, 0x3, 0x4, 0x5, 0x6, 0x6, 0x5, 0x4, 0x3, 0x2, 0x1};
             uint8_t token2[12] = {0x1, 0x22, 0x3, 0x4, 0x5, 0x6, 0x6, 0x5, 0x4, 0x3, 0x2, 0x1};
 
+            uint8_t mixa[8] = {0};
+            mixa[0] = mac[5];
+            mixa[1] = mac[3];
+            mixa[2] = mac[0];
+            mixa[3] = pid[0];
+            mixa[4] = pid[0];
+            mixa[5] = mac[1];
+            mixa[6] = mac[0];
+            mixa[7] = mac[4];
+/*
             uint8_t mixb[8] = {0};
             mixb[0] = mac[5];
             mixb[1] = mac[3];
@@ -266,8 +276,8 @@ void DeviceRopot::serviceDetailsDiscovered_handshake(QLowEnergyService::ServiceS
             mixb[5] = mac[5];
             mixb[6] = mac[0];
             mixb[7] = pid[0];
-
-            rc4_crypt(mixb, 8, token1, 12);
+*/
+            rc4_crypt(mixa, 8, token1, 12);
             rc4_crypt(token2, 12, magicend, 4);
 
             m_key_challenge = QByteArray::fromRawData((char*)token1, 12);
@@ -491,7 +501,7 @@ void DeviceRopot::bleReadDone(const QLowEnergyCharacteristic &c, const QByteArra
         {
             // first read might send bad data (0x aa bb cc dd ee ff 99 88 77 66...)
             // until the first write is done
-            if (data[0] == 0xAA && data[1] == 0xbb)
+            if (data[0] == 0xAA && data[1] == 0xBB)
                 return;
 
             m_temperature = static_cast<int16_t>(data[0] + (data[1] << 8)) / 10.f;
@@ -519,8 +529,8 @@ void DeviceRopot::bleReadDone(const QLowEnergyCharacteristic &c, const QByteArra
             qDebug() << "* DeviceRopot update:" << getAddress();
             qDebug() << "- m_firmware:" << m_deviceFirmware;
             qDebug() << "- m_battery:" << m_deviceBattery;
-            qDebug() << "- m_soil_moisture:" << m_soilMoisture;
-            qDebug() << "- m_soil_conductivity:" << m_soilConductivity;
+            qDebug() << "- m_soilMoisture:" << m_soilMoisture;
+            qDebug() << "- m_soilConductivity:" << m_soilConductivity;
             qDebug() << "- m_temperature:" << m_temperature;
 #endif
         }
@@ -542,12 +552,6 @@ void DeviceRopot::parseAdvertisementData(const QByteArray &value)
         const quint8 *data = reinterpret_cast<const quint8 *>(value.constData());
 
         QString mac;
-        int batt = -99;
-        float temp = -99;
-        float hygro = -99;
-        int moist = -99;
-        int lumi = -99;
-        int fert = -99;
 
 #if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
         // Save mac address
@@ -570,6 +574,13 @@ void DeviceRopot::parseAdvertisementData(const QByteArray &value)
 
         if (value.size() >= 16)
         {
+            int batt = -99;
+            float temp = -99;
+            float hygro = -99;
+            int moist = -99;
+            int lumi = -99;
+            int fert = -99;
+
             // get data
             if (data[12] == 4 && value.size() >= 17)
             {
@@ -652,7 +663,7 @@ void DeviceRopot::parseAdvertisementData(const QByteArray &value)
                 }
             }
 /*
-            if (m_temperature > -99 && m_luminosity > -99 && m_soil_moisture && m_soil_conductivity)
+            if (m_temperature > -99 && m_luminosityLux > -99 && m_soilMoisture > -99 && m_soilConductivity > -99)
             {
                 m_lastUpdate = QDateTime::currentDateTime();
 
@@ -665,16 +676,17 @@ void DeviceRopot::parseAdvertisementData(const QByteArray &value)
                 }
             }
 */
-#ifndef QT_NO_DEBUG
-            //qDebug() << "* DeviceRopot service data:" << getAddress();
-            //qDebug() << "- MAC:" << mac;
-            //qDebug() << "- battery:" << batt;
-            //qDebug() << "- temperature:" << temp;
-            //qDebug() << "- humidity:" << hygro;
-            //qDebug() << "- luminosity:" << lumi;
-            //qDebug() << "- moisture:" << moist;
-            //qDebug() << "- fertility:" << fert;
-#endif
+            if (temp > -99 || lumi > -99 || moist > -99 || fert > -99)
+            {
+                qDebug() << "* DeviceRopot service data:" << getAddress() << value.size() << "bytes";
+                if (!mac.isEmpty()) qDebug() << "- MAC:" << mac;
+                if (batt > -99) qDebug() << "- battery:" << batt;
+                if (temp > -99) qDebug() << "- temperature:" << temp;
+                if (hygro > -99) qDebug() << "- humidity:" << hygro;
+                if (lumi > -99) qDebug() << "- luminosity:" << lumi;
+                if (moist > -99) qDebug() << "- moisture:" << moist;
+                if (fert > -99) qDebug() << "- fertility:" << fert;
+            }
         }
     }
 }
