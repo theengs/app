@@ -56,6 +56,7 @@ Q_SIGNALS:
 private slots:
     void handleMessage(const QMqttMessage &qmsg);
     void updateStateChange();
+    void brokerConnected();
     void brokerDisconnected();
 
 public:
@@ -64,8 +65,8 @@ public:
     Q_INVOKABLE bool connect();
     Q_INVOKABLE void disconnect();
 
-    bool publish(const QString &topic, const QString &str);
-    bool subscribe(const QString &topic);
+    bool publish(QString topic, QString str);
+    bool subscribe(QString topic);
 
     bool getStatus() const { return (m_mqttclient && m_mqttclient->state() == QMqttClient::Connected); }
     QString getLog() const { return m_mqttLog; }

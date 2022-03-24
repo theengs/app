@@ -50,13 +50,7 @@ MqttManager::~MqttManager()
 /* ************************************************************************** */
 
 bool MqttManager::connect()
-{    
-    if (m_mqttclient)
-    {
-        // ?
-        publish("theengs", "rzttmkhkofghm");
-    }
-
+{
     if (!m_mqttclient)
     {
         qDebug() << "MqttManager::connect()";
@@ -70,6 +64,7 @@ bool MqttManager::connect()
         m_mqttclient->setPassword(sm->getMqttPassword());
 
         QObject::connect(m_mqttclient, &QMqttClient::stateChanged, this, &MqttManager::updateStateChange);
+        QObject::connect(m_mqttclient, &QMqttClient::connected, this, &MqttManager::brokerConnected);
         QObject::connect(m_mqttclient, &QMqttClient::disconnected, this, &MqttManager::brokerDisconnected);
 
         m_mqttclient->connectToHost();
@@ -92,10 +87,19 @@ void MqttManager::disconnect()
 
 /* ************************************************************************** */
 
-bool MqttManager::publish(const QString &topic, const QString &str)
+bool MqttManager::publish(QString topic, QString str)
 {
     if (m_mqttclient && m_mqttclient->state() == QMqttClient::Connected)
     {
+        if (topic.isEmpty())
+        {
+            SettingsManager *sm = SettingsManager::getInstance();
+
+            topic = sm->getMqttTopicA();
+            topic += "/";
+            topic += sm->getMqttTopicB();
+            topic += "/BTtoMQTT";
+        }
         qDebug() << "MqttManager::publish(" << topic << " : " << str << ")";
 
         QMqttTopicName t(topic);
@@ -113,7 +117,7 @@ bool MqttManager::publish(const QString &topic, const QString &str)
     return false;
 }
 
-bool MqttManager::subscribe(const QString &topic)
+bool MqttManager::subscribe(QString topic)
 {
     if (m_mqttclient && m_mqttclient->state() == QMqttClient::Connected)
     {
@@ -133,6 +137,25 @@ void MqttManager::updateStateChange()
     Q_EMIT logChanged();
 
     Q_EMIT statusChanged();
+}
+
+void MqttManager::brokerConnected()
+{
+    qDebug() << "MqttManager::brokerCnnected()" << m_mqttclient->state();
+
+    if (m_mqttclient)
+    {
+        SettingsManager *sm = SettingsManager::getInstance();
+        QString topic = sm->getMqttTopicA();
+        topic += "/";
+        topic += sm->getMqttTopicB();
+        topic += "/version";
+
+        QMqttTopicName t(topic);
+        QByteArray v("v" + QString::fromLatin1(APP_VERSION).toLocal8Bit());
+
+        m_mqttclient->publish(t, v);
+    }
 }
 
 void MqttManager::brokerDisconnected()
