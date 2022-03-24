@@ -26,6 +26,11 @@ include(src/thirdparty/MobileSharing/MobileSharing.pri)
 include(src/thirdparty/SingleApplication/singleapplication.pri)
 DEFINES += QAPPLICATION_CLASS=QApplication
 
+# Theengs submodule
+INCLUDEPATH     += $${PWD}/src/thirdparty/TheengsDecoder/src/arduino_json/src/
+INCLUDEPATH     += $${PWD}/src/thirdparty/TheengsDecoder/src/
+SOURCES += $${PWD}/src/thirdparty/TheengsDecoder/src/decoder.cpp
+
 # Project files ################################################################
 
 SOURCES  += src/main.cpp \
@@ -89,6 +94,7 @@ HEADERS  += src/SettingsManager.h \
             src/devices/device_ess_generic.h \
             src/devices/device_wp6003.h \
             src/utils/utils_app.h \
+            src/utils/utils_bits.h \
             src/utils/utils_language.h \
             src/utils/utils_maths.h \
             src/utils/utils_screen.h \
@@ -133,10 +139,6 @@ CONTRIBS_DIR = $${PWD}/contribs/env/$${PLATFORM}_$${ARCH}/usr
 INCLUDEPATH     += $${CONTRIBS_DIR}/include/
 QMAKE_LIBDIR    += $${CONTRIBS_DIR}/lib/
 QMAKE_RPATHDIR  += $${CONTRIBS_DIR}/lib/
-
-INCLUDEPATH     += $${PWD}/src/thirdparty/TheengsDecoder/src/arduino_json/src/
-INCLUDEPATH     += $${PWD}/src/thirdparty/TheengsDecoder/src/
-SOURCES += $${PWD}/src/thirdparty/TheengsDecoder/src/decoder.cpp
 
 # Build settings ###############################################################
 

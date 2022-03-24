@@ -35,6 +35,7 @@
 #include "devices/device_wp6003.h"
 
 #include "utils/utils_app.h"
+#include "utils/utils_bits.h"
 
 #include "DatabaseManager.h"
 
@@ -833,21 +834,27 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                 //         << "bytes:" << info.manufacturerData(id).toHex();
 
                 //dd->parseAdvertisementData(info.manufacturerData(id));
-/*
-                DynamicJsonDocument doc(2048);
+
+                DynamicJsonDocument doc(1024);
+                doc["id"] = info.address().toString().toStdString();
                 doc["name"] = info.name().toStdString();
-                doc["manufacturerdata"] = info.manufacturerData(id).toHex().toStdString();
+                doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).toStdString() + info.manufacturerData(id).toHex().toStdString();
 
                 TheengsDecoder a;
                 JsonObject obj = doc.as<JsonObject>();
 
-                if (a.decodeBLEJson(obj) == 0)
+                if (a.decodeBLEJson(obj) >= 0)
                 {
                     std::string output;
                     serializeJson(obj, output);
                     qDebug() << "output:" << output.c_str();
                 }
-*/
+                else
+                {
+                    std::string input;
+                    serializeJson(doc, input);
+                    qDebug() << "input :" << input.c_str();
+                }
             }
 
             const QList<QBluetoothUuid> &serviceIds = info.serviceIds();
@@ -859,32 +866,28 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                 //         << "bytes:" << info.serviceData(id).toHex();
 
                 //dd->parseAdvertisementData(info.serviceData(id));
-/*
-                DynamicJsonDocument doc(2048);
+
+                DynamicJsonDocument doc(1024);
+                doc["id"] = info.address().toString().toStdString();
                 doc["name"] = info.name().toStdString();
                 doc["servicedata"] = info.serviceData(id).toHex().toStdString();
-                doc["servicedatauuid"] = id.toString(QUuid::Id128).toStdString();
-                //doc["servicedata"] = "71205d01ffd20c6d8d7cc40d0910020000";
-
-                // 712098000163b6658d7cc40d0410024001 // flowercare from doc
-                // 71205d01ffd20c6d8d7cc40d0910020000 // ropot
-                // 58585b059bb268c538c1a4634217bacb1103009fd7bcda // LYWSD03MMC
-                // 0000d72a000020917a01beee24004101bde71800 //thermobeacon
-
-                //std::string input;
-                //serializeJson(doc, input);
-                //qDebug() << "input :" << input.c_str();
+                //doc["servicedatauuid"] = id.toString(QUuid::Id128).toStdString();
 
                 TheengsDecoder a;
                 JsonObject obj = doc.as<JsonObject>();
 
-                if (a.decodeBLEJson(obj) == 0)
+                if (a.decodeBLEJson(obj) >= 0)
                 {
                     std::string output;
                     serializeJson(obj, output);
                     qDebug() << "output:" << output.c_str();
                 }
-*/
+                else
+                {
+                    std::string input;
+                    serializeJson(doc, input);
+                    qDebug() << "input :" << input.c_str();
+                }
             }
 
             // Dynamic updates
