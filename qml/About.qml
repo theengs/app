@@ -93,7 +93,7 @@ Item {
 
                         text: qsTr("WEBSITE")
                         source: "qrc:/assets/icons_material/baseline-insert_link-24px.svg"
-                        onClicked: Qt.openUrlExternally("https://github.com/theengs/app")
+                        onClicked: Qt.openUrlExternally("https://app.theengs.io")
                     }
 
                     ButtonWireframeIconCentered {
@@ -104,19 +104,7 @@ Item {
 
                         text: qsTr("SUPPORT")
                         source: "qrc:/assets/icons_material/baseline-support-24px.svg"
-                        onClicked: Qt.openUrlExternally("https://github.com/theengs/app")
-                    }
-
-                    ButtonWireframeIconCentered {
-                        visible: (appWindow.width > 800)
-                        width: 160
-                        sourceSize: 22
-                        fullColor: true
-                        primaryColor: (Theme.currentTheme === ThemeEngine.THEME_NIGHT) ? Theme.colorHeader : "#5483EF"
-
-                        text: qsTr("GitHub")
-                        source: "qrc:/assets/logos/github.svg"
-                        onClicked: Qt.openUrlExternally("https://github.com/theengs/app")
+                        onClicked: Qt.openUrlExternally("https://github.com/theengs/app/issues/new")
                     }
                 }
             }
@@ -157,7 +145,7 @@ Item {
 
                     text: qsTr("SUPPORT")
                     source: "qrc:/assets/icons_material/baseline-support-24px.svg"
-                    onClicked: Qt.openUrlExternally("https://github.com/theengs/app")
+                    onClicked: Qt.openUrlExternally("https://github.com/theengs/app/issues/new")
                 }
             }
 
@@ -261,69 +249,6 @@ Item {
             ////////
 
             Item {
-                id: rate
-                height: 48
-                anchors.left: parent.left
-                anchors.leftMargin: 0
-                anchors.right: parent.right
-                anchors.rightMargin: 0
-
-                visible: (Qt.platform.os === "android" || Qt.platform.os === "ios")
-
-                IconSvg {
-                    id: rateImg
-                    width: 31
-                    height: 31
-                    anchors.left: parent.left
-                    anchors.leftMargin: 0
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    source: "qrc:/assets/icons_material/baseline-stars-24px.svg"
-                    color: Theme.colorIcon
-                }
-
-                Text {
-                    id: rateTxt
-                    anchors.left: parent.left
-                    anchors.leftMargin: 48
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: qsTr("Rate the application")
-                    textFormat: Text.PlainText
-                    font.pixelSize: Theme.fontSizeContent
-                    color: Theme.colorText
-                }
-
-                IconSvg {
-                    width: 20
-                    height: 20
-                    anchors.right: parent.right
-                    anchors.rightMargin: 0
-                    anchors.verticalCenter: parent.verticalCenter
-                    visible: singleColumn
-
-                    source: "qrc:/assets/icons_material/duotone-launch-24px.svg"
-                    color: Theme.colorIcon
-                }
-
-                MouseArea {
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: singleColumn ? parent.right : rateTxt.right
-                    anchors.rightMargin: singleColumn ? 0 : -24
-                    anchors.bottom: parent.bottom
-                    onClicked: {
-                        if (Qt.platform.os === "android")
-                            Qt.openUrlExternally("market://details?id=com.theengs.app")
-                        else if (Qt.platform.os === "ios")
-                            Qt.openUrlExternally("itms-apps://itunes.apple.com/app/1234")
-                    }
-                }
-            }
-
-            ////////
-
-            Item {
                 height: 16
                 anchors.left: parent.left
                 anchors.right: parent.right
@@ -388,7 +313,6 @@ Item {
                     onClicked: Qt.openUrlExternally("https://github.com/theengs/app/releases")
                 }
             }
-
 
             ////////
 
