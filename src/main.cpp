@@ -124,11 +124,14 @@ int main(int argc, char *argv[])
     NotificationManager *nm = NotificationManager::getInstance();
     MqttManager *mq = MqttManager::getInstance();
     DeviceManager *dm = new DeviceManager;
-    if (!sm || !st || !nm || !dm)
+    if (!sm || !st || !nm || !mq || !dm)
     {
         qWarning() << "Cannot init Theengs components!";
         return EXIT_FAILURE;
     }
+
+    // Start MQTT
+    if (sm->getMQTT()) mq->connect();
 
     // Init generic utils
     UtilsScreen *utilsScreen = UtilsScreen::getInstance();

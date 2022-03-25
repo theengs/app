@@ -65,6 +65,31 @@ Item {
                     wrapMode: Text.WordWrap
                     verticalAlignment: Text.AlignVCenter
                 }
+
+                Row {
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 4
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        text: settingsManager.mqtt ? qsTr("enabled") : qsTr("disabled")
+                        textFormat: Text.PlainText
+                        font.pixelSize: Theme.fontSizeContent
+                        color: Theme.colorText
+                    }
+
+                    SwitchThemedMobile {
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        checked: settingsManager.mqtt
+                        onClicked: {
+                            settingsManager.mqtt = checked
+                            mqttManager.reconnect()
+                        }
+                    }
+                }
             }
 
             ////////
@@ -120,10 +145,14 @@ Item {
                     width: grid.sz
                     height: 36
 
+                    selectByMouse: true
                     placeholderText: qsTr("Host")
                     text: settingsManager.mqttHost
-                    onEditingFinished: settingsManager.mqttHost = text
-                    selectByMouse: true
+
+                    onEditingFinished: {
+                        settingsManager.mqttHost = text
+                        mqttManager.reconnect()
+                    }
 
                     IconSvg {
                         width: 20; height: 20;
@@ -141,11 +170,15 @@ Item {
                     width: grid.sz
                     height: 36
 
+                    selectByMouse: true
                     placeholderText: qsTr("Port")
                     text: settingsManager.mqttPort
-                    onEditingFinished: settingsManager.mqttPort = parseInt(text, 10)
                     validator: IntValidator { bottom: 1; top: 65535; }
-                    selectByMouse: true
+
+                    onEditingFinished: {
+                        settingsManager.mqttPort = parseInt(text, 10)
+                        mqttManager.reconnect()
+                    }
 
                     IconSvg {
                         width: 20; height: 20;
@@ -163,10 +196,14 @@ Item {
                     width: grid.sz
                     height: 36
 
+                    selectByMouse: true
                     placeholderText: qsTr("User")
                     text: settingsManager.mqttUser
-                    onEditingFinished: settingsManager.mqttUser = text
-                    selectByMouse: true
+
+                    onEditingFinished: {
+                        settingsManager.mqttUser = text
+                        mqttManager.reconnect()
+                    }
 
                     IconSvg {
                         width: 20; height: 20;
@@ -184,11 +221,15 @@ Item {
                     width: grid.sz
                     height: 36
 
+                    selectByMouse: true
                     placeholderText: qsTr("Password")
                     text: settingsManager.mqttPassword
-                    onEditingFinished: settingsManager.mqttPassword = text
-                    selectByMouse: true
                     echoMode: TextInput.PasswordEchoOnEdit
+
+                    onEditingFinished: {
+                        settingsManager.mqttPassword = text
+                        mqttManager.reconnect()
+                    }
 
                     IconSvg {
                         width: 20; height: 20;
@@ -235,10 +276,14 @@ Item {
                     width: grid.sz
                     height: 36
 
+                    selectByMouse: true
                     placeholderText: qsTr("Topic A")
                     text: settingsManager.mqttTopicA
-                    onEditingFinished: settingsManager.mqttTopicA = text
-                    selectByMouse: true
+
+                    onEditingFinished: {
+                        settingsManager.mqttTopicA = text
+                        mqttManager.reconnect()
+                    }
 
                     IconSvg {
                         width: 20; height: 20;
@@ -256,10 +301,14 @@ Item {
                     width: grid.sz
                     height: 36
 
+                    selectByMouse: true
                     placeholderText: qsTr("Topic B")
                     text: settingsManager.mqttTopicB
-                    onEditingFinished: settingsManager.mqttTopicB = text
-                    selectByMouse: true
+
+                    onEditingFinished: {
+                        settingsManager.mqttTopicB = text
+                        mqttManager.reconnect()
+                    }
 
                     IconSvg {
                         width: 20; height: 20;
@@ -275,28 +324,30 @@ Item {
 
             ////////
 
-            ButtonWireframe {
+            Row {
                 anchors.right: parent.right
                 anchors.rightMargin: 16
+                spacing: 16
 
-                text: qsTr("Save")
-                fullColor: true
+                ButtonWireframe {
+                    text: qsTr("Save")
+                    fullColor: true
 
-                onClicked: focus = true
+                    onClicked: {
+                        focus = true
+                        mqttManager.reconnect()
+                    }
+                }
+
+                ButtonWireframe {
+                    text: mqttManager.status ? qsTr("Connected") : qsTr("Disconnected")
+                    primaryColor: mqttManager.status ? Theme.colorGreen : Theme.colorOrange
+                    fullColor: true
+                }
             }
 
             ////////
 
-            ButtonWireframe {
-                anchors.right: parent.right
-                anchors.rightMargin: 16
-
-                text: mqttManager.status ? qsTr("connected") : qsTr("disconnected")
-                primaryColor: mqttManager.status ? Theme.colorGreen : Theme.colorOrange
-                fullColor: true
-
-                onClicked: mqttManager.connect()
-            }
             Text {
                 anchors.left: parent.left
                 anchors.leftMargin: 16

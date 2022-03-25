@@ -53,24 +53,24 @@ bool MqttManager::connect()
 {
     if (!m_mqttclient)
     {
-        qDebug() << "MqttManager::connect()";
-        SettingsManager *sm = SettingsManager::getInstance();
-
         m_mqttclient = new QMqttClient(this);
-        m_mqttclient->setHostname(sm->getMqttHost());
-        m_mqttclient->setPort(sm->getMqttPort());
-
-        m_mqttclient->setUsername(sm->getMqttUser());
-        m_mqttclient->setPassword(sm->getMqttPassword());
-
         QObject::connect(m_mqttclient, &QMqttClient::stateChanged, this, &MqttManager::updateStateChange);
         QObject::connect(m_mqttclient, &QMqttClient::connected, this, &MqttManager::brokerConnected);
         QObject::connect(m_mqttclient, &QMqttClient::disconnected, this, &MqttManager::brokerDisconnected);
+    }
+
+    if (m_mqttclient)
+    {
+        qDebug() << "MqttManager::connect()";
+
+        SettingsManager *sm = SettingsManager::getInstance();
+        m_mqttclient->setHostname(sm->getMqttHost());
+        m_mqttclient->setPort(sm->getMqttPort());
+        m_mqttclient->setUsername(sm->getMqttUser());
+        m_mqttclient->setPassword(sm->getMqttPassword());
 
         m_mqttclient->connectToHost();
         //m_mqttclient->connectToHostEncrypted();
-
-        qDebug() << "yes ?";
     }
 
     return false;
@@ -81,8 +81,15 @@ void MqttManager::disconnect()
     if (m_mqttclient)
     {
         qDebug() << "MqttManager::disconnect()";
+
         m_mqttclient->disconnectFromHost();
     }
+}
+
+void MqttManager::reconnect()
+{
+    disconnect();
+    connect();
 }
 
 /* ************************************************************************** */
@@ -141,7 +148,7 @@ void MqttManager::updateStateChange()
 
 void MqttManager::brokerConnected()
 {
-    qDebug() << "MqttManager::brokerCnnected()" << m_mqttclient->state();
+    qDebug() << "MqttManager::brokerConnected()" << m_mqttclient->state();
 
     if (m_mqttclient)
     {
