@@ -475,7 +475,45 @@ void DeviceRopot::bleReadDone(const QLowEnergyCharacteristic &c, const QByteArra
         }
         else
         {
-            // Parse entry // TODO
+            // Parse entry
+            int64_t tmcd = (data[0] + (data[1] << 8) + (data[2] << 16) + (data[3] << 24));
+            m_lastHistorySync.setSecsSinceEpoch(m_device_wall_time + tmcd);
+
+            float temperature = static_cast<int16_t>(data[4]  + (data[5] << 8)) / 10.f;
+            if (temperature > 100.f) temperature = 0.f; // FIXME negative temperatures aren't properly coded?
+            int soil_moisture = data[11];
+            int soil_conductivity = data[12] + (data[13] << 8) + (data[14] << 16) + (data[15] << 24);
+
+            addDatabaseRecord2(m_device_wall_time + tmcd, soil_moisture, soil_conductivity);
+
+#ifndef QT_NO_DEBUG
+            qDebug() << "* History entry" << m_history_entryIndex-1 << " at " << tmcd << " / or" << QDateTime::fromSecsSinceEpoch(m_device_wall_time+tmcd);
+            qDebug() << "DATA: 0x" << value.toHex();
+            qDebug() << "- soil_moisture:" << soil_moisture;
+            qDebug() << "- soil_conductivity:" << soil_conductivity;
+            qDebug() << "- temperature:" << temperature;
+#endif
+
+            // Update progress
+            m_history_entryIndex--;
+            m_history_sessionRead++;
+            Q_EMIT progressUpdated();
+
+            if (m_history_entryIndex > 0)
+            {
+                // Read next entry (format: 0xA1 + entry / 16b little endian)
+                QByteArray nextentry(QByteArray::fromHex("A1"));
+                nextentry.push_back(m_history_entryIndex%256);
+                nextentry.push_back(m_history_entryIndex/256);
+                serviceHistory->writeCharacteristic(chi, nextentry, QLowEnergyService::WriteWithResponse);
+            }
+            else
+            {
+                // Finish it
+                refreshHistoryFinished(true);
+                m_bleController->disconnectFromDevice();
+                return;
+            }
         }
 
         return;
@@ -676,6 +714,7 @@ void DeviceRopot::parseAdvertisementData(const QByteArray &value)
                 }
             }
 */
+/*
             if (temp > -99 || lumi > -99 || moist > -99 || fert > -99)
             {
                 qDebug() << "* DeviceRopot service data:" << getAddress() << value.size() << "bytes";
@@ -687,6 +726,7 @@ void DeviceRopot::parseAdvertisementData(const QByteArray &value)
                 if (moist > -99) qDebug() << "- moisture:" << moist;
                 if (fert > -99) qDebug() << "- fertility:" << fert;
             }
+*/
         }
     }
 }
@@ -727,6 +767,58 @@ bool DeviceRopot::addDatabaseRecord(const int64_t timestamp,
             addData.bindValue(":hygro", soilMoisture);
             addData.bindValue(":condu", soilConductivity);
             addData.bindValue(":temp", temperature);
+            status = addData.exec();
+
+            if (status)
+            {
+                m_lastUpdateDatabase = tmcd;
+            }
+            else
+            {
+                qWarning() << "> DeviceRopot addData.exec() ERROR" << addData.lastError().type() << ":" << addData.lastError().text();
+            }
+        }
+    }
+    else
+    {
+        qWarning() << "DeviceRopot values are INVALID";
+    }
+
+    return status;
+}
+
+/* ************************************************************************** */
+
+bool DeviceRopot::areValuesValid2(const int soilMoisture, const int soilConductivity) const
+{
+    if (soilMoisture < 0 || soilMoisture > 100) return false;
+    if (soilConductivity < 0 || soilConductivity > 20000) return false;
+
+    return true;
+}
+
+bool DeviceRopot::addDatabaseRecord2(const int64_t timestamp,
+                                     const int soilMoisture, const int soilConductivity)
+{
+    bool status = false;
+
+    if (areValuesValid2(soilMoisture, soilConductivity))
+    {
+        if (m_dbInternal || m_dbExternal)
+        {
+            // SQL date format YYYY-MM-DD HH:MM:SS
+            // We only save one record every 60m
+
+            QDateTime tmcd = QDateTime::fromSecsSinceEpoch(timestamp);
+
+            QSqlQuery addData;
+            addData.prepare("REPLACE INTO plantData (deviceAddr, ts, ts_full, soilMoisture, soilConductivity)"
+                            " VALUES (:deviceAddr, :ts, :ts_full, :hygro, :condu)");
+            addData.bindValue(":deviceAddr", getAddress());
+            addData.bindValue(":ts", tmcd.toString("yyyy-MM-dd hh:00:00"));
+            addData.bindValue(":ts_full", tmcd.toString("yyyy-MM-dd hh:mm:ss"));
+            addData.bindValue(":hygro", soilMoisture);
+            addData.bindValue(":condu", soilConductivity);
             status = addData.exec();
 
             if (status)
