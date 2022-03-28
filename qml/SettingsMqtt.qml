@@ -101,7 +101,7 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 12
 
-                text: qsTr("Connects to a remote MySQL compatible database, instead of the embedded database. Allows multiple instances of the application to share data. Database setup is at your own charge.")
+                text: qsTr("Connects to a remote MQTT broker. Setup is at your own charge.")
                 textFormat: Text.PlainText
                 wrapMode: Text.WordWrap
                 color: Theme.colorSubText
@@ -355,7 +355,9 @@ Item {
                 anchors.rightMargin: 16
 
                 text: mqttManager.stuff
+                textFormat: Text.PlainText
                 wrapMode: Text.WordWrap
+                color: Theme.colorSubText
             }
         }
     }

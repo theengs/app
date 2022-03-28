@@ -101,12 +101,11 @@ bool MqttManager::publish(QString topic, QString str)
         if (topic.isEmpty())
         {
             SettingsManager *sm = SettingsManager::getInstance();
+            if (!sm || (sm && (sm->getMqttTopicA().isEmpty() || sm->getMqttTopicB().isEmpty()))) return false;
 
-            topic = sm->getMqttTopicA();
-            topic += "/";
-            topic += sm->getMqttTopicB();
-            topic += "/BTtoMQTT";
+            topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT";
         }
+
         qDebug() << "MqttManager::publish(" << topic << " : " << str << ")";
 
         QMqttTopicName t(topic);
@@ -153,10 +152,9 @@ void MqttManager::brokerConnected()
     if (m_mqttclient)
     {
         SettingsManager *sm = SettingsManager::getInstance();
-        QString topic = sm->getMqttTopicA();
-        topic += "/";
-        topic += sm->getMqttTopicB();
-        topic += "/version";
+        if (!sm || (sm && (sm->getMqttTopicA().isEmpty() || sm->getMqttTopicB().isEmpty()))) return;
+
+        QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/version";
 
         QMqttTopicName t(topic);
         QByteArray v("v" + QString::fromLatin1(APP_VERSION).toLocal8Bit());
