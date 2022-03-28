@@ -16,8 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DEVICE_HYGROTEMP_CGDK2_H
-#define DEVICE_HYGROTEMP_CGDK2_H
+#ifndef DEVICE_THEENGS_H
+#define DEVICE_THEENGS_H
 /* ************************************************************************** */
 
 #include "device_sensor.h"
@@ -31,35 +31,22 @@
 /* ************************************************************************** */
 
 /*!
- * Qingping "Temp RH Lite"
- * CGDK2 device / round body / LCD screen
+ * Theengs generic device
  */
-class DeviceHygrotempCGDK2: public DeviceSensor
+class DeviceTheengs: public DeviceSensor
 {
     Q_OBJECT
 
 public:
-    DeviceHygrotempCGDK2(QString &deviceAddr, QString &deviceName, QObject *parent = nullptr);
-    DeviceHygrotempCGDK2(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
-    ~DeviceHygrotempCGDK2();
+    DeviceTheengs(QString &deviceAddr, QString &deviceName, QObject *parent = nullptr);
+    DeviceTheengs(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
+    ~DeviceTheengs();
 
 private:
     // QLowEnergyController related
     void serviceScanDone();
     void addLowEnergyService(const QBluetoothUuid &uuid);
-    void serviceDetailsDiscovered_infos(QLowEnergyService::ServiceState newState);
-    void serviceDetailsDiscovered_data(QLowEnergyService::ServiceState newState);
-
-    QLowEnergyService *serviceInfos = nullptr;
-    QLowEnergyService *serviceData = nullptr;
-
-    QLowEnergyDescriptor m_notificationDesc;
-    void confirmedDescriptorWrite(const QLowEnergyDescriptor &d, const QByteArray &value);
-
-    void bleWriteDone(const QLowEnergyCharacteristic &c, const QByteArray &value);
-    void bleReadDone(const QLowEnergyCharacteristic &c, const QByteArray &value);
-    void bleReadNotify(const QLowEnergyCharacteristic &c, const QByteArray &value);
 };
 
 /* ************************************************************************** */
-#endif // DEVICE_HYGROTEMP_CGDK2_H
+#endif // DEVICE_THEENGS_H

@@ -22,7 +22,7 @@
 #include "devices/device_flowerpower.h"
 #include "devices/device_parrotpot.h"
 #include "devices/device_ropot.h"
-#include "devices/device_hygrotemp_lcd.h"
+#include "devices/device_hygrotemp_lywsdcgq.h"
 #include "devices/device_hygrotemp_cgg1.h"
 #include "devices/device_hygrotemp_clock.h"
 #include "devices/device_hygrotemp_square.h"
@@ -128,14 +128,14 @@ DeviceManager::DeviceManager(bool daemon)
             else if (deviceName == "HiGrow")
                 d = new DeviceEsp32HiGrow(deviceAddr, deviceName, this);
             else if (deviceName == "MJ_HT_V1")
-                d = new DeviceHygrotempLCD(deviceAddr, deviceName, this);
+                d = new DeviceHygrotempLYWSDCGQ(deviceAddr, deviceName, this);
             else if (deviceName == "ClearGrass Temp & RH")
                 d = new DeviceHygrotempCGG1(deviceAddr, deviceName, this);
             else if (deviceName == "Qingping Temp RH Lite")
                 d = new DeviceHygrotempCGDK2(deviceAddr, deviceName, this);
             else if (deviceName == "LYWSD02" || deviceName == "MHO-C303")
                 d = new DeviceHygrotempClock(deviceAddr, deviceName, this);
-            else if (deviceName == "LYWSD03MMC" || deviceName == "MHO-C401")
+            else if (deviceName == "LYWSD03MMC" || deviceName == "MHO-C401" || deviceName == "XMWSDJO4MMC")
                 d = new DeviceHygrotempSquare(deviceAddr, deviceName, this);
             else if (deviceName == "ThermoBeacon")
                 d = new DeviceThermoBeacon(deviceAddr, deviceName, this);
@@ -1472,7 +1472,7 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
             info.name() == "ClearGrass Temp & RH" ||
             info.name() == "Qingping Temp RH Lite" ||
             info.name() == "LYWSD02" || info.name() == "MHO-C303" ||
-            info.name() == "LYWSD03MMC" || info.name() == "MHO-C401" ||
+            info.name() == "LYWSD03MMC" || info.name() == "MHO-C401" || info.name() == "XMWSDJO4MMC" ||
             info.name() == "ThermoBeacon" ||
             info.name().startsWith("6003#") ||
             info.name() == "AirQualityMonitor" ||
@@ -1507,14 +1507,14 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
             else if (info.name() == "HiGrow")
                 d = new DeviceEsp32HiGrow(info, this);
             else if (info.name() == "MJ_HT_V1")
-                d = new DeviceHygrotempLCD(info, this);
+                d = new DeviceHygrotempLYWSDCGQ(info, this);
             else if (info.name() == "ClearGrass Temp & RH")
                 d = new DeviceHygrotempCGG1(info, this);
             else if (info.name() == "Qingping Temp RH Lite")
                 d = new DeviceHygrotempCGDK2(info, this);
             else if (info.name() == "LYWSD02" || info.name() == "MHO-C303")
                 d = new DeviceHygrotempClock(info, this);
-            else if (info.name() == "LYWSD03MMC" || info.name() == "MHO-C401")
+            else if (info.name() == "LYWSD03MMC" || info.name() == "MHO-C401" || info.name() == "XMWSDJO4MMC")
                 d = new DeviceHygrotempSquare(info, this);
             else if (info.name() == "ThermoBeacon")
                 d = new DeviceThermoBeacon(info, this);

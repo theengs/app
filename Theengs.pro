@@ -47,11 +47,14 @@ SOURCES  += src/main.cpp \
             src/device_sensor.cpp \
             src/devices/device_flowercare.cpp \
             src/devices/device_flowerpower.cpp \
-            src/devices/device_hygrotemp_lcd.cpp \
+            src/devices/device_hygrotemp_cgd1.cpp \
             src/devices/device_hygrotemp_cgg1.cpp \
+            src/devices/device_hygrotemp_cgp1w.cpp \
             src/devices/device_hygrotemp_clock.cpp \
+            src/devices/device_hygrotemp_lywsdcgq.cpp \
             src/devices/device_hygrotemp_square.cpp \
             src/devices/device_hygrotemp_cgdk2.cpp \
+            src/devices/device_jqjcy01ym.cpp \
             src/devices/device_thermobeacon.cpp \
             src/devices/device_ropot.cpp \
             src/devices/device_parrotpot.cpp \
@@ -80,11 +83,14 @@ HEADERS  += src/SettingsManager.h \
             src/device_sensor.h \
             src/devices/device_flowercare.h \
             src/devices/device_flowerpower.h \
-            src/devices/device_hygrotemp_lcd.h \
+            src/devices/device_hygrotemp_cgd1.h \
             src/devices/device_hygrotemp_cgg1.h \
+            src/devices/device_hygrotemp_cgp1w.h \
             src/devices/device_hygrotemp_clock.h \
+            src/devices/device_hygrotemp_lywsdcgq.h \
             src/devices/device_hygrotemp_square.h \
             src/devices/device_hygrotemp_cgdk2.h \
+            src/devices/device_jqjcy01ym.h \
             src/devices/device_thermobeacon.h \
             src/devices/device_ropot.h \
             src/devices/device_parrotpot.h \

@@ -16,8 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DEVICE_HYGROTEMP_CGDK2_H
-#define DEVICE_HYGROTEMP_CGDK2_H
+#ifndef DEVICE_HYGROTEMP_CGD1_H
+#define DEVICE_HYGROTEMP_CGD1_H
 /* ************************************************************************** */
 
 #include "device_sensor.h"
@@ -31,35 +31,25 @@
 /* ************************************************************************** */
 
 /*!
- * Qingping "Temp RH Lite"
- * CGDK2 device / round body / LCD screen
+ * Qingping (formerly ClearGrass) "Temp & RH Barometer Pro S" / "Temp & RH Monitor Pro S"
+ * CGP1W device / squared body / LCD
  */
-class DeviceHygrotempCGDK2: public DeviceSensor
+class DeviceHygrotempCGP1W: public DeviceSensor
 {
     Q_OBJECT
 
+    void parseAdvertisementData(const QByteArray &value);
+
 public:
-    DeviceHygrotempCGDK2(QString &deviceAddr, QString &deviceName, QObject *parent = nullptr);
-    DeviceHygrotempCGDK2(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
-    ~DeviceHygrotempCGDK2();
+    DeviceHygrotempCGP1W(QString &deviceAddr, QString &deviceName, QObject *parent = nullptr);
+    DeviceHygrotempCGP1W(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
+    ~DeviceHygrotempCGP1W();
 
 private:
     // QLowEnergyController related
     void serviceScanDone();
     void addLowEnergyService(const QBluetoothUuid &uuid);
-    void serviceDetailsDiscovered_infos(QLowEnergyService::ServiceState newState);
-    void serviceDetailsDiscovered_data(QLowEnergyService::ServiceState newState);
-
-    QLowEnergyService *serviceInfos = nullptr;
-    QLowEnergyService *serviceData = nullptr;
-
-    QLowEnergyDescriptor m_notificationDesc;
-    void confirmedDescriptorWrite(const QLowEnergyDescriptor &d, const QByteArray &value);
-
-    void bleWriteDone(const QLowEnergyCharacteristic &c, const QByteArray &value);
-    void bleReadDone(const QLowEnergyCharacteristic &c, const QByteArray &value);
-    void bleReadNotify(const QLowEnergyCharacteristic &c, const QByteArray &value);
 };
 
 /* ************************************************************************** */
-#endif // DEVICE_HYGROTEMP_CGDK2_H
+#endif // DEVICE_HYGROTEMP_CGD1_H

@@ -200,17 +200,17 @@ bool DeviceSensor::getSqlDeviceInfos()
             Q_EMIT sensorUpdated();
         }
     }
-    else if ((m_deviceName.startsWith("Parrot pot")) && (m_deviceFirmware.size() == 6))
+    else if ((m_deviceName == "ropot") && (m_deviceFirmware.size() == 5))
     {
-        if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_PARROTPOT))
+        if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_ROPOT))
         {
             m_firmware_uptodate = true;
             Q_EMIT sensorUpdated();
         }
     }
-    else if ((m_deviceName == "ropot") && (m_deviceFirmware.size() == 5))
+    else if ((m_deviceName.startsWith("Parrot pot")) && (m_deviceFirmware.size() == 6))
     {
-        if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_ROPOT))
+        if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_PARROTPOT))
         {
             m_firmware_uptodate = true;
             Q_EMIT sensorUpdated();
@@ -250,7 +250,15 @@ bool DeviceSensor::getSqlDeviceInfos()
     }
     else if ((m_deviceName == "LYWSD03MMC") && (m_deviceFirmware.size() == 10))
     {
-        if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_HYGROTEMP_SQUARE))
+        if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_HYGROTEMP_LYWSD03MMC))
+        {
+            m_firmware_uptodate = true;
+            Q_EMIT sensorUpdated();
+        }
+    }
+    else if ((m_deviceName == "XMWSDJO4MMC") && (m_deviceFirmware.size() == 10))
+    {
+        if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_HYGROTEMP_XMWSDJO4MMC))
         {
             m_firmware_uptodate = true;
             Q_EMIT sensorUpdated();
@@ -259,14 +267,6 @@ bool DeviceSensor::getSqlDeviceInfos()
     else if ((m_deviceName == "MHO-C401") && (m_deviceFirmware.size() == 10))
     {
         if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_HYGROTEMP_EINK2))
-        {
-            m_firmware_uptodate = true;
-            Q_EMIT sensorUpdated();
-        }
-    }
-    else if ((m_deviceName == "MHO-303") && (m_deviceFirmware.size() == 10))
-    {
-        if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_HYGROTEMP_ALARM))
         {
             m_firmware_uptodate = true;
             Q_EMIT sensorUpdated();

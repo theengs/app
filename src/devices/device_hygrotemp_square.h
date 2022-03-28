@@ -36,6 +36,9 @@
  *
  * MMC "Digital Hygrometer"
  * MHO-C401 device / square body / E-Ink
+ *
+ * Miaomiaoce "?"
+ * XMWSDJO4MMC device / rectangular body / E-Ink
  */
 class DeviceHygrotempSquare: public DeviceSensor
 {

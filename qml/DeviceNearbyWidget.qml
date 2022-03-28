@@ -64,7 +64,7 @@ Rectangle {
                         device.deviceName === "Qingping Temp RH Lite" ||
                         device.deviceName === "ThermoBeacon" ||
                         device.deviceName === "LYWSD02" || device.deviceName === "MHO-C303" ||
-                        device.deviceName === "LYWSD03MMC" || device.deviceName === "MHO-C401" ||
+                        device.deviceName === "LYWSD03MMC" || device.deviceName === "MHO-C401" || device.deviceName === "XMWSDJO4MMC" ||
                         device.deviceName === "WP6003" || device.deviceName === "AirQualityMonitor" ||
                         device.deviceName === "GeigerCounter")
                         return "qrc:/assets/icons_material/baseline-check_circle-24px.svg"
@@ -116,7 +116,7 @@ Rectangle {
                       device.deviceName === "Qingping Temp RH Lite" ||
                       device.deviceName === "ThermoBeacon" ||
                       device.deviceName === "LYWSD02" || device.deviceName === "MHO-C303" ||
-                      device.deviceName === "LYWSD03MMC" || device.deviceName === "MHO-C401" ||
+                      device.deviceName === "LYWSD03MMC" || device.deviceName === "MHO-C401" || device.deviceName === "XMWSDJO4MMC" ||
                       device.deviceName === "WP6003" || device.deviceName === "AirQualityMonitor" ||
                       device.deviceName === "GeigerCounter")
 
@@ -164,7 +164,7 @@ Rectangle {
                     device.deviceName === "Qingping Temp RH Lite" ||
                     device.deviceName === "ThermoBeacon" ||
                     device.deviceName === "LYWSD02" || device.deviceName === "MHO-C303" ||
-                    device.deviceName === "LYWSD03MMC" || device.deviceName === "MHO-C401" ||
+                    device.deviceName === "LYWSD03MMC" || device.deviceName === "MHO-C401" || device.deviceName === "XMWSDJO4MMC" ||
                     device.deviceName === "WP6003" || device.deviceName === "AirQualityMonitor" ||
                     device.deviceName === "GeigerCounter")
                     return "qrc:/assets/icons_material/baseline-check_circle-24px.svg"

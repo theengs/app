@@ -16,8 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DEVICE_HYGROTEMP_LCD_H
-#define DEVICE_HYGROTEMP_LCD_H
+#ifndef DEVICE_HYGROTEMP_LYWSDCGQ_H
+#define DEVICE_HYGROTEMP_LYWSDCGQ_H
 /* ************************************************************************** */
 
 #include "device_sensor.h"
@@ -31,18 +31,18 @@
 /* ************************************************************************** */
 
 /*!
+ * Xiaomi MiJia "Bluetooth Hygrometer"
  * Xiaomi "Bluetooth Temperature and Humidity sensor with LCD"
- * ClearGrass "Digital Bluetooth Thermometer and Hygrometer"
  * LYWSDCGQ device / round body / LCD
  */
-class DeviceHygrotempLCD: public DeviceSensor
+class DeviceHygrotempLYWSDCGQ: public DeviceSensor
 {
     Q_OBJECT
 
 public:
-    DeviceHygrotempLCD(QString &deviceAddr, QString &deviceName, QObject *parent = nullptr);
-    DeviceHygrotempLCD(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
-    ~DeviceHygrotempLCD();
+    DeviceHygrotempLYWSDCGQ(QString &deviceAddr, QString &deviceName, QObject *parent = nullptr);
+    DeviceHygrotempLYWSDCGQ(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
+    ~DeviceHygrotempLYWSDCGQ();
 
 private:
     // QLowEnergyController related
@@ -65,4 +65,4 @@ private:
 };
 
 /* ************************************************************************** */
-#endif // DEVICE_HYGROTEMP_LCD_H
+#endif // DEVICE_HYGROTEMP_LYWSDCGQ_H

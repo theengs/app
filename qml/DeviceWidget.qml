@@ -79,7 +79,8 @@ Item {
                        boxDevice.deviceName === "MHO-C303") {
                 imageDevice.source = "qrc:/assets/icons_material/baseline-crop_16_9-24px.svg"
             } else if (boxDevice.deviceName === "LYWSD03MMC" ||
-                       boxDevice.deviceName === "MHO-C401") {
+                       boxDevice.deviceName === "MHO-C401" ||
+                       boxDevice.deviceName === "XMWSDJO4MMC") {
                 imageDevice.source = "qrc:/assets/icons_material/baseline-crop_square-24px.svg"
             } else {
                 imageDevice.source = "qrc:/assets/icons_material/outline-settings_remote-24px.svg"
