@@ -42,6 +42,8 @@ public:
     DeviceTheengs(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
     ~DeviceTheengs();
 
+    void parseAdvertisementData(const QByteArray &value);
+
 private:
     // QLowEnergyController related
     void serviceScanDone();
