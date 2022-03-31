@@ -41,10 +41,12 @@ SOURCES  += src/main.cpp \
             src/AndroidService.cpp \
             src/MqttManager.cpp \
             src/DeviceManager.cpp \
+            src/DeviceManager_advertisement.cpp \
             src/device.cpp \
             src/device_infos.cpp \
             src/device_filter.cpp \
             src/device_sensor.cpp \
+            src/device_theengs.cpp \
             src/devices/device_flowercare.cpp \
             src/devices/device_flowerpower.cpp \
             src/devices/device_hygrotemp_cgd1.cpp \
@@ -82,6 +84,7 @@ HEADERS  += src/SettingsManager.h \
             src/device_infos.h \
             src/device_filter.h \
             src/device_sensor.h \
+            src/device_theengs.h \
             src/devices/device_flowercare.h \
             src/devices/device_flowerpower.h \
             src/devices/device_hygrotemp_cgd1.h \

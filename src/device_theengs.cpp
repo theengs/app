@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "device_theengs_generic.h"
+#include "device_theengs.h"
 
 #include <cstdint>
 #include <cmath>
@@ -33,8 +33,8 @@
 
 /* ************************************************************************** */
 
-DeviceTheengsGeneric::DeviceTheengsGeneric(QString &deviceAddr, QString &deviceName, QObject *parent):
-    DeviceTheengs(deviceAddr, deviceName, parent)
+DeviceTheengs::DeviceTheengs(QString &deviceAddr, QString &deviceName, QObject *parent):
+    DeviceSensor(deviceAddr, deviceName, parent)
 {
     if (deviceName == "thermometer")
     {
@@ -51,8 +51,8 @@ DeviceTheengsGeneric::DeviceTheengsGeneric(QString &deviceAddr, QString &deviceN
     }
 }
 
-DeviceTheengsGeneric::DeviceTheengsGeneric(const QBluetoothDeviceInfo &d, QObject *parent):
-    DeviceTheengs(d, parent)
+DeviceTheengs::DeviceTheengs(const QBluetoothDeviceInfo &d, QObject *parent):
+    DeviceSensor(d, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
     m_deviceCapabilities = DeviceUtils::DEVICE_BATTERY;
@@ -60,26 +60,26 @@ DeviceTheengsGeneric::DeviceTheengsGeneric(const QBluetoothDeviceInfo &d, QObjec
     m_deviceSensors += DeviceUtils::SENSOR_HUMIDITY;
 }
 
-DeviceTheengsGeneric::~DeviceTheengsGeneric()
+DeviceTheengs::~DeviceTheengs()
 {
     //
 }
 
 /* ************************************************************************** */
 
-void DeviceTheengsGeneric::serviceScanDone()
+void DeviceTheengs::serviceScanDone()
 {
-    //qDebug() << "DeviceTheengsGeneric::serviceScanDone(" << m_deviceAddress << ")";
+    //qDebug() << "DeviceTheengs::serviceScanDone(" << m_deviceAddress << ")";
 }
 
-void DeviceTheengsGeneric::addLowEnergyService(const QBluetoothUuid &uuid)
+void DeviceTheengs::addLowEnergyService(const QBluetoothUuid &uuid)
 {
-    //qDebug() << "DeviceTheengsGeneric::addLowEnergyService(" << uuid.toString() << ")";
+    //qDebug() << "DeviceTheengs::addLowEnergyService(" << uuid.toString() << ")";
 }
 
 /* ************************************************************************** */
 
-void DeviceTheengsGeneric::parseAdvertisementData(const QByteArray &value)
+void DeviceTheengs::parseAdvertisementData(const QByteArray &value)
 {
     //
 }

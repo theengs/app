@@ -16,11 +16,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DEVICE_THEENGS_GENERIC_H
-#define DEVICE_THEENGS_GENERIC_H
+#ifndef DEVICE_THEENGS_H
+#define DEVICE_THEENGS_H
 /* ************************************************************************** */
 
-#include "device_theengs.h"
+#include "device_sensor.h"
 
 #include <QObject>
 #include <QList>
@@ -31,16 +31,16 @@
 /* ************************************************************************** */
 
 /*!
- * Theengs generic device
+ * Theengs generic
  */
-class DeviceTheengsGeneric: public DeviceTheengs
+class DeviceTheengs: public DeviceSensor
 {
     Q_OBJECT
 
 public:
-    DeviceTheengsGeneric(QString &deviceAddr, QString &deviceName, QObject *parent = nullptr);
-    DeviceTheengsGeneric(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
-    ~DeviceTheengsGeneric();
+    DeviceTheengs(QString &deviceAddr, QString &deviceName, QObject *parent = nullptr);
+    DeviceTheengs(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
+    ~DeviceTheengs();
 
     void parseAdvertisementData(const QByteArray &value);
 
@@ -51,4 +51,4 @@ private:
 };
 
 /* ************************************************************************** */
-#endif // DEVICE_THEENGS_GENERIC_H
+#endif // DEVICE_THEENGS_H

@@ -17,46 +17,37 @@
 */
 
 #include "DeviceManager.h"
+#include "DatabaseManager.h"
+
 #include "device.h"
 #include "devices/device_flowercare.h"
 #include "devices/device_flowerpower.h"
 #include "devices/device_parrotpot.h"
 #include "devices/device_ropot.h"
 #include "devices/device_hygrotemp_lywsdcgq.h"
+#include "devices/device_hygrotemp_cgd1.h"
+#include "devices/device_hygrotemp_cgdk2.h"
 #include "devices/device_hygrotemp_cgg1.h"
+#include "devices/device_hygrotemp_cgp1w.h"
 #include "devices/device_hygrotemp_clock.h"
 #include "devices/device_hygrotemp_square.h"
-#include "devices/device_hygrotemp_cgdk2.h"
 #include "devices/device_thermobeacon.h"
+#include "devices/device_jqjcy01ym.h"
 #include "devices/device_esp32_airqualitymonitor.h"
 #include "devices/device_esp32_higrow.h"
 #include "devices/device_esp32_geigercounter.h"
 #include "devices/device_ess_generic.h"
 #include "devices/device_wp6003.h"
 
-#include "utils/utils_app.h"
-#include "utils/utils_bits.h"
-
-#include "DatabaseManager.h"
-#include "MqttManager.h"
-
-//#include <theengs/decoder.h>
-#include <decoder.h>
+#include <QList>
+#include <QDateTime>
+#include <QDebug>
 
 #include <QBluetoothLocalDevice>
 #include <QBluetoothDeviceDiscoveryAgent>
 #include <QBluetoothAddress>
 #include <QBluetoothDeviceInfo>
 #include <QLowEnergyConnectionParameters>
-
-#include <QList>
-#include <QDebug>
-
-#include <QStandardPaths>
-#include <QDir>
-#include <QFile>
-#include <QTextStream>
-#include <QDateTime>
 
 #include <QSqlDatabase>
 #include <QSqlDriver>
@@ -808,219 +799,6 @@ void DeviceManager::listenDevices()
                 //qDebug() << "Listening for BLE advertisement devices...";
             }
         }
-    }
-}
-
-void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetoothDeviceInfo::Fields updatedFields)
-{
-    //qDebug() << "updateBleDevice() " << info.address() /*<< info.deviceUuid()*/ << " updatedFields: " << updatedFields;
-
-    bool status = false;
-    Q_UNUSED(updatedFields)
-
-    if (info.address().toString() == info.name().replace('-', ':')) return; // skip beacons
-
-    for (auto d: qAsConst(m_devices_model->m_devices)) // KNOWN DEVICES ////////
-    {
-        Device *dd = qobject_cast<Device*>(d);
-
-#if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
-        if (dd && dd->getAddress() == info.deviceUuid().toString())
-#else
-        if (dd && dd->getAddress() == info.address().toString())
-#endif
-        {
-            const QList<quint16> &manufacturerIds = info.manufacturerIds();
-            for (const auto id: manufacturerIds)
-            {
-                //qDebug() << info.name() << info.address() << Qt::hex
-                //         << "ID" << id
-                //         << "manufacturer data" << Qt::dec << info.manufacturerData(id).count() << Qt::hex
-                //         << "bytes:" << info.manufacturerData(id).toHex();
-
-                dd->parseAdvertisementData(info.manufacturerData(id));
-
-                DynamicJsonDocument doc(1024);
-                doc["id"] = info.address().toString().toStdString();
-                doc["name"] = info.name().toStdString();
-                doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).toStdString() + info.manufacturerData(id).toHex().toStdString();
-
-                TheengsDecoder a;
-                JsonObject obj = doc.as<JsonObject>();
-
-                if (a.decodeBLEJson(obj) >= 0)
-                {
-                    std::string output;
-                    serializeJson(obj, output);
-
-                    qDebug() << "output:" << output.c_str();
-
-                    SettingsManager *sm = SettingsManager::getInstance();
-                    MqttManager *mq = MqttManager::getInstance();
-                    if (sm && mq)
-                    {
-                        QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/";
-                        topic += info.address().toString().remove(':');
-
-                        mq->publish(topic, QString::fromStdString(output));
-                    }
-
-                    status = true;
-                }
-                else
-                {
-                    std::string input;
-                    serializeJson(doc, input);
-                    qDebug() << "input :" << input.c_str();
-                }
-            }
-
-            const QList<QBluetoothUuid> &serviceIds = info.serviceIds();
-            for (const auto id: serviceIds)
-            {
-                //qDebug() << info.name() << info.address() << Qt::hex
-                //         << "ID" << id
-                //         << "service data" << Qt::dec << info.serviceData(id).count() << Qt::hex
-                //         << "bytes:" << info.serviceData(id).toHex();
-
-                dd->parseAdvertisementData(info.serviceData(id));
-
-                DynamicJsonDocument doc(1024);
-                doc["id"] = info.address().toString().toStdString();
-                doc["name"] = info.name().toStdString();
-                doc["servicedata"] = info.serviceData(id).toHex().toStdString();
-                //doc["servicedatauuid"] = id.toString(QUuid::Id128).toStdString();
-
-                TheengsDecoder a;
-                JsonObject obj = doc.as<JsonObject>();
-
-                if (a.decodeBLEJson(obj) >= 0)
-                {
-                    std::string output;
-                    serializeJson(obj, output);
-
-                    qDebug() << "output:" << output.c_str();
-
-                    SettingsManager *sm = SettingsManager::getInstance();
-                    MqttManager *mq = MqttManager::getInstance();
-                    if (sm && mq)
-                    {
-                        QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/";
-                        topic += info.address().toString().remove(':');
-
-                        status = mq->publish(topic, QString::fromStdString(output));
-                    }
-
-                    status = true;
-                }
-                else
-                {
-                    std::string input;
-                    serializeJson(doc, input);
-                    qDebug() << "input :" << input.c_str();
-                }
-            }
-/*
-            // Dynamic updates
-            if (m_listening)
-            {
-                if (dd->getName() == "ThermoBeacon") return;
-
-                if (dd->needsUpdateRt())
-                {
-                    // old or no data: go for refresh
-                    m_devices_updating_queue.push_back(dd);
-                    dd->refreshQueue();
-                    refreshDevices_continue();
-                }
-            }
-*/
-            return;
-        }
-    }
-
-    if (!status) // UN-KNOWN DEVICES ///////////////////////////////////////////
-    {
-        const QList<quint16> &manufacturerIds = info.manufacturerIds();
-        for (const auto id: manufacturerIds)
-        {
-            //qDebug() << info.name() << info.address() << Qt::hex
-            //         << "ID" << id
-            //         << "manufacturer data" << Qt::dec << info.manufacturerData(id).count() << Qt::hex
-            //         << "bytes:" << info.manufacturerData(id).toHex();
-
-            DynamicJsonDocument doc(1024);
-            doc["id"] = info.address().toString().toStdString();
-            doc["name"] = info.name().toStdString();
-            doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).toStdString() + info.manufacturerData(id).toHex().toStdString();
-
-            TheengsDecoder a;
-            JsonObject obj = doc.as<JsonObject>();
-
-            if (a.decodeBLEJson(obj) >= 0)
-            {
-                std::string output;
-                serializeJson(obj, output);
-
-                qDebug() << "(UNKNOWN DEVICE) output" << output.c_str();
-
-                SettingsManager *sm = SettingsManager::getInstance();
-                MqttManager *mq = MqttManager::getInstance();
-                if (sm && mq)
-                {
-                    QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/";
-                    topic += info.address().toString().remove(':');
-
-                    mq->publish(topic, QString::fromStdString(output));
-                }
-
-                status = true;
-            }
-        }
-
-        const QList<QBluetoothUuid> &serviceIds = info.serviceIds();
-        for (const auto id: serviceIds)
-        {
-            //qDebug() << info.name() << info.address() << Qt::hex
-            //         << "ID" << id
-            //         << "service data" << Qt::dec << info.serviceData(id).count() << Qt::hex
-            //         << "bytes:" << info.serviceData(id).toHex();
-
-            DynamicJsonDocument doc(1024);
-            doc["id"] = info.address().toString().toStdString();
-            doc["name"] = info.name().toStdString();
-            doc["servicedata"] = info.serviceData(id).toHex().toStdString();
-            //doc["servicedatauuid"] = id.toString(QUuid::Id128).toStdString();
-
-            TheengsDecoder a;
-            JsonObject obj = doc.as<JsonObject>();
-
-            if (a.decodeBLEJson(obj) >= 0)
-            {
-                std::string output;
-                serializeJson(obj, output);
-
-                qDebug() << "(UNKNOWN DEVICE) output" << output.c_str();
-
-                SettingsManager *sm = SettingsManager::getInstance();
-                MqttManager *mq = MqttManager::getInstance();
-                if (sm && mq)
-                {
-                    QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/";
-                    topic += info.address().toString().remove(':');
-
-                    status = mq->publish(topic, QString::fromStdString(output));
-                }
-
-                status = true;
-            }
-        }
-    }
-
-    // Dynamic scanning
-    if (m_scanning)
-    {
-        addBleDevice(info);
     }
 }
 

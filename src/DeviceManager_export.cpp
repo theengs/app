@@ -16,39 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DEVICE_THEENGS_GENERIC_H
-#define DEVICE_THEENGS_GENERIC_H
-/* ************************************************************************** */
-
-#include "device_theengs.h"
-
-#include <QObject>
-#include <QList>
-
-#include <QBluetoothDeviceInfo>
-#include <QLowEnergyController>
+#include "DeviceManager.h"
 
 /* ************************************************************************** */
 
-/*!
- * Theengs generic device
- */
-class DeviceTheengsGeneric: public DeviceTheengs
-{
-    Q_OBJECT
-
-public:
-    DeviceTheengsGeneric(QString &deviceAddr, QString &deviceName, QObject *parent = nullptr);
-    DeviceTheengsGeneric(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
-    ~DeviceTheengsGeneric();
-
-    void parseAdvertisementData(const QByteArray &value);
-
-private:
-    // QLowEnergyController related
-    void serviceScanDone();
-    void addLowEnergyService(const QBluetoothUuid &uuid);
-};
-
 /* ************************************************************************** */
-#endif // DEVICE_THEENGS_GENERIC_H
