@@ -17,6 +17,7 @@
 */
 
 #include "device_theengs.h"
+#include "SettingsManager.h"
 
 #include <cstdint>
 #include <cmath>
@@ -70,3 +71,40 @@ void DeviceTheengs::parseAdvertisementData(const QByteArray &value)
 }
 
 /* ************************************************************************** */
+
+float DeviceTheengs::getTemp1() const
+{
+    SettingsManager *s = SettingsManager::getInstance();
+    if (s->getTempUnit() == "F") return getTemp1F();
+    return getTemp1C();
+}
+float DeviceTheengs::getTemp2() const
+{
+    SettingsManager *s = SettingsManager::getInstance();
+    if (s->getTempUnit() == "F") return getTemp2F();
+    return getTemp2C();
+}
+float DeviceTheengs::getTemp3() const
+{
+    SettingsManager *s = SettingsManager::getInstance();
+    if (s->getTempUnit() == "F") return getTemp3F();
+    return getTemp3C();
+}
+float DeviceTheengs::getTemp4() const
+{
+    SettingsManager *s = SettingsManager::getInstance();
+    if (s->getTempUnit() == "F") return getTemp4F();
+    return getTemp4C();
+}
+float DeviceTheengs::getTemp5() const
+{
+    SettingsManager *s = SettingsManager::getInstance();
+    if (s->getTempUnit() == "F") return getTemp5F();
+    return getTemp5C();
+}
+float DeviceTheengs::getTemp6() const
+{
+    SettingsManager *s = SettingsManager::getInstance();
+    if (s->getTempUnit() == "F") return getTemp6F();
+    return getTemp6C();
+}

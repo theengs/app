@@ -32,7 +32,7 @@
 
 /*!
  * Govee hygrometers
- * H5072 / H5075 / H5102
+ * H5055 / H5072 / H5075 / H5102
  */
 class DeviceHygrotempGovee: public DeviceSensor
 {

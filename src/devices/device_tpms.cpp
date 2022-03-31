@@ -40,8 +40,8 @@ DeviceTPMS::DeviceTPMS(QString &deviceAddr, QString &deviceName, QObject *parent
     m_deviceType = DeviceUtils::DEVICE_THEENGS_PROBES;
     m_deviceCapabilities = DeviceUtils::DEVICE_BATTERY;
 
-    m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
-    m_deviceSensors += DeviceUtils::SENSOR_PRESSURE;
+    m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_1;
+    m_deviceSensors += DeviceUtilsTheengs::SENSOR_PRESSURE_1;
     m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_2;
     m_deviceSensors += DeviceUtilsTheengs::SENSOR_PRESSURE_2;
     m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_3;
@@ -56,8 +56,8 @@ DeviceTPMS::DeviceTPMS(const QBluetoothDeviceInfo &d, QObject *parent):
     m_deviceType = DeviceUtils::DEVICE_THEENGS_PROBES;
     m_deviceCapabilities = DeviceUtils::DEVICE_BATTERY;
 
-    m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
-    m_deviceSensors += DeviceUtils::SENSOR_PRESSURE;
+    m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_1;
+    m_deviceSensors += DeviceUtilsTheengs::SENSOR_PRESSURE_1;
     m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_2;
     m_deviceSensors += DeviceUtilsTheengs::SENSOR_PRESSURE_2;
     m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_3;

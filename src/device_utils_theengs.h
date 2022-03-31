@@ -37,6 +37,7 @@ public:
     {
         qRegisterMetaType<DeviceUtilsTheengs::DeviceBeacons>("DeviceUtilsTheengs::DeviceBeacons");
         qRegisterMetaType<DeviceUtilsTheengs::DeviceScales>("DeviceUtilsTheengs::DeviceScales");
+        qRegisterMetaType<DeviceUtilsTheengs::DeviceProbes>("DeviceUtilsTheengs::DeviceProbes");
         qRegisterMetaType<DeviceUtilsTheengs::DeviceSensorsAdditionals>("DeviceUtilsTheengs::DeviceSensorsAdditionals");
 
         qmlRegisterType<DeviceUtilsTheengs>("DeviceUtilsTheengs", 1, 0, "DeviceUtilsTheengs");
@@ -54,6 +55,7 @@ public:
 
         SENSOR_STEPS                = (1 <<  6), //!< Pedometer
     };
+    Q_ENUM(DeviceBeacons)
 
     enum DeviceScales {
 
@@ -63,21 +65,27 @@ public:
 
         SENSOR_IMPEDANCE            = (1 << 15),
     };
+    Q_ENUM(DeviceScales)
+
+    enum DeviceProbes {
+
+        SENSOR_TEMPERATURE_1        = (1 <<  0),
+        SENSOR_TEMPERATURE_2        = (1 <<  1),
+        SENSOR_TEMPERATURE_3        = (1 <<  2),
+        SENSOR_TEMPERATURE_4        = (1 <<  3),
+        SENSOR_TEMPERATURE_5        = (1 <<  4),
+        SENSOR_TEMPERATURE_6        = (1 <<  5),
+
+        SENSOR_PRESSURE_1           = (1 <<  6),
+        SENSOR_PRESSURE_2           = (1 <<  7),
+        SENSOR_PRESSURE_3           = (1 <<  8),
+        SENSOR_PRESSURE_4           = (1 <<  9),
+    };
+    Q_ENUM(DeviceProbes)
 
     enum DeviceSensorsAdditionals {
 
         // environmental data (additionals)
-        //SENSOR_TEMPERATURE_1        = (1 <<  0), //!< Additional temperature sensors
-        SENSOR_TEMPERATURE_2        = (1 <<  0), //!< Additional temperature sensors
-        SENSOR_TEMPERATURE_3        = (1 <<  1),
-        SENSOR_TEMPERATURE_4        = (1 <<  2),
-        SENSOR_TEMPERATURE_5        = (1 <<  3),
-        SENSOR_TEMPERATURE_6        = (1 <<  4),
-
-        //SENSOR_PRESSURE_1           = (1 <<  5),
-        SENSOR_PRESSURE_2           = (1 <<  5),
-        SENSOR_PRESSURE_3           = (1 <<  6),
-        SENSOR_PRESSURE_4           = (1 <<  7),
 
         // (bool sensors)
         SENSOR_PRESENCE             = (1 << 16),

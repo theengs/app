@@ -38,8 +38,9 @@ DeviceJQJCY01YM::DeviceJQJCY01YM(QString &deviceAddr, QString &deviceName, QObje
 {
     m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
     m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
-    m_deviceSensors += DeviceUtils::SENSOR_HCHO;
+    m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
     m_deviceSensors += DeviceUtils::SENSOR_HUMIDITY;
+    m_deviceSensors += DeviceUtils::SENSOR_HCHO;
 }
 
 DeviceJQJCY01YM::DeviceJQJCY01YM(const QBluetoothDeviceInfo &d, QObject *parent):
@@ -47,8 +48,9 @@ DeviceJQJCY01YM::DeviceJQJCY01YM(const QBluetoothDeviceInfo &d, QObject *parent)
 {
     m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
     m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
-    m_deviceSensors += DeviceUtils::SENSOR_HCHO;
+    m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
     m_deviceSensors += DeviceUtils::SENSOR_HUMIDITY;
+    m_deviceSensors += DeviceUtils::SENSOR_HCHO;
 }
 
 DeviceJQJCY01YM::~DeviceJQJCY01YM()
@@ -72,7 +74,132 @@ void DeviceJQJCY01YM::addLowEnergyService(const QBluetoothUuid &uuid)
 
 void DeviceJQJCY01YM::parseAdvertisementData(const QByteArray &value)
 {
-    //
+    qDebug() << "DeviceJQJCY01YM::parseAdvertisementData(" << m_deviceAddress << ")" << value.size();
+    qDebug() << "DATA: 0x" << value.toHex();
+
+    // 12-18 bytes messages
+    if (value.size() >= 12)
+    {
+        const quint8 *data = reinterpret_cast<const quint8 *>(value.constData());
+
+        QString mac;
+
+#if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
+        // Save mac address
+        mac += value.mid(10,1).toHex().toUpper();
+        mac += ':';
+        mac += value.mid(9,1).toHex().toUpper();
+        mac += ':';
+        mac += value.mid(8,1).toHex().toUpper();
+        mac += ':';
+        mac += value.mid(7,1).toHex().toUpper();
+        mac += ':';
+        mac += value.mid(6,1).toHex().toUpper();
+        mac += ':';
+        mac += value.mid(5,1).toHex().toUpper();
+
+        setSetting("mac", mac);
+#else
+        Q_UNUSED(mac)
+#endif
+
+        if (value.size() >= 15)
+        {
+            int batt = -99;
+            float temp = -99;
+            float humi = -99;
+            int lumi = -99;
+            float form = -99;
+            int moist = -99;
+            int fert = -99;
+            // get data
+            if (data[11] == 4 && value.size() >= 16)
+            {
+                temp = static_cast<int16_t>(data[14] + (data[15] << 8)) / 10.f;
+                if (temp != m_temperature)
+                {
+                    if (temp > -20.f && temp < 100.f)
+                    {
+                        m_temperature = temp;
+                        Q_EMIT dataUpdated();
+                    }
+                }
+            }
+            else if (data[11] == 6 && value.size() >= 16)
+            {
+                humi = static_cast<int16_t>(data[14] + (data[15] << 8)) / 10.f;
+                if (humi != m_humidity)
+                {
+                    if (humi >= 0.f && humi <= 100.f)
+                    {
+                        m_humidity = humi;
+                        Q_EMIT dataUpdated();
+                    }
+                }
+            }
+            else if (data[11] == 10 && value.size() >= 15)
+            {
+                batt = static_cast<int8_t>(data[14]);
+                setBattery(batt);
+            }
+            else if (data[11] == 11 && value.size() >= 18)
+            {
+                temp = static_cast<int16_t>(data[14] + (data[15] << 8)) / 10.f;
+                if (temp != m_temperature)
+                {
+                    m_temperature = temp;
+                    Q_EMIT dataUpdated();
+                }
+                humi = static_cast<int16_t>(data[16] + (data[17] << 8)) / 10.f;
+                if (humi != m_humidity)
+                {
+                    m_humidity = humi;
+                    Q_EMIT dataUpdated();
+                }
+            }
+            else if (data[11] == 16 && value.size() >= 16)
+            {
+                form = static_cast<int16_t>(data[14] + (data[15] << 8)) / 10.f;
+                if (form != m_hcho)
+                {
+                    if (form >= 0.f && form <= 100.f)
+                    {
+                        m_hcho = form*100; // mg to µg
+                        Q_EMIT dataUpdated();
+                    }
+                }
+            }
+            else
+            {
+                qDebug() << "MiBeacon: unknown tag >" << data[11];
+            }
+
+            if (m_temperature > -99 && m_humidity > -99 && m_hcho > -99)
+            {
+                m_lastUpdate = QDateTime::currentDateTime();
+                refreshDataFinished(true);
+
+                if (needsUpdateDb())
+                {
+                    // TODO // UPDATE DB
+                }
+            }
+
+            if (temp > -99 || humi > -99 || lumi > -99 || form > -99 || moist > -99 || fert > -99)
+            {
+                qDebug() << "* MiBeacon service data:" << getName() << getAddress() << "(" << value.size() << ") bytes";
+                if (!mac.isEmpty()) qDebug() << "- MAC:" << mac;
+                if (batt > -99) qDebug() << "- battery:" << batt;
+                if (temp > -99) qDebug() << "- temperature:" << temp;
+                if (humi > -99) qDebug() << "- humidity:" << humi;
+                if (lumi > -99) qDebug() << "- luminosity:" << lumi;
+                if (form > -99) qDebug() << "- formaldehyde:" << form;
+                if (moist > -99) qDebug() << "- soil moisture:" << moist;
+                if (fert > -99) qDebug() << "- soil fertility:" << fert;
+            }
+
+        }
+    }
 }
 
 /* ************************************************************************** */

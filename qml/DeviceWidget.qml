@@ -807,6 +807,13 @@ Item {
             function initData() {
                 if (boxDevice.hasSetting("primary")) {
                     primaryValue = boxDevice.getSetting("primary")
+                } else {
+                    if (boxDevice.hasVocSensor) primaryValue = "voc"
+                    else if (boxDevice.hasCo2Sensor) primaryValue = "co2"
+                    else if (boxDevice.hasPM10Sensor) primaryValue = "pm10"
+                    else if (boxDevice.hasHchoSensor) primaryValue = "hcho"
+                    else if (boxDevice.hasGeigerCounter) primaryValue = "nuclear"
+                    else primaryValue = "hygrometer"
                 }
 
                 if (primaryValue === "voc") {
