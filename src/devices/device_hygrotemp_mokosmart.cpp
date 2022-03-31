@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "device_theengs.h"
+#include "device_hygrotemp_mokosmart.h"
 
 #include <cstdint>
 #include <cmath>
@@ -33,38 +33,44 @@
 
 /* ************************************************************************** */
 
-DeviceTheengs::DeviceTheengs(QString &deviceAddr, QString &deviceName, QObject *parent):
+DeviceHygrotempMOKOSmart::DeviceHygrotempMOKOSmart(QString &deviceAddr, QString &deviceName, QObject *parent):
     DeviceSensor(deviceAddr, deviceName, parent)
 {
-    //
+    m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
+    m_deviceCapabilities = DeviceUtils::DEVICE_BATTERY;
+    m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
+    m_deviceSensors += DeviceUtils::SENSOR_HUMIDITY;
 }
 
-DeviceTheengs::DeviceTheengs(const QBluetoothDeviceInfo &d, QObject *parent):
+DeviceHygrotempMOKOSmart::DeviceHygrotempMOKOSmart(const QBluetoothDeviceInfo &d, QObject *parent):
     DeviceSensor(d, parent)
 {
-    //
+    m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
+    m_deviceCapabilities = DeviceUtils::DEVICE_BATTERY;
+    m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
+    m_deviceSensors += DeviceUtils::SENSOR_HUMIDITY;
 }
 
-DeviceTheengs::~DeviceTheengs()
+DeviceHygrotempMOKOSmart::~DeviceHygrotempMOKOSmart()
 {
     //
 }
 
 /* ************************************************************************** */
 
-void DeviceTheengs::serviceScanDone()
+void DeviceHygrotempMOKOSmart::serviceScanDone()
 {
-    //qDebug() << "DeviceTheengs::serviceScanDone(" << m_deviceAddress << ")";
+    //qDebug() << "DeviceHygrotempMOKOSmart::serviceScanDone(" << m_deviceAddress << ")";
 }
 
-void DeviceTheengs::addLowEnergyService(const QBluetoothUuid &uuid)
+void DeviceHygrotempMOKOSmart::addLowEnergyService(const QBluetoothUuid &uuid)
 {
-    //qDebug() << "DeviceTheengs::addLowEnergyService(" << uuid.toString() << ")";
+    //qDebug() << "DeviceHygrotempMOKOSmart::addLowEnergyService(" << uuid.toString() << ")";
 }
 
 /* ************************************************************************** */
 
-void DeviceTheengs::parseAdvertisementData(const QByteArray &value)
+void DeviceHygrotempMOKOSmart::parseAdvertisementData(const QByteArray &value)
 {
     //
 }

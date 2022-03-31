@@ -16,8 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DEVICE_HYGROTEMP_CGD1_H
-#define DEVICE_HYGROTEMP_CGD1_H
+#ifndef DEVICE_HYGROTEMP_CGP1W_H
+#define DEVICE_HYGROTEMP_CGP1W_H
 /* ************************************************************************** */
 
 #include "device_sensor.h"
@@ -52,4 +52,4 @@ private:
 };
 
 /* ************************************************************************** */
-#endif // DEVICE_HYGROTEMP_CGD1_H
+#endif // DEVICE_HYGROTEMP_CGP1W_H

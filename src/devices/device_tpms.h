@@ -16,57 +16,39 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef DEVICE_TPMS_H
+#define DEVICE_TPMS_H
+/* ************************************************************************** */
+
 #include "device_theengs.h"
 
-#include <cstdint>
-#include <cmath>
+#include <QObject>
+#include <QList>
 
-#include <QBluetoothUuid>
-#include <QBluetoothServiceInfo>
-#include <QLowEnergyService>
-
-#include <QSqlQuery>
-#include <QSqlError>
-
-#include <QDateTime>
-#include <QDebug>
+#include <QBluetoothDeviceInfo>
+#include <QLowEnergyController>
 
 /* ************************************************************************** */
 
-DeviceTheengs::DeviceTheengs(QString &deviceAddr, QString &deviceName, QObject *parent):
-    DeviceSensor(deviceAddr, deviceName, parent)
+/*!
+ * Xiaomi "Temperature and Pression Monitoring System"
+ */
+class DeviceTPMS: public DeviceTheengs
 {
-    //
-}
+    Q_OBJECT
 
-DeviceTheengs::DeviceTheengs(const QBluetoothDeviceInfo &d, QObject *parent):
-    DeviceSensor(d, parent)
-{
-    //
-}
+    void parseAdvertisementData(const QByteArray &value);
 
-DeviceTheengs::~DeviceTheengs()
-{
-    //
-}
+public:
+    DeviceTPMS(QString &deviceAddr, QString &deviceName, QObject *parent = nullptr);
+    DeviceTPMS(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
+    ~DeviceTPMS();
+
+private:
+    // QLowEnergyController related
+    void serviceScanDone();
+    void addLowEnergyService(const QBluetoothUuid &uuid);
+};
 
 /* ************************************************************************** */
-
-void DeviceTheengs::serviceScanDone()
-{
-    //qDebug() << "DeviceTheengs::serviceScanDone(" << m_deviceAddress << ")";
-}
-
-void DeviceTheengs::addLowEnergyService(const QBluetoothUuid &uuid)
-{
-    //qDebug() << "DeviceTheengs::addLowEnergyService(" << uuid.toString() << ")";
-}
-
-/* ************************************************************************** */
-
-void DeviceTheengs::parseAdvertisementData(const QByteArray &value)
-{
-    //
-}
-
-/* ************************************************************************** */
+#endif // DEVICE_TPMS_H

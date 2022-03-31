@@ -24,20 +24,27 @@
 #include "devices/device_flowerpower.h"
 #include "devices/device_parrotpot.h"
 #include "devices/device_ropot.h"
-#include "devices/device_hygrotemp_lywsdcgq.h"
 #include "devices/device_hygrotemp_cgd1.h"
 #include "devices/device_hygrotemp_cgdk2.h"
 #include "devices/device_hygrotemp_cgg1.h"
 #include "devices/device_hygrotemp_cgp1w.h"
 #include "devices/device_hygrotemp_clock.h"
 #include "devices/device_hygrotemp_square.h"
+#include "devices/device_hygrotemp_lywsdcgq.h"
+#include "devices/device_hygrotemp_inkbird.h"
+#include "devices/device_hygrotemp_govee.h"
+#include "devices/device_hygrotemp_mokosmart.h"
+#include "devices/device_hygrotemp_tempodisc.h"
 #include "devices/device_thermobeacon.h"
 #include "devices/device_jqjcy01ym.h"
+#include "devices/device_wp6003.h"
 #include "devices/device_esp32_airqualitymonitor.h"
 #include "devices/device_esp32_higrow.h"
 #include "devices/device_esp32_geigercounter.h"
 #include "devices/device_ess_generic.h"
-#include "devices/device_wp6003.h"
+#include "devices/device_theengs_generic.h"
+#include "devices/device_tempprobe_inkbird.h"
+#include "devices/device_tpms.h"
 
 #include <QList>
 #include <QDateTime>
@@ -119,18 +126,34 @@ DeviceManager::DeviceManager(bool daemon)
                 d = new DeviceParrotPot(deviceAddr, deviceName, this);
             else if (deviceName == "HiGrow")
                 d = new DeviceEsp32HiGrow(deviceAddr, deviceName, this);
-            else if (deviceName == "MJ_HT_V1")
-                d = new DeviceHygrotempLYWSDCGQ(deviceAddr, deviceName, this);
-            else if (deviceName == "ClearGrass Temp & RH")
-                d = new DeviceHygrotempCGG1(deviceAddr, deviceName, this);
+
+            else if (deviceName == "CGD1")
+                d = new DeviceHygrotempCGD1(deviceAddr, deviceName, this);
             else if (deviceName == "Qingping Temp RH Lite")
                 d = new DeviceHygrotempCGDK2(deviceAddr, deviceName, this);
+            else if (deviceName == "ClearGrass Temp & RH")
+                d = new DeviceHygrotempCGG1(deviceAddr, deviceName, this);
+            else if (deviceName == "CGP1W")
+                d = new DeviceHygrotempCGP1W(deviceAddr, deviceName, this);
+            else if (deviceName == "MJ_HT_V1")
+                d = new DeviceHygrotempLYWSDCGQ(deviceAddr, deviceName, this);
             else if (deviceName == "LYWSD02" || deviceName == "MHO-C303")
                 d = new DeviceHygrotempClock(deviceAddr, deviceName, this);
             else if (deviceName == "LYWSD03MMC" || deviceName == "MHO-C401" || deviceName == "XMWSDJO4MMC")
                 d = new DeviceHygrotempSquare(deviceAddr, deviceName, this);
             else if (deviceName == "ThermoBeacon")
                 d = new DeviceThermoBeacon(deviceAddr, deviceName, this);
+            else if (deviceName == "GOVEE" || deviceName == "GOVEE")
+                d = new DeviceHygrotempGovee(deviceAddr, deviceName, this);
+            else if (deviceName == "MOKOSmart")
+                d = new DeviceHygrotempMOKOSmart(deviceAddr, deviceName, this);
+            else if (deviceName == "TempoDisk")
+                d = new DeviceHygrotempTempoDisk(deviceAddr, deviceName, this);
+            else if (deviceName == "InkBird")
+                d = new DeviceHygrotempInkBird(deviceAddr, deviceName, this);
+
+            else if (deviceName.startsWith("JQJCY01YM"))
+                d = new DeviceJQJCY01YM(deviceAddr, deviceName, this);
             else if (deviceName.startsWith("WP6003"))
                 d = new DeviceWP6003(deviceAddr, deviceName, this);
             else if (deviceName == "AirQualityMonitor")
@@ -1394,18 +1417,34 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
                 d = new DeviceParrotPot(info, this);
             else if (info.name() == "HiGrow")
                 d = new DeviceEsp32HiGrow(info, this);
-            else if (info.name() == "MJ_HT_V1")
-                d = new DeviceHygrotempLYWSDCGQ(info, this);
-            else if (info.name() == "ClearGrass Temp & RH")
-                d = new DeviceHygrotempCGG1(info, this);
+
+            else if (info.name() == "CGD1")
+                d = new DeviceHygrotempCGD1(info, this);
             else if (info.name() == "Qingping Temp RH Lite")
                 d = new DeviceHygrotempCGDK2(info, this);
+            else if (info.name() == "ClearGrass Temp & RH")
+                d = new DeviceHygrotempCGG1(info, this);
+            else if (info.name() == "CGP1W")
+                d = new DeviceHygrotempCGP1W(info, this);
+            else if (info.name() == "MJ_HT_V1")
+                d = new DeviceHygrotempLYWSDCGQ(info, this);
             else if (info.name() == "LYWSD02" || info.name() == "MHO-C303")
                 d = new DeviceHygrotempClock(info, this);
             else if (info.name() == "LYWSD03MMC" || info.name() == "MHO-C401" || info.name() == "XMWSDJO4MMC")
                 d = new DeviceHygrotempSquare(info, this);
             else if (info.name() == "ThermoBeacon")
                 d = new DeviceThermoBeacon(info, this);
+            else if (info.name() == "GOVEE")
+                d = new DeviceHygrotempGovee(info, this);
+            else if (info.name() == "MOKOSmart")
+                d = new DeviceHygrotempMOKOSmart(info, this);
+            else if (info.name() == "TempoDisk")
+                d = new DeviceHygrotempTempoDisk(info, this);
+            else if (info.name() == "InkBird")
+                d = new DeviceHygrotempInkBird(info, this);
+
+            else if (info.name().startsWith("JQJCY01YM"))
+                d = new DeviceJQJCY01YM(info, this);
             else if (info.name().startsWith("6003#"))
                 d = new DeviceWP6003(info, this);
             else if (info.name() == "AirQualityMonitor")

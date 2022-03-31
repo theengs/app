@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "device_hygrotemp_cgp1w.h"
+#include "device_tempprobe_inkbird.h"
 
 #include <cstdint>
 #include <cmath>
@@ -33,46 +33,58 @@
 
 /* ************************************************************************** */
 
-DeviceHygrotempCGP1W::DeviceHygrotempCGP1W(QString &deviceAddr, QString &deviceName, QObject *parent):
-    DeviceSensor(deviceAddr, deviceName, parent)
+DeviceTempprobeInkBird::DeviceTempprobeInkBird(QString &deviceAddr, QString &deviceName, QObject *parent):
+    DeviceTheengs(deviceAddr, deviceName, parent)
 {
-    m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
+    m_deviceType = DeviceUtils::DEVICE_THEENGS_PROBES;
     m_deviceCapabilities = DeviceUtils::DEVICE_BATTERY;
+
     m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
-    m_deviceSensors += DeviceUtils::SENSOR_HUMIDITY;
-    m_deviceSensors += DeviceUtils::SENSOR_PRESSURE;
+    m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_2;
+
+    m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_3;
+    m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_4;
+
+    m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_5;
+    m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_6;
 }
 
-DeviceHygrotempCGP1W::DeviceHygrotempCGP1W(const QBluetoothDeviceInfo &d, QObject *parent):
-    DeviceSensor(d, parent)
+DeviceTempprobeInkBird::DeviceTempprobeInkBird(const QBluetoothDeviceInfo &d, QObject *parent):
+    DeviceTheengs(d, parent)
 {
-    m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
+    m_deviceType = DeviceUtils::DEVICE_THEENGS_PROBES;
     m_deviceCapabilities = DeviceUtils::DEVICE_BATTERY;
+
     m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
-    m_deviceSensors += DeviceUtils::SENSOR_HUMIDITY;
-    m_deviceSensors += DeviceUtils::SENSOR_PRESSURE;
+    m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_2;
+
+    m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_3;
+    m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_4;
+
+    m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_5;
+    m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_6;
 }
 
-DeviceHygrotempCGP1W::~DeviceHygrotempCGP1W()
+DeviceTempprobeInkBird::~DeviceTempprobeInkBird()
 {
     //
 }
 
 /* ************************************************************************** */
 
-void DeviceHygrotempCGP1W::serviceScanDone()
+void DeviceTempprobeInkBird::serviceScanDone()
 {
-    //qDebug() << "DeviceHygrotempCGP1W::serviceScanDone(" << m_deviceAddress << ")";
+    //qDebug() << "DeviceTempprobeInkBird::serviceScanDone(" << m_deviceAddress << ")";
 }
 
-void DeviceHygrotempCGP1W::addLowEnergyService(const QBluetoothUuid &uuid)
+void DeviceTempprobeInkBird::addLowEnergyService(const QBluetoothUuid &uuid)
 {
-    //qDebug() << "DeviceHygrotempCGP1W::addLowEnergyService(" << uuid.toString() << ")";
+    //qDebug() << "DeviceTempprobeInkBird::addLowEnergyService(" << uuid.toString() << ")";
 }
 
 /* ************************************************************************** */
 
-void DeviceHygrotempCGP1W::parseAdvertisementData(const QByteArray &value)
+void DeviceTempprobeInkBird::parseAdvertisementData(const QByteArray &value)
 {
     //
 }

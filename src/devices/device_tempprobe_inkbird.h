@@ -16,57 +16,39 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef DEVICE_TEMPPROBE_INKBIRD_H
+#define DEVICE_TEMPPROBE_INKBIRD_H
+/* ************************************************************************** */
+
 #include "device_theengs.h"
 
-#include <cstdint>
-#include <cmath>
+#include <QObject>
+#include <QList>
 
-#include <QBluetoothUuid>
-#include <QBluetoothServiceInfo>
-#include <QLowEnergyService>
-
-#include <QSqlQuery>
-#include <QSqlError>
-
-#include <QDateTime>
-#include <QDebug>
+#include <QBluetoothDeviceInfo>
+#include <QLowEnergyController>
 
 /* ************************************************************************** */
 
-DeviceTheengs::DeviceTheengs(QString &deviceAddr, QString &deviceName, QObject *parent):
-    DeviceSensor(deviceAddr, deviceName, parent)
+/*!
+ * InkBird IBT-2X / IBT-4XS / IBT-6XS temperature probes
+ */
+class DeviceTempprobeInkBird: public DeviceTheengs
 {
-    //
-}
+    Q_OBJECT
 
-DeviceTheengs::DeviceTheengs(const QBluetoothDeviceInfo &d, QObject *parent):
-    DeviceSensor(d, parent)
-{
-    //
-}
+    void parseAdvertisementData(const QByteArray &value);
 
-DeviceTheengs::~DeviceTheengs()
-{
-    //
-}
+public:
+    DeviceTempprobeInkBird(QString &deviceAddr, QString &deviceName, QObject *parent = nullptr);
+    DeviceTempprobeInkBird(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
+    ~DeviceTempprobeInkBird();
+
+private:
+    // QLowEnergyController related
+    void serviceScanDone();
+    void addLowEnergyService(const QBluetoothUuid &uuid);
+};
 
 /* ************************************************************************** */
-
-void DeviceTheengs::serviceScanDone()
-{
-    //qDebug() << "DeviceTheengs::serviceScanDone(" << m_deviceAddress << ")";
-}
-
-void DeviceTheengs::addLowEnergyService(const QBluetoothUuid &uuid)
-{
-    //qDebug() << "DeviceTheengs::addLowEnergyService(" << uuid.toString() << ")";
-}
-
-/* ************************************************************************** */
-
-void DeviceTheengs::parseAdvertisementData(const QByteArray &value)
-{
-    //
-}
-
-/* ************************************************************************** */
+#endif // DEVICE_TEMPPROBE_INKBIRD_H

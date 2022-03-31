@@ -21,6 +21,7 @@
 /* ************************************************************************** */
 
 #include "device_sensor.h"
+#include "device_utils_theengs.h"
 
 #include <QObject>
 #include <QList>

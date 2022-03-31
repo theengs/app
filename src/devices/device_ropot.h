@@ -33,9 +33,7 @@
 /* ************************************************************************** */
 
 /*!
- * Xiaomi "RoPot" or "FlowerPot" (HHCCPOT002)
- * WANFEI "RoPot" (?)
- * VegTrug "VegTrugGrow Pot"
+ * Xiaomi "RoPot" or VegTrug "Grow Care Pot" (HHCCPOT002)
  */
 class DeviceRopot: public DeviceSensor
 {

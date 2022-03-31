@@ -36,28 +36,13 @@
 DeviceTheengsGeneric::DeviceTheengsGeneric(QString &deviceAddr, QString &deviceName, QObject *parent):
     DeviceTheengs(deviceAddr, deviceName, parent)
 {
-    if (deviceName == "thermometer")
-    {
-        m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
-        m_deviceCapabilities = DeviceUtils::DEVICE_BATTERY;
-        m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
-    }
-    else if (deviceName == "hygrometer")
-    {
-        m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
-        m_deviceCapabilities = DeviceUtils::DEVICE_BATTERY;
-        m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
-        m_deviceSensors += DeviceUtils::SENSOR_HUMIDITY;
-    }
+    m_deviceType = DeviceUtils::DEVICE_THEENGS;
 }
 
 DeviceTheengsGeneric::DeviceTheengsGeneric(const QBluetoothDeviceInfo &d, QObject *parent):
     DeviceTheengs(d, parent)
 {
-    m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
-    m_deviceCapabilities = DeviceUtils::DEVICE_BATTERY;
-    m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
-    m_deviceSensors += DeviceUtils::SENSOR_HUMIDITY;
+    m_deviceType = DeviceUtils::DEVICE_THEENGS;
 }
 
 DeviceTheengsGeneric::~DeviceTheengsGeneric()

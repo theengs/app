@@ -16,57 +16,40 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "device_theengs.h"
+#ifndef DEVICE_HYGROTEMP_GOVEE_H
+#define DEVICE_HYGROTEMP_GOVEE_H
+/* ************************************************************************** */
 
-#include <cstdint>
-#include <cmath>
+#include "device_sensor.h"
 
-#include <QBluetoothUuid>
-#include <QBluetoothServiceInfo>
-#include <QLowEnergyService>
+#include <QObject>
+#include <QList>
 
-#include <QSqlQuery>
-#include <QSqlError>
-
-#include <QDateTime>
-#include <QDebug>
+#include <QBluetoothDeviceInfo>
+#include <QLowEnergyController>
 
 /* ************************************************************************** */
 
-DeviceTheengs::DeviceTheengs(QString &deviceAddr, QString &deviceName, QObject *parent):
-    DeviceSensor(deviceAddr, deviceName, parent)
+/*!
+ * Govee hygrometers
+ * H5072 / H5075 / H5102
+ */
+class DeviceHygrotempGovee: public DeviceSensor
 {
-    //
-}
+    Q_OBJECT
 
-DeviceTheengs::DeviceTheengs(const QBluetoothDeviceInfo &d, QObject *parent):
-    DeviceSensor(d, parent)
-{
-    //
-}
+    void parseAdvertisementData(const QByteArray &value);
 
-DeviceTheengs::~DeviceTheengs()
-{
-    //
-}
+public:
+    DeviceHygrotempGovee(QString &deviceAddr, QString &deviceName, QObject *parent = nullptr);
+    DeviceHygrotempGovee(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
+    ~DeviceHygrotempGovee();
+
+private:
+    // QLowEnergyController related
+    void serviceScanDone();
+    void addLowEnergyService(const QBluetoothUuid &uuid);
+};
 
 /* ************************************************************************** */
-
-void DeviceTheengs::serviceScanDone()
-{
-    //qDebug() << "DeviceTheengs::serviceScanDone(" << m_deviceAddress << ")";
-}
-
-void DeviceTheengs::addLowEnergyService(const QBluetoothUuid &uuid)
-{
-    //qDebug() << "DeviceTheengs::addLowEnergyService(" << uuid.toString() << ")";
-}
-
-/* ************************************************************************** */
-
-void DeviceTheengs::parseAdvertisementData(const QByteArray &value)
-{
-    //
-}
-
-/* ************************************************************************** */
+#endif // DEVICE_HYGROTEMP_GOVEE_H

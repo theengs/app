@@ -66,16 +66,20 @@ public:
     }
 
     enum DeviceType {
-        DEVICE_PLANTSENSOR          = 0,
+        DEVICE_UNKNOWN              = 0,
+
+        DEVICE_PLANTSENSOR          = 1,
         DEVICE_THERMOMETER,
         DEVICE_ENVIRONMENTAL,
 
-        DEVICE_THEENGS = 7,
-
         DEVICE_LAMP                 = 8,
         DEVICE_SCALE,
+        DEVICE_BUTTON,
         DEVICE_BEACON,
         DEVICE_PGP,
+
+        DEVICE_THEENGS = 16,
+        DEVICE_THEENGS_PROBES,
     };
     Q_ENUM(DeviceType)
 

@@ -33,10 +33,8 @@
 /* ************************************************************************** */
 
 /*!
- * Xiaomi "Flower Care" (HHCCJCY01, HHCCJCY10)
- * VegTrug "Grow Care Home"
- * Xiaomi "Flower Care Max" (HHCCJCY09)
- * VegTrug "Grow Care Garden" (GCLS002)
+ * Xiaomi "Flower Care" or VegTrug "Grow Care Home" (HHCCJCY01, HHCCJCY10)
+ * Xiaomi "Flower Care Max" (HHCCJCY09) or VegTrug "Grow Care Garden" (GCLS002)
  */
 class DeviceFlowerCare: public DeviceSensor
 {

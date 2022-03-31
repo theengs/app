@@ -22,6 +22,7 @@
 #include "DeviceManager.h"
 #include "SystrayManager.h"
 #include "NotificationManager.h"
+#include "device_utils_theengs.h"
 #include "utils/utils_app.h"
 #include "utils/utils_screen.h"
 #include "utils/utils_language.h"
@@ -151,6 +152,7 @@ int main(int argc, char *argv[])
 
     MobileUI::registerQML();
     DeviceUtils::registerQML();
+    DeviceUtilsTheengs::registerQML();
 
     // Then we start the UI
     QQmlApplicationEngine engine;
