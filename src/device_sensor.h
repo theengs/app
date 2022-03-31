@@ -300,6 +300,8 @@ public:
     Q_INVOKABLE QString getTempString() const;
     Q_INVOKABLE float getHeatIndex() const;
     Q_INVOKABLE QString getHeatIndexString() const;
+    Q_INVOKABLE float getDewPoint() const;
+    Q_INVOKABLE QString getDewPointString() const;
     float getHumidity() const { return m_humidity; }
     // Environmental
     int getPressure() const { return m_pressure; }

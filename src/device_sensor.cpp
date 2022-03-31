@@ -941,6 +941,38 @@ QString DeviceSensor::getHeatIndexString() const
 
 /* ************************************************************************** */
 
+float DeviceSensor::getDewPoint() const
+{
+    float dew = (m_temperature - ((14.55 + 0.114 * m_temperature) * (1 - (0.01 * m_humidity)))
+                               - (pow(((2.5 + 0.007 * m_temperature) * (1 - (0.01 * m_humidity))), 3))
+                               - ((15.9 + 0.117 * m_temperature) * pow((1 - (0.01 * m_humidity)), 14)));
+
+    SettingsManager *s = SettingsManager::getInstance();
+    if (s->getTempUnit() == "F")
+    {
+        return ((dew - 32) / 1.8f);
+    }
+    else
+    {
+        return dew;
+    }
+}
+
+QString DeviceSensor::getDewPointString() const
+{
+    QString dewString;
+
+    SettingsManager *s = SettingsManager::getInstance();
+    if (s->getTempUnit() == "F")
+        dewString = QString::number(getDewPoint(), 'f', 1) + "°F";
+    else
+        dewString = QString::number(getDewPoint(), 'f', 1) + "°C";
+
+    return dewString;
+}
+
+/* ************************************************************************** */
+
 int DeviceSensor::getHistoryUpdatePercent() const
 {
     int p = 0;
