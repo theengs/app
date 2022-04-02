@@ -33,6 +33,7 @@ class DeviceUtilsTheengs: public QObject
     Q_OBJECT
 
 public:
+/*
     static void registerQML()
     {
         qRegisterMetaType<DeviceUtilsTheengs::DeviceBeacons>("DeviceUtilsTheengs::DeviceBeacons");
@@ -63,12 +64,13 @@ public:
         SENSOR_WEIGHT_MODE          = (1 << 1),
         SENSOR_WEIGHT               = (1 << 2),
 
-        SENSOR_IMPEDANCE            = (1 << 15),
+        SENSOR_IMPEDANCE            = (1 << 4),
     };
     Q_ENUM(DeviceScales)
 
     enum DeviceProbes {
 
+        // probes
         SENSOR_TEMPERATURE_1        = (1 <<  0),
         SENSOR_TEMPERATURE_2        = (1 <<  1),
         SENSOR_TEMPERATURE_3        = (1 <<  2),
@@ -94,6 +96,51 @@ public:
         SENSOR_ALARM                = (1 << 19),
     };
     Q_ENUM(DeviceSensorsAdditionals)
+*/
+    static void registerQML()
+    {
+        qRegisterMetaType<DeviceUtilsTheengs::DeviceSensorsTheengs>("DeviceUtilsTheengs::DeviceSensorsTheengs");
+        qmlRegisterType<DeviceUtilsTheengs>("DeviceUtilsTheengs", 1, 0, "DeviceUtilsTheengs");
+    }
+
+    enum DeviceSensorsTheengs {
+        // probes
+        SENSOR_TEMPERATURE_1        = (1 <<  0),
+        SENSOR_TEMPERATURE_2        = (1 <<  1),
+        SENSOR_TEMPERATURE_3        = (1 <<  2),
+        SENSOR_TEMPERATURE_4        = (1 <<  3),
+        SENSOR_TEMPERATURE_5        = (1 <<  4),
+        SENSOR_TEMPERATURE_6        = (1 <<  5),
+
+        SENSOR_PRESSURE_1           = (1 <<  6),
+        SENSOR_PRESSURE_2           = (1 <<  7),
+        SENSOR_PRESSURE_3           = (1 <<  8),
+        SENSOR_PRESSURE_4           = (1 <<  9),
+
+        // scales
+        SENSOR_WEIGHT_UNIT          = (1 << 10),
+        SENSOR_WEIGHT_MODE          = (1 << 11),
+        SENSOR_WEIGHT               = (1 << 12),
+        SENSOR_IMPEDANCE            = (1 << 13),
+
+        // beacons
+        SENSOR_ACCL_X               = (1 << 16), //!< Accelerometer
+        SENSOR_ACCL_Y               = (1 << 17),
+        SENSOR_ACCL_Z               = (1 << 18),
+
+        SENSOR_GYRO_X               = (1 << 19), //!< Gyroscope
+        SENSOR_GYRO_Y               = (1 << 20),
+        SENSOR_GYRO_Z               = (1 << 21),
+
+        SENSOR_STEPS                = (1 << 22), //!< Pedometer
+
+        // others
+        SENSOR_PRESENCE             = (1 << 24),
+        SENSOR_OPEN                 = (1 << 25),
+        SENSOR_MOVEMENT             = (1 << 26),
+        SENSOR_ALARM                = (1 << 27),
+    };
+    Q_ENUM(DeviceSensorsTheengs)
 };
 
 /* ************************************************************************** */

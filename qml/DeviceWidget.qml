@@ -356,6 +356,12 @@ Item {
                         } else if (boxDevice.isEnvironmentalSensor) {
                             screenDeviceEnvironmental.loadDevice(boxDevice)
                             appContent.state = "DeviceEnvironmental"
+                        } else if (boxDevice.isProbe) {
+                            screenDeviceProbe.loadDevice(boxDevice)
+                            appContent.state = "DeviceProbe"
+                        } else if (boxDevice.isScale) {
+                            screenDeviceScale.loadDevice(boxDevice)
+                            appContent.state = "DeviceScale"
                         }
                     }
                 }

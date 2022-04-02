@@ -45,7 +45,7 @@ class DeviceEssGeneric: public DeviceSensor
 public:
     DeviceEssGeneric(QString &deviceAddr, QString &deviceName, QObject *parent = nullptr);
     DeviceEssGeneric(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
-    ~DeviceEssGeneric();
+    virtual ~DeviceEssGeneric();
 
 private:
     // QLowEnergyController related

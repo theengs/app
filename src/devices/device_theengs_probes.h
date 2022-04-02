@@ -16,8 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DEVICE_TEMPPROBE_INKBIRD_H
-#define DEVICE_TEMPPROBE_INKBIRD_H
+#ifndef DEVICE_THEENGS_PROBES_H
+#define DEVICE_THEENGS_PROBES_H
 /* ************************************************************************** */
 
 #include "device_theengs.h"
@@ -32,23 +32,20 @@
 
 /*!
  * InkBird IBT-2X / IBT-4XS / IBT-6XS temperature probes
+ * Govee H5055 "Bluetooth BBQ Thermometer"
+ * Xiaomi "Temperature and Pression Monitoring System"
  */
-class DeviceTempprobeInkBird: public DeviceTheengs
+class DeviceTheengsProbes: public DeviceTheengs
 {
     Q_OBJECT
 
-    void parseAdvertisementData(const QByteArray &value);
-
 public:
-    DeviceTempprobeInkBird(QString &deviceAddr, QString &deviceName, QObject *parent = nullptr);
-    DeviceTempprobeInkBird(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
-    ~DeviceTempprobeInkBird();
+    DeviceTheengsProbes(const QString &deviceAddr, const QString &deviceName, QObject *parent = nullptr);
+    DeviceTheengsProbes(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
+    ~DeviceTheengsProbes();
 
-private:
-    // QLowEnergyController related
-    void serviceScanDone();
-    void addLowEnergyService(const QBluetoothUuid &uuid);
+    void parseAdvertisementTheengs(const QString &json);
 };
 
 /* ************************************************************************** */
-#endif // DEVICE_TEMPPROBE_INKBIRD_H
+#endif // DEVICE_THEENGS_PROBES_H

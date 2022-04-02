@@ -796,7 +796,7 @@ bool DeviceSensor::hasData() const
     {
         // If we have immediate data (<12h old)
         if (m_temperature > -20.f || m_humidity > 0 || m_luminosityLux > 0 ||
-            m_pm_10 > 0 || m_co2 > 0 || m_voc > 0 || m_rm > 0)
+            m_pm_10 > 0 || m_co2 > 0 || m_voc > 0 || m_hcho > 0 || m_rm > 0)
             return true;
 
         tableName = "sensorData";

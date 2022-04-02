@@ -55,9 +55,11 @@ class Device: public QObject
     Q_PROPERTY(QString deviceFirmware READ getFirmware NOTIFY sensorUpdated)
     Q_PROPERTY(bool deviceFirmwareUpToDate READ isFirmwareUpToDate NOTIFY sensorUpdated)
 
+    Q_PROPERTY(bool isEnvironmentalSensor READ isEnvironmentalSensor NOTIFY sensorUpdated)
     Q_PROPERTY(bool isPlantSensor READ isPlantSensor NOTIFY sensorUpdated)
     Q_PROPERTY(bool isThermometer READ isThermometer NOTIFY sensorUpdated)
-    Q_PROPERTY(bool isEnvironmentalSensor READ isEnvironmentalSensor NOTIFY sensorUpdated)
+    Q_PROPERTY(bool isProbe READ isProbe NOTIFY sensorUpdated)
+    Q_PROPERTY(bool isScale READ isScale NOTIFY sensorUpdated)
 
     Q_PROPERTY(bool hasRealTime READ hasRealTime NOTIFY capabilitiesUpdated)
     Q_PROPERTY(bool hasHistory READ hasHistory NOTIFY capabilitiesUpdated)
@@ -240,9 +242,11 @@ public:
     int getDeviceCapabilities() const { return m_deviceCapabilities; }
     int getDeviceSensors() const { return m_deviceSensors; }
 
-    bool isPlantSensor() const { return (m_deviceType == DeviceUtils::DEVICE_PLANTSENSOR); }
-    bool isThermometer() const { return (m_deviceType == DeviceUtils::DEVICE_THERMOMETER); }
     bool isEnvironmentalSensor() const { return (m_deviceType == DeviceUtils::DEVICE_ENVIRONMENTAL); }
+    bool isPlantSensor() const { return (m_deviceType == DeviceUtils::DEVICE_PLANTSENSOR); }
+    bool isProbe() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_PROBES); }
+    bool isScale() const { return (m_deviceType == DeviceUtils::DEVICE_SCALE); }
+    bool isThermometer() const { return (m_deviceType == DeviceUtils::DEVICE_THERMOMETER); }
 
     bool hasRealTime() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_REALTIME); }
     virtual bool hasHistory() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_HISTORY); }

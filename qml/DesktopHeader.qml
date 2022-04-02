@@ -612,8 +612,10 @@ Rectangle {
         anchors.bottom: parent.bottom
 
         visible: (!headerUnicolor &&
-                  appContent.state !== "DeviceThermometer" &&
                   appContent.state !== "DeviceEnvironmental" &&
+                  appContent.state !== "DeviceProbe" &&
+                  appContent.state !== "DeviceScale" &&
+                  appContent.state !== "DeviceThermometer" &&
                   appContent.state !== "Tutorial")
 
         height: 2

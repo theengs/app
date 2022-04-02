@@ -28,6 +28,10 @@
 #include <QSqlQuery>
 #include <QSqlError>
 
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+
 #include <QDateTime>
 #include <QDebug>
 
@@ -52,21 +56,10 @@ DeviceTheengsGeneric::~DeviceTheengsGeneric()
 
 /* ************************************************************************** */
 
-void DeviceTheengsGeneric::serviceScanDone()
+void DeviceTheengsGeneric::parseAdvertisementTheengs(const QString &json)
 {
-    //qDebug() << "DeviceTheengsGeneric::serviceScanDone(" << m_deviceAddress << ")";
-}
-
-void DeviceTheengsGeneric::addLowEnergyService(const QBluetoothUuid &uuid)
-{
-    //qDebug() << "DeviceTheengsGeneric::addLowEnergyService(" << uuid.toString() << ")";
-}
-
-/* ************************************************************************** */
-
-void DeviceTheengsGeneric::parseAdvertisementData(const QByteArray &value)
-{
-    //
+    qDebug() << "DeviceTheengsGeneric::parseAdvertisementTheengs()";
+    qDebug() << "DATA:" << json;
 }
 
 /* ************************************************************************** */

@@ -110,7 +110,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
 
                 dd->parseAdvertisementData(info.serviceData(id));
 
-                DynamicJsonDocument doc(1024);
+                DynamicJsonDocument doc(512);
                 doc["id"] = info.address().toString().toStdString();
                 doc["name"] = info.name().toStdString();
                 doc["servicedata"] = info.serviceData(id).toHex().toStdString();
@@ -174,7 +174,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
             //         << "manufacturer data" << Qt::dec << info.manufacturerData(id).count() << Qt::hex
             //         << "bytes:" << info.manufacturerData(id).toHex();
 
-            DynamicJsonDocument doc(1024);
+            DynamicJsonDocument doc(512);
             doc["id"] = info.address().toString().toStdString();
             doc["name"] = info.name().toStdString();
             doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).toStdString() + info.manufacturerData(id).toHex().toStdString();
@@ -185,6 +185,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
             if (a.decodeBLEJson(obj) >= 0)
             {
                 std::string output;
+                obj.remove("manufacturerdata");
                 serializeJson(obj, output);
 
                 qDebug() << "(UNKNOWN DEVICE) output" << output.c_str();
@@ -223,6 +224,8 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
             if (a.decodeBLEJson(obj) >= 0)
             {
                 std::string output;
+                obj.remove("servicedata");
+                obj.remove("servicedatauuid");
                 serializeJson(obj, output);
 
                 qDebug() << "(UNKNOWN DEVICE) output" << output.c_str();

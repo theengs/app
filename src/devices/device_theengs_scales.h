@@ -16,8 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DEVICE_TPMS_H
-#define DEVICE_TPMS_H
+#ifndef DEVICE_THEENGS_SCALE_H
+#define DEVICE_THEENGS_SCALE_H
 /* ************************************************************************** */
 
 #include "device_theengs.h"
@@ -31,24 +31,22 @@
 /* ************************************************************************** */
 
 /*!
- * Xiaomi "Temperature and Pression Monitoring System"
+ * Xiaomi scales:
+ * - XMTZC01HM/XMTZC04HM
+ * - XMTZC02HM/XMTZC05HM
  */
-class DeviceTPMS: public DeviceTheengs
+class DeviceTheengsScales: public DeviceTheengs
 {
     Q_OBJECT
 
-    void parseAdvertisementData(const QByteArray &value);
-
 public:
-    DeviceTPMS(QString &deviceAddr, QString &deviceName, QObject *parent = nullptr);
-    DeviceTPMS(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
-    ~DeviceTPMS();
+    DeviceTheengsScales(const QString &deviceAddr, const QString &deviceName, QObject *parent = nullptr);
+    DeviceTheengsScales(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
+    ~DeviceTheengsScales();
 
-private:
-    // QLowEnergyController related
-    void serviceScanDone();
-    void addLowEnergyService(const QBluetoothUuid &uuid);
+    // adv
+    void parseAdvertisementTheengs(const QString &json);
 };
 
 /* ************************************************************************** */
-#endif // DEVICE_TPMS_H
+#endif // DEVICE_THEENGS_SCALE_H

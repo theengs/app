@@ -43,8 +43,8 @@
 #include "devices/device_esp32_geigercounter.h"
 #include "devices/device_ess_generic.h"
 #include "devices/device_theengs_generic.h"
-#include "devices/device_tempprobe_inkbird.h"
-#include "devices/device_tpms.h"
+#include "devices/device_theengs_probes.h"
+#include "devices/device_theengs_scales.h"
 
 #include <QList>
 #include <QDateTime>

@@ -46,7 +46,6 @@ SOURCES  += src/main.cpp \
             src/device_infos.cpp \
             src/device_filter.cpp \
             src/device_sensor.cpp \
-            src/device_theengs.cpp \
             src/devices/device_flowercare.cpp \
             src/devices/device_flowerpower.cpp \
             src/devices/device_ropot.cpp \
@@ -69,9 +68,10 @@ SOURCES  += src/main.cpp \
             src/devices/device_esp32_geigercounter.cpp \
             src/devices/device_esp32_higrow.cpp \
             src/devices/device_ess_generic.cpp \
+            src/device_theengs.cpp \
             src/devices/device_theengs_generic.cpp \
-            src/devices/device_tempprobe_inkbird.cpp \
-            src/devices/device_tpms.cpp \
+            src/devices/device_theengs_probes.cpp \
+            src/devices/device_theengs_scales.cpp \
             src/utils/utils_app.cpp \
             src/utils/utils_language.cpp \
             src/utils/utils_maths.cpp \
@@ -91,7 +91,6 @@ HEADERS  += src/SettingsManager.h \
             src/device_infos.h \
             src/device_filter.h \
             src/device_sensor.h \
-            src/device_theengs.h \
             src/devices/device_flowercare.h \
             src/devices/device_flowerpower.h \
             src/devices/device_ropot.h \
@@ -114,9 +113,10 @@ HEADERS  += src/SettingsManager.h \
             src/devices/device_esp32_geigercounter.h \
             src/devices/device_esp32_higrow.h \
             src/devices/device_ess_generic.h \
+            src/device_theengs.h \
             src/devices/device_theengs_generic.h \
-            src/devices/device_tempprobe_inkbird.h \
-            src/devices/device_tpms.h \
+            src/devices/device_theengs_probes.h \
+            src/devices/device_theengs_scales.h \
             src/utils/utils_app.h \
             src/utils/utils_bits.h \
             src/utils/utils_language.h \

@@ -31,8 +31,21 @@
 
 /* ************************************************************************** */
 
+/*
+  MOKOSmart M1
+  RuuviTag
+  MiBand?
+
+  MUE4094RT
+  CGH1
+  CGPR1
+
+  XMTZC01HM/XMTZC04HM
+  XMTZC02HM/XMTZC05HM
+*/
+
 /*!
- * Theengs generic
+ * Theengs generic device
  */
 class DeviceTheengs: public DeviceSensor
 {
@@ -49,6 +62,21 @@ class DeviceTheengs: public DeviceSensor
     Q_PROPERTY(int pressure2 READ getPressure2 NOTIFY dataUpdated)
     Q_PROPERTY(int pressure3 READ getPressure3 NOTIFY dataUpdated)
     Q_PROPERTY(int pressure4 READ getPressure4 NOTIFY dataUpdated)
+    Q_PROPERTY(bool alarm1 READ getAlarm1 NOTIFY dataUpdated)
+    Q_PROPERTY(bool alarm2 READ getAlarm2 NOTIFY dataUpdated)
+    Q_PROPERTY(bool alarm3 READ getAlarm3 NOTIFY dataUpdated)
+    Q_PROPERTY(bool alarm4 READ getAlarm4 NOTIFY dataUpdated)
+
+    // scale data
+    Q_PROPERTY(float weight READ getWeight NOTIFY dataUpdated)
+    Q_PROPERTY(QString weightMode READ getWeightMode NOTIFY dataUpdated)
+    Q_PROPERTY(QString weightUnit READ getWeightUnit NOTIFY dataUpdated)
+    Q_PROPERTY(int impedance READ getImpedance NOTIFY dataUpdated)
+
+    Q_PROPERTY(bool hasWeight READ hasWeight NOTIFY sensorsUpdated)
+    Q_PROPERTY(bool hasWeightMode READ hasWeightMode NOTIFY sensorsUpdated)
+    Q_PROPERTY(bool hasWeightUnit READ hasWeightUnit NOTIFY sensorsUpdated)
+    Q_PROPERTY(bool hasImpedance READ hasImpedance NOTIFY sensorsUpdated)
 
 protected:
     // probe data
@@ -58,17 +86,31 @@ protected:
     float m_temperature4 = -99.f;
     float m_temperature5 = -99.f;
     float m_temperature6 = -99.f;
-    float m_pressure1 = -99.f;
-    float m_pressure2 = -99.f;
-    float m_pressure3 = -99.f;
-    float m_pressure4 = -99.f;
+    int m_pressure1 = -99;
+    int m_pressure2 = -99;
+    int m_pressure3 = -99;
+    int m_pressure4 = -99;
+    bool m_alarm1 = false;
+    bool m_alarm2 = false;
+    bool m_alarm3 = false;
+    bool m_alarm4 = false;
+
+    // scale data
+    float m_weight = -99.f;
+    QString m_weightUnit;
+    QString m_weightMode;
+    int m_impedance = -99;
+
+    virtual bool hasData() const;
 
 public:
-    DeviceTheengs(QString &deviceAddr, QString &deviceName, QObject *parent = nullptr);
+    DeviceTheengs(const QString &deviceAddr, const QString &deviceName, QObject *parent = nullptr);
     DeviceTheengs(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
-    ~DeviceTheengs();
+    virtual ~DeviceTheengs();
 
-    void parseAdvertisementData(const QByteArray &value);
+    // adv
+    virtual void parseAdvertisementData(const QByteArray &value);
+    virtual void parseAdvertisementTheengs(const QString &json);
 
     // probe data
     float getTemp1() const;
@@ -93,11 +135,26 @@ public:
     int getPressure2() const { return m_pressure2; }
     int getPressure3() const { return m_pressure3; }
     int getPressure4() const { return m_pressure4; }
+    bool getAlarm1() const { return m_alarm1; }
+    bool getAlarm2() const { return m_alarm2; }
+    bool getAlarm3() const { return m_alarm3; }
+    bool getAlarm4() const { return m_alarm4; }
+
+    // scale data
+    float getWeight() const { return m_weight; }
+    QString getWeightUnit() const { return m_weightUnit; }
+    QString getWeightMode() const { return m_weightMode; }
+    int getImpedance() const { return m_impedance; }
+
+    bool hasWeight() const { return (m_deviceSensors & DeviceUtilsTheengs::SENSOR_WEIGHT); }
+    bool hasWeightMode() const { return (m_deviceSensors & DeviceUtilsTheengs::SENSOR_WEIGHT_MODE); }
+    bool hasWeightUnit() const { return (m_deviceSensors & DeviceUtilsTheengs::SENSOR_WEIGHT_UNIT); }
+    bool hasImpedance() const { return (m_deviceSensors & DeviceUtilsTheengs::SENSOR_IMPEDANCE); }
 
 private:
     // QLowEnergyController related
-    void serviceScanDone();
-    void addLowEnergyService(const QBluetoothUuid &uuid);
+    virtual void serviceScanDone();
+    virtual void addLowEnergyService(const QBluetoothUuid &uuid);
 };
 
 /* ************************************************************************** */
