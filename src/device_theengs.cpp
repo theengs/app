@@ -65,7 +65,7 @@ void DeviceTheengs::serviceScanDone()
 void DeviceTheengs::addLowEnergyService(const QBluetoothUuid &uuid)
 {
     //qDebug() << "DeviceTheengs::addLowEnergyService(" << uuid.toString() << ")";
-    Q_UNUSED(uuid)
+    Q_UNUSED (uuid)
 }
 
 /* ************************************************************************** */
@@ -134,33 +134,12 @@ void DeviceTheengs::parseAdvertisementData(const QByteArray &value)
 {
     qDebug() << "DeviceTheengs::parseAdvertisementTheengs()";
     qDebug() << "DATA: 0x" << value.toHex();
-
-    Q_UNUSED(value)
 }
 
 void DeviceTheengs::parseAdvertisementTheengs(const QString &json)
 {
     qDebug() << "DeviceTheengs::parseAdvertisementTheengs()";
     qDebug() << "DATA:" << json;
-
-    QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
-    QJsonObject obj = doc.object();
-
-    if (obj.contains("batt")) setBattery(obj["batt"].toInt());
-    if (obj.contains("mac")) setSetting("mac", obj["mac"].toString());
-
-    if (obj.contains("tempc")) {
-        if (m_temperature != obj["tempc"].toDouble()) {
-            m_temperature = obj["tempc"].toDouble();
-            Q_EMIT dataUpdated();
-        }
-    }
-    if (obj.contains("hum")) {
-        if (m_humidity != obj["hum"].toDouble()) {
-            m_humidity = obj["hum"].toDouble();
-            Q_EMIT dataUpdated();
-        }
-    }
 }
 
 /* ************************************************************************** */

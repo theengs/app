@@ -66,7 +66,7 @@ void DeviceHygrotempInkBird::serviceScanDone()
 void DeviceHygrotempInkBird::addLowEnergyService(const QBluetoothUuid &uuid)
 {
     //qDebug() << "DeviceHygrotempInkBird::addLowEnergyService(" << uuid.toString() << ")";
-    Q_UNUSED(uuid)
+    Q_UNUSED (uuid)
 }
 
 /* ************************************************************************** */

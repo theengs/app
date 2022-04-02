@@ -105,6 +105,9 @@ public:
 
     enum DeviceSensorsTheengs {
         // probes
+        //SENSOR_PROBES_TEMP          = (1 <<  0),
+        //SENSOR_PROBES_TPMS          = (1 <<  1),
+
         SENSOR_TEMPERATURE_1        = (1 <<  0),
         SENSOR_TEMPERATURE_2        = (1 <<  1),
         SENSOR_TEMPERATURE_3        = (1 <<  2),

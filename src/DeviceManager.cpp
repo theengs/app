@@ -46,6 +46,9 @@
 #include "devices/device_theengs_probes.h"
 #include "devices/device_theengs_scales.h"
 
+#include <decoder.h> // Theengs decoder
+#include "utils/utils_bits.h"
+
 #include <QList>
 #include <QDateTime>
 #include <QDebug>
@@ -1367,140 +1370,237 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
 {
     //qDebug() << "DeviceManager::addBleDevice()" << " > NAME" << info.name() << " > RSSI" << info.rssi();
 
-    if (info.rssi() >= 0) return; // we probably just hit the device cache
-    if (m_devices_blacklist.contains(info.address().toString()))return; // device is blacklisted
-
-    SettingsManager *sm = SettingsManager::getInstance();
-    if (sm && sm->getBluetoothLimitScanningRange() && info.rssi() < -70) return; // device is too far away
-
-    if (info.coreConfigurations() & QBluetoothDeviceInfo::LowEnergyCoreConfiguration)
+    // Various sanity checks
     {
-        if (info.name() == "Flower care" || info.name() == "Flower mate" || info.name() == "Grow care garden" ||
-            info.name().startsWith("Flower power") ||
-            info.name().startsWith("Parrot pot") ||
-            info.name() == "ropot" ||
-            info.name() == "MJ_HT_V1" ||
-            info.name() == "ClearGrass Temp & RH" ||
-            info.name() == "Qingping Temp RH Lite" ||
-            info.name() == "LYWSD02" || info.name() == "MHO-C303" ||
-            info.name() == "LYWSD03MMC" || info.name() == "MHO-C401" || info.name() == "XMWSDJO4MMC" ||
-            info.name() == "ThermoBeacon" ||
-            info.name().startsWith("6003#") ||
-            info.name() == "AirQualityMonitor" ||
-            info.name() == "GeigerCounter" ||
-            info.name() == "HiGrow")
+        if (info.rssi() >= 0) return; // we probably just hit the device cache
+
+        if (m_devices_blacklist.contains(info.address().toString()))return; // device is blacklisted
+
+        SettingsManager *sm = SettingsManager::getInstance();
+        if (sm && sm->getBluetoothLimitScanningRange() && info.rssi() < -70) return; // device is too far away
+
+        if ((info.coreConfigurations() & QBluetoothDeviceInfo::LowEnergyCoreConfiguration) == false) return; // not a BLE device
+
+        for (auto ed: qAsConst(m_devices_model->m_devices))
         {
-            // Check if it's not already in the UI
-            for (auto ed: qAsConst(m_devices_model->m_devices))
+            Device *edd = qobject_cast<Device*>(ed);
+            if (edd && (edd->getAddress() == info.address().toString() ||
+                        edd->getAddress() == info.deviceUuid().toString()))
             {
-                Device *edd = qobject_cast<Device*>(ed);
-#if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
-                if (edd && edd->getAddress() == info.deviceUuid().toString())
-#else
-                if (edd && edd->getAddress() == info.address().toString())
-#endif
+                return; // device is already in the UI
+            }
+        }
+    }
+
+    Device *d = nullptr;
+
+    // Regular WatchFlower device
+    if (info.name() == "Flower care" || info.name() == "Flower mate" || info.name() == "Grow care garden" ||
+        info.name().startsWith("Flower power") ||
+        info.name().startsWith("Parrot pot") ||
+        info.name() == "ropot" ||
+        info.name() == "MJ_HT_V1" ||
+        info.name() == "ClearGrass Temp & RH" ||
+        info.name() == "Qingping Temp RH Lite" ||
+        info.name() == "LYWSD02" || info.name() == "MHO-C303" ||
+        info.name() == "LYWSD03MMC" || info.name() == "MHO-C401" || info.name() == "XMWSDJO4MMC" ||
+        info.name() == "ThermoBeacon" ||
+        info.name().startsWith("6003#") ||
+        info.name() == "AirQualityMonitor" ||
+        info.name() == "GeigerCounter" ||
+        info.name() == "HiGrow")
+    {
+        // Create the device
+        if (info.name() == "Flower care" || info.name() == "Flower mate" || info.name() == "Grow care garden")
+            d = new DeviceFlowerCare(info, this);
+        else if (info.name() == "ropot")
+            d = new DeviceRopot(info, this);
+        else if (info.name().startsWith("Flower power"))
+            d = new DeviceFlowerPower(info, this);
+        else if (info.name().startsWith("Parrot pot"))
+            d = new DeviceParrotPot(info, this);
+        else if (info.name() == "HiGrow")
+            d = new DeviceEsp32HiGrow(info, this);
+
+        else if (info.name() == "CGD1")
+            d = new DeviceHygrotempCGD1(info, this);
+        else if (info.name() == "Qingping Temp RH Lite")
+            d = new DeviceHygrotempCGDK2(info, this);
+        else if (info.name() == "ClearGrass Temp & RH")
+            d = new DeviceHygrotempCGG1(info, this);
+        else if (info.name() == "CGP1W")
+            d = new DeviceHygrotempCGP1W(info, this);
+        else if (info.name() == "MJ_HT_V1")
+            d = new DeviceHygrotempLYWSDCGQ(info, this);
+        else if (info.name() == "LYWSD02" || info.name() == "MHO-C303")
+            d = new DeviceHygrotempClock(info, this);
+        else if (info.name() == "LYWSD03MMC" || info.name() == "MHO-C401" || info.name() == "XMWSDJO4MMC")
+            d = new DeviceHygrotempSquare(info, this);
+        else if (info.name() == "ThermoBeacon")
+            d = new DeviceThermoBeacon(info, this);
+
+        else if (info.name().startsWith("JQJCY01YM"))
+            d = new DeviceJQJCY01YM(info, this);
+        else if (info.name().startsWith("6003#"))
+            d = new DeviceWP6003(info, this);
+        else if (info.name() == "AirQualityMonitor")
+            d = new DeviceEsp32AirQualityMonitor(info, this);
+        else if (info.name() == "GeigerCounter")
+            d = new DeviceEsp32GeigerCounter(info, this);
+    }
+    else // Theengs device maybe?
+    {
+        const QList<quint16> &manufacturerIds = info.manufacturerIds();
+        for (const auto id: manufacturerIds)
+        {
+            if (d) break;
+
+            DynamicJsonDocument doc(512);
+            doc["id"] = info.address().toString().toStdString();
+            doc["name"] = info.name().toStdString();
+            doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).toStdString() + info.manufacturerData(id).toHex().toStdString();
+
+            TheengsDecoder dec;
+            JsonObject obj = doc.as<JsonObject>();
+
+            if (dec.decodeBLEJson(obj) >= 0)
+            {
+                int did = dec.getTheengModel(doc, doc["model_id"]);
+                if (did == TheengsDecoder::IBT_2X ||
+                    did == TheengsDecoder::IBT4XS ||
+                    did == TheengsDecoder::IBT6XS_SOLIS ||
+                    did == TheengsDecoder::H5055 ||
+                    did == TheengsDecoder::TPMS)
                 {
-                    return;
+                    d = new DeviceTheengsProbes(info, this);
+                }
+                else if (did == TheengsDecoder::XMTZC04HM ||
+                         did == TheengsDecoder::XMTZC05HM)
+                {
+                    d = new DeviceTheengsScales(info, this);
+                }
+                else if (did == TheengsDecoder::BM_V23 ||
+                         did == TheengsDecoder::IBSTH1 ||
+                         did == TheengsDecoder::IBSTH2 ||
+                         did == TheengsDecoder::H5072 ||
+                         did == TheengsDecoder::H5075 ||
+                         did == TheengsDecoder::H5102 ||
+                         did == TheengsDecoder::LYWSD03MMC_ATC ||
+                         did == TheengsDecoder::LYWSD03MMC_PVVX)
+                {
+                    d = new DeviceTheengsGeneric(info, this);
+                }
+                else
+                {
+                    // TODO
                 }
             }
+        }
 
-            // Create the device
-            Device *d = nullptr;
+        const QList<QBluetoothUuid> &serviceIds = info.serviceIds();
+        for (const auto id: serviceIds)
+        {
+            if (d) break;
 
-            if (info.name() == "Flower care" || info.name() == "Flower mate" || info.name() == "Grow care garden")
-                d = new DeviceFlowerCare(info, this);
-            else if (info.name() == "ropot")
-                d = new DeviceRopot(info, this);
-            else if (info.name().startsWith("Flower power"))
-                d = new DeviceFlowerPower(info, this);
-            else if (info.name().startsWith("Parrot pot"))
-                d = new DeviceParrotPot(info, this);
-            else if (info.name() == "HiGrow")
-                d = new DeviceEsp32HiGrow(info, this);
+            DynamicJsonDocument doc(512);
+            doc["id"] = info.address().toString().toStdString();
+            doc["name"] = info.name().toStdString();
+            doc["servicedata"] = info.serviceData(id).toHex().toStdString();
+            //doc["servicedatauuid"] = id.toString(QUuid::Id128).toStdString();
 
-            else if (info.name() == "CGD1")
-                d = new DeviceHygrotempCGD1(info, this);
-            else if (info.name() == "Qingping Temp RH Lite")
-                d = new DeviceHygrotempCGDK2(info, this);
-            else if (info.name() == "ClearGrass Temp & RH")
-                d = new DeviceHygrotempCGG1(info, this);
-            else if (info.name() == "CGP1W")
-                d = new DeviceHygrotempCGP1W(info, this);
-            else if (info.name() == "MJ_HT_V1")
-                d = new DeviceHygrotempLYWSDCGQ(info, this);
-            else if (info.name() == "LYWSD02" || info.name() == "MHO-C303")
-                d = new DeviceHygrotempClock(info, this);
-            else if (info.name() == "LYWSD03MMC" || info.name() == "MHO-C401" || info.name() == "XMWSDJO4MMC")
-                d = new DeviceHygrotempSquare(info, this);
-            else if (info.name() == "ThermoBeacon")
-                d = new DeviceThermoBeacon(info, this);
-            else if (info.name() == "GOVEE")
-                d = new DeviceHygrotempGovee(info, this);
-            else if (info.name() == "MOKOSmart")
-                d = new DeviceHygrotempMOKOSmart(info, this);
-            else if (info.name() == "TempoDisk")
-                d = new DeviceHygrotempTempoDisk(info, this);
-            else if (info.name() == "InkBird")
-                d = new DeviceHygrotempInkBird(info, this);
+            TheengsDecoder dec;
+            JsonObject obj = doc.as<JsonObject>();
 
-            else if (info.name().startsWith("JQJCY01YM"))
-                d = new DeviceJQJCY01YM(info, this);
-            else if (info.name().startsWith("6003#"))
-                d = new DeviceWP6003(info, this);
-            else if (info.name() == "AirQualityMonitor")
-                d = new DeviceEsp32AirQualityMonitor(info, this);
-            else if (info.name() == "GeigerCounter")
-                d = new DeviceEsp32GeigerCounter(info, this);
-
-            if (!d) return;
-
-            connect(d, &Device::deviceUpdated, this, &DeviceManager::refreshDevices_finished);
-
-            SettingsManager *sm = SettingsManager::getInstance();
-            if (d->getLastUpdateInt() < 0 ||
-                d->getLastUpdateInt() > (int)(d->isPlantSensor() ? sm->getUpdateIntervalPlant() : sm->getUpdateIntervalThermo()))
+            if (dec.decodeBLEJson(obj) >= 0)
             {
-                // Old or no data: mark it as queued until the deviceManager sync new devices
-                d->refreshQueue();
-            }
-
-            // Add it to the database?
-            if (m_dbInternal || m_dbExternal)
-            {
-                // if
-                QSqlQuery queryDevice;
-                queryDevice.prepare("SELECT deviceName FROM devices WHERE deviceAddr = :deviceAddr");
-                queryDevice.bindValue(":deviceAddr", d->getAddress());
-                queryDevice.exec();
-
-                // then
-                if (queryDevice.last() == false)
+                int did = dec.getTheengModel(doc, doc["model_id"]);
+                if (did == TheengsDecoder::IBT_2X ||
+                    did == TheengsDecoder::IBT4XS ||
+                    did == TheengsDecoder::IBT6XS_SOLIS ||
+                    did == TheengsDecoder::H5055 ||
+                    did == TheengsDecoder::TPMS)
                 {
-                    qDebug() << "+ Adding device: " << d->getName() << "/" << d->getAddress() << "to local database";
+                    d = new DeviceTheengsProbes(info, this);
+                }
+                else if (did == TheengsDecoder::XMTZC04HM ||
+                         did == TheengsDecoder::XMTZC05HM)
+                {
+                    d = new DeviceTheengsScales(info, this);
+                }
+                else if (did == TheengsDecoder::BM_V23 ||
+                         did == TheengsDecoder::IBSTH1 ||
+                         did == TheengsDecoder::IBSTH2 ||
+                         did == TheengsDecoder::H5072 ||
+                         did == TheengsDecoder::H5075 ||
+                         did == TheengsDecoder::H5102 ||
+                         did == TheengsDecoder::LYWSD03MMC_ATC ||
+                         did == TheengsDecoder::LYWSD03MMC_PVVX)
+                {
+                    d = new DeviceTheengsGeneric(info, this);
+                }
+                else
+                {
+                    // MIBAND
+                    // RUUVITAG_RAWV1
+                    // RUUVITAG_RAWV1
+                    // MOKOBEACON
+                    // MOKOBEACONXPRO
+                    // SBS1 ?
+                    // INODE_EM ?
 
-                    QSqlQuery addDevice;
-                    addDevice.prepare("INSERT INTO devices (deviceAddr, deviceName) VALUES (:deviceAddr, :deviceName)");
-                    addDevice.bindValue(":deviceAddr", d->getAddress());
-                    addDevice.bindValue(":deviceName", d->getName());
-                    addDevice.exec();
+                    // CGH1
+                    // CGPR1
+                    //MUE4094RT
+
+                    //d = new DeviceTheengsGeneric(info, this);
                 }
             }
-
-            // Add it to the UI
-            m_devices_model->addDevice(d);
-            Q_EMIT devicesListUpdated();
-
-            qDebug() << "Device added (from BLE discovery): " << d->getName() << "/" << d->getAddress();
-
-#if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
-            // try to get the MAC address immediately
-            updateBleDevice(info, QBluetoothDeviceInfo::Field::None);
-#endif
         }
-        else
+    }
+
+    if (d)
+    {
+        connect(d, &Device::deviceUpdated, this, &DeviceManager::refreshDevices_finished);
+
+        SettingsManager *sm = SettingsManager::getInstance();
+        if (d->getLastUpdateInt() < 0 ||
+            d->getLastUpdateInt() > (int)(d->isPlantSensor() ? sm->getUpdateIntervalPlant() : sm->getUpdateIntervalThermo()))
         {
-            //qDebug() << "Unsupported device: " << info.name() << "/" << info.address();
+            // Old or no data: mark it as queued until the deviceManager sync new devices
+            d->refreshQueue();
         }
+
+        // Add it to the database?
+        if (m_dbInternal || m_dbExternal)
+        {
+            // if
+            QSqlQuery queryDevice;
+            queryDevice.prepare("SELECT deviceName FROM devices WHERE deviceAddr = :deviceAddr");
+            queryDevice.bindValue(":deviceAddr", d->getAddress());
+            queryDevice.exec();
+
+            // then
+            if (queryDevice.last() == false)
+            {
+                qDebug() << "+ Adding device: " << d->getName() << "/" << d->getAddress() << "to local database";
+
+                QSqlQuery addDevice;
+                addDevice.prepare("INSERT INTO devices (deviceAddr, deviceName) VALUES (:deviceAddr, :deviceName)");
+                addDevice.bindValue(":deviceAddr", d->getAddress());
+                addDevice.bindValue(":deviceName", d->getName());
+                addDevice.exec();
+            }
+        }
+
+        // Add it to the UI
+        m_devices_model->addDevice(d);
+        Q_EMIT devicesListUpdated();
+
+        qDebug() << "Device added (from BLE discovery): " << d->getName() << "/" << d->getAddress();
+    }
+    else
+    {
+        //qDebug() << "Unsupported device: " << info.name() << "/" << info.address();
     }
 }
 

@@ -59,7 +59,52 @@ DeviceTheengsGeneric::~DeviceTheengsGeneric()
 void DeviceTheengsGeneric::parseAdvertisementTheengs(const QString &json)
 {
     qDebug() << "DeviceTheengsGeneric::parseAdvertisementTheengs()";
-    qDebug() << "DATA:" << json;
+    qDebug() << "JSON:" << json;
+
+    QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
+    QJsonObject obj = doc.object();
+
+    if (obj.contains("batt")) setBattery(obj["batt"].toInt());
+    if (obj.contains("mac")) setSetting("mac", obj["mac"].toString());
+
+    if (obj.contains("tempc")) {
+        if (!hasTemperatureSensor()) {
+            m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
+            m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
+            Q_EMIT sensorUpdated();
+        }
+
+        if (m_temperature != obj["tempc"].toDouble()) {
+            m_temperature = obj["tempc"].toDouble();
+            Q_EMIT dataUpdated();
+        }
+    }
+
+    if (obj.contains("hum")) {
+        if (!hasTemperatureSensor()) {
+            m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
+            m_deviceSensors += DeviceUtils::SENSOR_HUMIDITY;
+            Q_EMIT sensorUpdated();
+        }
+
+        if (m_humidity != obj["hum"].toDouble()) {
+            m_humidity = obj["hum"].toDouble();
+            Q_EMIT dataUpdated();
+        }
+    }
+
+    if (obj.contains("pres")) {
+        if (!hasTemperatureSensor()) {
+            m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
+            m_deviceSensors += DeviceUtils::SENSOR_PRESSURE;
+            Q_EMIT sensorUpdated();
+        }
+
+        if (m_pressure != obj["pres"].toDouble() * 10.0) {
+            m_pressure = obj["pres"].toDouble() * 10.0;
+            Q_EMIT dataUpdated();
+        }
+    }
 }
 
 /* ************************************************************************** */

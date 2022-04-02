@@ -22,7 +22,7 @@
 #include "utils/utils_app.h"
 #include "utils/utils_bits.h"
 
-#include <decoder.h>
+#include <decoder.h> // Theengs decoder
 
 #include <QBluetoothLocalDevice>
 #include <QBluetoothDeviceDiscoveryAgent>
@@ -65,7 +65,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
 
                 dd->parseAdvertisementData(info.manufacturerData(id));
 
-                DynamicJsonDocument doc(1024);
+                DynamicJsonDocument doc(512);
                 doc["id"] = info.address().toString().toStdString();
                 doc["name"] = info.name().toStdString();
                 doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).toStdString() + info.manufacturerData(id).toHex().toStdString();
@@ -212,16 +212,16 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
             //         << "service data" << Qt::dec << info.serviceData(id).count() << Qt::hex
             //         << "bytes:" << info.serviceData(id).toHex();
 
-            DynamicJsonDocument doc(1024);
+            DynamicJsonDocument doc(512);
             doc["id"] = info.address().toString().toStdString();
             doc["name"] = info.name().toStdString();
             doc["servicedata"] = info.serviceData(id).toHex().toStdString();
             //doc["servicedatauuid"] = id.toString(QUuid::Id128).toStdString();
 
-            TheengsDecoder a;
+            TheengsDecoder dec;
             JsonObject obj = doc.as<JsonObject>();
 
-            if (a.decodeBLEJson(obj) >= 0)
+            if (dec.decodeBLEJson(obj) >= 0)
             {
                 std::string output;
                 obj.remove("servicedata");

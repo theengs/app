@@ -66,14 +66,14 @@ void DeviceHygrotempMOKOSmart::serviceScanDone()
 void DeviceHygrotempMOKOSmart::addLowEnergyService(const QBluetoothUuid &uuid)
 {
     //qDebug() << "DeviceHygrotempMOKOSmart::addLowEnergyService(" << uuid.toString() << ")";
-    Q_UNUSED(uuid)
+    Q_UNUSED (uuid)
 }
 
 /* ************************************************************************** */
 
 void DeviceHygrotempMOKOSmart::parseAdvertisementData(const QByteArray &value)
 {
-    //
+    Q_UNUSED(value)
 }
 
 /* ************************************************************************** */

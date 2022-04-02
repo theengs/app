@@ -73,6 +73,7 @@ SOURCES  += src/main.cpp \
             src/devices/device_theengs_probes.cpp \
             src/devices/device_theengs_scales.cpp \
             src/utils/utils_app.cpp \
+            src/utils/utils_bits.cpp \
             src/utils/utils_language.cpp \
             src/utils/utils_maths.cpp \
             src/utils/utils_screen.cpp \

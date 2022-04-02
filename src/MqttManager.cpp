@@ -129,6 +129,8 @@ bool MqttManager::subscribe(QString topic)
     {
         //
     }
+
+    return false;
 }
 
 /* ************************************************************************** */

@@ -66,14 +66,14 @@ void DeviceHygrotempGovee::serviceScanDone()
 void DeviceHygrotempGovee::addLowEnergyService(const QBluetoothUuid &uuid)
 {
     //qDebug() << "DeviceHygrotempGovee::addLowEnergyService(" << uuid.toString() << ")";
-    Q_UNUSED(uuid)
+    Q_UNUSED (uuid)
 }
 
 /* ************************************************************************** */
 
 void DeviceHygrotempGovee::parseAdvertisementData(const QByteArray &value)
 {
-    //
+    Q_UNUSED(value)
 }
 
 /* ************************************************************************** */

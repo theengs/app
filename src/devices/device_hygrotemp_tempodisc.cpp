@@ -66,14 +66,14 @@ void DeviceHygrotempTempoDisk::serviceScanDone()
 void DeviceHygrotempTempoDisk::addLowEnergyService(const QBluetoothUuid &uuid)
 {
     //qDebug() << "DeviceHygrotempTempoDisk::addLowEnergyService(" << uuid.toString() << ")";
-    Q_UNUSED(uuid)
+    Q_UNUSED (uuid)
 }
 
 /* ************************************************************************** */
 
 void DeviceHygrotempTempoDisk::parseAdvertisementData(const QByteArray &value)
 {
-    //
+    Q_UNUSED(value)
 }
 
 /* ************************************************************************** */

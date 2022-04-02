@@ -107,7 +107,7 @@ DeviceTheengsProbes::~DeviceTheengsProbes()
 void DeviceTheengsProbes::parseAdvertisementTheengs(const QString &json)
 {
     qDebug() << "DeviceTheengsProbes::parseAdvertisementTheengs()";
-    qDebug() << "DATA:" << json;
+    qDebug() << "JSON:" << json;
 
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
     QJsonObject obj = doc.object();
@@ -120,7 +120,7 @@ void DeviceTheengsProbes::parseAdvertisementTheengs(const QString &json)
         int idx = obj["count"].toInt();
         float pres = obj["pres"].toDouble() * 10.0;
         float temp = obj["tempc"].toDouble();
-        int batt = obj["batt"].toInt();
+        //int batt = obj["batt"].toInt();
         bool alarm = obj["alarm"].toBool();
 
         if (idx == 1) {

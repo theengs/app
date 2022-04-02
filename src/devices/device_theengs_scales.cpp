@@ -59,7 +59,7 @@ DeviceTheengsScales::~DeviceTheengsScales()
 void DeviceTheengsScales::parseAdvertisementTheengs(const QString &json)
 {
     qDebug() << "DeviceTheengsScales::parseAdvertisementTheengs()";
-    qDebug() << "DATA:" << json;
+    qDebug() << "JSON:" << json;
 
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
     QJsonObject obj = doc.object();
