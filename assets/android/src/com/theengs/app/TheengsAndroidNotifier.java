@@ -29,7 +29,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 
-public class WatchFlowerAndroidNotifier {
+public class TheengsAndroidNotifier {
 
     private static String channelId = "Theengs";
     private static String channelName = "Theengs Notifier";

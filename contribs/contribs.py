@@ -213,27 +213,12 @@ if not os.path.exists(src_dir + FILE_arduinojson):
     urllib.request.urlretrieve("https://github.com/bblanchon/ArduinoJson/archive/refs/heads/6.x.zip", src_dir + FILE_arduinojson)
 
 ## QtMqtt (version: 6.3.0)
-FILE_qtmqtt = "qtmqtt-6.3.0-beta3.zip"
-DIR_qtmqtt = "qtmqtt-6.3.0-beta3"
+FILE_qtmqtt = "qtmqtt-6.3.0-rc1.zip"
+DIR_qtmqtt = "qtmqtt-6.3.0-rc1"
 
 if not os.path.exists(src_dir + FILE_qtmqtt):
     print("> Downloading " + FILE_qtmqtt + "...")
-    urllib.request.urlretrieve("https://github.com/qt/qtmqtt/archive/refs/tags/v6.3.0-beta3.zip", src_dir + FILE_qtmqtt)
-
-## QMQTT (version: ejvr qt6)
-FILE_qmqtt6 = "qmqtt-qt6.zip"
-DIR_qmqtt6 = "qmqtt-qt6"
-
-if not os.path.exists(src_dir + FILE_qmqtt6):
-    print("> Downloading " + FILE_qmqtt6 + "...")
-    urllib.request.urlretrieve("https://github.com/ejvr/qmqtt/archive/refs/heads/qt6.zip", src_dir + FILE_qmqtt6)
-
-## QMQTT (version: 1.0.0)
-FILE_qmqtt = "qmqtt-1.0.0.zip"
-DIR_qmqtt = "qmqtt-1.0.0"
-if not os.path.exists(src_dir + FILE_qmqtt):
-    print("> Downloading " + FILE_qmqtt + "...")
-    urllib.request.urlretrieve("https://github.com/emqx/qmqtt/archive/refs/tags/v1.0.0.zip", src_dir + FILE_qmqtt)
+    urllib.request.urlretrieve("https://github.com/qt/qtmqtt/archive/refs/tags/v6.3.0-rc1.zip", src_dir + FILE_qtmqtt)
 
 ## Android OpenSSL (version: git)
 for TARGET in TARGETS:
@@ -331,35 +316,34 @@ for TARGET in TARGETS:
     ############################################################################
 
     ## EXTRACT
-    if not os.path.isdir(build_dir + DIR_theengsdecoder):
-        zipTD = zipfile.ZipFile(src_dir + FILE_theengsdecoder)
-        zipTD.extractall(build_dir)
 
-    zipAJS = zipfile.ZipFile(src_dir + FILE_arduinojson)
-    zipAJS.extractall(build_dir + DIR_theengsdecoder + "/src/")
+    ## theengs decoder
+    #if not os.path.isdir(build_dir + DIR_theengsdecoder):
+    #    zipTD = zipfile.ZipFile(src_dir + FILE_theengsdecoder)
+    #    zipTD.extractall(build_dir)
 
-    if os.path.exists(build_dir + DIR_theengsdecoder + "/src/arduino_json"):
-        shutil.rmtree(build_dir + DIR_theengsdecoder + "/src/arduino_json")
-        shutil.move(build_dir + DIR_theengsdecoder + "/src/" + DIR_arduinojson, build_dir + DIR_theengsdecoder + "/src/arduino_json")
+    #zipAJS = zipfile.ZipFile(src_dir + FILE_arduinojson)
+    #zipAJS.extractall(build_dir + DIR_theengsdecoder + "/src/")
 
+    #if os.path.exists(build_dir + DIR_theengsdecoder + "/src/arduino_json"):
+    #    shutil.rmtree(build_dir + DIR_theengsdecoder + "/src/arduino_json")
+    #    shutil.move(build_dir + DIR_theengsdecoder + "/src/" + DIR_arduinojson, build_dir + DIR_theengsdecoder + "/src/arduino_json")
+
+    ## QtMqtt
     if not os.path.isdir(build_dir + DIR_qtmqtt):
         zipQtM = zipfile.ZipFile(src_dir + FILE_qtmqtt)
         zipQtM.extractall(build_dir)
-        
-    if not os.path.isdir(build_dir + DIR_qmqtt6):
-        zipQM = zipfile.ZipFile(src_dir + FILE_qmqtt6)
-        zipQM.extractall(build_dir)
 
     ## BUILD & INSTALL
 
-    ## theengs decoder
+    ## theengs decoder build
     #print("> Building theengs decoder")
     #try: os.makedirs(build_dir + DIR_theengsdecoder + "/build")
     #except: print() # who cares
     #subprocess.check_call(CMAKE_cmd + ["-G", CMAKE_gen, "-DCMAKE_BUILD_TYPE=Release", "-DBUILD_SHARED_LIBS:BOOL=" + build_shared, "-DBUILD_STATIC_LIBS:BOOL=" + build_static, "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=TRUE", "-DCMAKE_INSTALL_PREFIX=" + env_dir + "/usr", ".."], cwd=build_dir + DIR_theengsdecoder + "/build")
     #subprocess.check_call(["cmake", "--build", ".", "--config", "Release"], cwd=build_dir + DIR_theengsdecoder + "/build")
 
-    ## manual installation
+    ## theengs decoder manual installation
     #try:
     #    os.makedirs(env_dir + "/usr/lib/")
     #    os.makedirs(env_dir + "/usr/include/theengs")
@@ -369,5 +353,13 @@ for TARGET in TARGETS:
     #shutil.copy2(build_dir + DIR_theengsdecoder + "/src/decoder.h", env_dir + "/usr/include/theengs/")
     #shutil.copy2(build_dir + DIR_theengsdecoder + "/src/devices.h", env_dir + "/usr/include/theengs/")
     #copytree(build_dir + DIR_theengsdecoder + "/src/devices", env_dir + "/usr/include/theengs/devices/")
+
+    ## QtMqtt
+    print("> Building QtMqtt")
+    try: os.makedirs(build_dir + DIR_qtmqtt + "/build")
+    except: print() # who cares
+
+    subprocess.check_call(CMAKE_cmd + ["-G", CMAKE_gen, "-DCMAKE_PREFIX_PATH=/home/emeric/Dev/tools/Qt/6.3.0/android_arm64_v8a/lib/cmake/Qt6/", "-DCMAKE_BUILD_TYPE=Release", "-DBUILD_SHARED_LIBS:BOOL=" + build_shared, "-DBUILD_STATIC_LIBS:BOOL=" + build_static, "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=TRUE", "-DCMAKE_INSTALL_PREFIX=" + env_dir + "/usr", "."], cwd=build_dir + DIR_qtmqtt)
+    subprocess.check_call(["cmake", "--build", ".", "--config", "Release"], cwd=build_dir + DIR_qtmqtt)
 
     ############################################################################

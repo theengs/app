@@ -208,8 +208,6 @@ Loader {
                             else if (sensorPages.currentIndex === 1)
                                 appHeader.setActiveDeviceHistory()
                             else if (sensorPages.currentIndex === 2)
-                                appHeader.setActiveDevicePlant()
-                            else if (sensorPages.currentIndex === 3)
                                 appHeader.setActiveDeviceSettings()
                         } else {
                             if (sensorPages.currentIndex === 0)
@@ -217,8 +215,6 @@ Loader {
                             else if (sensorPages.currentIndex === 1)
                                 mobileMenu.setActiveDeviceHistory()
                             else if (sensorPages.currentIndex === 2)
-                                mobileMenu.setActiveDevicePlant()
-                            else if (sensorPages.currentIndex === 3)
                                 mobileMenu.setActiveDeviceSettings()
                         }
                     }

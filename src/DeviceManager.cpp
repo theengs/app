@@ -31,10 +31,6 @@
 #include "devices/device_hygrotemp_clock.h"
 #include "devices/device_hygrotemp_square.h"
 #include "devices/device_hygrotemp_lywsdcgq.h"
-#include "devices/device_hygrotemp_inkbird.h"
-#include "devices/device_hygrotemp_govee.h"
-#include "devices/device_hygrotemp_mokosmart.h"
-#include "devices/device_hygrotemp_tempodisc.h"
 #include "devices/device_thermobeacon.h"
 #include "devices/device_jqjcy01ym.h"
 #include "devices/device_wp6003.h"
@@ -146,6 +142,7 @@ DeviceManager::DeviceManager(bool daemon)
                 d = new DeviceHygrotempSquare(deviceAddr, deviceName, this);
             else if (deviceName == "ThermoBeacon")
                 d = new DeviceThermoBeacon(deviceAddr, deviceName, this);
+/*
             else if (deviceName == "GOVEE" || deviceName == "GOVEE")
                 d = new DeviceHygrotempGovee(deviceAddr, deviceName, this);
             else if (deviceName == "MOKOSmart")
@@ -154,7 +151,7 @@ DeviceManager::DeviceManager(bool daemon)
                 d = new DeviceHygrotempTempoDisk(deviceAddr, deviceName, this);
             else if (deviceName == "InkBird")
                 d = new DeviceHygrotempInkBird(deviceAddr, deviceName, this);
-
+*/
             else if (deviceName.startsWith("JQJCY01YM"))
                 d = new DeviceJQJCY01YM(deviceAddr, deviceName, this);
             else if (deviceName.startsWith("WP6003"))

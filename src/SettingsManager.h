@@ -122,7 +122,7 @@ class SettingsManager: public QObject
 
     bool m_mqtt = false;
     QString m_mqttHost;
-    int m_mqttPort = 8883;
+    int m_mqttPort = 1883;
     QString m_mqttName = "theengs";
     QString m_mqttUser = "theengs";
     QString m_mqttPassword = "theengs";

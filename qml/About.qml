@@ -181,7 +181,7 @@ Item {
                     anchors.rightMargin: 0
                     anchors.verticalCenter: desc.verticalCenter
 
-                    text: qsTr("A plant monitoring application that reads and plots data from compatible Bluetooth sensors and thermometers like Xiaomi 'Flower Care' or Parrot 'Flower Power'.")
+                    text: qsTr("Efficient, portable and lightweight library for Internet of Things payload decoding.")
                     textFormat: Text.PlainText
                     wrapMode: Text.WordWrap
                     color: Theme.colorText
@@ -190,79 +190,6 @@ Item {
             }
 
             ////////
-
-            Item {
-                id: authors
-                height: 48
-                anchors.left: parent.left
-                anchors.leftMargin: 0
-                anchors.right: parent.right
-                anchors.rightMargin: 0
-
-                IconSvg {
-                    id: authorImg
-                    width: 31
-                    height: 31
-                    anchors.left: parent.left
-                    anchors.leftMargin: 0
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    source: "qrc:/assets/icons_material/baseline-supervised_user_circle-24px.svg"
-                    color: Theme.colorIcon
-                }
-
-                Text {
-                    id: authorTxt
-                    anchors.left: parent.left
-                    anchors.leftMargin: 48
-                    anchors.right: parent.right
-                    anchors.rightMargin: 0
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: qsTr("Application by <a href=\"https://emeric.io\">Emeric Grange</a><br>Visual design by <a href=\"https://dribbble.com/chrisdiaz\">Chris Díaz</a>")
-                    textFormat: Text.StyledText
-                    onLinkActivated: Qt.openUrlExternally(link)
-                    font.pixelSize: Theme.fontSizeContent
-                    color: Theme.colorText
-                    linkColor: Theme.colorText
-
-                    MouseArea {
-                        anchors.fill: parent
-                        acceptedButtons: Qt.NoButton
-                        cursorShape: authorTxt.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
-                    }
-                }
-
-                IconSvg {
-                    width: 20
-                    height: 20
-                    anchors.right: parent.right
-                    anchors.rightMargin: 0
-                    anchors.verticalCenter: parent.verticalCenter
-                    visible: singleColumn
-
-                    source: "qrc:/assets/icons_material/duotone-launch-24px.svg"
-                    color: Theme.colorIcon
-                }
-            }
-
-            ////////
-
-            Item {
-                height: 16
-                anchors.left: parent.left
-                anchors.right: parent.right
-
-                Rectangle {
-                    height: 1
-                    color: Theme.colorSeparator
-                    anchors.left: parent.left
-                    anchors.leftMargin: -(screenPaddingLeft + 16)
-                    anchors.right: parent.right
-                    anchors.rightMargin: -(screenPaddingRight + 16)
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
 
             Item {
                 id: releasenotes
@@ -455,6 +382,17 @@ Item {
                         anchors.rightMargin: 12
 
                         text: "- Qt (LGPL 3)"
+                        textFormat: Text.PlainText
+                        color: Theme.colorText
+                        font.pixelSize: Theme.fontSizeContent
+                        wrapMode: Text.WordWrap
+                    }
+                    Text {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+
+                        text: "- QtMqtt (GPL 3)"
                         textFormat: Text.PlainText
                         color: Theme.colorText
                         font.pixelSize: Theme.fontSizeContent

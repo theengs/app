@@ -362,6 +362,8 @@ Item {
                         } else if (boxDevice.isScale) {
                             screenDeviceScale.loadDevice(boxDevice)
                             appContent.state = "DeviceScale"
+                        } else {
+                            //
                         }
                     }
                 }

@@ -47,25 +47,16 @@ Rectangle {
     function setActiveDeviceData() {
         menuDeviceData.selected = true
         menuDeviceHistory.selected = false
-        menuDevicePlant.selected = false
         menuDeviceSettings.selected = false
     }
     function setActiveDeviceHistory() {
         menuDeviceData.selected = false
         menuDeviceHistory.selected = true
-        menuDevicePlant.selected = false
-        menuDeviceSettings.selected = false
-    }
-    function setActiveDevicePlant() {
-        menuDeviceData.selected = false
-        menuDeviceHistory.selected = false
-        menuDevicePlant.selected = true
         menuDeviceSettings.selected = false
     }
     function setActiveDeviceSettings() {
         menuDeviceData.selected = false
         menuDeviceHistory.selected = false
-        menuDevicePlant.selected = false
         menuDeviceSettings.selected = true
     }
 
@@ -172,20 +163,6 @@ Rectangle {
 
             //selected: (appContent.state === "DevicePlantSensor")
             onClicked: mobileMenu.deviceHistoryButtonClicked()
-        }
-        MobileMenuItem_horizontal {
-            id: menuDevicePlant
-            height: mobileMenu.hhh
-
-            text: qsTr("Plant")
-            source: "qrc:/assets/icons_material/baseline-iso-24px.svg"
-            sourceSize: mobileMenu.hhi
-
-            colorContent: Theme.colorTabletmenuContent
-            colorHighlight: Theme.colorTabletmenuHighlight
-
-            //selected: (appContent.state === "DevicePlantSensor")
-            onClicked: mobileMenu.devicePlantButtonClicked()
         }
         MobileMenuItem_horizontal {
             id: menuDeviceSettings

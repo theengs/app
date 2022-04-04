@@ -230,7 +230,7 @@ Component {
 
                     visible: (currentDevice.deviceName.includes("BBQ") && currentDevice.hasData)
 
-                    Row  {
+                    Row {
                         anchors.horizontalCenter: parent.horizontalCenter
                         spacing: 12
 
@@ -810,7 +810,7 @@ Component {
                         }
                     }
                 }
-                Row  {
+                Row {
                     anchors.centerIn: columnTPMS
                     visible: columnTPMS.visible
                     spacing: 12

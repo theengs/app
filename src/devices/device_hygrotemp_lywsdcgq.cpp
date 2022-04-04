@@ -159,7 +159,7 @@ void DeviceHygrotempLYWSDCGQ::serviceDetailsDiscovered_infos(QLowEnergyService::
 
             if (m_deviceFirmware.size() == 8)
             {
-                if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_HYGROTEMP_LCD))
+                if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_HYGROTEMP_LYWSDCGQ))
                 {
                     m_firmware_uptodate = true;
                     Q_EMIT sensorUpdated();

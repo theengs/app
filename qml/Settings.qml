@@ -704,7 +704,7 @@ Item {
             }
 
             ////////
-
+/*
             Item {
                 id: element_notifications
                 height: 48
@@ -773,7 +773,7 @@ Item {
                 color: Theme.colorSubText
                 font.pixelSize: Theme.fontSizeContentSmall
             }
-
+*/
             ////////////////
 
             Rectangle {
@@ -929,57 +929,6 @@ Item {
                         checked: settingsManager.bigIndicator
                         onClicked: settingsManager.bigIndicator = true
                     }
-                }
-            }
-
-            ////////
-
-            Item {
-                id: element_dynascale
-                height: 48
-                anchors.left: parent.left
-                anchors.leftMargin: screenPaddingLeft
-                anchors.right: parent.right
-                anchors.rightMargin: screenPaddingRight
-
-                IconSvg {
-                    id: image_dynascale
-                    width: 24
-                    height: 24
-                    anchors.left: parent.left
-                    anchors.leftMargin: 16
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    color: Theme.colorIcon
-                    source: "qrc:/assets/icons_material/baseline-straighten-24px.svg"
-                }
-
-                Text {
-                    id: text_dynascale
-                    height: 40
-                    anchors.left: image_dynascale.right
-                    anchors.leftMargin: 24
-                    anchors.right: switch_dynascale.left
-                    anchors.rightMargin: 16
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: qsTr("Dynamic scale for indicators")
-                    textFormat: Text.PlainText
-                    font.pixelSize: Theme.fontSizeContent
-                    color: Theme.colorText
-                    wrapMode: Text.WordWrap
-                    verticalAlignment: Text.AlignVCenter
-                }
-
-                SwitchThemedMobile {
-                    id: switch_dynascale
-                    anchors.right: parent.right
-                    anchors.rightMargin: 0
-                    anchors.verticalCenter: parent.verticalCenter
-                    z: 1
-
-                    checked: settingsManager.dynaScale
-                    onClicked: settingsManager.dynaScale = checked
                 }
             }
 

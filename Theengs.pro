@@ -253,12 +253,12 @@ android {
 
     include($${PWD}/contribs/env/android_openssl-master/openssl.pri)
 
-    DEFINES += LIBS_SUFFIX='\\"_$${QT_ARCH}.so\\"'
-    ANDROID_EXTRA_LIBS += \
-        $${PWD}/contribs/env/android_armv7/usr/lib/libdecoder.so \
-        $${PWD}/contribs/env/android_armv8/usr/lib/libdecoder.so \
-        $${PWD}/contribs/env/android_x86/usr/lib/libdecoder.so \
-        $${PWD}/contribs/env/android_x86_64/usr/lib/libdecoder.so
+    #DEFINES += LIBS_SUFFIX='\\"_$${QT_ARCH}.so\\"'
+    #ANDROID_EXTRA_LIBS += \
+    #    $${PWD}/contribs/env/android_armv7/usr/lib/libdecoder.so \
+    #    $${PWD}/contribs/env/android_armv8/usr/lib/libdecoder.so \
+    #    $${PWD}/contribs/env/android_x86/usr/lib/libdecoder.so \
+    #    $${PWD}/contribs/env/android_x86_64/usr/lib/libdecoder.so
 }
 
 ios {
