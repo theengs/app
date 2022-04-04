@@ -43,6 +43,8 @@ public:
     DeviceJQJCY01YM(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
     ~DeviceJQJCY01YM();
 
+    Q_INVOKABLE bool hasData() const;
+
     void parseAdvertisementData(const QByteArray &value);
 
 private:

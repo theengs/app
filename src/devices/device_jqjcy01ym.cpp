@@ -178,11 +178,34 @@ void DeviceJQJCY01YM::parseAdvertisementData(const QByteArray &value)
             if (m_temperature > -99 && m_humidity > -99 && m_hcho > -99)
             {
                 m_lastUpdate = QDateTime::currentDateTime();
-                refreshDataFinished(true);
 
                 if (needsUpdateDb())
                 {
-                    // TODO // UPDATE DB
+                    if (m_dbInternal || m_dbExternal)
+                    {
+                        // SQL date format YYYY-MM-DD HH:MM:SS
+                        QString tsStr = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+
+                        QSqlQuery addData;
+                        addData.prepare("REPLACE INTO sensorData (deviceAddr, timestamp, temperature, humidity, hcho)"
+                                        " VALUES (:deviceAddr, :ts, :temp, :humi, :hcho)");
+                        addData.bindValue(":deviceAddr", getAddress());
+                        addData.bindValue(":ts", tsStr);
+                        addData.bindValue(":temp", m_temperature);
+                        addData.bindValue(":humi", m_humidity);
+                        addData.bindValue(":hcho", m_hcho);
+
+                        if (addData.exec())
+                        {
+                            m_lastUpdateDatabase = m_lastUpdate;
+                        }
+                        else
+                        {
+                            qWarning() << "> DeviceJQJCY01YM addData.exec() ERROR" << addData.lastError().type() << ":" << addData.lastError().text();
+                        }
+                    }
+
+                    refreshDataFinished(true);
                 }
             }
 
@@ -201,6 +224,36 @@ void DeviceJQJCY01YM::parseAdvertisementData(const QByteArray &value)
 
         }
     }
+}
+
+/* ************************************************************************** */
+
+bool DeviceJQJCY01YM::hasData() const
+{
+    //qDebug() << "DeviceJQJCY01YM::hasData()";
+
+    // If we have immediate data (<12h old)
+    if (m_temperature > 0 || m_humidity > 0 || m_hcho > 0)
+        return true;
+
+    // Otherwise, check if we have stored data
+    if (m_dbInternal || m_dbExternal)
+    {
+        QSqlQuery hasData;
+        hasData.prepare("SELECT COUNT(*) FROM sensorData WHERE deviceAddr = :deviceAddr;");
+        hasData.bindValue(":deviceAddr", getAddress());
+
+        if (hasData.exec() == false)
+            qWarning() << "> hasData.exec(DeviceJQJCY01YM) ERROR" << hasData.lastError().type() << ":" << hasData.lastError().text();
+
+        while (hasData.next())
+        {
+            if (hasData.value(0).toInt() > 0) // data count
+                return true;
+        }
+    }
+
+    return false;
 }
 
 /* ************************************************************************** */

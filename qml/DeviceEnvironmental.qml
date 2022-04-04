@@ -209,10 +209,10 @@ Loader {
                     indicatorAirQuality.value = currentDevice.voc
                 } else if (primary === "hcho") {
                     indicatorAirQuality.legend = qsTr("HCHO")
-                    indicatorAirQuality.limitMin = 500
-                    indicatorAirQuality.limitMax = 1000
+                    indicatorAirQuality.limitMin = 250
+                    indicatorAirQuality.limitMax = 750
                     indicatorAirQuality.valueMin = 0
-                    indicatorAirQuality.valueMax = 1500
+                    indicatorAirQuality.valueMax = 1000
                     indicatorAirQuality.value = currentDevice.hcho
                 } else if (primary === "co2") {
                     indicatorAirQuality.legend = (currentDevice.haseCo2Sensor ? qsTr("eCO2") : qsTr("CO2"))
@@ -281,16 +281,14 @@ Loader {
                     //indicatorRadioactivity.visible = false
                     //indicatorHygrometer.visible = false
 
-                    if (currentDevice.hasVocSensor) {
-                        if (primary === "voc") indicatorAirQuality.value = currentDevice.voc
-                        else if (primary === "hcho") indicatorAirQuality.value = currentDevice.hcho
-                        else if (primary === "co2") indicatorAirQuality.value = currentDevice.co2
-                        else if (primary === "co") indicatorAirQuality.value = currentDevice.co
-                        else if (primary === "o2") indicatorAirQuality.value = currentDevice.o2
-                        else if (primary === "o3") indicatorAirQuality.value = currentDevice.o3
-                        else if (primary === "no2") indicatorAirQuality.value = currentDevice.no2
-                        else if (primary === "so2") indicatorAirQuality.value = currentDevice.so2
-                    }
+                    if (primary === "voc") indicatorAirQuality.value = currentDevice.voc
+                    else if (primary === "hcho") indicatorAirQuality.value = currentDevice.hcho
+                    else if (primary === "co2") indicatorAirQuality.value = currentDevice.co2
+                    else if (primary === "co") indicatorAirQuality.value = currentDevice.co
+                    else if (primary === "o2") indicatorAirQuality.value = currentDevice.o2
+                    else if (primary === "o3") indicatorAirQuality.value = currentDevice.o3
+                    else if (primary === "no2") indicatorAirQuality.value = currentDevice.no2
+                    else if (primary === "so2") indicatorAirQuality.value = currentDevice.so2
                 }
 
                 // Battery level
@@ -328,7 +326,7 @@ Loader {
                 chartEnvLoader.visible = false
 
                 if (isAirMonitor) {
-                    if (currentDevice.hasVocSensor) {
+                    if (currentDevice.hasVocSensor || currentDevice.hasHchoSensor || currentDevice.hasCo2Sensor) {
                         if (chartEnvLoader.status != Loader.Ready) {
                             chartEnvLoader.source = "ChartEnvironmentalVoc.qml"
                         } else {
@@ -347,7 +345,7 @@ Loader {
 
                 // GRAPH
                 if (isAirMonitor) {
-                    if (currentDevice.hasVocSensor) {
+                    if (currentDevice.hasVocSensor || currentDevice.hasHchoSensor || currentDevice.hasCo2Sensor) {
                         currentDevice.updateChartData_environmentalVoc(31)
                     }
                 }
@@ -735,7 +733,7 @@ Loader {
                                         precision: 0
                                         onSensorSelection: primary = "hcho"
                                     }
-        /*
+/*
                                     ItemEnvBox {
                                         id: o2
                                         width: airFlow.www
@@ -795,7 +793,7 @@ Loader {
                                         precision: 0
                                         onSensorSelection: primary = "co"
                                     }
-        */
+*/
                                     ItemEnvBox {
                                         id: co2
                                         width: airFlow.www

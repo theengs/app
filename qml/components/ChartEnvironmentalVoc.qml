@@ -26,10 +26,14 @@ Item {
         if (typeof currentDevice === "undefined" || !currentDevice) return
         //console.log("chartEnvironmentalVoc // updateGraph() >> " + currentDevice)
 
-        if (itemDeviceEnvironmental.primary === "voc" || itemDeviceEnvironmental.primary === "hcho") {
+        if (itemDeviceEnvironmental.primary === "voc") {
             limitMin = 500
             limitMax = 1000
             scaleMax = 1500
+        } else if (itemDeviceEnvironmental.primary === "hcho") {
+            limitMin = 250
+            limitMax = 500
+            scaleMax = 750
         } else if (itemDeviceEnvironmental.primary === "co2") {
             limitMin = 850
             limitMax = 1500
@@ -158,11 +162,14 @@ Item {
                             property int valueMax
 
                             function loadValues() {
-                                if (itemDeviceEnvironmental.primary === "voc" ||
-                                    itemDeviceEnvironmental.primary === "hcho") {
+                                if (itemDeviceEnvironmental.primary === "voc") {
                                     valueMin = modelData.vocMin
                                     valueMean = modelData.vocMean
                                     valueMax = modelData.vocMax
+                                } else if (itemDeviceEnvironmental.primary === "hcho") {
+                                    valueMin = modelData.hchoMin
+                                    valueMean = modelData.hchoMean
+                                    valueMax = modelData.hchoMax
                                 } else if (itemDeviceEnvironmental.primary === "co2") {
                                     valueMin = modelData.co2Min
                                     valueMean = modelData.co2Mean

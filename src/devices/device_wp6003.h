@@ -42,7 +42,7 @@ public:
     DeviceWP6003(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
     ~DeviceWP6003();
 
-    Q_INVOKABLE virtual bool hasData() const;
+    Q_INVOKABLE bool hasData() const;
 
 private:
     // QLowEnergyController related

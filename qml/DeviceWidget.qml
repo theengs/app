@@ -834,9 +834,9 @@ Item {
                 } else if (primaryValue === "hcho") {
                     gaugeLegend.text = qsTr("HCHO")
                     gaugeValue.from = 0
-                    gaugeValue.to = 1500
-                    limitMin = 500
-                    limitMax = 1000
+                    gaugeValue.to = 1000
+                    limitMin = 250
+                    limitMax = 750
                     gaugeValue.value = boxDevice.hcho
                 } else if (primaryValue === "co2") {
                     gaugeLegend.text = (boxDevice.haseCo2Sensor ? qsTr("eCO2") : qsTr("CO2"))
