@@ -58,6 +58,11 @@ class DeviceTheengs: public DeviceSensor
     Q_PROPERTY(float temperature4 READ getTemp4 NOTIFY dataUpdated)
     Q_PROPERTY(float temperature5 READ getTemp5 NOTIFY dataUpdated)
     Q_PROPERTY(float temperature6 READ getTemp6 NOTIFY dataUpdated)
+
+    Q_PROPERTY(int battery1 READ getBattery1 NOTIFY dataUpdated)
+    Q_PROPERTY(int battery2 READ getBattery2 NOTIFY dataUpdated)
+    Q_PROPERTY(int battery3 READ getBattery3 NOTIFY dataUpdated)
+    Q_PROPERTY(int battery4 READ getBattery4 NOTIFY dataUpdated)
     Q_PROPERTY(int pressure1 READ getPressure1 NOTIFY dataUpdated)
     Q_PROPERTY(int pressure2 READ getPressure2 NOTIFY dataUpdated)
     Q_PROPERTY(int pressure3 READ getPressure3 NOTIFY dataUpdated)
@@ -86,6 +91,10 @@ protected:
     float m_temperature4 = -99.f;
     float m_temperature5 = -99.f;
     float m_temperature6 = -99.f;
+    int m_battery1 = -99;
+    int m_battery2 = -99;
+    int m_battery3 = -99;
+    int m_battery4 = -99;
     int m_pressure1 = -99;
     int m_pressure2 = -99;
     int m_pressure3 = -99;
@@ -131,6 +140,10 @@ public:
     float getTemp6() const;
     float getTemp6C() const { return m_temperature6; }
     float getTemp6F() const { return (m_temperature6 * 9.f/5.f + 32.f); }
+    int getBattery1() const { return m_battery1; }
+    int getBattery2() const { return m_battery2; }
+    int getBattery3() const { return m_battery3; }
+    int getBattery4() const { return m_battery4; }
     int getPressure1() const { return m_pressure1; }
     int getPressure2() const { return m_pressure2; }
     int getPressure3() const { return m_pressure3; }

@@ -106,7 +106,12 @@ Item {
                     loaderIndicators.sourceComponent = componentThermometer
                 else
                     loaderIndicators.sourceComponent = componentEnvironmentalGauge
+            } else if (boxDevice.isProbe) {
+                // ?
+            } else if (boxDevice.isScale) {
+                loaderIndicators.sourceComponent = componentThermometer
             }
+
             if (loaderIndicators.item) {
                 loaderIndicators.item.initData()
                 loaderIndicators.item.updateData()
@@ -758,14 +763,24 @@ Item {
             }
 
             function updateData() {
-                if (boxDevice.hasGeigerCounter) {
-                    textTemp.text = ""
-                    textHygro.font.pixelSize = bigAssMode ? 24 : 22
-                    textHygro.text = boxDevice.radioactivityH.toFixed(2) + " " + qsTr("µSv/h")
-                } else if (boxDevice.hasVocSensor) {
-                    textTemp.font.pixelSize = bigAssMode ? 28 : 26
-                    textTemp.text = (boxDevice.voc).toFixed(0) + " " + qsTr("µg/m³")
-                    textHygro.text = boxDevice.temperature.toFixed(1) + "°"
+                if (boxDevice.isThermometer) {
+                    textTemp.text = boxDevice.temperature.toFixed(1) + "°"
+                    textHygro.text = boxDevice.humidity.toFixed(0) + "%"
+                } else if (boxDevice.isEnvironmentalSensor) {
+                    if (boxDevice.hasGeigerCounter) {
+                        textTemp.text = ""
+                        textHygro.font.pixelSize = bigAssMode ? 24 : 22
+                        textHygro.text = boxDevice.radioactivityH.toFixed(2) + " " + qsTr("µSv/h")
+                    } else if (boxDevice.hasVocSensor) {
+                        textTemp.font.pixelSize = bigAssMode ? 28 : 26
+                        textTemp.text = (boxDevice.voc).toFixed(0) + " " + qsTr("µg/m³")
+                        textHygro.text = boxDevice.temperature.toFixed(1) + "°"
+                    }
+                } else if (boxDevice.isScale) {
+                    textTemp.text = boxDevice.weight.toFixed(1) + " " + ((settingsManager.tempUnit === 'C') ? "kg" : "p")
+                    if (boxDevice.impedance > 0) textHygro.text = boxDevice.impedance + " Ω"
+                } else if (boxDevice.isProbe) {
+                    //
                 } else {
                     textTemp.text = boxDevice.temperature.toFixed(1) + "°"
                     textHygro.text = boxDevice.humidity.toFixed(0) + "%"

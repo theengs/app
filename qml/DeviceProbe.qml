@@ -580,8 +580,9 @@ Component {
 
                             Column {
                                 anchors.horizontalCenter: parent.horizontalCenter
-                                anchors.horizontalCenterOffset: -4
+                                anchors.horizontalCenterOffset: -8
                                 anchors.verticalCenter: parent.verticalCenter
+                                anchors.verticalCenterOffset: 8
                                 visible: (currentDevice.temperature1 > -99)
 
                                 Text {
@@ -604,7 +605,7 @@ Component {
                                 }
                                 Text {
                                     text: currentDevice.temperature1.toFixed(1)
-                                    font.pixelSize: 32
+                                    font.pixelSize: 28
                                     font.bold: false
                                     color: cccc
 
@@ -618,6 +619,16 @@ Component {
                                         font.bold: false
                                         color: cccc
                                     }
+                                }
+                                IconSvg {
+                                    width: isPhone ? 20 : 24
+                                    height: isPhone ? 32 : 36
+                                    rotation: 90
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    anchors.horizontalCenterOffset: 8
+                                    source: UtilsDeviceSensors.getDeviceBatteryIcon(currentDevice.battery1)
+                                    fillMode: Image.PreserveAspectCrop
+                                    color: cccc
                                 }
                             }
                         }
@@ -641,8 +652,9 @@ Component {
 
                             Column {
                                 anchors.horizontalCenter: parent.horizontalCenter
-                                anchors.horizontalCenterOffset: -4
+                                anchors.horizontalCenterOffset: -8
                                 anchors.verticalCenter: parent.verticalCenter
+                                anchors.verticalCenterOffset: 8
                                 visible: (currentDevice.temperature2 > -99)
 
                                 Text {
@@ -665,7 +677,7 @@ Component {
                                 }
                                 Text {
                                     text: currentDevice.temperature2.toFixed(1)
-                                    font.pixelSize: 32
+                                    font.pixelSize: 28
                                     font.bold: false
                                     color: cccc
 
@@ -679,6 +691,16 @@ Component {
                                         font.bold: false
                                         color: cccc
                                     }
+                                }
+                                IconSvg {
+                                    width: isPhone ? 20 : 24
+                                    height: isPhone ? 32 : 36
+                                    rotation: 90
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    anchors.horizontalCenterOffset: 8
+                                    source: UtilsDeviceSensors.getDeviceBatteryIcon(currentDevice.battery2)
+                                    fillMode: Image.PreserveAspectCrop
+                                    color: cccc
                                 }
                             }
                         }
@@ -706,8 +728,9 @@ Component {
 
                             Column {
                                 anchors.horizontalCenter: parent.horizontalCenter
-                                anchors.horizontalCenterOffset: -4
+                                anchors.horizontalCenterOffset: -8
                                 anchors.verticalCenter: parent.verticalCenter
+                                anchors.verticalCenterOffset: 8
                                 visible: (currentDevice.temperature3 > -99)
 
                                 Text {
@@ -730,7 +753,7 @@ Component {
                                 }
                                 Text {
                                     text: currentDevice.temperature3.toFixed(1)
-                                    font.pixelSize: 32
+                                    font.pixelSize: 28
                                     font.bold: false
                                     color: cccc
 
@@ -744,6 +767,16 @@ Component {
                                         font.bold: false
                                         color: cccc
                                     }
+                                }
+                                IconSvg {
+                                    width: isPhone ? 20 : 24
+                                    height: isPhone ? 32 : 36
+                                    rotation: 90
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    anchors.horizontalCenterOffset: 8
+                                    source: UtilsDeviceSensors.getDeviceBatteryIcon(currentDevice.battery3)
+                                    fillMode: Image.PreserveAspectCrop
+                                    color: cccc
                                 }
                             }
                         }
@@ -767,8 +800,9 @@ Component {
 
                             Column {
                                 anchors.horizontalCenter: parent.horizontalCenter
-                                anchors.horizontalCenterOffset: -4
+                                anchors.horizontalCenterOffset: -8
                                 anchors.verticalCenter: parent.verticalCenter
+                                anchors.verticalCenterOffset: 8
                                 visible: (currentDevice.temperature4 > -99)
 
                                 Text {
@@ -791,7 +825,7 @@ Component {
                                 }
                                 Text {
                                     text: currentDevice.temperature4.toFixed(1)
-                                    font.pixelSize: 32
+                                    font.pixelSize: 28
                                     font.bold: false
                                     color: cccc
 
@@ -806,35 +840,30 @@ Component {
                                         color: cccc
                                     }
                                 }
+                                IconSvg {
+                                    width: isPhone ? 20 : 24
+                                    height: isPhone ? 32 : 36
+                                    rotation: 90
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    anchors.horizontalCenterOffset: 8
+                                    source: UtilsDeviceSensors.getDeviceBatteryIcon(currentDevice.battery4)
+                                    fillMode: Image.PreserveAspectCrop
+                                    color: cccc
+                                }
                             }
                         }
                     }
                 }
-                Row {
+
+                Text { // deviceName
                     anchors.centerIn: columnTPMS
                     visible: columnTPMS.visible
-                    spacing: 12
 
-                    Text { // deviceName
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: currentDevice.deviceName
-                        font.pixelSize: 28
-                        font.bold: false
-                        color: cccc
-                        opacity: 0.66
-                    }
-
-                    IconSvg { //imageBattery
-                        width: isPhone ? 20 : 24
-                        height: isPhone ? 32 : 36
-                        rotation: 90
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        visible: (currentDevice.hasBattery && currentDevice.deviceBattery >= 0)
-                        source: UtilsDeviceSensors.getDeviceBatteryIcon(currentDevice.deviceBattery)
-                        fillMode: Image.PreserveAspectCrop
-                        color: cccc
-                    }
+                    text: currentDevice.deviceName
+                    font.pixelSize: 28
+                    font.bold: false
+                    color: cccc
+                    opacity: 0.66
                 }
 
                 ////////

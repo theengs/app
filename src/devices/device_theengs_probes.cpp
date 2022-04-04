@@ -41,29 +41,15 @@ DeviceTheengsProbes::DeviceTheengsProbes(const QString &deviceAddr, const QStrin
     DeviceTheengs(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_THEENGS_PROBES;
-    m_deviceCapabilities = DeviceUtils::DEVICE_BATTERY;
 
     if (deviceName.contains("iBBQ"))
     {
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_1;
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_2;
-
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_3;
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_4;
-
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_5;
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_6;
+        m_deviceCapabilities = DeviceUtils::DEVICE_BATTERY;
+        m_deviceSensors += DeviceUtilsTheengs::SENSOR_PROBES_TEMP;
     }
     else if (deviceName.contains("TPMS"))
     {
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_1;
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_PRESSURE_1;
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_2;
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_PRESSURE_2;
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_3;
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_PRESSURE_3;
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_4;
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_PRESSURE_4;
+        m_deviceSensors += DeviceUtilsTheengs::SENSOR_PROBES_TPMS;
     }
 }
 
@@ -71,29 +57,15 @@ DeviceTheengsProbes::DeviceTheengsProbes(const QBluetoothDeviceInfo &d, QObject 
     DeviceTheengs(d, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_THEENGS_PROBES;
-    m_deviceCapabilities = DeviceUtils::DEVICE_BATTERY;
 
     if (d.name().contains("iBBQ"))
     {
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_1;
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_2;
-
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_3;
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_4;
-
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_5;
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_6;
+        m_deviceCapabilities = DeviceUtils::DEVICE_BATTERY;
+        m_deviceSensors += DeviceUtilsTheengs::SENSOR_PROBES_TEMP;
     }
     else if (d.name().contains("TPMS"))
     {
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_1;
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_PRESSURE_1;
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_2;
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_PRESSURE_2;
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_3;
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_PRESSURE_3;
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_TEMPERATURE_4;
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_PRESSURE_4;
+        m_deviceSensors += DeviceUtilsTheengs::SENSOR_PROBES_TPMS;
     }
 }
 
@@ -120,27 +92,31 @@ void DeviceTheengsProbes::parseAdvertisementTheengs(const QString &json)
         int idx = obj["count"].toInt();
         float pres = obj["pres"].toDouble() * 10.0;
         float temp = obj["tempc"].toDouble();
-        //int batt = obj["batt"].toInt();
+        int batt = obj["batt"].toInt();
         bool alarm = obj["alarm"].toBool();
 
         if (idx == 1) {
             m_pressure1 = pres;
             m_temperature1 = temp;
+            m_battery1 = batt;
             m_alarm1 = alarm;
         }
         else if (idx == 2) {
             m_pressure2 = pres;
             m_temperature2 = temp;
+            m_battery2 = batt;
             m_alarm2 = alarm;
         }
         else if (idx == 3) {
             m_pressure3 = pres;
             m_temperature3 = temp;
+            m_battery3 = batt;
             m_alarm3 = alarm;
         }
         else if (idx == 4) {
             m_pressure4 = pres;
             m_temperature4 = temp;
+            m_battery4 = batt;
             m_alarm4 = alarm;
         }
     }

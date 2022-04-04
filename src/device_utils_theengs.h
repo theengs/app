@@ -105,9 +105,9 @@ public:
 
     enum DeviceSensorsTheengs {
         // probes
-        //SENSOR_PROBES_TEMP          = (1 <<  0),
-        //SENSOR_PROBES_TPMS          = (1 <<  1),
-
+        SENSOR_PROBES_TEMP          = (1 <<  0),
+        SENSOR_PROBES_TPMS          = (1 <<  1),
+/*
         SENSOR_TEMPERATURE_1        = (1 <<  0),
         SENSOR_TEMPERATURE_2        = (1 <<  1),
         SENSOR_TEMPERATURE_3        = (1 <<  2),
@@ -119,7 +119,7 @@ public:
         SENSOR_PRESSURE_2           = (1 <<  7),
         SENSOR_PRESSURE_3           = (1 <<  8),
         SENSOR_PRESSURE_4           = (1 <<  9),
-
+*/
         // scales
         SENSOR_WEIGHT_UNIT          = (1 << 10),
         SENSOR_WEIGHT_MODE          = (1 << 11),

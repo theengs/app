@@ -1476,7 +1476,9 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
                 {
                     d = new DeviceTheengsScales(info, this);
                 }
-                else if (did == TheengsDecoder::BM_V23 ||
+                else if (did == TheengsDecoder::CGG1_V1 ||
+                         did == TheengsDecoder::CGG1_V2 ||
+                         did == TheengsDecoder::BM_V23 ||
                          did == TheengsDecoder::IBSTH1 ||
                          did == TheengsDecoder::IBSTH2 ||
                          did == TheengsDecoder::H5072 ||
@@ -1524,7 +1526,9 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
                 {
                     d = new DeviceTheengsScales(info, this);
                 }
-                else if (did == TheengsDecoder::BM_V23 ||
+                else if (did == TheengsDecoder::CGG1_V1 ||
+                         did == TheengsDecoder::CGG1_V2 ||
+                         did == TheengsDecoder::BM_V23 ||
                          did == TheengsDecoder::IBSTH1 ||
                          did == TheengsDecoder::IBSTH2 ||
                          did == TheengsDecoder::H5072 ||

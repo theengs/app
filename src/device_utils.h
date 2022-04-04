@@ -65,6 +65,12 @@ public:
         qmlRegisterType<DeviceUtils>("DeviceUtils", 1, 0, "DeviceUtils");
     }
 
+    enum BluetoothMode {
+        DEVICE_BLE_CONNECTION       = (1 <<  0), //!< Can connect to the device to get/set data
+        DEVICE_BLE_ADVERTISEMENT    = (1 <<  1), //!< Can get data from advertisement packet
+    };
+    Q_ENUM(BluetoothMode)
+
     enum DeviceType {
         DEVICE_UNKNOWN              = 0,
 
