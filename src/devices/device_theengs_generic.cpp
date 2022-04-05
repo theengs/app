@@ -58,8 +58,8 @@ DeviceTheengsGeneric::~DeviceTheengsGeneric()
 
 void DeviceTheengsGeneric::parseAdvertisementTheengs(const QString &json)
 {
-    qDebug() << "DeviceTheengsGeneric::parseAdvertisementTheengs()";
-    qDebug() << "JSON:" << json;
+    //qDebug() << "DeviceTheengsGeneric::parseAdvertisementTheengs()";
+    //qDebug() << "JSON:" << json;
 
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
     QJsonObject obj = doc.object();

@@ -78,7 +78,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                     std::string output;
                     serializeJson(obj, output);
 
-                    qDebug() << "output:" << output.c_str();
+                    //qDebug() << "output:" << output.c_str();
 
                     SettingsManager *sm = SettingsManager::getInstance();
                     MqttManager *mq = MqttManager::getInstance();
@@ -94,9 +94,9 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                 }
                 else
                 {
-                    std::string input;
-                    serializeJson(doc, input);
-                    qDebug() << "input :" << input.c_str();
+                    //std::string input;
+                    //serializeJson(doc, input);
+                    //qDebug() << "input :" << input.c_str();
                 }
             }
 
@@ -124,7 +124,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                     std::string output;
                     serializeJson(obj, output);
 
-                    qDebug() << "output:" << output.c_str();
+                    //qDebug() << "output:" << output.c_str();
 
                     SettingsManager *sm = SettingsManager::getInstance();
                     MqttManager *mq = MqttManager::getInstance();
@@ -140,9 +140,9 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                 }
                 else
                 {
-                    std::string input;
-                    serializeJson(doc, input);
-                    qDebug() << "input :" << input.c_str();
+                    //std::string input;
+                    //serializeJson(doc, input);
+                    //qDebug() << "input :" << input.c_str();
                 }
             }
 /*
@@ -188,7 +188,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                 obj.remove("manufacturerdata");
                 serializeJson(obj, output);
 
-                qDebug() << "(UNKNOWN DEVICE) output" << output.c_str();
+                //qDebug() << "(UNKNOWN DEVICE) output (mfd) " << output.c_str();
 
                 SettingsManager *sm = SettingsManager::getInstance();
                 MqttManager *mq = MqttManager::getInstance();
@@ -228,7 +228,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                 obj.remove("servicedatauuid");
                 serializeJson(obj, output);
 
-                qDebug() << "(UNKNOWN DEVICE) output" << output.c_str();
+                //qDebug() << "(UNKNOWN DEVICE) output (svd)" << output.c_str();
 
                 SettingsManager *sm = SettingsManager::getInstance();
                 MqttManager *mq = MqttManager::getInstance();
@@ -248,6 +248,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
     // Dynamic scanning
     if (m_scanning)
     {
+        //qDebug() << "addBleDevice() FROM DYNAMIC SCANNING";
         addBleDevice(info);
     }
 }

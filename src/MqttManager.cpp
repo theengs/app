@@ -145,7 +145,7 @@ bool MqttManager::subscribe(QString topic)
 {
     if (m_mqttclient && m_mqttclient->state() == QMqttClient::Connected)
     {
-        //
+        Q_UNUSED(topic)
     }
 
     return false;

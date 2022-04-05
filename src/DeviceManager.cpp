@@ -142,16 +142,7 @@ DeviceManager::DeviceManager(bool daemon)
                 d = new DeviceHygrotempSquare(deviceAddr, deviceName, this);
             else if (deviceName == "ThermoBeacon")
                 d = new DeviceThermoBeacon(deviceAddr, deviceName, this);
-/*
-            else if (deviceName == "GOVEE" || deviceName == "GOVEE")
-                d = new DeviceHygrotempGovee(deviceAddr, deviceName, this);
-            else if (deviceName == "MOKOSmart")
-                d = new DeviceHygrotempMOKOSmart(deviceAddr, deviceName, this);
-            else if (deviceName == "TempoDisk")
-                d = new DeviceHygrotempTempoDisk(deviceAddr, deviceName, this);
-            else if (deviceName == "InkBird")
-                d = new DeviceHygrotempInkBird(deviceAddr, deviceName, this);
-*/
+
             else if (deviceName.startsWith("JQJCY01YM"))
                 d = new DeviceJQJCY01YM(deviceAddr, deviceName, this);
             else if (deviceName.startsWith("WP6003"))
@@ -161,10 +152,18 @@ DeviceManager::DeviceManager(bool daemon)
             else if (deviceName == "GeigerCounter")
                 d = new DeviceEsp32GeigerCounter(deviceAddr, deviceName, this);
 
+            else
+            {
+                // Theengs devices?
+                if (deviceName.contains("TPMS") || deviceName.contains("BBQ"))
+                    d = new DeviceTheengsProbes(deviceAddr, deviceName, this);
+            }
+
             if (d)
             {
                 connect(d, &Device::deviceUpdated, this, &DeviceManager::refreshDevices_finished);
                 connect(d, &Device::deviceSynced, this, &DeviceManager::syncDevices_finished);
+
                 m_devices_model->addDevice(d);
 
                 //qDebug() << "* Device added (from database): " << deviceName << "/" << deviceAddr;
@@ -1448,6 +1447,9 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
     }
     else // Theengs device maybe?
     {
+        int device_id = -1;
+        std::string device_str;
+
         const QList<quint16> &manufacturerIds = info.manufacturerIds();
         for (const auto id: manufacturerIds)
         {
@@ -1463,37 +1465,11 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
 
             if (dec.decodeBLEJson(obj) >= 0)
             {
-                int did = dec.getTheengModel(doc, doc["model_id"]);
-                if (did == TheengsDecoder::IBT_2X ||
-                    did == TheengsDecoder::IBT4XS ||
-                    did == TheengsDecoder::IBT6XS_SOLIS ||
-                    did == TheengsDecoder::H5055 ||
-                    did == TheengsDecoder::TPMS)
-                {
-                    d = new DeviceTheengsProbes(info, this);
-                }
-                else if (did == TheengsDecoder::XMTZC04HM ||
-                         did == TheengsDecoder::XMTZC05HM)
-                {
-                    d = new DeviceTheengsScales(info, this);
-                }
-                else if (did == TheengsDecoder::CGG1_V1 ||
-                         did == TheengsDecoder::CGG1_V2 ||
-                         did == TheengsDecoder::BM_V23 ||
-                         did == TheengsDecoder::IBSTH1 ||
-                         did == TheengsDecoder::IBSTH2 ||
-                         did == TheengsDecoder::H5072 ||
-                         did == TheengsDecoder::H5075 ||
-                         did == TheengsDecoder::H5102 ||
-                         did == TheengsDecoder::LYWSD03MMC_ATC ||
-                         did == TheengsDecoder::LYWSD03MMC_PVVX)
-                {
-                    d = new DeviceTheengsGeneric(info, this);
-                }
-                else
-                {
-                    // TODO
-                }
+                DynamicJsonDocument doc2(512);
+                device_id = dec.getTheengModel(doc2, doc["model_id"]);
+                serializeJson(doc2, device_str);
+
+                qDebug() << "addDevice() FOUND (mfd) id:" << device_id;
             }
         }
 
@@ -1513,65 +1489,63 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
 
             if (dec.decodeBLEJson(obj) >= 0)
             {
-                int did = dec.getTheengModel(doc, doc["model_id"]);
-                if (did == TheengsDecoder::IBT_2X ||
-                    did == TheengsDecoder::IBT4XS ||
-                    did == TheengsDecoder::IBT6XS_SOLIS ||
-                    did == TheengsDecoder::H5055 ||
-                    did == TheengsDecoder::TPMS)
-                {
-                    d = new DeviceTheengsProbes(info, this);
-                }
-                else if (did == TheengsDecoder::XMTZC04HM ||
-                         did == TheengsDecoder::XMTZC05HM)
-                {
-                    d = new DeviceTheengsScales(info, this);
-                }
-                else if (did == TheengsDecoder::CGG1_V1 ||
-                         did == TheengsDecoder::CGG1_V2 ||
-                         did == TheengsDecoder::BM_V23 ||
-                         did == TheengsDecoder::IBSTH1 ||
-                         did == TheengsDecoder::IBSTH2 ||
-                         did == TheengsDecoder::H5072 ||
-                         did == TheengsDecoder::H5075 ||
-                         did == TheengsDecoder::H5102 ||
-                         did == TheengsDecoder::LYWSD03MMC_ATC ||
-                         did == TheengsDecoder::LYWSD03MMC_PVVX)
-                {
-                    d = new DeviceTheengsGeneric(info, this);
-                }
-                else
-                {
-                    // MIBAND
-                    // RUUVITAG_RAWV1
-                    // RUUVITAG_RAWV1
-                    // MOKOBEACON
-                    // MOKOBEACONXPRO
-                    // SBS1 ?
-                    // INODE_EM ?
+                DynamicJsonDocument doc2(512);
+                device_id = dec.getTheengModel(doc2, doc["model_id"]);
+                serializeJson(doc2, device_str);
 
-                    // CGH1
-                    // CGPR1
-                    //MUE4094RT
-
-                    //d = new DeviceTheengsGeneric(info, this);
-                }
+                qDebug() << "addDevice() FOUND (mfd) id:" << device_id;
             }
+        }
+
+        qDebug() << "device_id[out]  " << device_id;
+        qDebug() << "device_str[out] " << QString::fromStdString(device_str);
+
+        if (device_id == TheengsDecoder::IBT_2X ||
+            device_id == TheengsDecoder::IBT4XS ||
+            device_id == TheengsDecoder::IBT6XS_SOLIS ||
+            device_id == TheengsDecoder::H5055 ||
+            device_id == TheengsDecoder::TPMS)
+        {
+            d = new DeviceTheengsProbes(info, this);
+        }
+        else if (device_id == TheengsDecoder::XMTZC04HM ||
+                 device_id == TheengsDecoder::XMTZC05HM)
+        {
+            d = new DeviceTheengsScales(info, this);
+        }
+        else if (device_id == TheengsDecoder::CGG1_V1 ||
+                 device_id == TheengsDecoder::CGG1_V2 ||
+                 device_id == TheengsDecoder::BM_V23 ||
+                 device_id == TheengsDecoder::IBSTH1 ||
+                 device_id == TheengsDecoder::IBSTH2 ||
+                 device_id == TheengsDecoder::H5072 ||
+                 device_id == TheengsDecoder::H5075 ||
+                 device_id == TheengsDecoder::H5102 ||
+                 device_id == TheengsDecoder::LYWSD03MMC_ATC ||
+                 device_id == TheengsDecoder::LYWSD03MMC_PVVX)
+        {
+            d = new DeviceTheengsGeneric(info, this);
+        }
+        else
+        {
+            // MIBAND
+            // RUUVITAG_RAWV1
+            // RUUVITAG_RAWV1
+            // MOKOBEACON
+            // MOKOBEACONXPRO
+            // SBS1 ?
+            // INODE_EM ?
+
+            // CGH1
+            // CGPR1
+            //MUE4094RT
+
+            //d = new DeviceTheengsGeneric(info, this);
         }
     }
 
     if (d)
     {
-        connect(d, &Device::deviceUpdated, this, &DeviceManager::refreshDevices_finished);
-
-        SettingsManager *sm = SettingsManager::getInstance();
-        if (d->getLastUpdateInt() < 0 ||
-            d->getLastUpdateInt() > (int)(d->isPlantSensor() ? sm->getUpdateIntervalPlant() : sm->getUpdateIntervalThermo()))
-        {
-            // Old or no data: mark it as queued until the deviceManager sync new devices
-            d->refreshQueue();
-        }
-
         // Add it to the database?
         if (m_dbInternal || m_dbExternal)
         {
@@ -1592,6 +1566,17 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
                 addDevice.bindValue(":deviceName", d->getName());
                 addDevice.exec();
             }
+        }
+
+        //
+        connect(d, &Device::deviceUpdated, this, &DeviceManager::refreshDevices_finished);
+
+        SettingsManager *sm = SettingsManager::getInstance();
+        if (d->getLastUpdateInt() < 0 ||
+            d->getLastUpdateInt() > (int)(d->isPlantSensor() ? sm->getUpdateIntervalPlant() : sm->getUpdateIntervalThermo()))
+        {
+            // Old or no data: mark it as queued until the deviceManager sync new devices
+            d->refreshQueue();
         }
 
         // Add it to the UI
