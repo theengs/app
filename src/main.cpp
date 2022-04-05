@@ -79,11 +79,10 @@ int main(int argc, char *argv[])
         if (sm && sm->getSysTray())
         {
             DatabaseManager *db = DatabaseManager::getInstance();
-            NotificationManager *nm = NotificationManager::getInstance();
             DeviceManager *dm = new DeviceManager(true);
-            if (!db || !nm || !dm) return EXIT_FAILURE;
+            if (!db || !dm) return EXIT_FAILURE;
 
-            AndroidService *as = new AndroidService(dm, nm);
+            AndroidService *as = new AndroidService(dm);
             if (!as) return EXIT_FAILURE;
 
             return app.exec();

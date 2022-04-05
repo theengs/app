@@ -20,8 +20,10 @@
 
 #if defined(Q_OS_ANDROID)
 
-#include "DeviceManager.h"
+#include "DatabaseManager.h"
 #include "SettingsManager.h"
+#include "DeviceManager.h"
+#include "MqttManager.h"
 #include "NotificationManager.h"
 
 #include <QtCore/private/qandroidextras_p.h>
@@ -32,15 +34,14 @@
 
 /* ************************************************************************** */
 
-AndroidService::AndroidService(DeviceManager *dm, NotificationManager *nm, QObject *parent) : QObject(parent)
+AndroidService::AndroidService(DeviceManager *dm, QObject *parent) : QObject(parent)
 {
     // Save the managers
     m_deviceManager = dm;
-    m_notificationManager = nm;
 
     // Configure update timer (only started on desktop)
     connect(&m_workTimer, &QTimer::timeout, this, &AndroidService::gotowork);
-    setWorkTimer();
+    setWorkTimer(15);
 }
 
 AndroidService::~AndroidService()
@@ -60,6 +61,17 @@ void AndroidService::gotowork()
 {
     if (m_deviceManager && m_deviceManager->areDevicesAvailable())
     {
+        // Reload a few things
+        SettingsManager *sm = SettingsManager::getInstance();
+        sm->reloadSettings();
+
+        MqttManager *mq = MqttManager::getInstance();
+        if (sm->getMQTT()) mq->reconnect2();
+
+        //NotificationManager *nm = NotificationManager::getInstance();
+        //nm->setNotification2("Theengs AndroidService", QDateTime::currentDateTime().toString());
+
+        // Start background refresh
         m_deviceManager->refreshDevices_background();
     }
 }

@@ -51,6 +51,11 @@ SettingsManager::~SettingsManager()
 /* ************************************************************************** */
 /* ************************************************************************** */
 
+void SettingsManager::reloadSettings()
+{
+    readSettings();
+}
+
 bool SettingsManager::readSettings()
 {
     bool status = false;

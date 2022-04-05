@@ -41,13 +41,14 @@ class AndroidService: public QObject
     void setWorkTimer(int workInterval = 60);
 
     DeviceManager *m_deviceManager = nullptr;
-    NotificationManager *m_notificationManager = nullptr;
+    //NotificationManager *m_notificationManager = nullptr;
+    //SettingsManager *m_settingsManager = nullptr;
 
 private slots:
     void gotowork();
 
 public:
-    AndroidService(DeviceManager *dm, NotificationManager *nm, QObject *parent = nullptr);
+    AndroidService(DeviceManager *dm, QObject *parent = nullptr);
     ~AndroidService();
 
     static void service_start();

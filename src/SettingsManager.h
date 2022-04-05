@@ -280,6 +280,7 @@ public:
     void setMqttTopicB(const QString &value);
 
     // Utils
+    Q_INVOKABLE void reloadSettings();
     Q_INVOKABLE void resetSettings();
 };
 

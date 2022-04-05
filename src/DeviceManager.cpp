@@ -885,7 +885,7 @@ void DeviceManager::updateDevice(const QString &address)
 void DeviceManager::refreshDevices_background()
 {
     //qDebug() << "DeviceManager::refreshDevices_background()";
-
+/*
     QSqlQuery readLastSync;
     readLastSync.prepare("SELECT lastSync FROM lastSync");
     readLastSync.exec();
@@ -898,7 +898,7 @@ void DeviceManager::refreshDevices_background()
             if (mins < 60) return;
         }
     }
-
+*/
     // Make sure we have Bluetooth
     if (!checkBluetooth())
     {
@@ -906,8 +906,8 @@ void DeviceManager::refreshDevices_background()
     }
 
     // Background refresh (if background location permission)
-    //listenDevices();
-
+    listenDevices();
+/*
     // Start refresh (if needed)
     m_devices_updating_queue.clear();
     m_devices_updating.clear();
@@ -929,6 +929,7 @@ void DeviceManager::refreshDevices_background()
         }
     }
     refreshDevices_continue();
+*/
 }
 
 void DeviceManager::refreshDevices_listen()

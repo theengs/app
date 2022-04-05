@@ -88,8 +88,26 @@ void MqttManager::disconnect()
 
 void MqttManager::reconnect()
 {
-    disconnect();
-    connect();
+    SettingsManager *sm = SettingsManager::getInstance();
+    if (sm && sm->getMQTT())
+    {
+        disconnect();
+        connect();
+    }
+}
+
+void MqttManager::reconnect2()
+{
+    SettingsManager *sm = SettingsManager::getInstance();
+    if (sm && sm->getMQTT())
+    {
+        if (!m_mqttclient || m_mqttclient->state() != QMqttClient::Connected)
+            connect();
+    }
+    else
+    {
+        disconnect();
+    }
 }
 
 /* ************************************************************************** */
@@ -112,7 +130,7 @@ bool MqttManager::publish(QString topic, QString str)
         QByteArray m(str.toLocal8Bit());
 
         QString l = "publish: " + topic + " / " + str + "\n";
-        m_mqttLog += l;
+        m_mqttLog.push_front(l);
         Q_EMIT logChanged();
 
         m_mqttclient->publish(t, m);
@@ -137,14 +155,17 @@ bool MqttManager::subscribe(QString topic)
 
 void MqttManager::updateStateChange()
 {
-    qDebug() << "MqttManager::updateStateChange()" << m_mqttclient->state();
+    if (m_mqttclient)
+    {
+        qDebug() << "MqttManager::updateStateChange()" << m_mqttclient->state();
 
-    if (m_mqttclient->state() == 0) m_mqttLog += "status: disconnected \n";
-    if (m_mqttclient->state() == 1) m_mqttLog += "status: connecting \n";
-    if (m_mqttclient->state() == 2) m_mqttLog += "status: connected \n";
-    Q_EMIT logChanged();
+        if (m_mqttclient->state() == 0) m_mqttLog.push_front("status: disconnected \n");
+        if (m_mqttclient->state() == 1) m_mqttLog.push_front("status: connecting \n");
+        if (m_mqttclient->state() == 2) m_mqttLog.push_front("status: connected \n");
+        Q_EMIT logChanged();
 
-    Q_EMIT statusChanged();
+        Q_EMIT statusChanged();
+    }
 }
 
 void MqttManager::brokerConnected()
@@ -167,7 +188,7 @@ void MqttManager::brokerConnected()
 
 void MqttManager::brokerDisconnected()
 {
-    qDebug() << "MqttManager::brokerDisconnected()" << m_mqttclient->state();
+    qDebug() << "MqttManager::brokerDisconnected()";
 }
 
 void MqttManager::handleMessage(const QMqttMessage &qmsg)
