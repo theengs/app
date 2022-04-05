@@ -96,12 +96,9 @@ int main(int argc, char *argv[])
 
 #if defined(Q_OS_LINUX)
     // NVIDIA suspend&resume hack
-    if (QLibraryInfo::version() >= QVersionNumber(5, 13, 0))
-    {
-        auto format = QSurfaceFormat::defaultFormat();
-        format.setOption(QSurfaceFormat::ResetNotification);
-        QSurfaceFormat::setDefaultFormat(format);
-    }
+    auto format = QSurfaceFormat::defaultFormat();
+    format.setOption(QSurfaceFormat::ResetNotification);
+    QSurfaceFormat::setDefaultFormat(format);
 #endif
 
     SingleApplication app(argc, argv);

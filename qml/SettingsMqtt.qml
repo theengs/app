@@ -39,38 +39,42 @@ Item {
 
                 color: Theme.colorForeground
 
-                IconSvg {
-                    id: image_appsettings
-                    width: 24
-                    height: 24
+                Row {
                     anchors.left: parent.left
                     anchors.leftMargin: screenPaddingLeft + 16
                     anchors.verticalCenter: parent.verticalCenter
+                    spacing: 24
 
-                    color: Theme.colorIcon
-                    source: "qrc:/assets/logos/mqtt.svg"
-                }
+                    IconSvg {
+                        id: image_appsettings
+                        width: 24
+                        height: 24
+                        anchors.verticalCenter: parent.verticalCenter
 
-                Text {
-                    id: text_appsettings
-                    anchors.left: image_appsettings.right
-                    anchors.leftMargin: 24
-                    anchors.verticalCenter: parent.verticalCenter
+                        color: Theme.colorIcon
+                        source: "qrc:/assets/logos/mqtt.svg"
+                    }
 
-                    text: qsTr("MQTT")
-                    textFormat: Text.PlainText
-                    font.pixelSize: Theme.fontSizeContent
-                    font.bold: false
-                    color: Theme.colorText
-                    wrapMode: Text.WordWrap
-                    verticalAlignment: Text.AlignVCenter
+                    Text {
+                        id: text_appsettings
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        text: qsTr("MQTT")
+                        textFormat: Text.PlainText
+                        font.pixelSize: Theme.fontSizeContent
+                        font.bold: false
+                        color: Theme.colorText
+                        wrapMode: Text.WordWrap
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
 
                 Row {
                     anchors.right: parent.right
+                    anchors.rightMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 4
-
+/*
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
 
@@ -86,8 +90,21 @@ Item {
                         checked: settingsManager.mqtt
                         onClicked: {
                             settingsManager.mqtt = checked
-                            mqttManager.reconnect()
+
+                            if (checked) mqttManager.connect()
+                            else  mqttManager.disconnect()
                         }
+                    }
+*/
+                    ButtonWireframe {
+                        height: 28
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        visible: settingsManager.mqtt
+                        fullColor: true
+                        primaryColor: mqttManager.status ? Theme.colorGreen : Theme.colorOrange
+
+                        text: mqttManager.status ? qsTr("Connected") : qsTr("Disconnected")
                     }
                 }
             }
@@ -114,8 +131,40 @@ Item {
             Text {
                 anchors.left: parent.left
                 anchors.leftMargin: 16
+
+                text: qsTr("Status")
+                textFormat: Text.PlainText
+                wrapMode: Text.WordWrap
+                color: Theme.colorSubText
+                font.pixelSize: Theme.fontSizeContentBig
+                verticalAlignment: Text.AlignBottom
+            }
+
+            ////////
+
+            Column {
+                anchors.left: parent.left
+                anchors.leftMargin: 16
                 anchors.right: parent.right
-                anchors.rightMargin: 12
+                anchors.rightMargin: 16
+
+                SwitchThemedDesktop {
+                    text: settingsManager.mqtt ? qsTr("Enabled") : qsTr("Disabled")
+                    checked: settingsManager.mqtt
+                    onClicked: {
+                        settingsManager.mqtt = checked
+
+                        if (checked) mqttManager.connect()
+                        else  mqttManager.disconnect()
+                    }
+                }
+            }
+
+            ////////
+
+            Text {
+                anchors.left: parent.left
+                anchors.leftMargin: 16
 
                 text: qsTr("Broker")
                 textFormat: Text.PlainText
@@ -134,7 +183,7 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 16
 
-                rows: 4
+                rows: singleColumn ? 4 : 2
                 columns: singleColumn ? 1 : 2
                 spacing: 12
 
@@ -324,7 +373,7 @@ Item {
 
             ////////
 
-            Row {
+            Column {
                 anchors.right: parent.right
                 anchors.rightMargin: 16
                 spacing: 16
@@ -335,15 +384,16 @@ Item {
 
                     onClicked: {
                         focus = true
-                        mqttManager.reconnect()
+                        if (settingsManager.mqtt) mqttManager.reconnect()
                     }
                 }
-
+/*
                 ButtonWireframe {
                     text: mqttManager.status ? qsTr("Connected") : qsTr("Disconnected")
                     primaryColor: mqttManager.status ? Theme.colorGreen : Theme.colorOrange
                     fullColor: true
                 }
+*/
             }
 
             ////////
