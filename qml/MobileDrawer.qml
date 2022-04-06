@@ -397,7 +397,7 @@ Drawer {
                     anchors.left: parent.left
                     anchors.right: parent.right
 
-                    enabled: deviceManager.bluetooth && !deviceManager.scanning
+                    enabled: (deviceManager.bluetooth && !deviceManager.scanning)
 
                     MouseArea {
                         anchors.fill: parent
@@ -444,63 +444,6 @@ Drawer {
                         font.pixelSize: 13
                         font.bold: true
                         color: rectangleRefresh.enabled ? Theme.colorText : Theme.colorSubText
-                    }
-                }
-
-                ////////
-
-                Item {
-                    id: rectangleSync
-                    height: 48
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-
-                    enabled: deviceManager.bluetooth && !deviceManager.scanning
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: {
-                            if (!deviceManager.scanning) {
-                                if (deviceManager.syncing) {
-                                    deviceManager.syncDevices_stop()
-                                } else {
-                                    deviceManager.syncDevices_start()
-                                }
-                                appDrawer.close()
-                            }
-                        }
-                    }
-
-                    IconSvg {
-                        id: buttonSync
-                        width: 24
-                        height: 24
-                        anchors.left: parent.left
-                        anchors.leftMargin: screenPaddingLeft + 16
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        source: "qrc:/assets/icons_custom/duotone-date_all-24px.svg"
-                        color: rectangleSync.enabled ? Theme.colorText : Theme.colorSubText
-
-                        SequentialAnimation on opacity {
-                            id: syncAnimation
-                            loops: Animation.Infinite
-                            running: deviceManager.syncing
-                            onStopped: buttonRescan.opacity = 1
-
-                            PropertyAnimation { to: 0.33; duration: 750; }
-                            PropertyAnimation { to: 1; duration: 750; }
-                        }
-                    }
-                    Label {
-                        anchors.left: parent.left
-                        anchors.leftMargin: screenPaddingLeft + 56
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        text: qsTr("Sync sensors history")
-                        font.pixelSize: 13
-                        font.bold: true
-                        color: rectangleSync.enabled ? Theme.colorText : Theme.colorSubText
                     }
                 }
 

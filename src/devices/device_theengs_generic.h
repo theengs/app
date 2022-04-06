@@ -37,13 +37,28 @@ class DeviceTheengsGeneric: public DeviceTheengs
 {
     Q_OBJECT
 
+private:
+    bool areValuesValid_plants(const int soilMoisture, const int soilConductivity,
+                               const float temperature, const int luminosity) const;
+    bool addDatabaseRecord_plants(const int64_t timestamp,
+                                  const int soilMoisture, const int soilConductivity,
+                                  const float temperature, const int luminosity);
+
+    bool areValuesValid_thermometer(const float t, const float h) const;
+    bool addDatabaseRecord_thermometer(const int64_t timestamp, const float t, const float h);
+
 public:
-    DeviceTheengsGeneric(QString &deviceAddr, QString &deviceName, QObject *parent = nullptr);
-    DeviceTheengsGeneric(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
+    DeviceTheengsGeneric(const QString &deviceAddr, const QString &deviceName,
+                         const QString &deviceModel, const QString &devicePropsJson,
+                         QObject *parent = nullptr);
+    DeviceTheengsGeneric(const QBluetoothDeviceInfo &d,
+                         const QString &deviceModel, const QString &devicePropsJson,
+                         QObject *parent = nullptr);
     ~DeviceTheengsGeneric();
 
-    // adv
-    void parseAdvertisementTheengs(const QString &json);
+    // theengs decoder
+    void parseTheengsProps(const QString &json);
+    void parseTheengsAdvertisement(const QString &json);
 };
 
 /* ************************************************************************** */

@@ -175,7 +175,7 @@ Item {
 
             visible: isDesktop
 
-            text: currentDevice.deviceName + " - " + currentDevice.devicePlantName
+            text: currentDevice.deviceName + " - " + currentDevice.deviceAssociatedName
             color: Theme.colorText
             font.pixelSize: 22
             font.capitalization: Font.Capitalize

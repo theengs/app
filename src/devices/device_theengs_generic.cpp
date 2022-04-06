@@ -37,16 +37,22 @@
 
 /* ************************************************************************** */
 
-DeviceTheengsGeneric::DeviceTheengsGeneric(QString &deviceAddr, QString &deviceName, QObject *parent):
-    DeviceTheengs(deviceAddr, deviceName, parent)
+DeviceTheengsGeneric::DeviceTheengsGeneric(const QString &deviceAddr, const QString &deviceName,
+                                           const QString &deviceModel, const QString &json,
+                                           QObject *parent):
+    DeviceTheengs(deviceAddr, deviceName, deviceModel, parent)
 {
-    m_deviceType = DeviceUtils::DEVICE_THEENGS;
+    m_deviceModel = deviceModel;
+
+    parseTheengsProps(json);
 }
 
-DeviceTheengsGeneric::DeviceTheengsGeneric(const QBluetoothDeviceInfo &d, QObject *parent):
-    DeviceTheengs(d, parent)
+DeviceTheengsGeneric::DeviceTheengsGeneric(const QBluetoothDeviceInfo &d,
+                                           const QString &deviceModel, const QString &json,
+                                           QObject *parent):
+    DeviceTheengs(d, deviceModel, parent)
 {
-    m_deviceType = DeviceUtils::DEVICE_THEENGS;
+    parseTheengsProps(json);
 }
 
 DeviceTheengsGeneric::~DeviceTheengsGeneric()
@@ -55,10 +61,49 @@ DeviceTheengsGeneric::~DeviceTheengsGeneric()
 }
 
 /* ************************************************************************** */
+/* ************************************************************************** */
 
-void DeviceTheengsGeneric::parseAdvertisementTheengs(const QString &json)
+void DeviceTheengsGeneric::parseTheengsProps(const QString &json)
 {
-    //qDebug() << "DeviceTheengsGeneric::parseAdvertisementTheengs()";
+    qDebug() << "DeviceTheengsGeneric::parseTheengsProps()";
+    qDebug() << "JSON:" << json;
+
+    QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
+
+    //QJsonObject obj = doc.object();
+    //int model_id = obj["model_id"].toInt();
+
+    QJsonObject prop = doc.object()["properties"].toObject();
+
+    // Capabilities
+    if (prop.contains("batt")) m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
+    Q_EMIT capabilitiesUpdated();
+
+    // Sensors
+    if (prop.contains("moi")) m_deviceSensors += DeviceUtils::SENSOR_SOIL_MOISTURE;
+    if (prop.contains("fer")) m_deviceSensors += DeviceUtils::SENSOR_SOIL_CONDUCTIVITY;
+    if (prop.contains("tempc")) m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
+    if (prop.contains("hum")) m_deviceSensors += DeviceUtils::SENSOR_HUMIDITY;
+    if (prop.contains("lux")) m_deviceSensors += DeviceUtils::SENSOR_LUMINOSITY;
+    if (prop.contains("pres")) m_deviceSensors += DeviceUtils::SENSOR_PRESSURE;
+    if (prop.contains("for")) m_deviceSensors += DeviceUtils::SENSOR_HCHO;
+    Q_EMIT sensorsUpdated();
+
+    // Device mode
+    m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
+
+    // Device type
+    if (hasSoilMoistureSensor() && hasSoilConductivitySensor()) m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR;
+    else if (hasWeight()) m_deviceType = DeviceUtils::DEVICE_SCALE;
+    else if (hasTemperatureSensor() && hasHumiditySensor()) m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
+    else m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
+}
+
+/* ************************************************************************** */
+
+void DeviceTheengsGeneric::parseTheengsAdvertisement(const QString &json)
+{
+    //qDebug() << "DeviceTheengsGeneric::parseTheengsAdvertisement()";
     //qDebug() << "JSON:" << json;
 
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
@@ -67,13 +112,21 @@ void DeviceTheengsGeneric::parseAdvertisementTheengs(const QString &json)
     if (obj.contains("batt")) setBattery(obj["batt"].toInt());
     if (obj.contains("mac")) setSetting("mac", obj["mac"].toString());
 
-    if (obj.contains("tempc")) {
-        if (!hasTemperatureSensor()) {
-            m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
-            m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
-            Q_EMIT sensorUpdated();
+    if (obj.contains("moi")) {
+        if (m_soilMoisture != obj["moi"].toDouble()) {
+            m_soilMoisture = obj["moi"].toDouble();
+            Q_EMIT dataUpdated();
         }
+    }
 
+    if (obj.contains("fer")) {
+        if (m_soilConductivity != obj["fer"].toDouble()) {
+            m_soilConductivity = obj["fer"].toDouble();
+            Q_EMIT dataUpdated();
+        }
+    }
+
+    if (obj.contains("tempc")) {
         if (m_temperature != obj["tempc"].toDouble()) {
             m_temperature = obj["tempc"].toDouble();
             Q_EMIT dataUpdated();
@@ -81,30 +134,168 @@ void DeviceTheengsGeneric::parseAdvertisementTheengs(const QString &json)
     }
 
     if (obj.contains("hum")) {
-        if (!hasTemperatureSensor()) {
-            m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
-            m_deviceSensors += DeviceUtils::SENSOR_HUMIDITY;
-            Q_EMIT sensorUpdated();
-        }
-
         if (m_humidity != obj["hum"].toDouble()) {
             m_humidity = obj["hum"].toDouble();
             Q_EMIT dataUpdated();
         }
     }
 
-    if (obj.contains("pres")) {
-        if (!hasTemperatureSensor()) {
-            m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
-            m_deviceSensors += DeviceUtils::SENSOR_PRESSURE;
-            Q_EMIT sensorUpdated();
+    if (obj.contains("lux")) {
+        if (m_luminosityLux != obj["lux"].toDouble()) {
+            m_luminosityLux = obj["lux"].toDouble();
+            Q_EMIT dataUpdated();
         }
+    }
 
+    if (obj.contains("pres")) {
         if (m_pressure != obj["pres"].toDouble() * 10.0) {
             m_pressure = obj["pres"].toDouble() * 10.0;
             Q_EMIT dataUpdated();
         }
     }
+
+    if (obj.contains("for")) {
+        if (m_hcho != obj["for"].toDouble()) {
+            m_hcho = obj["for"].toDouble();
+            Q_EMIT dataUpdated();
+        }
+    }
+
+    {
+        m_lastUpdate = QDateTime::currentDateTime();
+        refreshDataFinished(true);
+
+        if (needsUpdateDb())
+        {
+            if (isPlantSensor())
+            {
+                addDatabaseRecord_plants(m_lastUpdate.toSecsSinceEpoch(),
+                                         m_soilMoisture, m_soilConductivity,
+                                         m_temperature, m_humidity);
+            }
+            else if (isThermometer())
+            {
+                addDatabaseRecord_thermometer(m_lastUpdate.toSecsSinceEpoch(),
+                                              m_temperature, m_humidity);
+            }
+            else if (isEnvironmentalSensor())
+            {
+                //
+            }
+        }
+    }
+}
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+
+bool DeviceTheengsGeneric::areValuesValid_plants(const int soilMoisture, const int soilConductivity,
+                                                 const float temperature, const int luminosity) const
+{
+    if (hasSoilMoistureSensor() && (soilMoisture < 0 || soilMoisture > 100)) return false;
+    if (hasSoilConductivitySensor() && (soilConductivity < 0 || soilConductivity > 20000)) return false;
+    if (hasTemperatureSensor() && (temperature < -20.f || temperature > 100.f)) return false;
+    if (hasLuminositySensor() && (luminosity < 0 || luminosity > 150000)) return false;
+
+    return true;
+}
+
+bool DeviceTheengsGeneric::addDatabaseRecord_plants(const int64_t timestamp,
+                                                    const int soilMoisture, const int soilConductivity,
+                                                    const float temperature, const int luminosity)
+{
+    bool status = false;
+
+    if (areValuesValid_plants(soilMoisture, soilConductivity, temperature, luminosity))
+    {
+        if (m_dbInternal || m_dbExternal)
+        {
+            // SQL date format YYYY-MM-DD HH:MM:SS
+            // We only save one record every 60m
+
+            QDateTime tmcd = QDateTime::fromSecsSinceEpoch(timestamp);
+
+            QSqlQuery addData;
+            addData.prepare("REPLACE INTO plantData (deviceAddr, ts, ts_full, soilMoisture, soilConductivity, temperature, luminosity)"
+                            " VALUES (:deviceAddr, :ts, :ts_full, :hygro, :condu, :temp, :lumi)");
+            addData.bindValue(":deviceAddr", getAddress());
+            addData.bindValue(":ts", tmcd.toString("yyyy-MM-dd hh:00:00"));
+            addData.bindValue(":ts_full", tmcd.toString("yyyy-MM-dd hh:mm:ss"));
+            addData.bindValue(":hygro", soilMoisture);
+            addData.bindValue(":condu", soilConductivity);
+            addData.bindValue(":temp", temperature);
+            addData.bindValue(":lumi", luminosity);
+            status = addData.exec();
+
+            if (status)
+            {
+                m_lastUpdateDatabase = tmcd;
+            }
+            else
+            {
+                qWarning() << "> DeviceTheengsGeneric addData.exec() ERROR" << addData.lastError().type() << ":" << addData.lastError().text();
+            }
+        }
+    }
+    else
+    {
+        qWarning() << "DeviceTheengsGeneric values are INVALID";
+    }
+
+    return status;
+}
+
+/* ************************************************************************** */
+
+bool DeviceTheengsGeneric::areValuesValid_thermometer(const float t, const float h) const
+{
+    if (t <= 0.f && h <= 0.f) return false;
+    if (t < -20.f || t > 100.f) return false;
+    if (h < 0.f || t > 100.f) return false;
+
+    return true;
+}
+
+bool DeviceTheengsGeneric::addDatabaseRecord_thermometer(const int64_t timestamp, const float t, const float h)
+{
+    bool status = false;
+
+    if (areValuesValid_thermometer(t, h))
+    {
+        if (m_dbInternal || m_dbExternal)
+        {
+            // SQL date format YYYY-MM-DD HH:MM:SS
+            // We only save one record every 30m
+
+            QDateTime tmcd = QDateTime::fromSecsSinceEpoch(timestamp);
+            QDateTime tmcd_rounded = QDateTime::fromSecsSinceEpoch(timestamp + (1800 - timestamp % 1800) - 1800);
+
+            QSqlQuery addData;
+            addData.prepare("REPLACE INTO plantData (deviceAddr, ts, ts_full, temperature, humidity)"
+                            " VALUES (:deviceAddr, :ts, :ts_full, :temp, :hygro)");
+            addData.bindValue(":deviceAddr", getAddress());
+            addData.bindValue(":ts", tmcd_rounded.toString("yyyy-MM-dd hh:mm:00"));
+            addData.bindValue(":ts_full", tmcd.toString("yyyy-MM-dd hh:mm:ss"));
+            addData.bindValue(":temp", t);
+            addData.bindValue(":hygro", h);
+            status = addData.exec();
+
+            if (status)
+            {
+                m_lastUpdateDatabase = tmcd;
+            }
+            else
+            {
+                qWarning() << "> DeviceTheengsGeneric addData.exec() ERROR" << addData.lastError().type() << ":" << addData.lastError().text();
+            }
+        }
+    }
+    else
+    {
+        qWarning() << "DeviceTheengsGeneric values are INVALID";
+    }
+
+    return status;
 }
 
 /* ************************************************************************** */

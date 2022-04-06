@@ -111,7 +111,11 @@ Device::Device(const QBluetoothDeviceInfo &d, QObject *parent) : QObject(parent)
 
 Device::~Device()
 {
-    delete m_bleController;
+    if (m_bleController)
+    {
+        m_bleController->disconnectFromDevice();
+        delete m_bleController;
+    }
 }
 
 /* ************************************************************************** */
@@ -808,6 +812,24 @@ void Device::setAssociatedName(const QString &name)
         if (SettingsManager::getInstance()->getOrderBy() == "plant")
         {
             if (parent()) static_cast<DeviceManager *>(parent())->invalidate();
+        }
+    }
+}
+
+void Device::setEnabled(const bool enabled)
+{
+    if (m_isEnabled != enabled)
+    {
+        m_isEnabled = enabled;
+        Q_EMIT settingsUpdated();
+
+        if (m_dbInternal || m_dbExternal)
+        {
+            QSqlQuery updateEnabled;
+            updateEnabled.prepare("UPDATE devices SET isEnabled = :enabled WHERE deviceAddr = :deviceAddr");
+            updateEnabled.bindValue(":enabled", enabled);
+            updateEnabled.bindValue(":deviceAddr", getAddress());
+            updateEnabled.exec();
         }
     }
 }

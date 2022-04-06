@@ -37,6 +37,7 @@ DeviceEsp32AirQualityMonitor::DeviceEsp32AirQualityMonitor(QString &deviceAddr, 
     DeviceSensor(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
+    m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_CONNECTION;
     m_deviceCapabilities += DeviceUtils::DEVICE_REALTIME;
     m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
     m_deviceSensors += DeviceUtils::SENSOR_HUMIDITY;
@@ -51,6 +52,7 @@ DeviceEsp32AirQualityMonitor::DeviceEsp32AirQualityMonitor(const QBluetoothDevic
     DeviceSensor(d, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
+    m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_CONNECTION;
     m_deviceCapabilities += DeviceUtils::DEVICE_REALTIME;
     m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
     m_deviceSensors += DeviceUtils::SENSOR_HUMIDITY;

@@ -23,6 +23,7 @@
 #include "utils/utils_bits.h"
 
 #include <decoder.h> // Theengs decoder
+#include "device_theengs.h"
 
 #include <QBluetoothLocalDevice>
 #include <QBluetoothDeviceDiscoveryAgent>
@@ -38,7 +39,8 @@
 
 void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetoothDeviceInfo::Fields updatedFields)
 {
-    //qDebug() << "updateBleDevice() " << info.address() /*<< info.deviceUuid()*/ << " updatedFields: " << updatedFields;
+    //qDebug() << "updateBleDevice() " << info.name() << info.address();
+    //qDebug() << "updateBleDevice() " << info.name() << info.address() /*<< info.deviceUuid()*/ << " updatedFields: " << updatedFields;
 
     bool status = false;
     Q_UNUSED(updatedFields)
@@ -77,8 +79,9 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                 {
                     std::string output;
                     serializeJson(obj, output);
-
                     //qDebug() << "output:" << output.c_str();
+
+                    static_cast<DeviceTheengs *>(dd)->parseAdvertisementTheengs(QString::fromStdString(output));
 
                     SettingsManager *sm = SettingsManager::getInstance();
                     MqttManager *mq = MqttManager::getInstance();
@@ -116,15 +119,16 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                 doc["servicedata"] = info.serviceData(id).toHex().toStdString();
                 doc["servicedatauuid"] = id.toString().toStdString();
 
-                TheengsDecoder a;
                 JsonObject obj = doc.as<JsonObject>();
 
-                if (a.decodeBLEJson(obj) >= 0)
+                TheengsDecoder dec;
+                if (dec.decodeBLEJson(obj) >= 0)
                 {
                     std::string output;
                     serializeJson(obj, output);
-
                     //qDebug() << "output:" << output.c_str();
+
+                    static_cast<DeviceTheengs *>(dd)->parseAdvertisementTheengs(QString::fromStdString(output));
 
                     SettingsManager *sm = SettingsManager::getInstance();
                     MqttManager *mq = MqttManager::getInstance();
@@ -179,15 +183,15 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
             doc["name"] = info.name().toStdString();
             doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).toStdString() + info.manufacturerData(id).toHex().toStdString();
 
-            TheengsDecoder a;
+            TheengsDecoder dec;
             JsonObject obj = doc.as<JsonObject>();
 
-            if (a.decodeBLEJson(obj) >= 0)
+            if (dec.decodeBLEJson(obj) >= 0)
             {
-                std::string output;
                 obj.remove("manufacturerdata");
-                serializeJson(obj, output);
 
+                std::string output;
+                serializeJson(obj, output);
                 //qDebug() << "(UNKNOWN DEVICE) output (mfd) " << output.c_str();
 
                 SettingsManager *sm = SettingsManager::getInstance();
@@ -216,18 +220,18 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
             doc["id"] = info.address().toString().toStdString();
             doc["name"] = info.name().toStdString();
             doc["servicedata"] = info.serviceData(id).toHex().toStdString();
-            //doc["servicedatauuid"] = id.toString(QUuid::Id128).toStdString();
+            doc["servicedatauuid"] = id.toString(QUuid::Id128).toStdString();
 
             TheengsDecoder dec;
             JsonObject obj = doc.as<JsonObject>();
 
             if (dec.decodeBLEJson(obj) >= 0)
             {
-                std::string output;
                 obj.remove("servicedata");
                 obj.remove("servicedatauuid");
-                serializeJson(obj, output);
 
+                std::string output;
+                serializeJson(obj, output);
                 //qDebug() << "(UNKNOWN DEVICE) output (svd)" << output.c_str();
 
                 SettingsManager *sm = SettingsManager::getInstance();

@@ -41,7 +41,7 @@ AndroidService::AndroidService(DeviceManager *dm, QObject *parent) : QObject(par
 
     // Configure update timer (only started on desktop)
     connect(&m_workTimer, &QTimer::timeout, this, &AndroidService::gotowork);
-    setWorkTimer(15);
+    setWorkTimer(10);
 }
 
 AndroidService::~AndroidService()

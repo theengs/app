@@ -38,6 +38,7 @@ DeviceFlowerPower::DeviceFlowerPower(QString &deviceAddr, QString &deviceName, Q
     DeviceSensor(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR;
+    m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_CONNECTION;
     //m_deviceCapabilities += DeviceUtils::DEVICE_REALTIME;
     //m_deviceCapabilities += DeviceUtils::DEVICE_HISTORY;
     m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
@@ -54,6 +55,7 @@ DeviceFlowerPower::DeviceFlowerPower(const QBluetoothDeviceInfo &d, QObject *par
     DeviceSensor(d, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR;
+    m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_CONNECTION;
     //m_deviceCapabilities += DeviceUtils::DEVICE_REALTIME;
     //m_deviceCapabilities += DeviceUtils::DEVICE_HISTORY;
     m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;

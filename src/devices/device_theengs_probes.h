@@ -40,8 +40,12 @@ class DeviceTheengsProbes: public DeviceTheengs
     Q_OBJECT
 
 public:
-    DeviceTheengsProbes(const QString &deviceAddr, const QString &deviceName, QObject *parent = nullptr);
-    DeviceTheengsProbes(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
+    DeviceTheengsProbes(const QString &deviceAddr, const QString &deviceName,
+                        const QString &deviceModel, const QString &devicePropsJson,
+                        QObject *parent = nullptr);
+    DeviceTheengsProbes(const QBluetoothDeviceInfo &d,
+                        const QString &deviceModel, const QString &devicePropsJson,
+                        QObject *parent = nullptr);
     ~DeviceTheengsProbes();
 
     void parseAdvertisementTheengs(const QString &json);

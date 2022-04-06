@@ -37,6 +37,7 @@ DeviceJQJCY01YM::DeviceJQJCY01YM(QString &deviceAddr, QString &deviceName, QObje
     DeviceSensor(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
+    m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
     m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
     m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
     m_deviceSensors += DeviceUtils::SENSOR_HUMIDITY;
@@ -47,6 +48,7 @@ DeviceJQJCY01YM::DeviceJQJCY01YM(const QBluetoothDeviceInfo &d, QObject *parent)
     DeviceSensor(d, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
+    m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
     m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
     m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
     m_deviceSensors += DeviceUtils::SENSOR_HUMIDITY;

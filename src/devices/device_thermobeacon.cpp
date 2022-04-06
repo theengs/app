@@ -42,6 +42,8 @@ DeviceThermoBeacon::DeviceThermoBeacon(QString &deviceAddr, QString &deviceName,
     DeviceSensor(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
+    m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
+    m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
     m_deviceCapabilities += DeviceUtils::DEVICE_HISTORY;
     m_deviceCapabilities += DeviceUtils::DEVICE_LED_STATUS;
     m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
@@ -57,6 +59,8 @@ DeviceThermoBeacon::DeviceThermoBeacon(const QBluetoothDeviceInfo &d, QObject *p
     DeviceSensor(d, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
+    m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
+    m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
     m_deviceCapabilities += DeviceUtils::DEVICE_HISTORY;
     m_deviceCapabilities += DeviceUtils::DEVICE_LED_STATUS;
     m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
@@ -452,7 +456,6 @@ void DeviceThermoBeacon::parseAdvertisementData(const QByteArray &value)
         }
 
         m_lastUpdate = QDateTime::currentDateTime();
-        Q_EMIT statusUpdated();
 
         int battlvl = mapNumber(battv, 2300, 3100, 0, 100);
         setBattery(battlvl);

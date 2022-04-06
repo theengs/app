@@ -57,10 +57,6 @@ SOURCES  += src/main.cpp \
             src/devices/device_hygrotemp_clock.cpp \
             src/devices/device_hygrotemp_square.cpp \
             src/devices/device_hygrotemp_lywsdcgq.cpp \
-            src/devices/device_hygrotemp_inkbird.cpp \
-            src/devices/device_hygrotemp_govee.cpp \
-            src/devices/device_hygrotemp_mokosmart.cpp \
-            src/devices/device_hygrotemp_tempodisc.cpp \
             src/devices/device_thermobeacon.cpp \
             src/devices/device_jqjcy01ym.cpp \
             src/devices/device_wp6003.cpp \
@@ -103,10 +99,6 @@ HEADERS  += src/SettingsManager.h \
             src/devices/device_hygrotemp_clock.h \
             src/devices/device_hygrotemp_square.h \
             src/devices/device_hygrotemp_lywsdcgq.h \
-            src/devices/device_hygrotemp_inkbird.h \
-            src/devices/device_hygrotemp_govee.h \
-            src/devices/device_hygrotemp_mokosmart.h \
-            src/devices/device_hygrotemp_tempodisc.h \
             src/devices/device_thermobeacon.h \
             src/devices/device_jqjcy01ym.h \
             src/devices/device_wp6003.h \

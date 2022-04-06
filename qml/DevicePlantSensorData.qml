@@ -235,9 +235,9 @@ Item {
                             font.bold: false
                             color: Theme.colorHighContrast
 
-                            text: currentDevice ? currentDevice.devicePlantName : ""
+                            text: currentDevice ? currentDevice.deviceAssociatedName : ""
                             onEditingFinished: {
-                                currentDevice.devicePlantName = text
+                                currentDevice.deviceAssociatedName = text
                                 focus = false
                             }
 

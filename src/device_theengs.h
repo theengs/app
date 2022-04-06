@@ -31,19 +31,6 @@
 
 /* ************************************************************************** */
 
-/*
-  MOKOSmart M1
-  RuuviTag
-  MiBand?
-
-  MUE4094RT
-  CGH1
-  CGPR1
-
-  XMTZC01HM/XMTZC04HM
-  XMTZC02HM/XMTZC05HM
-*/
-
 /*!
  * Theengs generic device
  */
@@ -113,13 +100,17 @@ protected:
     virtual bool hasData() const;
 
 public:
-    DeviceTheengs(const QString &deviceAddr, const QString &deviceName, QObject *parent = nullptr);
-    DeviceTheengs(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
+    DeviceTheengs(const QString &deviceAddr, const QString &deviceName, const QString &deviceModel, QObject *parent = nullptr);
+    DeviceTheengs(const QBluetoothDeviceInfo &d, const QString &deviceModel, QObject *parent = nullptr);
     virtual ~DeviceTheengs();
 
     // adv
     virtual void parseAdvertisementData(const QByteArray &value);
     virtual void parseAdvertisementTheengs(const QString &json);
+
+    // theengs decoder
+    virtual void parseTheengsProps(const QString &json);
+    virtual void parseTheengsAdvertisement(const QString &json);
 
     // probe data
     float getTemp1() const;

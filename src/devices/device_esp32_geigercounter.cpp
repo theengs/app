@@ -37,6 +37,7 @@ DeviceEsp32GeigerCounter::DeviceEsp32GeigerCounter(QString &deviceAddr, QString 
     DeviceSensor(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
+    m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_CONNECTION;
     m_deviceCapabilities += DeviceUtils::DEVICE_REALTIME;
     m_deviceSensors += DeviceUtils::SENSOR_GEIGER;
 }
@@ -45,6 +46,7 @@ DeviceEsp32GeigerCounter::DeviceEsp32GeigerCounter(const QBluetoothDeviceInfo &d
     DeviceSensor(d, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
+    m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_CONNECTION;
     m_deviceCapabilities += DeviceUtils::DEVICE_REALTIME;
     m_deviceSensors += DeviceUtils::SENSOR_GEIGER;
 }

@@ -40,8 +40,12 @@ class DeviceTheengsScales: public DeviceTheengs
     Q_OBJECT
 
 public:
-    DeviceTheengsScales(const QString &deviceAddr, const QString &deviceName, QObject *parent = nullptr);
-    DeviceTheengsScales(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
+    DeviceTheengsScales(const QString &deviceAddr, const QString &deviceName,
+                        const QString &deviceModel, const QString &devicePropsJson,
+                        QObject *parent = nullptr);
+    DeviceTheengsScales(const QBluetoothDeviceInfo &d,
+                        const QString &deviceModel, const QString &devicePropsJson,
+                        QObject *parent = nullptr);
     ~DeviceTheengsScales();
 
     // adv

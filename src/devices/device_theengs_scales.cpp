@@ -37,14 +37,18 @@
 
 /* ************************************************************************** */
 
-DeviceTheengsScales::DeviceTheengsScales(const QString &deviceAddr, const QString &deviceName, QObject *parent):
-    DeviceTheengs(deviceAddr, deviceName, parent)
+DeviceTheengsScales::DeviceTheengsScales(const QString &deviceAddr, const QString &deviceName,
+                                         const QString &deviceModel, const QString &devicePropsJson,
+                                         QObject *parent):
+    DeviceTheengs(deviceAddr, deviceName, deviceModel, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_SCALE;
 }
 
-DeviceTheengsScales::DeviceTheengsScales(const QBluetoothDeviceInfo &d, QObject *parent):
-    DeviceTheengs(d, parent)
+DeviceTheengsScales::DeviceTheengsScales(const QBluetoothDeviceInfo &d,
+                                         const QString &deviceModel, const QString &devicePropsJson,
+                                         QObject *parent):
+    DeviceTheengs(d, deviceModel, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_SCALE;
 }

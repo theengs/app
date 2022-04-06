@@ -104,7 +104,7 @@ DeviceSensor::DeviceSensor(const QBluetoothDeviceInfo &d, QObject *parent) :
 
 DeviceSensor::~DeviceSensor()
 {
-    delete m_deviceInfos;
+    if (m_deviceInfos) delete m_deviceInfos;
 }
 
 /* ************************************************************************** */
@@ -266,7 +266,7 @@ bool DeviceSensor::getSqlDeviceInfos()
     }
     else if ((m_deviceName == "MHO-C401") && (m_deviceFirmware.size() == 10))
     {
-        if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_HYGROTEMP_EINK2))
+        if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_HYGROTEMP_MHOC401))
         {
             m_firmware_uptodate = true;
             Q_EMIT sensorUpdated();

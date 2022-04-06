@@ -37,8 +37,10 @@
 
 /* ************************************************************************** */
 
-DeviceTheengsProbes::DeviceTheengsProbes(const QString &deviceAddr, const QString &deviceName, QObject *parent):
-    DeviceTheengs(deviceAddr, deviceName, parent)
+DeviceTheengsProbes::DeviceTheengsProbes(const QString &deviceAddr, const QString &deviceName,
+                                         const QString &deviceModel, const QString &devicePropsJson,
+                                         QObject *parent):
+    DeviceTheengs(deviceAddr, deviceName, deviceModel, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_THEENGS_PROBES;
 
@@ -53,8 +55,10 @@ DeviceTheengsProbes::DeviceTheengsProbes(const QString &deviceAddr, const QStrin
     }
 }
 
-DeviceTheengsProbes::DeviceTheengsProbes(const QBluetoothDeviceInfo &d, QObject *parent):
-    DeviceTheengs(d, parent)
+DeviceTheengsProbes::DeviceTheengsProbes(const QBluetoothDeviceInfo &d,
+                                         const QString &deviceModel, const QString &devicePropsJson,
+                                         QObject *parent):
+    DeviceTheengs(d, deviceModel, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_THEENGS_PROBES;
 

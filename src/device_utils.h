@@ -36,7 +36,7 @@
 
 #define LATEST_KNOWN_FIRMWARE_HYGROTEMP_LYWSDCGQ        "00.00.66"
 #define LATEST_KNOWN_FIRMWARE_HYGROTEMP_EINK            "1.1.2_0007"
-#define LATEST_KNOWN_FIRMWARE_HYGROTEMP_EINK2           "1.0.0_0010"
+#define LATEST_KNOWN_FIRMWARE_HYGROTEMP_MHOC401         "1.0.0_0010"
 #define LATEST_KNOWN_FIRMWARE_HYGROTEMP_CGDK2           "2.1.0"
 #define LATEST_KNOWN_FIRMWARE_HYGROTEMP_CLOCK           "1.1.2_0019"
 #define LATEST_KNOWN_FIRMWARE_HYGROTEMP_ALARM           "?"
@@ -61,12 +61,15 @@ public:
         qRegisterMetaType<DeviceUtils::DeviceSensors>("DeviceUtils::DeviceSensors");
         qRegisterMetaType<DeviceUtils::DeviceStatus>("DeviceUtils::DeviceStatus");
         qRegisterMetaType<DeviceUtils::DeviceActions>("DeviceUtils::DeviceActions");
+        qRegisterMetaType<DeviceUtils::BluetoothMode>("DeviceUtils::BluetoothMode");
 
         qmlRegisterType<DeviceUtils>("DeviceUtils", 1, 0, "DeviceUtils");
     }
 
     enum BluetoothMode {
-        DEVICE_BLE_CONNECTION       = (1 <<  0), //!< Can connect to the device to get/set data
+        DEVICE_BLE_UNKNOWN          = 0,
+
+        DEVICE_BLE_CONNECTION       = (1 <<  0), //!< Can get/set data by connecting to the device
         DEVICE_BLE_ADVERTISEMENT    = (1 <<  1), //!< Can get data from advertisement packet
     };
     Q_ENUM(BluetoothMode)

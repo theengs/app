@@ -37,6 +37,7 @@ DeviceHygrotempCGG1::DeviceHygrotempCGG1(QString &deviceAddr, QString &deviceNam
     DeviceSensor(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
+    m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
     m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
     m_deviceSensors += DeviceUtils::SENSOR_HUMIDITY;
 
@@ -50,6 +51,7 @@ DeviceHygrotempCGG1::DeviceHygrotempCGG1(const QBluetoothDeviceInfo &d, QObject 
     DeviceSensor(d, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
+    m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
     m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
     m_deviceSensors += DeviceUtils::SENSOR_HUMIDITY;
 

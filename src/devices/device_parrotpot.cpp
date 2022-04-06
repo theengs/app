@@ -38,6 +38,7 @@ DeviceParrotPot::DeviceParrotPot(QString &deviceAddr, QString &deviceName, QObje
     DeviceSensor(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR;
+    m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_CONNECTION;
     //m_deviceCapabilities += DeviceUtils::DEVICE_REALTIME;
     //m_deviceCapabilities += DeviceUtils::DEVICE_HISTORY;
     m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
@@ -57,6 +58,7 @@ DeviceParrotPot::DeviceParrotPot(const QBluetoothDeviceInfo &d, QObject *parent)
     DeviceSensor(d, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR;
+    m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_CONNECTION;
     //m_deviceCapabilities += DeviceUtils::DEVICE_REALTIME;
     //m_deviceCapabilities += DeviceUtils::DEVICE_HISTORY;
     m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;

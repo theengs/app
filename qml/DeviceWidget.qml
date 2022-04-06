@@ -158,8 +158,8 @@ Item {
     function updateSensorSettings() {
         // Title
         if (boxDevice.isPlantSensor) {
-            if (boxDevice.devicePlantName !== "")
-                textTitle.text = boxDevice.devicePlantName
+            if (boxDevice.deviceAssociatedName !== "")
+                textTitle.text = boxDevice.deviceAssociatedName
             else
                 textTitle.text = boxDevice.deviceName
         } else if (boxDevice.isThermometer) {

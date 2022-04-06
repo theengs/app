@@ -329,6 +329,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
 
             visible: (deviceManager.bluetooth &&
+                      (selectedDevice && selectedDevice.hasBluetoothConnection) &&
                       (appContent.state === "DevicePlantSensor" ||
                        appContent.state === "DeviceThermometer" ||
                        appContent.state === "DeviceEnvironmental"))

@@ -43,6 +43,7 @@
 #include "devices/device_theengs_scales.h"
 
 #include <decoder.h> // Theengs decoder
+#include <string>
 #include "utils/utils_bits.h"
 
 #include <QList>
@@ -107,11 +108,12 @@ DeviceManager::DeviceManager(bool daemon)
 
         // Load saved devices
         QSqlQuery queryDevices;
-        queryDevices.exec("SELECT deviceName, deviceAddr FROM devices");
+        queryDevices.exec("SELECT deviceName, deviceModel, deviceAddr FROM devices");
         while (queryDevices.next())
         {
             QString deviceName = queryDevices.value(0).toString();
-            QString deviceAddr = queryDevices.value(1).toString();
+            QString deviceModel_theengs = queryDevices.value(1).toString();
+            QString deviceAddr = queryDevices.value(2).toString();
 
             Device *d = nullptr;
 
@@ -152,11 +154,24 @@ DeviceManager::DeviceManager(bool daemon)
             else if (deviceName == "GeigerCounter")
                 d = new DeviceEsp32GeigerCounter(deviceAddr, deviceName, this);
 
-            else
+            if (!d) // Theengs devices?
             {
-                // Theengs devices?
-                if (deviceName.contains("TPMS") || deviceName.contains("BBQ"))
-                    d = new DeviceTheengsProbes(deviceAddr, deviceName, this);
+                TheengsDecoder dec;
+                QString device_props = QString::fromLatin1(dec.getTheengProperties(deviceModel_theengs.toLatin1()));
+
+                if (!deviceModel_theengs.isEmpty() && !device_props.isEmpty())
+                {
+                    if (deviceName.contains("TPMS") || deviceName.contains("BBQ"))
+                    {
+                        d = new DeviceTheengsProbes(deviceAddr, deviceName,
+                                                    deviceModel_theengs, device_props, this);
+                    }
+                    else
+                    {
+                        d = new DeviceTheengsGeneric(deviceAddr, deviceName,
+                                                     deviceModel_theengs, device_props, this);
+                    }
+                }
             }
 
             if (d)
@@ -663,6 +678,7 @@ void DeviceManager::addNearbyBleDevice(const QBluetoothDeviceInfo &info)
         d->setRssi(info.rssi());
 
         //connect(d, &Device::deviceUpdated, this, &DeviceManager::refreshDevices_finished);
+        //connect(d, &Device::deviceSynced, this, &DeviceManager::syncDevices_finished);
 
         // Add it to the UI
         m_devices_nearby_model->addDevice(d);
@@ -838,6 +854,7 @@ void DeviceManager::detectBleDevice(const QBluetoothDeviceInfo &info)
         if (dd && dd->getAddress() == info.address().toString())
 #endif
         {
+            if (!dd->hasBluetoothConnection()) return;
             if (dd->getName() == "ThermoBeacon") return;
 
             if (dd->needsUpdateRt())
@@ -870,7 +887,10 @@ void DeviceManager::updateDevice(const QString &address)
         for (auto d: qAsConst(m_devices_model->m_devices))
         {
             Device *dd = qobject_cast<Device*>(d);
-            if (dd && dd->getAddress() == address)
+            if (dd &&
+                dd->getAddress() == address &&
+                dd->isEnabled() &&
+                dd->hasBluetoothConnection())
             {
                 m_devices_updating_queue += dd;
                 dd->refreshQueue();
@@ -984,6 +1004,8 @@ void DeviceManager::refreshDevices_check()
             if (dd)
             {
                 if (dd->getName() == "ThermoBeacon") continue;
+                if (!dd->isEnabled()) continue;
+                if (!dd->hasBluetoothConnection()) continue;
 
                 if (dd->needsUpdateRt())
                 {
@@ -1022,7 +1044,10 @@ void DeviceManager::refreshDevices_start()
         for (auto d: qAsConst(m_devices_model->m_devices))
         {
             Device *dd = qobject_cast<Device*>(d);
-            if (dd && (dd->getLastUpdateInt() < 0 || dd->getLastUpdateInt() > 2))
+            if (dd &&
+                dd->isEnabled() &&
+                dd->hasBluetoothConnection() &&
+                (dd->getLastUpdateInt() < 0 || dd->getLastUpdateInt() > 2))
             {
                 if (dd->getName() == "ThermoBeacon") continue;
 
@@ -1049,7 +1074,7 @@ void DeviceManager::refreshDevices_continue()
             {
                 // update next device in the list
                 Device *d = qobject_cast<Device*>(m_devices_updating_queue.first());
-                if (d)
+                if (d && d->needsUpdateRt())
                 {
                     m_devices_updating_queue.removeFirst();
                     m_devices_updating.push_back(d);
@@ -1448,7 +1473,8 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
     else // Theengs device maybe?
     {
         int device_id = -1;
-        std::string device_str;
+        QString device_modelId;
+        QString device_props;
 
         const QList<quint16> &manufacturerIds = info.manufacturerIds();
         for (const auto id: manufacturerIds)
@@ -1465,11 +1491,10 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
 
             if (dec.decodeBLEJson(obj) >= 0)
             {
-                DynamicJsonDocument doc2(512);
-                device_id = dec.getTheengModel(doc2, doc["model_id"]);
-                serializeJson(doc2, device_str);
+                device_modelId = QString::fromStdString(doc["model_id"]);
+                device_props = QString::fromLatin1(dec.getTheengProperties(device_modelId.toLatin1()));
 
-                qDebug() << "addDevice() FOUND (mfd) id:" << device_id;
+                qDebug() << "addDevice() FOUND [mfd] :" << device_modelId << device_props;
             }
         }
 
@@ -1482,65 +1507,43 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
             doc["id"] = info.address().toString().toStdString();
             doc["name"] = info.name().toStdString();
             doc["servicedata"] = info.serviceData(id).toHex().toStdString();
-            //doc["servicedatauuid"] = id.toString(QUuid::Id128).toStdString();
+            doc["servicedatauuid"] = id.toString(QUuid::Id128).toStdString();
 
             TheengsDecoder dec;
             JsonObject obj = doc.as<JsonObject>();
 
             if (dec.decodeBLEJson(obj) >= 0)
             {
-                DynamicJsonDocument doc2(512);
-                device_id = dec.getTheengModel(doc2, doc["model_id"]);
-                serializeJson(doc2, device_str);
+                device_modelId = QString::fromStdString(doc["model_id"]);
+                device_props = QString::fromLatin1(dec.getTheengProperties(device_modelId.toLatin1()));
 
-                qDebug() << "addDevice() FOUND (mfd) id:" << device_id;
+                qDebug() << "addDevice() FOUND [svd] :" << device_modelId << device_props;
             }
         }
 
-        qDebug() << "device_id[out]  " << device_id;
-        qDebug() << "device_str[out] " << QString::fromStdString(device_str);
+        if (device_id >= 0 || (!device_modelId.isEmpty() && !device_props.isEmpty()))
+        {
+            //qDebug() << "device_id[out]  " << device_id;
+            //qDebug() << "device_modelId[out]  " << device_modelId;
+            //qDebug() << "device_props[out] " << device_props;
 
-        if (device_id == TheengsDecoder::IBT_2X ||
-            device_id == TheengsDecoder::IBT4XS ||
-            device_id == TheengsDecoder::IBT6XS_SOLIS ||
-            device_id == TheengsDecoder::H5055 ||
-            device_id == TheengsDecoder::TPMS)
-        {
-            d = new DeviceTheengsProbes(info, this);
-        }
-        else if (device_id == TheengsDecoder::XMTZC04HM ||
-                 device_id == TheengsDecoder::XMTZC05HM)
-        {
-            d = new DeviceTheengsScales(info, this);
-        }
-        else if (device_id == TheengsDecoder::CGG1_V1 ||
-                 device_id == TheengsDecoder::CGG1_V2 ||
-                 device_id == TheengsDecoder::BM_V23 ||
-                 device_id == TheengsDecoder::IBSTH1 ||
-                 device_id == TheengsDecoder::IBSTH2 ||
-                 device_id == TheengsDecoder::H5072 ||
-                 device_id == TheengsDecoder::H5075 ||
-                 device_id == TheengsDecoder::H5102 ||
-                 device_id == TheengsDecoder::LYWSD03MMC_ATC ||
-                 device_id == TheengsDecoder::LYWSD03MMC_PVVX)
-        {
-            d = new DeviceTheengsGeneric(info, this);
-        }
-        else
-        {
-            // MIBAND
-            // RUUVITAG_RAWV1
-            // RUUVITAG_RAWV1
-            // MOKOBEACON
-            // MOKOBEACONXPRO
-            // SBS1 ?
-            // INODE_EM ?
-
-            // CGH1
-            // CGPR1
-            //MUE4094RT
-
-            //d = new DeviceTheengsGeneric(info, this);
+            if (device_id == TheengsDecoder::IBT_2X ||
+                device_id == TheengsDecoder::IBT4XS ||
+                device_id == TheengsDecoder::IBT6XS_SOLIS ||
+                device_id == TheengsDecoder::H5055 ||
+                device_id == TheengsDecoder::TPMS)
+            {
+                d = new DeviceTheengsProbes(info, device_modelId, device_props, this);
+            }
+            else if (device_id == TheengsDecoder::XMTZC04HM ||
+                     device_id == TheengsDecoder::XMTZC05HM)
+            {
+                d = new DeviceTheengsScales(info, device_modelId, device_props, this);
+            }
+            else
+            {
+                d = new DeviceTheengsGeneric(info, device_modelId, device_props, this);
+            }
         }
     }
 
@@ -1561,8 +1564,9 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
                 qDebug() << "+ Adding device: " << d->getName() << "/" << d->getAddress() << "to local database";
 
                 QSqlQuery addDevice;
-                addDevice.prepare("INSERT INTO devices (deviceAddr, deviceName) VALUES (:deviceAddr, :deviceName)");
+                addDevice.prepare("INSERT INTO devices (deviceAddr, deviceModel, deviceName) VALUES (:deviceAddr, :deviceModel, :deviceName)");
                 addDevice.bindValue(":deviceAddr", d->getAddress());
+                addDevice.bindValue(":deviceModel", d->getModel());
                 addDevice.bindValue(":deviceName", d->getName());
                 addDevice.exec();
             }
@@ -1570,13 +1574,17 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
 
         //
         connect(d, &Device::deviceUpdated, this, &DeviceManager::refreshDevices_finished);
+        connect(d, &Device::deviceSynced, this, &DeviceManager::syncDevices_finished);
 
-        SettingsManager *sm = SettingsManager::getInstance();
-        if (d->getLastUpdateInt() < 0 ||
-            d->getLastUpdateInt() > (int)(d->isPlantSensor() ? sm->getUpdateIntervalPlant() : sm->getUpdateIntervalThermo()))
+        if (d->hasBluetoothConnection())
         {
-            // Old or no data: mark it as queued until the deviceManager sync new devices
-            d->refreshQueue();
+            SettingsManager *sm = SettingsManager::getInstance();
+            if (d->getLastUpdateInt() < 0 ||
+                d->getLastUpdateInt() > (int)(d->isPlantSensor() ? sm->getUpdateIntervalPlant() : sm->getUpdateIntervalThermo()))
+            {
+                // Old or no data: mark it as queued until the deviceManager sync new devices
+                d->refreshQueue();
+            }
         }
 
         // Add it to the UI
@@ -1603,6 +1611,7 @@ void DeviceManager::removeDevice(const QString &address)
 
             // Make sure its not being used
             disconnect(dd, &Device::deviceUpdated, this, &DeviceManager::refreshDevices_finished);
+            disconnect(dd, &Device::deviceSynced, this, &DeviceManager::syncDevices_finished);
             dd->refreshStop();
             refreshDevices_finished(dd);
 

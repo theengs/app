@@ -38,16 +38,18 @@
 
 /* ************************************************************************** */
 
-DeviceTheengs::DeviceTheengs(const QString &deviceAddr, const QString &deviceName, QObject *parent):
+DeviceTheengs::DeviceTheengs(const QString &deviceAddr, const QString &deviceName, const QString &deviceModel, QObject *parent):
     DeviceSensor(deviceAddr, deviceName, parent)
 {
-    //
+    m_deviceModel = deviceModel;
+    m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 }
 
-DeviceTheengs::DeviceTheengs(const QBluetoothDeviceInfo &d, QObject *parent):
+DeviceTheengs::DeviceTheengs(const QBluetoothDeviceInfo &d, const QString &deviceModel, QObject *parent):
     DeviceSensor(d, parent)
 {
-    //
+    m_deviceModel = deviceModel;
+    m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 }
 
 DeviceTheengs::~DeviceTheengs()
@@ -73,6 +75,37 @@ void DeviceTheengs::addLowEnergyService(const QBluetoothUuid &uuid)
 bool DeviceTheengs::hasData() const
 {
     // If we have immediate data (<12h old)
+/*
+    if (isPlantSensor())
+    {
+        if (m_soilMoisture > -80.f)
+            return true;
+    }
+    else if (isThermometer())
+    {
+        if (m_temperature > -80.f)
+            return true;
+    }
+    else if (isEnvironmentalSensor())
+    {
+        if (m_dbInternal || m_dbExternal)
+        {
+            QSqlQuery hasData;
+            hasData.prepare("SELECT COUNT(*) FROM sensorData WHERE deviceAddr = :deviceAddr;");
+            hasData.bindValue(":deviceAddr", getAddress());
+
+            if (hasData.exec() == false)
+                qWarning() << "> hasData.exec(DeviceTheengs) ERROR" << hasData.lastError().type() << ":" << hasData.lastError().text();
+
+            while (hasData.next())
+            {
+                if (hasData.value(0).toInt() > 0) // data count
+                    return true;
+            }
+        }
+    }
+    else
+*/
     if (isProbe())
     {
         if (m_temperature1 > -80.f || m_temperature2 > -80.f)
@@ -83,8 +116,12 @@ bool DeviceTheengs::hasData() const
         if (m_weight > -80.f)
             return true;
     }
+    else
+    {
+        return DeviceSensor::hasData();
+    }
 
-    // db?
+    // TODO // also check db?
 
     return false;
 }
@@ -132,14 +169,26 @@ float DeviceTheengs::getTemp6() const
 
 void DeviceTheengs::parseAdvertisementData(const QByteArray &value)
 {
-    qDebug() << "DeviceTheengs::parseAdvertisementTheengs()";
-    qDebug() << "DATA: 0x" << value.toHex();
+    //qDebug() << "DeviceTheengs::parseAdvertisementData()";
+    //qDebug() << "DATA: 0x" << value.toHex();
 }
 
 void DeviceTheengs::parseAdvertisementTheengs(const QString &json)
 {
-    qDebug() << "DeviceTheengs::parseAdvertisementTheengs()";
-    qDebug() << "DATA:" << json;
+    //qDebug() << "DeviceTheengs::parseAdvertisementTheengs()";
+    //qDebug() << "JSON:" << json;
+
+    parseTheengsAdvertisement(json);
+}
+
+void DeviceTheengs::parseTheengsProps(const QString &json)
+{
+    //
+}
+
+void DeviceTheengs::parseTheengsAdvertisement(const QString &json)
+{
+    //
 }
 
 /* ************************************************************************** */
