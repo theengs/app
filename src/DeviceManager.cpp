@@ -157,7 +157,7 @@ DeviceManager::DeviceManager(bool daemon)
             if (!d) // Theengs devices?
             {
                 TheengsDecoder dec;
-                QString device_props = QString::fromLatin1(dec.getTheengProperties(deviceModel_theengs.toLatin1()));
+                QString device_props = QString::fromUtf8(dec.getTheengProperties(deviceModel_theengs.toLatin1()));
 
                 if (!deviceModel_theengs.isEmpty() && !device_props.isEmpty())
                 {
@@ -1515,7 +1515,7 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
             if (dec.decodeBLEJson(obj) >= 0)
             {
                 device_modelId = QString::fromStdString(doc["model_id"]);
-                device_props = QString::fromLatin1(dec.getTheengProperties(device_modelId.toLatin1()));
+                device_props = QString::fromUtf8(dec.getTheengProperties(device_modelId.toLatin1()));
 
                 qDebug() << "addDevice() FOUND [svd] :" << device_modelId << device_props;
             }

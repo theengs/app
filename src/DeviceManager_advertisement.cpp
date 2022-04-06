@@ -81,7 +81,8 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                     serializeJson(obj, output);
                     //qDebug() << "output:" << output.c_str();
 
-                    static_cast<DeviceTheengs *>(dd)->parseAdvertisementTheengs(QString::fromStdString(output));
+                    DeviceTheengs *ddd = dynamic_cast<DeviceTheengs*>(dd);
+                    if (ddd) ddd->parseAdvertisementTheengs(QString::fromStdString(output));
 
                     SettingsManager *sm = SettingsManager::getInstance();
                     MqttManager *mq = MqttManager::getInstance();
@@ -128,7 +129,8 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                     serializeJson(obj, output);
                     //qDebug() << "output:" << output.c_str();
 
-                    static_cast<DeviceTheengs *>(dd)->parseAdvertisementTheengs(QString::fromStdString(output));
+                    DeviceTheengs *ddd = dynamic_cast<DeviceTheengs*>(dd);
+                    if (ddd) ddd->parseAdvertisementTheengs(QString::fromStdString(output));
 
                     SettingsManager *sm = SettingsManager::getInstance();
                     MqttManager *mq = MqttManager::getInstance();
