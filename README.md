@@ -4,32 +4,22 @@
 
 ### Features
 
-* Support many plant sensors and thermometers
-
-
-## Supported devices
-
-Theengs has been built to be compatible with as many Bluetooth sensors as possible.  
-Various new Bluetooth devices and sensors can be added to Theengs. If you have one in mind, you can contact us and we'll see what can be done!  
-
-
-## Screenshots
-
-![GUI_MOBILE2](https://i.imgur.com/e1bXFXM.png)
+* Support many Bluetooth Low Energy sensors
 
 
 ## Documentation
 
 #### Dependencies
 
-You will need a C++17 compiler and Qt 6.3+ (with Qt Charts).  
+You will need a C++17 compiler and Qt 6.3+ (with Qt Connectivity and Qt Charts modules).  
 For Android builds, you'll need the appropriates JDK (11) SDK (23+) and NDK (22+). You can customize Android build environment using the `assets/android/gradle.properties` file.  
+For Windows builds, you'll need the MSVC 2019+ compiler.  
 
 #### Building Theengs
 
 ```bash
-$ git clone https://github.com/emericg/Theengs.git
-$ cd Theengs/
+$ git clone https://github.com/theengs/app.git
+$ cd app/
 $ qmake
 $ make
 ```
@@ -49,7 +39,7 @@ The application will ask you for permission to use Bluetooth. You can learn more
 
 ##### Linux ('live mode' and 'historical data')
 
-While reading FlowerCare historical entry count, the sensors usually freeze for up to a second, and the Linux kernel consider that to be a connection timeout.  
+While reading Flower Care and RoPot historical entry count, the sensors usually freeze for up to a second, and the Linux kernel consider that to be a connection timeout.  
 To be able to get the historical data working on Linux, you'll need to increase the "supervision timeout" value (while root):
 
 ```bash
@@ -66,6 +56,7 @@ You could also give Theengs binary the _net_raw_ and _net_admin_ capabilities, s
 #### Third party projects used by Theengs
 
 * [Qt](https://www.qt.io) ([LGPL 3](https://www.gnu.org/licenses/lgpl-3.0.txt))
+* [QtMqtt](https://www.qt.io) ([GPL 3](https://www.gnu.org/licenses/gpl-3.0.txt))
 * [StatusBar](https://github.com/jpnurmi/statusbar) ([MIT](https://opensource.org/licenses/MIT))
 * [ekkesSHAREexample](https://github.com/ekke/ekkesSHAREexample) ([license](https://github.com/ekke/ekkesSHAREexample/blob/master/LICENSE))
 * [SingleApplication](https://github.com/itay-grudev/SingleApplication) ([MIT](https://opensource.org/licenses/MIT))
@@ -88,5 +79,3 @@ You can help us find and report bugs, suggest new features, help with translatio
 
 Theengs is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.  
 Read the [LICENSE](LICENSE) file or [consult the license on the FSF website](https://www.gnu.org/licenses/gpl-3.0.txt) directly.
-
-> Emeric Grange <emeric.grange@gmail.com>
