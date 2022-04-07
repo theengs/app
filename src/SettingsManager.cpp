@@ -123,6 +123,9 @@ bool SettingsManager::readSettings()
         if (settings.contains("settings/notifsEnabled"))
             m_notificationsEnabled = settings.value("settings/notifsEnabled").toBool();
 
+        if (settings.contains("settings/updateIntervalBackground"))
+            m_updateIntervalBackground = settings.value("settings/updateIntervalBackground").toInt();
+
         if (settings.contains("settings/updateIntervalPlant"))
             m_updateIntervalPlant = settings.value("settings/updateIntervalPlant").toInt();
 
@@ -228,6 +231,7 @@ bool SettingsManager::writeSettings()
         settings.setValue("settings/startMinimized", m_startMinimized);
         settings.setValue("settings/trayEnabled", m_systrayEnabled);
         settings.setValue("settings/notifsEnabled", m_notificationsEnabled);
+        settings.setValue("settings/updateIntervalBackground", m_updateIntervalBackground);
         settings.setValue("settings/updateIntervalPlant", m_updateIntervalPlant);
         settings.setValue("settings/updateIntervalThermo", m_updateIntervalThermo);
         settings.setValue("settings/graphHistory", m_graphHistogram);
@@ -292,6 +296,8 @@ void SettingsManager::resetSettings()
     Q_EMIT systrayChanged();
     m_notificationsEnabled = true;
     Q_EMIT notifsChanged();
+    m_updateIntervalBackground = BACKGROUND_UPDATE_INTERVAL;
+    Q_EMIT updateIntervalBackgroundChanged();
     m_updateIntervalPlant = PLANT_UPDATE_INTERVAL;
     Q_EMIT updateIntervalPlantChanged();
     m_updateIntervalThermo = THERMO_UPDATE_INTERVAL;
@@ -472,6 +478,16 @@ void SettingsManager::setBluetoothSimUpdates(const unsigned value)
         m_bluetoothSimUpdates = value;
         writeSettings();
         Q_EMIT bluetoothSimUpdatesChanged();
+    }
+}
+
+void SettingsManager::setUpdateIntervalBackground(const unsigned value)
+{
+    if (m_updateIntervalBackground != value)
+    {
+        m_updateIntervalBackground = value;
+        writeSettings();
+        Q_EMIT updateIntervalBackgroundChanged();
     }
 }
 

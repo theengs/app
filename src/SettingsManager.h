@@ -20,9 +20,10 @@
 #define SETTINGS_MANAGER_H
 /* ************************************************************************** */
 
-#define PLANT_UPDATE_INTERVAL   240 // minutes
-#define THERMO_UPDATE_INTERVAL  120 // minutes
-#define ERROR_UPDATE_INTERVAL    60 // minutes
+#define BACKGROUND_UPDATE_INTERVAL    5 // minutes
+#define PLANT_UPDATE_INTERVAL       180 // minutes
+#define THERMO_UPDATE_INTERVAL       60 // minutes
+#define ERROR_UPDATE_INTERVAL        60 // minutes
 
 #include <QObject>
 #include <QString>
@@ -55,6 +56,7 @@ class SettingsManager: public QObject
     Q_PROPERTY(bool bluetoothControl READ getBluetoothControl WRITE setBluetoothControl NOTIFY bluetoothControlChanged)
     Q_PROPERTY(bool bluetoothLimitScanningRange READ getBluetoothLimitScanningRange WRITE setBluetoothLimitScanningRange NOTIFY bluetoothLimitScanningRangeChanged)
     Q_PROPERTY(uint bluetoothSimUpdates READ getBluetoothSimUpdates WRITE setBluetoothSimUpdates NOTIFY bluetoothSimUpdatesChanged)
+    Q_PROPERTY(uint updateIntervalBackground READ getUpdateIntervalBackground WRITE setUpdateIntervalBackground NOTIFY updateIntervalBackgroundChanged)
     Q_PROPERTY(uint updateIntervalPlant READ getUpdateIntervalPlant WRITE setUpdateIntervalPlant NOTIFY updateIntervalPlantChanged)
     Q_PROPERTY(uint updateIntervalThermo READ getUpdateIntervalThermo WRITE setUpdateIntervalThermo NOTIFY updateIntervalThermoChanged)
     Q_PROPERTY(QString orderBy READ getOrderBy WRITE setOrderBy NOTIFY orderByChanged)
@@ -101,8 +103,9 @@ class SettingsManager: public QObject
 
     bool m_bluetoothControl = false;
     bool m_bluetoothLimitScanningRange = false;
-    unsigned m_bluetoothSimUpdates = 2;
+    unsigned m_bluetoothSimUpdates = 4;
 
+    unsigned m_updateIntervalBackground = BACKGROUND_UPDATE_INTERVAL;
     unsigned m_updateIntervalPlant = PLANT_UPDATE_INTERVAL;
     unsigned m_updateIntervalThermo = THERMO_UPDATE_INTERVAL;
     QString m_graphHistogram = "weekly";
@@ -151,6 +154,7 @@ Q_SIGNALS:
     void bluetoothControlChanged();
     void bluetoothSimUpdatesChanged();
     void bluetoothLimitScanningRangeChanged();
+    void updateIntervalBackgroundChanged();
     void updateIntervalPlantChanged();
     void updateIntervalThermoChanged();
     void graphHistogramChanged();
@@ -204,6 +208,9 @@ public:
 
     unsigned getBluetoothSimUpdates() const { return m_bluetoothSimUpdates; }
     void setBluetoothSimUpdates(const unsigned value);
+
+    unsigned getUpdateIntervalBackground() const { return m_updateIntervalBackground; }
+    void setUpdateIntervalBackground(const unsigned value);
 
     unsigned getUpdateIntervalPlant() const { return m_updateIntervalPlant; }
     void setUpdateIntervalPlant(const unsigned value);

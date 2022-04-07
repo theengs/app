@@ -50,7 +50,7 @@ Item {
             anchors.right: parent.right
             height: singleColumn ? maxheight : devicePlantSensorSettings.height
 
-            property int maxheight: 2*topPadding + 3*spacing + itemDevice.height + itemDeviceInfos.height + itemDeviceSensors.height + itemDeviceSettings.height
+            property int maxheight: 2*topPadding + 3*spacing + itemDevice.height + itemDeviceInfos.height + itemDeviceSensors.height //+ itemDeviceSettings.height
 
             topPadding: 14
             padding: 12
@@ -546,7 +546,8 @@ Item {
 
                     SwitchThemedDesktop {
                         text: checked ? qsTr("Device is enabled") : qsTr("Device is disabled")
-                        checked: true
+                        checked: currentDevice.deviceEnabled
+                        onClicked: currentDevice.deviceEnabled = checked
                     }
 
                     Row {

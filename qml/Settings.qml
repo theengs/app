@@ -264,8 +264,14 @@ Item {
                 font.pixelSize: Theme.fontSizeContentSmall
             }
 
-            ////////
+            Item { // spacer
+                height: 1
+                anchors.left: parent.left
+                anchors.right: parent.right
+            }
 
+            ////////
+/*
             Rectangle {
                 height: 1
                 anchors.left: parent.left
@@ -369,8 +375,44 @@ Item {
                 anchors.right: parent.right
                 color: Theme.colorSeparator
             }
+*/
+            ////////////////
 
-            ////////
+            Rectangle {
+                height: 48
+                anchors.left: parent.left
+                anchors.right: parent.right
+                color: Theme.colorForeground
+
+                IconSvg {
+                    id: image_ble
+                    width: 24
+                    height: 24
+                    anchors.left: parent.left
+                    anchors.leftMargin: screenPaddingLeft + 16
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    color: Theme.colorIcon
+                    source: "qrc:/assets/icons_material/baseline-bluetooth-24px.svg"
+                }
+
+                Text {
+                    id: text_ble
+                    anchors.left: image_ble.right
+                    anchors.leftMargin: 24
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    text: qsTr("Bluetooth")
+                    textFormat: Text.PlainText
+                    font.pixelSize: Theme.fontSizeContent
+                    font.bold: false
+                    color: Theme.colorText
+                    wrapMode: Text.WordWrap
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            ////////////////
 
             Item {
                 id: element_bluetoothControl
@@ -441,8 +483,18 @@ Item {
                 font.pixelSize: Theme.fontSizeContentSmall
             }
 
-            ////////
+            Rectangle {
+                height: 1
+                anchors.left: parent.left
+                anchors.right: parent.right
+                color: Theme.colorSeparator
 
+                // Android only
+                visible: (Qt.platform.os === "android")
+            }
+
+            ////////
+/*
             Item {
                 id: element_bluetoothSimUpdate
                 height: 48
@@ -537,8 +589,6 @@ Item {
                 font.pixelSize: Theme.fontSizeContentSmall
             }
 
-            ////////
-
             Rectangle {
                 height: 1
                 anchors.left: parent.left
@@ -546,7 +596,7 @@ Item {
                 color: Theme.colorSeparator
                 visible: (Qt.platform.os !== "ios")
             }
-
+*/
             ////////
 
             Item {
@@ -633,6 +683,66 @@ Item {
                 wrapMode: Text.WordWrap
                 color: Theme.colorSubText
                 font.pixelSize: Theme.fontSizeContentSmall
+            }
+
+            ////////
+
+            Item {
+                id: element_update_background
+                height: 48
+                anchors.left: parent.left
+                anchors.leftMargin: screenPaddingLeft
+                anchors.right: parent.right
+                anchors.rightMargin: screenPaddingRight
+
+                IconSvg {
+                    id: image_update_background
+                    width: 24
+                    height: 24
+                    anchors.left: parent.left
+                    anchors.leftMargin: 16
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    color: Theme.colorIcon
+                    source: "qrc:/assets/icons_material/duotone-timer-24px.svg"
+                }
+
+                Text {
+                    id: text_update_background
+                    height: 40
+                    anchors.left: image_update_background.right
+                    anchors.leftMargin: 24
+                    anchors.right: spinBox_update_background.left
+                    anchors.rightMargin: 16
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    text: qsTr("Background update interval")
+                    textFormat: Text.PlainText
+                    font.pixelSize: Theme.fontSizeContent
+                    color: Theme.colorText
+                    wrapMode: Text.WordWrap
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                SpinBoxThemed {
+                    id: spinBox_update_background
+                    width: 128
+                    height: 36
+                    anchors.right: parent.right
+                    anchors.rightMargin: 12
+                    anchors.verticalCenter: parent.verticalCenter
+                    z: 1
+
+                    legend: " " + qsTr("m.", "short for minutes")
+                    from: 5
+                    to: 360
+                    stepSize: 5
+                    editable: false
+                    wheelEnabled: isDesktop
+
+                    value: (settingsManager.updateIntervalBackground)
+                    onValueModified: settingsManager.updateIntervalBackground = value
+                }
             }
 
             ////////
@@ -745,223 +855,6 @@ Item {
             ////////////////
 
             Item {
-                id: element_update
-                height: 48
-                anchors.left: parent.left
-                anchors.leftMargin: screenPaddingLeft
-                anchors.right: parent.right
-                anchors.rightMargin: screenPaddingRight
-
-                IconSvg {
-                    id: image_update
-                    width: 24
-                    height: 24
-                    anchors.left: parent.left
-                    anchors.leftMargin: 16
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    color: Theme.colorIcon
-                    source: "qrc:/assets/icons_material/duotone-timer-24px.svg"
-                }
-
-                Text {
-                    id: text_update
-                    height: 40
-                    anchors.left: image_update.right
-                    anchors.leftMargin: 24
-                    anchors.right: spinBox_update.left
-                    anchors.rightMargin: 16
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: qsTr("Update interval")
-                    textFormat: Text.PlainText
-                    font.pixelSize: Theme.fontSizeContent
-                    color: Theme.colorText
-                    wrapMode: Text.WordWrap
-                    verticalAlignment: Text.AlignVCenter
-                }
-
-                SpinBoxThemed {
-                    id: spinBox_update
-                    width: 128
-                    height: 36
-                    anchors.right: parent.right
-                    anchors.rightMargin: 12
-                    anchors.verticalCenter: parent.verticalCenter
-                    z: 1
-
-                    legend: " " + qsTr("h.", "short for hours")
-                    from: 1
-                    to: 24
-                    stepSize: 1
-                    editable: false
-                    wheelEnabled: isDesktop
-
-                    value: (settingsManager.updateIntervalPlant / 60)
-                    onValueModified: settingsManager.updateIntervalPlant = (value * 60)
-                }
-            }
-
-            ////////
-
-            Item {
-                id: element_bigindicators
-                height: 48
-                anchors.left: parent.left
-                anchors.leftMargin: screenPaddingLeft
-                anchors.right: parent.right
-                anchors.rightMargin: screenPaddingRight
-
-                IconSvg {
-                    id: image_bigindicators
-                    width: 24
-                    height: 24
-                    anchors.left: parent.left
-                    anchors.leftMargin: 16
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    color: Theme.colorIcon
-                    source: "qrc:/assets/icons_custom/indicators-24px.svg"
-                }
-
-                Text {
-                    id: text_bigindicators
-                    height: 40
-                    anchors.left: image_bigindicators.right
-                    anchors.leftMargin: 24
-                    anchors.right: row_bigindicators.left
-                    anchors.rightMargin: 16
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: qsTr("Data indicators style")
-                    textFormat: Text.PlainText
-                    font.pixelSize: Theme.fontSizeContent
-                    color: Theme.colorText
-                    wrapMode: Text.WordWrap
-                    verticalAlignment: Text.AlignVCenter
-                }
-
-                Row {
-                    id: row_bigindicators
-                    anchors.right: parent.right
-                    anchors.rightMargin: 12
-                    anchors.verticalCenter: text_bigindicators.verticalCenter
-                    spacing: 12
-
-                    RadioButtonThemed {
-                        text: qsTr("thin")
-
-                        checked: !settingsManager.bigIndicator
-                        onClicked: settingsManager.bigIndicator = false
-                    }
-
-                    RadioButtonThemed {
-                        text: qsTr("solid")
-
-                        checked: settingsManager.bigIndicator
-                        onClicked: settingsManager.bigIndicator = true
-                    }
-                }
-            }
-
-            ////////////////
-
-            Rectangle {
-                height: 48
-                anchors.left: parent.left
-                anchors.right: parent.right
-                color: Theme.colorForeground
-
-                IconSvg {
-                    id: image_thermometer
-                    width: 24
-                    height: 24
-                    anchors.left: parent.left
-                    anchors.leftMargin: screenPaddingLeft + 16
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    color: Theme.colorIcon
-                    source: "qrc:/assets/icons_custom/thermometer_big-24px.svg"
-                }
-
-                Text {
-                    id: text_thermometer
-                    anchors.left: image_thermometer.right
-                    anchors.leftMargin: 24
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: qsTr("Thermometers")
-                    textFormat: Text.PlainText
-                    font.pixelSize: Theme.fontSizeContent
-                    color: Theme.colorText
-                    wrapMode: Text.WordWrap
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-
-            ////////////////
-
-            Item {
-                id: element_thermometer_update
-                height: 48
-                anchors.left: parent.left
-                anchors.leftMargin: screenPaddingLeft
-                anchors.right: parent.right
-                anchors.rightMargin: screenPaddingRight
-
-                IconSvg {
-                    id: image_thermometer_update
-                    width: 24
-                    height: 24
-                    anchors.left: parent.left
-                    anchors.leftMargin: 16
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    color: Theme.colorIcon
-                    source: "qrc:/assets/icons_material/duotone-timer-24px.svg"
-                }
-
-                Text {
-                    id: text_thermometer_update
-                    height: 40
-                    anchors.left: image_thermometer_update.right
-                    anchors.leftMargin: 24
-                    anchors.right: spinBox_thermometer_update.left
-                    anchors.rightMargin: 16
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: qsTr("Update interval")
-                    textFormat: Text.PlainText
-                    font.pixelSize: Theme.fontSizeContent
-                    color: Theme.colorText
-                    wrapMode: Text.WordWrap
-                    verticalAlignment: Text.AlignVCenter
-                }
-
-                SpinBoxThemed {
-                    id: spinBox_thermometer_update
-                    width: 128
-                    height: 36
-                    anchors.right: parent.right
-                    anchors.rightMargin: 12
-                    anchors.verticalCenter: parent.verticalCenter
-                    z: 1
-
-                    legend: " " + qsTr("h.", "short for hours")
-                    from: 1
-                    to: 24
-                    stepSize: 1
-                    editable: false
-                    wheelEnabled: isDesktop
-
-                    value: (settingsManager.updateIntervalThermo / 60)
-                    onValueModified: settingsManager.updateIntervalThermo = (value * 60)
-                }
-            }
-
-            ////////
-
-            Item {
                 id: element_thermometer_unit
                 height: 48
                 anchors.left: parent.left
@@ -1018,6 +911,190 @@ Item {
                     }
                 }
             }
+
+            ////////
+
+            Item {
+                id: element_bigindicators
+                height: 48
+                anchors.left: parent.left
+                anchors.leftMargin: screenPaddingLeft
+                anchors.right: parent.right
+                anchors.rightMargin: screenPaddingRight
+
+                IconSvg {
+                    id: image_bigindicators
+                    width: 24
+                    height: 24
+                    anchors.left: parent.left
+                    anchors.leftMargin: 16
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    color: Theme.colorIcon
+                    source: "qrc:/assets/icons_custom/indicators-24px.svg"
+                }
+
+                Text {
+                    id: text_bigindicators
+                    height: 40
+                    anchors.left: image_bigindicators.right
+                    anchors.leftMargin: 24
+                    anchors.right: row_bigindicators.left
+                    anchors.rightMargin: 16
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    text: qsTr("Plant indicators style")
+                    textFormat: Text.PlainText
+                    font.pixelSize: Theme.fontSizeContent
+                    color: Theme.colorText
+                    wrapMode: Text.WordWrap
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                Row {
+                    id: row_bigindicators
+                    anchors.right: parent.right
+                    anchors.rightMargin: 12
+                    anchors.verticalCenter: text_bigindicators.verticalCenter
+                    spacing: 12
+
+                    RadioButtonThemed {
+                        text: qsTr("thin")
+
+                        checked: !settingsManager.bigIndicator
+                        onClicked: settingsManager.bigIndicator = false
+                    }
+
+                    RadioButtonThemed {
+                        text: qsTr("solid")
+
+                        checked: settingsManager.bigIndicator
+                        onClicked: settingsManager.bigIndicator = true
+                    }
+                }
+            }
+
+            ////////
+
+            Item {
+                id: element_update
+                height: 48
+                anchors.left: parent.left
+                anchors.leftMargin: screenPaddingLeft
+                anchors.right: parent.right
+                anchors.rightMargin: screenPaddingRight
+
+                IconSvg {
+                    id: image_update
+                    width: 24
+                    height: 24
+                    anchors.left: parent.left
+                    anchors.leftMargin: 16
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    color: Theme.colorIcon
+                    source: "qrc:/assets/icons_material/duotone-timer-24px.svg"
+                }
+
+                Text {
+                    id: text_update
+                    height: 40
+                    anchors.left: image_update.right
+                    anchors.leftMargin: 24
+                    anchors.right: spinBox_update.left
+                    anchors.rightMargin: 16
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    text: qsTr("Update interval (plant sensor)")
+                    textFormat: Text.PlainText
+                    font.pixelSize: Theme.fontSizeContent
+                    color: Theme.colorText
+                    wrapMode: Text.WordWrap
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                SpinBoxThemed {
+                    id: spinBox_update
+                    width: 128
+                    height: 36
+                    anchors.right: parent.right
+                    anchors.rightMargin: 12
+                    anchors.verticalCenter: parent.verticalCenter
+                    z: 1
+
+                    legend: " " + qsTr("h.", "short for hours")
+                    from: 1
+                    to: 24
+                    stepSize: 1
+                    editable: false
+                    wheelEnabled: isDesktop
+
+                    value: (settingsManager.updateIntervalPlant / 60)
+                    onValueModified: settingsManager.updateIntervalPlant = (value * 60)
+                }
+            }
+
+            ////////
+
+            Item {
+                id: element_thermometer_update
+                height: 48
+                anchors.left: parent.left
+                anchors.leftMargin: screenPaddingLeft
+                anchors.right: parent.right
+                anchors.rightMargin: screenPaddingRight
+
+                IconSvg {
+                    id: image_thermometer_update
+                    width: 24
+                    height: 24
+                    anchors.left: parent.left
+                    anchors.leftMargin: 16
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    color: Theme.colorIcon
+                    source: "qrc:/assets/icons_material/duotone-timer-24px.svg"
+                }
+
+                Text {
+                    id: text_thermometer_update
+                    height: 40
+                    anchors.left: image_thermometer_update.right
+                    anchors.leftMargin: 24
+                    anchors.right: spinBox_thermometer_update.left
+                    anchors.rightMargin: 16
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    text: qsTr("Update interval (thermometer)")
+                    textFormat: Text.PlainText
+                    font.pixelSize: Theme.fontSizeContent
+                    color: Theme.colorText
+                    wrapMode: Text.WordWrap
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                SpinBoxThemed {
+                    id: spinBox_thermometer_update
+                    width: 128
+                    height: 36
+                    anchors.right: parent.right
+                    anchors.rightMargin: 12
+                    anchors.verticalCenter: parent.verticalCenter
+                    z: 1
+
+                    legend: " " + qsTr("h.", "short for hours")
+                    from: 1
+                    to: 24
+                    stepSize: 1
+                    editable: false
+                    wheelEnabled: isDesktop
+
+                    value: (settingsManager.updateIntervalThermo / 60)
+                    onValueModified: settingsManager.updateIntervalThermo = (value * 60)
+                }
+            }
+
+            ////////
         }
     }
 

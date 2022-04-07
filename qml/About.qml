@@ -201,10 +201,10 @@ Item {
 
                 IconSvg {
                     id: releasenotesImg
-                    width: 24
-                    height: 24
+                    width: 28
+                    height: 28
                     anchors.left: parent.left
-                    anchors.leftMargin: 4
+                    anchors.leftMargin: 2
                     anchors.verticalCenter: parent.verticalCenter
 
                     source: "qrc:/assets/icons_material/outline-new_releases-24px.svg"
@@ -435,81 +435,6 @@ Item {
             }
 
             ////////
-
-            Item {
-                height: 16
-                anchors.left: parent.left
-                anchors.right: parent.right
-
-                Rectangle {
-                    height: 1
-                    color: Theme.colorSeparator
-                    anchors.left: parent.left
-                    anchors.leftMargin: -(screenPaddingLeft + 16)
-                    anchors.right: parent.right
-                    anchors.rightMargin: -(screenPaddingRight + 16)
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-
-            Item {
-                id: translators
-                height: 24 + translatorsLabel.height + translatorsColumn.height
-                anchors.left: parent.left
-                anchors.leftMargin: 0
-                anchors.right: parent.right
-                anchors.rightMargin: 0
-
-                IconSvg {
-                    id: translatorsImg
-                    width: 24
-                    height: 24
-                    anchors.left: parent.left
-                    anchors.leftMargin: 4
-                    anchors.verticalCenter: translatorsLabel.verticalCenter
-
-                    source: "qrc:/assets/icons_material/duotone-translate-24px.svg"
-                    color: Theme.colorIcon
-                }
-
-                Text {
-                    id: translatorsLabel
-                    anchors.top: parent.top
-                    anchors.topMargin: 8
-                    anchors.left: parent.left
-                    anchors.leftMargin: 48
-                    anchors.right: parent.right
-                    anchors.rightMargin: 0
-
-                    text: qsTr("Special thanks to our translators:")
-                    textFormat: Text.PlainText
-                    color: Theme.colorText
-                    font.pixelSize: Theme.fontSizeContent
-                    wrapMode: Text.WordWrap
-                }
-
-                Column {
-                    id: translatorsColumn
-                    anchors.top: translatorsLabel.bottom
-                    anchors.topMargin: 8
-                    anchors.left: parent.left
-                    anchors.leftMargin: 48
-                    anchors.right: parent.right
-                    anchors.rightMargin: 0
-                    spacing: 4
-
-                    Text {
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.rightMargin: 12
-
-                        text: "- Timmy (French)"
-                        textFormat: Text.PlainText
-                        color: Theme.colorText
-                        font.pixelSize: Theme.fontSizeContent
-                    }
-                }
-            }
         }
     }
 }

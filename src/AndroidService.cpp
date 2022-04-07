@@ -39,7 +39,7 @@ AndroidService::AndroidService(DeviceManager *dm, QObject *parent) : QObject(par
     // Save the managers
     m_deviceManager = dm;
 
-    // Configure update timer (only started on desktop)
+    // Configure update timer
     connect(&m_workTimer, &QTimer::timeout, this, &AndroidService::gotowork);
     setWorkTimer(10);
 }
@@ -67,6 +67,8 @@ void AndroidService::gotowork()
 
         MqttManager *mq = MqttManager::getInstance();
         if (sm->getMQTT()) mq->reconnect2();
+
+        setWorkTimer(sm->getUpdateIntervalBackground());
 
         //NotificationManager *nm = NotificationManager::getInstance();
         //nm->setNotification2("Theengs AndroidService", QDateTime::currentDateTime().toString());

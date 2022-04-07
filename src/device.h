@@ -108,7 +108,7 @@ class Device: public QObject
 
     Q_PROPERTY(QString deviceLocationName READ getLocationName WRITE setLocationName NOTIFY settingsUpdated)
     Q_PROPERTY(QString deviceAssociatedName READ getAssociatedName WRITE setAssociatedName NOTIFY settingsUpdated)
-    Q_PROPERTY(bool deviceEnabled READ isEnabled NOTIFY settingsUpdated)
+    Q_PROPERTY(bool deviceEnabled READ isEnabled WRITE setEnabled NOTIFY settingsUpdated)
     Q_PROPERTY(bool deviceIsInside READ isInside NOTIFY settingsUpdated)
     Q_PROPERTY(bool deviceIsOutside READ isOutside NOTIFY settingsUpdated)
 
@@ -336,7 +336,7 @@ public:
     void setAssociatedName(const QString &name);
     int getManualIndex() const { return m_manualOrderIndex; }
     bool isEnabled() const { return m_isEnabled; }
-    Q_INVOKABLE void setEnabled(const bool enabled);
+    void setEnabled(const bool enabled);
     bool isInside() const { return !m_isOutside; }
     bool isOutside() const { return m_isOutside; }
     Q_INVOKABLE void setOutside(const bool outside);
