@@ -1074,17 +1074,21 @@ void DeviceManager::refreshDevices_continue()
             {
                 // update next device in the list
                 Device *d = qobject_cast<Device*>(m_devices_updating_queue.first());
-                if (d && d->needsUpdateRt())
+                if (d)
                 {
                     m_devices_updating_queue.removeFirst();
-                    m_devices_updating.push_back(d);
-                    if (!m_updating)
-                    {
-                        m_updating = true;
-                        Q_EMIT updatingChanged();
-                    }
 
-                    d->refreshStart();
+                    if (d->needsUpdateRt())
+                    {
+                        m_devices_updating.push_back(d);
+                        if (!m_updating)
+                        {
+                            m_updating = true;
+                            Q_EMIT updatingChanged();
+                        }
+
+                        d->refreshStart();
+                    }
                 }
             }
         }
