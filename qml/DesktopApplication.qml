@@ -174,12 +174,15 @@ ApplicationWindow {
                     Theme.loadTheme(settingsManager.appTheme)
 
                     // Check Bluetooth anyway (on macOS)
-                    //if (Qt.platform.os === "osx") deviceManager.checkBluetooth();
+                    //if (Qt.platform.os === "osx") deviceManager.checkBluetooth()
 
-                    if (appContent.state === "DeviceBrowser")
+                    if (appContent.state === "DeviceBrowser") {
+                        // Restart the device browser
                         deviceManager.scanNearby_start()
-                    else
+                    } else {
+                        // Listen for nearby devices
                         deviceManager.refreshDevices_listen()
+                    }
 
                     break
             }

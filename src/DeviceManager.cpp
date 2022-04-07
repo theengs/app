@@ -238,6 +238,16 @@ bool DeviceManager::isScanning() const
     return m_scanning;
 }
 
+bool DeviceManager::isUpdating() const
+{
+    return !m_devices_updating.empty();
+}
+
+bool DeviceManager::isSyncing() const
+{
+    return !m_devices_syncing.empty();
+}
+
 /* ************************************************************************** */
 
 bool DeviceManager::checkBluetooth()
@@ -883,11 +893,6 @@ void DeviceManager::detectBleDevice(const QBluetoothDeviceInfo &info)
 /* ************************************************************************** */
 /* ************************************************************************** */
 
-bool DeviceManager::isUpdating() const
-{
-    return !m_devices_updating.empty();
-}
-
 void DeviceManager::updateDevice(const QString &address)
 {
     //qDebug() << "DeviceManager::updateDevice() " << address;
@@ -1136,6 +1141,20 @@ void DeviceManager::refreshDevices_stop()
 {
     //qDebug() << "DeviceManager::refreshDevices_stop()";
 
+    if (m_discoveryAgent->isActive())
+    {
+        m_discoveryAgent->stop();
+
+        if (m_listening) {
+            m_listening = false;
+            Q_EMIT listeningChanged();
+        }
+        if (m_scanning) {
+            m_scanning = false;
+            Q_EMIT scanningChanged();
+        }
+    }
+
     if (!m_devices_updating_queue.empty())
     {
         for (auto d: qAsConst(m_devices_updating))
@@ -1146,19 +1165,14 @@ void DeviceManager::refreshDevices_stop()
 
         m_devices_updating_queue.clear();
         m_devices_updating.clear();
-        m_updating = false;
 
+        m_updating = false;
         Q_EMIT updatingChanged();
     }
 }
 
 /* ************************************************************************** */
 /* ************************************************************************** */
-
-bool DeviceManager::isSyncing() const
-{
-    return !m_devices_syncing.empty();
-}
 
 void DeviceManager::syncDevice(const QString &address)
 {

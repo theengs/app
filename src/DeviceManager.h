@@ -96,8 +96,8 @@ class DeviceManager: public QObject
     bool isSyncing() const;
 
     static const int ble_scanning_duration = 20;
-    static const int ble_listening_duration = 60;
-    static const int ble_listening_duration_nearby = 30;
+    static const int ble_listening_duration = 0;
+    static const int ble_listening_duration_nearby = 60;
     static const int ble_listening_duration_background = 30;
 
     bool hasBluetooth() const;
@@ -130,6 +130,7 @@ public:
 
     Q_INVOKABLE void scanDevices_start();
     Q_INVOKABLE void scanDevices_stop();
+
     Q_INVOKABLE void listenDevices();
 
     Q_INVOKABLE void refreshDevices_background(); //!< Refresh devices on the background

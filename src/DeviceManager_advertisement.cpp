@@ -151,10 +151,11 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                     //qDebug() << "input :" << input.c_str();
                 }
             }
-/*
+
             // Dynamic updates
             if (m_listening)
             {
+                if (!dd->hasBluetoothConnection()) return;
                 if (dd->getName() == "ThermoBeacon") return;
 
                 if (dd->needsUpdateRt())
@@ -165,7 +166,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                     refreshDevices_continue();
                 }
             }
-*/
+
             return;
         }
     }

@@ -47,9 +47,9 @@ ApplicationWindow {
 /*
         console.log("handleNotches()")
         console.log("screen width : " + Screen.width)
-        console.log("screen width avail  : " + Screen.desktopAvailableWidth)
-        console.log("screen height : " + Screen.height)
-        console.log("screen height avail  : " + Screen.desktopAvailableHeight)
+        console.log("screen width avail : " + Screen.desktopAvailableWidth)
+        console.log("screen height: " + Screen.height)
+        console.log("screen height avail: " + Screen.desktopAvailableHeight)
         console.log("screen orientation: " + Screen.orientation)
         console.log("screen orientation (primary): " + Screen.primaryOrientation)
 */
@@ -237,10 +237,13 @@ ApplicationWindow {
                     // Check if we need an 'automatic' theme change
                     Theme.loadTheme(settingsManager.appTheme)
 
-                    if (appContent.state === "DeviceBrowser")
+                    if (appContent.state === "DeviceBrowser") {
+                        // Restart the device browser
                         deviceManager.scanNearby_start()
-                    else
+                    } else {
+                        // Listen for nearby devices
                         deviceManager.refreshDevices_listen()
+                    }
 
                     break
             }
