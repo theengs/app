@@ -39,8 +39,9 @@ class MqttManager: public QObject
     Q_PROPERTY(bool status READ getStatus NOTIFY statusChanged)
 
     QMqttClient *m_mqttclient = nullptr;
+
     QString m_mqttLog; // DEBUG
-    Q_PROPERTY(QString stuff READ getLog NOTIFY logChanged) // DEBUG
+    Q_PROPERTY(QString log READ getLog NOTIFY logChanged) // DEBUG
 
     static MqttManager *instance;
 

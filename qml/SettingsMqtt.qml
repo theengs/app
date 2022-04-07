@@ -404,7 +404,7 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 16
 
-                text: mqttManager.stuff
+                text: mqttManager.log
                 textFormat: Text.PlainText
                 wrapMode: Text.WordWrap
                 color: Theme.colorSubText

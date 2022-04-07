@@ -129,9 +129,9 @@ bool MqttManager::publish(QString topic, QString str)
         QMqttTopicName t(topic);
         QByteArray m(str.toLocal8Bit());
 
-        QString l = "publish: " + topic + " / " + str + "\n";
-        m_mqttLog.push_front(l);
-        Q_EMIT logChanged();
+        //QString l = "publish: " + topic + " / " + str + "\n";
+        //m_mqttLog.push_front(l);
+        //Q_EMIT logChanged();
 
         m_mqttclient->publish(t, m);
 
@@ -158,13 +158,12 @@ void MqttManager::updateStateChange()
     if (m_mqttclient)
     {
         qDebug() << "MqttManager::updateStateChange()" << m_mqttclient->state();
-
-        if (m_mqttclient->state() == 0) m_mqttLog.push_front("status: disconnected \n");
-        if (m_mqttclient->state() == 1) m_mqttLog.push_front("status: connecting \n");
-        if (m_mqttclient->state() == 2) m_mqttLog.push_front("status: connected \n");
-        Q_EMIT logChanged();
-
         Q_EMIT statusChanged();
+
+        //if (m_mqttclient->state() == 0) m_mqttLog.push_front("status: disconnected \n");
+        //if (m_mqttclient->state() == 1) m_mqttLog.push_front("status: connecting \n");
+        //if (m_mqttclient->state() == 2) m_mqttLog.push_front("status: connected \n");
+        //Q_EMIT logChanged();
     }
 }
 
