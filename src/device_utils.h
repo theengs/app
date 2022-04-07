@@ -81,11 +81,12 @@ public:
         DEVICE_THERMOMETER,
         DEVICE_ENVIRONMENTAL,
 
-        DEVICE_LAMP                 = 8,
-        DEVICE_SCALE,
-        DEVICE_BUTTON,
+        DEVICE_REMOTE               = 8,
         DEVICE_BEACON,
         DEVICE_PGP,
+        DEVICE_LAMP,
+        DEVICE_SCALE,
+        DEVICE_MOTION,
 
         DEVICE_THEENGS = 16,
         DEVICE_THEENGS_PROBES,

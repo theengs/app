@@ -132,8 +132,8 @@ public:
 
         // others
         SENSOR_PRESENCE             = (1 << 24),
-        SENSOR_OPEN                 = (1 << 25),
-        SENSOR_MOVEMENT             = (1 << 26),
+        SENSOR_MOVEMENT             = (1 << 25),
+        SENSOR_OPEN                 = (1 << 26),
         SENSOR_ALARM                = (1 << 27),
     };
     Q_ENUM(DeviceSensorsTheengs)

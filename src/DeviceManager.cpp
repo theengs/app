@@ -39,6 +39,8 @@
 #include "devices/device_esp32_geigercounter.h"
 #include "devices/device_ess_generic.h"
 #include "devices/device_theengs_generic.h"
+#include "devices/device_theengs_beacons.h"
+#include "devices/device_theengs_motions.h"
 #include "devices/device_theengs_probes.h"
 #include "devices/device_theengs_scales.h"
 
@@ -175,7 +177,23 @@ DeviceManager::DeviceManager(bool daemon)
                     {
                         d = new DeviceTheengsScales(deviceAddr, deviceName,
                                                     deviceModel_theengs, device_props, this);
+                    }/*
+                    else if (deviceModel_theengs == "MUE4094RT" ||
+                             deviceModel_theengs == "CGPR1" ||
+                             deviceModel_theengs == "CGH1")
+                    {
+                        d = new DeviceTheengsMotions(deviceAddr, deviceName,
+                                                     deviceModel_theengs, device_props, this);
                     }
+                    else if (deviceModel_theengs == "MiBand" ||
+                             deviceModel_theengs == "INEM" ||
+                             deviceModel_theengs == "Mokobeacon" ||
+                             deviceModel_theengs == "RuuviTag_RAWv1" ||
+                             deviceModel_theengs == "RuuviTag_RAWv2")
+                    {
+                        d = new DeviceTheengsBeacons(deviceAddr, deviceName,
+                                                     deviceModel_theengs, device_props, this);
+                    }*/
                     else
                     {
                         d = new DeviceTheengsGeneric(deviceAddr, deviceName,

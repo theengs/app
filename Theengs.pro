@@ -66,6 +66,8 @@ SOURCES  += src/main.cpp \
             src/devices/device_ess_generic.cpp \
             src/device_theengs.cpp \
             src/devices/device_theengs_generic.cpp \
+            src/devices/device_theengs_beacons.cpp \
+            src/devices/device_theengs_motions.cpp \
             src/devices/device_theengs_probes.cpp \
             src/devices/device_theengs_scales.cpp \
             src/utils/utils_app.cpp \
@@ -108,6 +110,8 @@ HEADERS  += src/SettingsManager.h \
             src/devices/device_ess_generic.h \
             src/device_theengs.h \
             src/devices/device_theengs_generic.h \
+            src/devices/device_theengs_beacons.h \
+            src/devices/device_theengs_motions.h \
             src/devices/device_theengs_probes.h \
             src/devices/device_theengs_scales.h \
             src/utils/utils_app.h \
