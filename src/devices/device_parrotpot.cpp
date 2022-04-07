@@ -34,7 +34,7 @@
 
 /* ************************************************************************** */
 
-DeviceParrotPot::DeviceParrotPot(QString &deviceAddr, QString &deviceName, QObject *parent):
+DeviceParrotPot::DeviceParrotPot(const QString &deviceAddr, const QString &deviceName, QObject *parent):
     DeviceSensor(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR;

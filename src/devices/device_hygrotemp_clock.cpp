@@ -37,7 +37,7 @@
 
 /* ************************************************************************** */
 
-DeviceHygrotempClock::DeviceHygrotempClock(QString &deviceAddr, QString &deviceName, QObject *parent):
+DeviceHygrotempClock::DeviceHygrotempClock(const QString &deviceAddr, const QString &deviceName, QObject *parent):
     DeviceSensor(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_THERMOMETER;

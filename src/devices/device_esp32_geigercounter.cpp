@@ -33,7 +33,7 @@
 
 /* ************************************************************************** */
 
-DeviceEsp32GeigerCounter::DeviceEsp32GeigerCounter(QString &deviceAddr, QString &deviceName, QObject *parent):
+DeviceEsp32GeigerCounter::DeviceEsp32GeigerCounter(const QString &deviceAddr, const QString &deviceName, QObject *parent):
     DeviceSensor(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;

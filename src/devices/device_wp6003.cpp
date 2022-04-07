@@ -34,7 +34,7 @@
 
 /* ************************************************************************** */
 
-DeviceWP6003::DeviceWP6003(QString &deviceAddr, QString &deviceName, QObject *parent):
+DeviceWP6003::DeviceWP6003(const QString &deviceAddr, const QString &deviceName, QObject *parent):
     DeviceSensor(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;

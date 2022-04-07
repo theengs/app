@@ -33,7 +33,7 @@
 
 /* ************************************************************************** */
 
-DeviceHygrotempCGDK2::DeviceHygrotempCGDK2(QString &deviceAddr, QString &deviceName, QObject *parent):
+DeviceHygrotempCGDK2::DeviceHygrotempCGDK2(const QString &deviceAddr, const QString &deviceName, QObject *parent):
     DeviceSensor(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_THERMOMETER;

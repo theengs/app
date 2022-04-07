@@ -33,7 +33,7 @@
 
 /* ************************************************************************** */
 
-DeviceEsp32AirQualityMonitor::DeviceEsp32AirQualityMonitor(QString &deviceAddr, QString &deviceName, QObject *parent):
+DeviceEsp32AirQualityMonitor::DeviceEsp32AirQualityMonitor(const QString &deviceAddr, const QString &deviceName, QObject *parent):
     DeviceSensor(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;

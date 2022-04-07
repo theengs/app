@@ -38,7 +38,7 @@
 
 /* ************************************************************************** */
 
-DeviceThermoBeacon::DeviceThermoBeacon(QString &deviceAddr, QString &deviceName, QObject *parent):
+DeviceThermoBeacon::DeviceThermoBeacon(const QString &deviceAddr, const QString &deviceName, QObject *parent):
     DeviceSensor(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_THERMOMETER;

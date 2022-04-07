@@ -40,7 +40,7 @@
 class DeviceThermoBeacon: public DeviceSensor
 {
 public:
-    DeviceThermoBeacon(QString &deviceAddr, QString &deviceName, QObject *parent = nullptr);
+    DeviceThermoBeacon(const QString &deviceAddr, const QString &deviceName, QObject *parent = nullptr);
     DeviceThermoBeacon(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
     ~DeviceThermoBeacon();
 

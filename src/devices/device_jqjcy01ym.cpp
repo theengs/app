@@ -33,7 +33,7 @@
 
 /* ************************************************************************** */
 
-DeviceJQJCY01YM::DeviceJQJCY01YM(QString &deviceAddr, QString &deviceName, QObject *parent):
+DeviceJQJCY01YM::DeviceJQJCY01YM(const QString &deviceAddr, const QString &deviceName, QObject *parent):
     DeviceSensor(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;

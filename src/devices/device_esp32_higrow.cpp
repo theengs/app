@@ -33,7 +33,7 @@
 
 /* ************************************************************************** */
 
-DeviceEsp32HiGrow::DeviceEsp32HiGrow(QString &deviceAddr, QString &deviceName, QObject *parent):
+DeviceEsp32HiGrow::DeviceEsp32HiGrow(const QString &deviceAddr, const QString &deviceName, QObject *parent):
     DeviceSensor(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR;

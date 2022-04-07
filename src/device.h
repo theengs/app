@@ -232,7 +232,7 @@ protected:
     void setBatteryFirmware(const int battery, const QString &firmware);
 
 public:
-    Device(QString &deviceAddr, QString &deviceName, QObject *parent = nullptr);
+    Device(const QString &deviceAddr, const QString &deviceName, QObject *parent = nullptr);
     Device(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
     virtual ~Device();
 

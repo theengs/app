@@ -35,7 +35,7 @@
 
 /* ************************************************************************** */
 
-DeviceRopot::DeviceRopot(QString &deviceAddr, QString &deviceName, QObject *parent):
+DeviceRopot::DeviceRopot(const QString &deviceAddr, const QString &deviceName, QObject *parent):
     DeviceSensor(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR;

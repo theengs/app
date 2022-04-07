@@ -32,7 +32,7 @@
 
 /* ************************************************************************** */
 
-DeviceSensor::DeviceSensor(QString &deviceAddr, QString &deviceName, QObject *parent) :
+DeviceSensor::DeviceSensor(const QString &deviceAddr, const QString &deviceName, QObject *parent) :
     Device(deviceAddr, deviceName, parent)
 {
     // Database
