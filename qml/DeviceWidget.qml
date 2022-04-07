@@ -11,9 +11,7 @@ Item {
     implicitHeight: 128
 
     property var boxDevice: pointer
-    property bool hasHygro: boxDevice.isPlantSensor &&
-                            ((boxDevice.soilMoisture > 0 || boxDevice.soilConductivity > 0) ||
-                             (boxDevice.hasDataNamed("soilMoisture") || boxDevice.hasDataNamed("soilConductivity")))
+    property bool hasHygro: boxDevice.isPlantSensor
 
     property bool wideAssMode: (width >= 380) || (isTablet && width >= 480)
     property bool bigAssMode: false
@@ -209,62 +207,50 @@ Item {
 
             if (boxDevice.isPlantSensor) {
 
-                water.visible = false
-                temp.visible = false
-
-                // Water me notif
-                if (hasHygro && boxDevice.soilMoisture < boxDevice.limitHygroMin) {
-                    water.visible = true
-                    water.source = "qrc:/assets/icons_material/duotone-water_mid-24px.svg"
-                    temp.color = Theme.colorBlue
-                } else if (boxDevice.soilMoisture > boxDevice.limitHygroMax) {
-                    water.visible = true
-                    water.source = "qrc:/assets/icons_material/duotone-water_full-24px.svg"
-                    temp.color = Theme.colorYellow
-                }
+                alarmFreeze.visible = false
 
                 // Extreme temperature notif
                 if (boxDevice.temperatureC > 40) {
-                    temp.visible = true
-                    temp.color = Theme.colorYellow
-                    temp.source = "qrc:/assets/icons_material/duotone-wb_sunny-24px.svg"
+                    alarmFreeze.visible = true
+                    alarmFreeze.color = Theme.colorYellow
+                    alarmFreeze.source = "qrc:/assets/icons_material/duotone-wb_sunny-24px.svg"
                 } else if (boxDevice.temperatureC <= 2 && boxDevice.temperatureC > -80) {
-                    temp.visible = true
-                    temp.source = "qrc:/assets/icons_material/baseline-ac_unit-24px.svg"
+                    alarmFreeze.visible = true
+                    alarmFreeze.source = "qrc:/assets/icons_material/baseline-ac_unit-24px.svg"
 
                     if (boxDevice.temperatureC <= -4)
-                        temp.color = Theme.colorRed
+                        alarmFreeze.color = Theme.colorRed
                     else if (boxDevice.temperatureC <= -2)
-                        temp.color = Theme.colorYellow
+                        alarmFreeze.color = Theme.colorYellow
                     else
-                        temp.color = Theme.colorBlue
+                        alarmFreeze.color = Theme.colorBlue
                 }
 
             } else if (boxDevice.isEnvironmentalSensor) {
 
-                ventilate.visible = false
-                //nuclear.visible = false
-                //warning.visible = false
+                alarmVentilate.visible = false
+                //alarmRadiation.visible = false
+                //alarmWarning.visible = false
 
                 // Air warning
                 if ((boxDevice.hasVocSensor && boxDevice.voc > 1000) ||
                     (boxDevice.hasCo2Sensor && boxDevice.co2 > 1500)) {
-                    ventilate.visible = true
-                    ventilate.color = Theme.colorRed
+                    alarmVentilate.visible = true
+                    alarmVentilate.color = Theme.colorRed
                 } else if ((boxDevice.hasVocSensor && boxDevice.voc > 500) ||
                            (boxDevice.hasCo2Sensor && boxDevice.co2 > 850)) {
-                    ventilate.visible = true
-                    ventilate.color = Theme.colorYellow
+                    alarmVentilate.visible = true
+                    alarmVentilate.color = Theme.colorYellow
                 }
 
                 // Radiation warning
                 if (boxDevice.hasGeigerCounter) {
                     if (boxDevice.radioactivityM > 1) {
-                        //nuclear.visible = true
+                        //alarmRadiation.visible = true
                         //if (boxDevice.radioactivityM > 10)
-                        //    nuclear.color = Theme.colorRed
+                        //    alarmRadiation.color = Theme.colorRed
                         //else
-                        //    nuclear.color = Theme.colorYellow
+                        //    alarmRadiation.color = Theme.colorYellow
                     }
                 }
             }
@@ -485,8 +471,7 @@ Item {
 
         ////////////////
 
-        Row {
-            id: lilIcons
+        Row { // alarms icons
             height: 24
             spacing: 8
             anchors.right: rowRight.left
@@ -497,17 +482,7 @@ Item {
             visible: boxDevice.hasDataToday
 
             IconSvg {
-                id: water
-                width: bigAssMode ? 28 : 24
-                height: bigAssMode ? 28 : 24
-                anchors.verticalCenter: parent.verticalCenter
-
-                visible: false
-                source: "qrc:/assets/icons_material/duotone-water_mid-24px.svg"
-                color: Theme.colorBlue
-            }
-            IconSvg {
-                id: temp
+                id: alarmFreeze
                 width: bigAssMode ? 28 : 24
                 height: bigAssMode ? 28 : 24
                 anchors.verticalCenter: parent.verticalCenter
@@ -517,7 +492,7 @@ Item {
                 color: Theme.colorYellow
             }
             IconSvg {
-                id: ventilate
+                id: alarmVentilate
                 width: bigAssMode ? 28 : 24
                 height: bigAssMode ? 28 : 24
                 anchors.verticalCenter: parent.verticalCenter
@@ -528,7 +503,7 @@ Item {
             }
 /*
             IconSvg {
-                id: nuclear
+                id: alarmRadiation
                 width: bigAssMode ? 28 : 24
                 height: bigAssMode ? 28 : 24
                 anchors.verticalCenter: parent.verticalCenter
@@ -539,7 +514,7 @@ Item {
                 color: Theme.colorYellow
             }
             IconSvg {
-                id: warning
+                id: alarmWarning
                 width: bigAssMode ? 28 : 24
                 height: bigAssMode ? 28 : 24
                 anchors.verticalCenter: parent.verticalCenter

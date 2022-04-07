@@ -466,6 +466,7 @@ Drawer {
                                 } else {
                                     deviceManager.scanDevices_start()
                                 }
+                                appDrawer.close()
                             }
                         }
                     }

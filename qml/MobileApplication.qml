@@ -252,7 +252,7 @@ ApplicationWindow {
 
     Timer {
         id: exitTimer
-        interval: 3000
+        interval: 3333
         running: false
         repeat: false
         onRunningChanged: exitWarning.opacity = running
@@ -585,27 +585,27 @@ ApplicationWindow {
 
     ////////////////
 
-    Text {
+    Rectangle {
         id: exitWarning
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 32
-        anchors.horizontalCenter: parent.horizontalCenter
+        height: 40
 
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.margins: 12
+
+        radius: 4
+        color: Theme.colorSeparator
         visible: opacity
         opacity: 0
         Behavior on opacity { OpacityAnimator { duration: 333 } }
 
-        text: qsTr("Press one more time to exit...")
-        textFormat: Text.PlainText
-        font.pixelSize: Theme.fontSizeContent
-        color: Theme.colorForeground
-
-        Rectangle {
-            anchors.fill: parent
-            anchors.margins: -8
-            z: -1
-            radius: 4
-            color: Theme.colorSubText
+        Text {
+            anchors.centerIn: parent
+            text: qsTr("Press one more time to exit...")
+            textFormat: Text.PlainText
+            font.pixelSize: Theme.fontSizeContent
+            color: Theme.colorText
         }
     }
 }

@@ -144,7 +144,7 @@ void DeviceSensor::refreshDataFinished(bool status, bool cached)
                         else if (!m_locationName.isEmpty())
                             message = tr("You need to water the plant near '%1'").arg(m_locationName);
                         else
-                            message = tr("You need to water one of your (unnamed) plants!");
+                            message = tr("You need to water one of your plant!");
 
                         nm->setNotification2("Plant Alarm", message);
                     }
