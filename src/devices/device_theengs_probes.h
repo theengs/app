@@ -31,9 +31,10 @@
 /* ************************************************************************** */
 
 /*!
- * InkBird IBT-2X / IBT-4XS / IBT-6XS temperature probes
- * Govee H5055 "Bluetooth BBQ Thermometer"
- * Xiaomi "Temperature and Pression Monitoring System"
+ * Theengs probes:
+ * - InkBird IBT-2X / IBT-4XS / IBT-6XS temperature probes
+ * - Govee H5055 "Bluetooth BBQ Thermometer"
+ * - Xiaomi "Temperature and Pression Monitoring System"
  */
 class DeviceTheengsProbes: public DeviceTheengs
 {
@@ -48,7 +49,9 @@ public:
                         QObject *parent = nullptr);
     ~DeviceTheengsProbes();
 
-    void parseAdvertisementTheengs(const QString &json);
+    // theengs decoder
+    void parseTheengsProps(const QString &json);
+    void parseTheengsAdvertisement(const QString &json);
 };
 
 /* ************************************************************************** */

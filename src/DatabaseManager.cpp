@@ -92,7 +92,7 @@ bool DatabaseManager::openDatabase_sqlite()
 
             if (dbDirectory.exists())
             {
-                dbPath += "/datas.db";
+                dbPath += "/data.db";
 
                 QSqlDatabase dbFile(QSqlDatabase::addDatabase("QSQLITE"));
                 dbFile.setDatabaseName(dbPath);
@@ -316,10 +316,10 @@ void DatabaseManager::createDatabase()
         createDbVersion.prepare("CREATE TABLE version (dbVersion INT);");
         if (createDbVersion.exec())
         {
-            QSqlQuery addVersion;
-            addVersion.prepare("INSERT INTO version (dbVersion) VALUES (:dbVersion)");
-            addVersion.bindValue(":dbVersion", CURRENT_DB_VERSION);
-            addVersion.exec();
+            QSqlQuery writeDbVersion;
+            writeDbVersion.prepare("INSERT INTO version (dbVersion) VALUES (:dbVersion)");
+            writeDbVersion.bindValue(":dbVersion", CURRENT_DB_VERSION);
+            writeDbVersion.exec();
         }
         else
         {
@@ -386,25 +386,26 @@ void DatabaseManager::createDatabase()
     {
         qDebug() << "+ Adding 'plantData' table to local database";
 
-        QSqlQuery createData;
-        createData.prepare("CREATE TABLE plantData (" \
-                           "deviceAddr CHAR(38)," \
-                           "ts DATETIME," \
-                           "ts_full DATETIME," \
-                             "soilMoisture INT," \
-                             "soilConductivity INT," \
-                             "soilTemperature FLOAT," \
-                             "soilPH FLOAT," \
-                             "temperature FLOAT," \
-                             "humidity FLOAT," \
-                             "luminosity INT," \
-                             "watertank FLOAT," \
-                           " PRIMARY KEY(deviceAddr, ts), " \
-                           " FOREIGN KEY(deviceAddr) REFERENCES devices(deviceAddr) ON DELETE CASCADE ON UPDATE NO ACTION " \
-                           ");");
+        QSqlQuery createPlantData;
+        createPlantData.prepare("CREATE TABLE plantData (" \
+                                "deviceID INT," \
+                                "deviceAddr CHAR(38)," \
+                                "ts DATETIME," \
+                                "ts_full DATETIME," \
+                                  "soilMoisture INT," \
+                                  "soilConductivity INT," \
+                                  "soilTemperature FLOAT," \
+                                  "soilPH FLOAT," \
+                                  "temperature FLOAT," \
+                                  "humidity FLOAT," \
+                                  "luminosity INT," \
+                                  "watertank FLOAT," \
+                                " PRIMARY KEY(deviceAddr, ts), " \
+                                " FOREIGN KEY(deviceAddr) REFERENCES devices(deviceAddr) ON DELETE CASCADE ON UPDATE NO ACTION " \
+                                ");");
 
-        if (createData.exec() == false)
-            qWarning() << "> createData.exec() ERROR" << createData.lastError().type() << ":" << createData.lastError().text();
+        if (createPlantData.exec() == false)
+            qWarning() << "> createPlantData.exec() ERROR" << createPlantData.lastError().type() << ":" << createPlantData.lastError().text();
     }
 
     if (!tableExists("sensorData"))
@@ -441,6 +442,21 @@ void DatabaseManager::createDatabase()
 
         if (createSensorData.exec() == false)
             qWarning() << "> createSensorData.exec() ERROR" << createSensorData.lastError().type() << ":" << createSensorData.lastError().text();
+    }
+
+    if (!tableExists("sensorTheengs"))
+    {
+        //qDebug() << "+ Adding 'sensorTheengs' table to local database";
+        //QSqlQuery createSensorTheengs;
+        //createSensorTheengs.prepare("CREATE TABLE sensorTheengs (" \
+        //                            "deviceID INT," \
+        //                            "deviceAddr CHAR(38)," \
+        //                            "todo INT," \
+        //                            " FOREIGN KEY(deviceAddr) REFERENCES devices(deviceAddr) ON DELETE CASCADE ON UPDATE NO ACTION " \
+        //                            ");");
+
+        //if (createSensorTheengs.exec() == false)
+        //    qWarning() << "> createSensorTheengs.exec() ERROR" << createSensorTheengs.lastError().type() << ":" << createSensorTheengs.lastError().text();
     }
 }
 

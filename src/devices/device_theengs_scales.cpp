@@ -42,7 +42,11 @@ DeviceTheengsScales::DeviceTheengsScales(const QString &deviceAddr, const QStrin
                                          QObject *parent):
     DeviceTheengs(deviceAddr, deviceName, deviceModel, parent)
 {
+    m_deviceModel = deviceModel;
     m_deviceType = DeviceUtils::DEVICE_SCALE;
+    m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
+
+    parseTheengsProps(devicePropsJson);
 }
 
 DeviceTheengsScales::DeviceTheengsScales(const QBluetoothDeviceInfo &d,
@@ -50,20 +54,45 @@ DeviceTheengsScales::DeviceTheengsScales(const QBluetoothDeviceInfo &d,
                                          QObject *parent):
     DeviceTheengs(d, deviceModel, parent)
 {
+    m_deviceModel = deviceModel;
     m_deviceType = DeviceUtils::DEVICE_SCALE;
+    m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
+
+    parseTheengsProps(devicePropsJson);
 }
 
 DeviceTheengsScales::~DeviceTheengsScales()
 {
-    if (m_bleController) m_bleController->disconnectFromDevice();
+    //
 }
 
 /* ************************************************************************** */
+/* ************************************************************************** */
 
-void DeviceTheengsScales::parseAdvertisementTheengs(const QString &json)
+void DeviceTheengsScales::parseTheengsProps(const QString &json)
 {
-    qDebug() << "DeviceTheengsScales::parseAdvertisementTheengs()";
-    qDebug() << "JSON:" << json;
+    //qDebug() << "DeviceTheengsScales::parseTheengsProps()";
+    //qDebug() << "JSON:" << json;
+
+    QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
+    QJsonObject prop = doc.object()["properties"].toObject();
+
+    // Capabilities
+    if (prop.contains("batt")) m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
+    Q_EMIT capabilitiesUpdated();
+
+    // Sensors
+    if (prop.contains("weighing_mode")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_WEIGHT_MODE;
+    if (prop.contains("unit")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_WEIGHT_UNIT;
+    if (prop.contains("weight")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_WEIGHT;
+    if (prop.contains("impedance")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_IMPEDANCE;
+    Q_EMIT sensorsUpdated();
+}
+
+void DeviceTheengsScales::parseTheengsAdvertisement(const QString &json)
+{
+    //qDebug() << "DeviceTheengsScales::parseTheengsAdvertisement()";
+    //qDebug() << "JSON:" << json;
 
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
     QJsonObject obj = doc.object();
@@ -107,5 +136,10 @@ void DeviceTheengsScales::parseAdvertisementTheengs(const QString &json)
         }
     }
 }
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+
+// TODO db
 
 /* ************************************************************************** */

@@ -161,9 +161,19 @@ DeviceManager::DeviceManager(bool daemon)
 
                 if (!deviceModel_theengs.isEmpty() && !device_props.isEmpty())
                 {
-                    if (deviceName.contains("TPMS") || deviceName.contains("BBQ"))
+                    if (deviceModel_theengs == "TPMS" ||
+                        deviceModel_theengs == "H5055"  ||
+                        deviceModel_theengs == "IBT-2X" ||
+                        deviceModel_theengs == "IBT-4XS"||
+                        deviceModel_theengs == "IBT-6XS/SOLIS-6")
                     {
                         d = new DeviceTheengsProbes(deviceAddr, deviceName,
+                                                    deviceModel_theengs, device_props, this);
+                    }
+                    else if (deviceModel_theengs == "XMTZC01HM/XMTZC04HM" ||
+                             deviceModel_theengs == "XMTZC02HM/XMTZC05HM")
+                    {
+                        d = new DeviceTheengsScales(deviceAddr, deviceName,
                                                     deviceModel_theengs, device_props, this);
                     }
                     else
@@ -1476,8 +1486,8 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
     }
     else // Theengs device maybe?
     {
-        int device_id = -1;
-        QString device_modelId;
+        QString device_model_theengs;
+        QString device_modelid_theengs;
         QString device_props;
 
         const QList<quint16> &manufacturerIds = info.manufacturerIds();
@@ -1495,10 +1505,11 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
 
             if (dec.decodeBLEJson(obj) >= 0)
             {
-                device_modelId = QString::fromStdString(doc["model_id"]);
-                device_props = QString::fromLatin1(dec.getTheengProperties(device_modelId.toLatin1()));
+                device_model_theengs = QString::fromStdString(doc["model"]);
+                device_modelid_theengs = QString::fromStdString(doc["model_id"]);
+                device_props = QString::fromLatin1(dec.getTheengProperties(device_modelid_theengs.toLatin1()));
 
-                qDebug() << "addDevice() FOUND [mfd] :" << device_modelId << device_props;
+                qDebug() << "addDevice() FOUND [mfd] :" << device_modelid_theengs << device_props;
             }
         }
 
@@ -1518,35 +1529,35 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
 
             if (dec.decodeBLEJson(obj) >= 0)
             {
-                device_modelId = QString::fromStdString(doc["model_id"]);
-                device_props = QString::fromUtf8(dec.getTheengProperties(device_modelId.toLatin1()));
+                device_model_theengs = QString::fromStdString(doc["model"]);
+                device_modelid_theengs = QString::fromStdString(doc["model_id"]);
+                device_props = QString::fromUtf8(dec.getTheengProperties(device_modelid_theengs.toLatin1()));
 
-                qDebug() << "addDevice() FOUND [svd] :" << device_modelId << device_props;
+                qDebug() << "addDevice() FOUND [svd] :" << device_modelid_theengs << device_props;
             }
         }
 
-        if (device_id >= 0 || (!device_modelId.isEmpty() && !device_props.isEmpty()))
+        if ((!device_modelid_theengs.isEmpty() && !device_props.isEmpty()))
         {
-            //qDebug() << "device_id[out]  " << device_id;
             //qDebug() << "device_modelId[out]  " << device_modelId;
             //qDebug() << "device_props[out] " << device_props;
 
-            if (device_id == TheengsDecoder::IBT_2X ||
-                device_id == TheengsDecoder::IBT4XS ||
-                device_id == TheengsDecoder::IBT6XS_SOLIS ||
-                device_id == TheengsDecoder::H5055 ||
-                device_id == TheengsDecoder::TPMS)
+            if (device_modelid_theengs == "TPMS" ||
+                device_modelid_theengs == "H5055"  ||
+                device_modelid_theengs == "IBT-2X" ||
+                device_modelid_theengs == "IBT-4XS"||
+                device_modelid_theengs == "IBT-6XS/SOLIS-6")
             {
-                d = new DeviceTheengsProbes(info, device_modelId, device_props, this);
+                d = new DeviceTheengsProbes(info, device_modelid_theengs, device_props, this);
             }
-            else if (device_id == TheengsDecoder::XMTZC04HM ||
-                     device_id == TheengsDecoder::XMTZC05HM)
+            else if (device_modelid_theengs == "XMTZC01HM/XMTZC04HM" ||
+                     device_modelid_theengs == "XMTZC02HM/XMTZC05HM")
             {
-                d = new DeviceTheengsScales(info, device_modelId, device_props, this);
+                d = new DeviceTheengsScales(info, device_modelid_theengs, device_props, this);
             }
             else
             {
-                d = new DeviceTheengsGeneric(info, device_modelId, device_props, this);
+                d = new DeviceTheengsGeneric(info, device_modelid_theengs, device_props, this);
             }
         }
     }

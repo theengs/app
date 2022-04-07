@@ -38,21 +38,23 @@
 /* ************************************************************************** */
 
 DeviceTheengsGeneric::DeviceTheengsGeneric(const QString &deviceAddr, const QString &deviceName,
-                                           const QString &deviceModel, const QString &json,
+                                           const QString &deviceModel, const QString &devicePropsJson,
                                            QObject *parent):
     DeviceTheengs(deviceAddr, deviceName, deviceModel, parent)
 {
     m_deviceModel = deviceModel;
 
-    parseTheengsProps(json);
+    parseTheengsProps(devicePropsJson);
 }
 
 DeviceTheengsGeneric::DeviceTheengsGeneric(const QBluetoothDeviceInfo &d,
-                                           const QString &deviceModel, const QString &json,
+                                           const QString &deviceModel, const QString &devicePropsJson,
                                            QObject *parent):
     DeviceTheengs(d, deviceModel, parent)
 {
-    parseTheengsProps(json);
+    m_deviceModel = deviceModel;
+
+    parseTheengsProps(devicePropsJson);
 }
 
 DeviceTheengsGeneric::~DeviceTheengsGeneric()
@@ -69,10 +71,6 @@ void DeviceTheengsGeneric::parseTheengsProps(const QString &json)
     qDebug() << "JSON:" << json;
 
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
-
-    //QJsonObject obj = doc.object();
-    //int model_id = obj["model_id"].toInt();
-
     QJsonObject prop = doc.object()["properties"].toObject();
 
     // Capabilities

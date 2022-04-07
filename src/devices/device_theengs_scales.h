@@ -48,8 +48,9 @@ public:
                         QObject *parent = nullptr);
     ~DeviceTheengsScales();
 
-    // adv
-    void parseAdvertisementTheengs(const QString &json);
+    // theengs decoder
+    void parseTheengsProps(const QString &json);
+    void parseTheengsAdvertisement(const QString &json);
 };
 
 /* ************************************************************************** */

@@ -42,17 +42,11 @@ DeviceTheengsProbes::DeviceTheengsProbes(const QString &deviceAddr, const QStrin
                                          QObject *parent):
     DeviceTheengs(deviceAddr, deviceName, deviceModel, parent)
 {
+    m_deviceModel = deviceModel;
     m_deviceType = DeviceUtils::DEVICE_THEENGS_PROBES;
+    m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 
-    if (deviceName.contains("iBBQ"))
-    {
-        m_deviceCapabilities = DeviceUtils::DEVICE_BATTERY;
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_PROBES_TEMP;
-    }
-    else if (deviceName.contains("TPMS"))
-    {
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_PROBES_TPMS;
-    }
+    parseTheengsProps(devicePropsJson);
 }
 
 DeviceTheengsProbes::DeviceTheengsProbes(const QBluetoothDeviceInfo &d,
@@ -60,17 +54,11 @@ DeviceTheengsProbes::DeviceTheengsProbes(const QBluetoothDeviceInfo &d,
                                          QObject *parent):
     DeviceTheengs(d, deviceModel, parent)
 {
+    m_deviceModel = deviceModel;
     m_deviceType = DeviceUtils::DEVICE_THEENGS_PROBES;
+    m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 
-    if (d.name().contains("iBBQ"))
-    {
-        m_deviceCapabilities = DeviceUtils::DEVICE_BATTERY;
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_PROBES_TEMP;
-    }
-    else if (d.name().contains("TPMS"))
-    {
-        m_deviceSensors += DeviceUtilsTheengs::SENSOR_PROBES_TPMS;
-    }
+    parseTheengsProps(devicePropsJson);
 }
 
 DeviceTheengsProbes::~DeviceTheengsProbes()
@@ -79,10 +67,36 @@ DeviceTheengsProbes::~DeviceTheengsProbes()
 }
 
 /* ************************************************************************** */
+/* ************************************************************************** */
 
-void DeviceTheengsProbes::parseAdvertisementTheengs(const QString &json)
+void DeviceTheengsProbes::parseTheengsProps(const QString &json)
 {
-    qDebug() << "DeviceTheengsProbes::parseAdvertisementTheengs()";
+    qDebug() << "DeviceTheengsProbes::parseTheengsProps()";
+    qDebug() << "JSON:" << json;
+
+    QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
+    QJsonObject prop = doc.object()["properties"].toObject();
+
+    // Capabilities
+    if (prop.contains("batt")) m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
+    Q_EMIT capabilitiesUpdated();
+
+    // Sensors
+    if (prop.contains("tempc")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_1;
+    if (prop.contains("tempc2")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_2;
+    if (prop.contains("tempc3")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_3;
+    if (prop.contains("tempc4")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_4;
+    if (prop.contains("tempc5")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_5;
+    if (prop.contains("tempc6")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_6;
+    if (prop.contains("count") && prop.contains("alarm")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_PROBES_TPMS;
+    Q_EMIT sensorsUpdated();
+}
+
+/* ************************************************************************** */
+
+void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
+{
+    qDebug() << "DeviceTheengsProbes::parseTheengsAdvertisement()";
     qDebug() << "JSON:" << json;
 
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
@@ -124,7 +138,7 @@ void DeviceTheengsProbes::parseAdvertisementTheengs(const QString &json)
             m_alarm4 = alarm;
         }
     }
-    else if (obj["model"].toString().contains("BBQ"))
+    else //if (obj["model"].toString().contains("BBQ"))
     {
         if (obj.contains("tempc")) m_temperature1 = obj["tempc"].toDouble();
         if (obj.contains("temp1c")) m_temperature1 = obj["temp1c"].toDouble();
@@ -146,5 +160,10 @@ void DeviceTheengsProbes::parseAdvertisementTheengs(const QString &json)
         }
     }
 }
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+
+// TODO db
 
 /* ************************************************************************** */

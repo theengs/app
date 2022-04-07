@@ -39,6 +39,13 @@ class DeviceTheengs: public DeviceSensor
     Q_OBJECT
 
     // probe data
+    Q_PROPERTY(bool hasTemperature1 READ hasTemp1 NOTIFY sensorsUpdated)
+    Q_PROPERTY(bool hasTemperature2 READ hasTemp2 NOTIFY sensorsUpdated)
+    Q_PROPERTY(bool hasTemperature3 READ hasTemp3 NOTIFY sensorsUpdated)
+    Q_PROPERTY(bool hasTemperature4 READ hasTemp4 NOTIFY sensorsUpdated)
+    Q_PROPERTY(bool hasTemperature5 READ hasTemp5 NOTIFY sensorsUpdated)
+    Q_PROPERTY(bool hasTemperature6 READ hasTemp6 NOTIFY sensorsUpdated)
+
     Q_PROPERTY(float temperature1 READ getTemp1 NOTIFY dataUpdated)
     Q_PROPERTY(float temperature2 READ getTemp2 NOTIFY dataUpdated)
     Q_PROPERTY(float temperature3 READ getTemp3 NOTIFY dataUpdated)
@@ -46,6 +53,7 @@ class DeviceTheengs: public DeviceSensor
     Q_PROPERTY(float temperature5 READ getTemp5 NOTIFY dataUpdated)
     Q_PROPERTY(float temperature6 READ getTemp6 NOTIFY dataUpdated)
 
+    Q_PROPERTY(bool hasProbesTPMS READ hasProbesTPMS NOTIFY sensorsUpdated)
     Q_PROPERTY(int battery1 READ getBattery1 NOTIFY dataUpdated)
     Q_PROPERTY(int battery2 READ getBattery2 NOTIFY dataUpdated)
     Q_PROPERTY(int battery3 READ getBattery3 NOTIFY dataUpdated)
@@ -60,17 +68,19 @@ class DeviceTheengs: public DeviceSensor
     Q_PROPERTY(bool alarm4 READ getAlarm4 NOTIFY dataUpdated)
 
     // scale data
-    Q_PROPERTY(float weight READ getWeight NOTIFY dataUpdated)
-    Q_PROPERTY(QString weightMode READ getWeightMode NOTIFY dataUpdated)
-    Q_PROPERTY(QString weightUnit READ getWeightUnit NOTIFY dataUpdated)
-    Q_PROPERTY(int impedance READ getImpedance NOTIFY dataUpdated)
-
     Q_PROPERTY(bool hasWeight READ hasWeight NOTIFY sensorsUpdated)
     Q_PROPERTY(bool hasWeightMode READ hasWeightMode NOTIFY sensorsUpdated)
     Q_PROPERTY(bool hasWeightUnit READ hasWeightUnit NOTIFY sensorsUpdated)
     Q_PROPERTY(bool hasImpedance READ hasImpedance NOTIFY sensorsUpdated)
 
+    Q_PROPERTY(float weight READ getWeight NOTIFY dataUpdated)
+    Q_PROPERTY(QString weightMode READ getWeightMode NOTIFY dataUpdated)
+    Q_PROPERTY(QString weightUnit READ getWeightUnit NOTIFY dataUpdated)
+    Q_PROPERTY(int impedance READ getImpedance NOTIFY dataUpdated)
+
 protected:
+    int m_deviceSensorsTheengs = 0;     //!< See DeviceSensorsTheengs enum
+
     // probe data
     float m_temperature1 = -99.f;
     float m_temperature2 = -99.f;
@@ -113,6 +123,14 @@ public:
     virtual void parseTheengsAdvertisement(const QString &json);
 
     // probe data
+    bool hasProbesTPMS() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_PROBES_TPMS); }
+    bool hasTemp1() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_TEMPERATURE_1); }
+    bool hasTemp2() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_TEMPERATURE_2); }
+    bool hasTemp3() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_TEMPERATURE_3); }
+    bool hasTemp4() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_TEMPERATURE_4); }
+    bool hasTemp5() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_TEMPERATURE_5); }
+    bool hasTemp6() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_TEMPERATURE_6); }
+
     float getTemp1() const;
     float getTemp1C() const { return m_temperature1; }
     float getTemp1F() const { return (m_temperature1 * 9.f/5.f + 32.f); }
@@ -145,15 +163,15 @@ public:
     bool getAlarm4() const { return m_alarm4; }
 
     // scale data
+    bool hasWeight() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_WEIGHT); }
+    bool hasWeightMode() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_WEIGHT_MODE); }
+    bool hasWeightUnit() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_WEIGHT_UNIT); }
+    bool hasImpedance() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_IMPEDANCE); }
+
     float getWeight() const { return m_weight; }
     QString getWeightUnit() const { return m_weightUnit; }
     QString getWeightMode() const { return m_weightMode; }
     int getImpedance() const { return m_impedance; }
-
-    bool hasWeight() const { return (m_deviceSensors & DeviceUtilsTheengs::SENSOR_WEIGHT); }
-    bool hasWeightMode() const { return (m_deviceSensors & DeviceUtilsTheengs::SENSOR_WEIGHT_MODE); }
-    bool hasWeightUnit() const { return (m_deviceSensors & DeviceUtilsTheengs::SENSOR_WEIGHT_UNIT); }
-    bool hasImpedance() const { return (m_deviceSensors & DeviceUtilsTheengs::SENSOR_IMPEDANCE); }
 
 private:
     // QLowEnergyController related
