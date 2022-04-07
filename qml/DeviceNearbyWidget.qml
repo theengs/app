@@ -45,32 +45,6 @@ Rectangle {
                 font.pixelSize: Theme.fontSizeContent
                 color: Theme.colorText
             }
-
-            IconSvg {
-                anchors.verticalCenter: parent.verticalCenter
-                visible: singleColumn
-
-                width: height
-                height: deviceTitle.height
-                color: Theme.colorGreen
-                opacity: 0.8
-                source: {
-                    if (device.deviceName === "Flower care" || device.deviceName === "Flower power" ||
-                        device.deviceName === "Flower mate" || device.deviceName === "Grow care garden" ||
-                        device.deviceName === "ropot" || device.deviceName === "Parrot pot" ||
-                        device.deviceName === "MJ_HT_V1" ||
-                        device.deviceName === "ClearGrass Temp & RH" ||
-                        device.deviceName === "Qingping Temp & RH M" || device.deviceName === "Qingping Temp & RH H" ||
-                        device.deviceName === "Qingping Temp RH Lite" ||
-                        device.deviceName === "ThermoBeacon" ||
-                        device.deviceName === "LYWSD02" || device.deviceName === "MHO-C303" ||
-                        device.deviceName === "LYWSD03MMC" || device.deviceName === "MHO-C401" || device.deviceName === "XMWSDJO4MMC" ||
-                        device.deviceName === "WP6003" || device.deviceName === "AirQualityMonitor" ||
-                        device.deviceName === "GeigerCounter")
-                        return "qrc:/assets/icons_material/baseline-check_circle-24px.svg"
-                    return ""
-                }
-            }
         }
 
         Row {
@@ -101,76 +75,6 @@ Rectangle {
         anchors.rightMargin: 12
         anchors.verticalCenter: parent.verticalCenter
         spacing: 12
-
-        IconSvg {
-            anchors.verticalCenter: parent.verticalCenter
-
-            width: 20
-            height: 20
-            visible: (device.deviceName === "Flower care" || device.deviceName === "Flower power" ||
-                      device.deviceName === "Flower mate" || device.deviceName === "Grow care garden" ||
-                      device.deviceName === "ropot" || device.deviceName === "Parrot pot" ||
-                      device.deviceName === "MJ_HT_V1" ||
-                      device.deviceName === "ClearGrass Temp & RH" ||
-                      device.deviceName === "Qingping Temp & RH M" || device.deviceName === "Qingping Temp & RH H" ||
-                      device.deviceName === "Qingping Temp RH Lite" ||
-                      device.deviceName === "ThermoBeacon" ||
-                      device.deviceName === "LYWSD02" || device.deviceName === "MHO-C303" ||
-                      device.deviceName === "LYWSD03MMC" || device.deviceName === "MHO-C401" || device.deviceName === "XMWSDJO4MMC" ||
-                      device.deviceName === "WP6003" || device.deviceName === "AirQualityMonitor" ||
-                      device.deviceName === "GeigerCounter")
-
-            source: blacklisted ? "qrc:/assets/icons_material/outline-remove_circle-24px.svg" : "qrc:/assets/icons_material/outline-add_circle-24px.svg"
-            color: {
-                if (ma.hovered) return Theme.colorPrimary
-                if (blacklisted) return Theme.colorRed
-                return Theme.colorIcon
-            }
-
-            MouseArea {
-                id: ma
-                anchors.fill: parent
-
-                hoverEnabled: true
-                property bool hovered: false
-                onEntered:hovered = true
-                onExited: hovered = false
-                onCanceled: hovered = false
-
-                onClicked: {
-                    confirmBlacklistDevice.deviceName = device.deviceName
-                    confirmBlacklistDevice.deviceAddress = device.deviceAddress
-                    confirmBlacklistDevice.open()
-                }
-            }
-        }
-
-        ////////
-
-        IconSvg {
-            anchors.verticalCenter: parent.verticalCenter
-            visible: !singleColumn
-
-            width: 20
-            height: 20
-            color: Theme.colorIcon
-            source: {
-                if (device.deviceName === "Flower care" || device.deviceName === "Flower power" ||
-                    device.deviceName === "Flower mate" || device.deviceName === "Grow care garden" ||
-                    device.deviceName === "ropot" || device.deviceName === "Parrot pot" ||
-                    device.deviceName === "MJ_HT_V1" ||
-                    device.deviceName === "ClearGrass Temp & RH" ||
-                    device.deviceName === "Qingping Temp & RH M" || device.deviceName === "Qingping Temp & RH H" ||
-                    device.deviceName === "Qingping Temp RH Lite" ||
-                    device.deviceName === "ThermoBeacon" ||
-                    device.deviceName === "LYWSD02" || device.deviceName === "MHO-C303" ||
-                    device.deviceName === "LYWSD03MMC" || device.deviceName === "MHO-C401" || device.deviceName === "XMWSDJO4MMC" ||
-                    device.deviceName === "WP6003" || device.deviceName === "AirQualityMonitor" ||
-                    device.deviceName === "GeigerCounter")
-                    return "qrc:/assets/icons_material/baseline-check_circle-24px.svg"
-                return ""
-            }
-        }
 
         ////////
 
