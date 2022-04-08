@@ -420,11 +420,7 @@ Rectangle {
 
             function setText() {
                 var txt = qsTr("Order by:") + " "
-                if (settingsManager.orderBy === "waterlevel") {
-                    txt += qsTr("water level")
-                } else if (settingsManager.orderBy === "plant") {
-                    txt += qsTr("plant name")
-                } else if (settingsManager.orderBy === "model") {
+                if (settingsManager.orderBy === "model") {
                     txt += qsTr("sensor model")
                 } else if (settingsManager.orderBy === "location") {
                     txt += qsTr("location")
@@ -440,11 +436,7 @@ Rectangle {
             }
 
             property var sortmode: {
-                if (settingsManager.orderBy === "waterlevel") {
-                    return 3
-                } else if (settingsManager.orderBy === "plant") {
-                    return 2
-                } else if (settingsManager.orderBy === "model") {
+                if (settingsManager.orderBy === "model") {
                     return 1
                 } else { // if (settingsManager.orderBy === "location") {
                     return 0
@@ -453,7 +445,7 @@ Rectangle {
 
             onClicked: {
                 sortmode++
-                if (sortmode > 3) sortmode = 0
+                if (sortmode > 1) sortmode = 0
 
                 if (sortmode === 0) {
                     settingsManager.orderBy = "location"
@@ -461,12 +453,6 @@ Rectangle {
                 } else if (sortmode === 1) {
                     settingsManager.orderBy = "model"
                     deviceManager.orderby_model()
-                } else if (sortmode === 2) {
-                    settingsManager.orderBy = "plant"
-                    deviceManager.orderby_plant()
-                } else if (sortmode === 3) {
-                    settingsManager.orderBy = "waterlevel"
-                    deviceManager.orderby_waterlevel()
                 }
             }
         }
