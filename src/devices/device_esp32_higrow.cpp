@@ -274,8 +274,7 @@ void DeviceEsp32HiGrow::bleReadNotify(const QLowEnergyCharacteristic &c, const Q
                 refreshDataFinished(true);
                 m_bleController->disconnectFromDevice();
             }
-
-#ifndef QT_NO_DEBUG
+/*
             qDebug() << "* DeviceEsp32HiGrow update:" << getAddress();
             qDebug() << "- m_firmware:" << m_deviceFirmware;
             qDebug() << "- m_battery:" << m_deviceBattery;
@@ -284,7 +283,7 @@ void DeviceEsp32HiGrow::bleReadNotify(const QLowEnergyCharacteristic &c, const Q
             qDebug() << "- m_temperature:" << m_temperature;
             qDebug() << "- m_humidity:" << m_humidity;
             qDebug() << "- m_luminosityLux:" << m_luminosityLux;
-#endif
+*/
         }
     }
 }

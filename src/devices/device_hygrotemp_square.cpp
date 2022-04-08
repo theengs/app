@@ -312,14 +312,13 @@ void DeviceHygrotempSquare::bleReadNotify(const QLowEnergyCharacteristic &c, con
                 refreshDataFinished(true);
                 m_bleController->disconnectFromDevice();
             }
-
-#ifndef QT_NO_DEBUG
+/*
             qDebug() << "* DeviceHygrotempSquare update:" << getAddress();
             qDebug() << "- m_firmware:" << m_deviceFirmware;
             qDebug() << "- m_battery:" << m_deviceBattery;
             qDebug() << "- m_temperature:" << m_temperature;
             qDebug() << "- m_humidity:" << m_humidity;
-#endif
+*/
         }
     }
 }

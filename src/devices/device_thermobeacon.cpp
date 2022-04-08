@@ -265,12 +265,10 @@ void DeviceThermoBeacon::bleReadNotify(const QLowEnergyCharacteristic &c, const 
                 m_device_wall_time = QDateTime::currentSecsSinceEpoch() - m_device_time;
             }
 /*
-#ifndef QT_NO_DEBUG
             qDebug() << "* DeviceThermoBeacon history sync  > " << getAddress();
             qDebug() << "- device_time  :" << m_device_time << "(" << (m_device_time / 3600.0 / 24.0) << "day)";
             qDebug() << "- last_sync is :" << m_lastHistorySync;
             qDebug() << "- entry_count  :" << m_history_entry_count;
-#endif
 */
             int idx = 0;
             if (m_ble_action == DeviceUtils::ACTION_UPDATE)
@@ -401,11 +399,11 @@ void DeviceThermoBeacon::bleReadNotify(const QLowEnergyCharacteristic &c, const 
                 {
                     m_temperature = temp3;
                     m_humidity = hygro3;
-#ifndef QT_NO_DEBUG
+/*
                     qDebug() << "* DeviceThermoBeacon addDatabaseRecord() @ " << QDateTime::fromSecsSinceEpoch(tmcd).toString("yyyy-MM-dd hh:mm:ss");
                     qDebug() << "- temperature:" << m_temperature;
                     qDebug() << "- humidity:" << m_humidity;
-#endif
+*/
                     addDatabaseRecord(tmcd, temp3, hygro3);
                 }
 
@@ -471,7 +469,7 @@ void DeviceThermoBeacon::parseAdvertisementData(const QByteArray &value)
         }
 
         refreshDataFinished(true);
-
+/*
         if (temp > -99 || humi > -99)
         {
             qDebug() << "* DeviceThermoBeacon manufacturer data:" << getAddress();
@@ -480,6 +478,7 @@ void DeviceThermoBeacon::parseAdvertisementData(const QByteArray &value)
             qDebug() << "- humidity:" << humi;
             qDebug() << "- device_time:" << m_device_time << "(" << (m_device_time / 3600.0 / 24.0) << "day)";
         }
+*/
     }
 }
 

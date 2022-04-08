@@ -433,8 +433,7 @@ void DeviceFlowerPower::serviceDetailsDiscovered_live(QLowEnergyService::Service
                 refreshDataFinished(true);
                 m_bleController->disconnectFromDevice();
             }
-
-#ifndef QT_NO_DEBUG
+/*
             qDebug() << "* DeviceFlowerPower update:" << getAddress();
             qDebug() << "- m_firmware:" << m_deviceFirmware;
             qDebug() << "- m_battery:" << m_deviceBattery;
@@ -444,7 +443,7 @@ void DeviceFlowerPower::serviceDetailsDiscovered_live(QLowEnergyService::Service
             qDebug() << "- m_soilTemperature : " << m_soilTemperature;
             qDebug() << "- m_temperature:" << m_temperature;
             qDebug() << "- m_luminosityLux:" << m_luminosityLux;
-#endif
+*/
         }
     }
 }
@@ -465,9 +464,7 @@ void DeviceFlowerPower::serviceDetailsDiscovered_clock(QLowEnergyService::Servic
                 m_device_time = data[0] + (data[1] << 8) + (data[2] << 16) + (data[3] << 24);
                 m_device_wall_time = QDateTime::currentSecsSinceEpoch() - m_device_time;
 
-#ifndef QT_NO_DEBUG
                 qDebug() << "* DeviceFlowerPower clock: " << m_device_time;
-#endif
             }
         }
     }

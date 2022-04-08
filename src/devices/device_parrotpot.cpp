@@ -455,8 +455,7 @@ void DeviceParrotPot::serviceDetailsDiscovered_live(QLowEnergyService::ServiceSt
                 refreshDataFinished(true);
                 m_bleController->disconnectFromDevice();
             }
-
-#ifndef QT_NO_DEBUG
+/*
             qDebug() << "* DeviceParrotPot update:" << getAddress();
             qDebug() << "- m_firmware:" << m_deviceFirmware;
             qDebug() << "- m_battery:" << m_deviceBattery;
@@ -465,7 +464,7 @@ void DeviceParrotPot::serviceDetailsDiscovered_live(QLowEnergyService::ServiceSt
             qDebug() << "- m_soilTemperature:" << m_soilTemperature;
             qDebug() << "- m_temperature:" << m_temperature;
             qDebug() << "- m_luminosityLux:" << m_luminosityLux;
-#endif
+*/
         }
     }
 }
@@ -485,9 +484,7 @@ void DeviceParrotPot::serviceDetailsDiscovered_watering(QLowEnergyService::Servi
                 int water_percent = static_cast<uint8_t>(cwt.value().constData()[0]);
                 m_watertank_level = (water_percent * m_watertank_capacity) / 100.0;
 
-#ifndef QT_NO_DEBUG
                 qDebug() << "* DeviceParrotPot water tank: " << m_water_level;
-#endif
             }
         }
 
@@ -516,9 +513,7 @@ void DeviceParrotPot::serviceDetailsDiscovered_clock(QLowEnergyService::ServiceS
                 m_device_time = data[0] + (data[1] << 8) + (data[2] << 16) + (data[3] << 24);
                 m_device_wall_time = QDateTime::currentSecsSinceEpoch() - m_device_time;
 
-#ifndef QT_NO_DEBUG
                 qDebug() << "* DeviceParrotPot clock: " << m_device_time;
-#endif
             }
         }
     }

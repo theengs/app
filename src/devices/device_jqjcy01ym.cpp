@@ -210,7 +210,7 @@ void DeviceJQJCY01YM::parseAdvertisementData(const QByteArray &value)
                     refreshDataFinished(true);
                 }
             }
-
+/*
             if (temp > -99 || humi > -99 || lumi > -99 || form > -99 || moist > -99 || fert > -99)
             {
                 qDebug() << "* MiBeacon service data:" << getName() << getAddress() << "(" << value.size() << ") bytes";
@@ -223,7 +223,7 @@ void DeviceJQJCY01YM::parseAdvertisementData(const QByteArray &value)
                 if (moist > -99) qDebug() << "- soil moisture:" << moist;
                 if (fert > -99) qDebug() << "- soil fertility:" << fert;
             }
-
+*/
         }
     }
 }
