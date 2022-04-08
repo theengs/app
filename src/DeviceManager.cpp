@@ -67,6 +67,8 @@
 
 DeviceManager::DeviceManager(bool daemon)
 {
+    m_daemonMode = daemon;
+
     // Data model init
     m_devices_model = new DeviceModel(this);
     m_devices_filter = new DeviceFilter(this);
@@ -98,7 +100,7 @@ DeviceManager::DeviceManager(bool daemon)
     if (m_dbInternal || m_dbExternal)
     {
         // Load blacklist
-        if (!daemon)
+        if (!m_daemonMode)
         {
             QSqlQuery queryBlacklist;
             queryBlacklist.exec("SELECT deviceAddr FROM devicesBlacklist");

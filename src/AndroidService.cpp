@@ -34,14 +34,15 @@
 
 /* ************************************************************************** */
 
-AndroidService::AndroidService(DeviceManager *dm, QObject *parent) : QObject(parent)
+AndroidService::AndroidService(DeviceManager *dm, SettingsManager *sm, QObject *parent) : QObject(parent)
 {
     // Save the managers
     m_deviceManager = dm;
+    m_settingsManager = sm;
 
     // Configure update timer
     connect(&m_workTimer, &QTimer::timeout, this, &AndroidService::gotowork);
-    setWorkTimer(10);
+    setWorkTimer(3);
 }
 
 AndroidService::~AndroidService()
@@ -51,9 +52,9 @@ AndroidService::~AndroidService()
 
 /* ************************************************************************** */
 
-void AndroidService::setWorkTimer(int workInterval)
+void AndroidService::setWorkTimer(int workInterval_mins)
 {
-    m_workTimer.setInterval(workInterval*60*1000);
+    m_workTimer.setInterval(workInterval_mins*60*1000);
     m_workTimer.start();
 }
 

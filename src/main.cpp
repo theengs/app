@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
             DeviceManager *dm = new DeviceManager(true);
             if (!db || !dm) return EXIT_FAILURE;
 
-            AndroidService *as = new AndroidService(dm);
+            AndroidService *as = new AndroidService(dm, sm);
             if (!as) return EXIT_FAILURE;
 
             return app.exec();
