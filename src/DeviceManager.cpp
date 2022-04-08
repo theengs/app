@@ -1762,3 +1762,8 @@ void DeviceManager::orderby_insideoutside()
 }
 
 /* ************************************************************************** */
+
+QString DeviceManager::getDeviceModelTheengs(const QString &modelid) const
+{
+    return QString::fromUtf8(TheengsDecoder().getTheengAttribute(modelid.toLatin1(), "model"));
+}

@@ -165,6 +165,8 @@ public:
         return QVariant::fromValue(m_devices_filter->data(proxyIndex, DeviceModel::PointerRole));
     }
 
+    Q_INVOKABLE QString getDeviceModelTheengs(const QString &modelid) const;
+
     void invalidate();
 
 private slots:

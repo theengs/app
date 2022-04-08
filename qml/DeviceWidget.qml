@@ -163,8 +163,14 @@ Item {
         } else if (boxDevice.isThermometer) {
             if (boxDevice.deviceName === "ThermoBeacon")
                 textTitle.text = boxDevice.deviceName
+            else if (boxDevice.deviceModel)
+                textTitle.text = deviceManager.getDeviceModelTheengs(boxDevice.deviceModel)
+            else if (boxDevice.deviceName)
+                textTitle.text = boxDevice.deviceName
             else
                 textTitle.text = qsTr("Thermometer")
+        } else if (boxDevice.isDeviceTheengs) {
+            textTitle.text = deviceManager.getDeviceModelTheengs(boxDevice.deviceModel)
         } else {
             textTitle.text = boxDevice.deviceName
         }

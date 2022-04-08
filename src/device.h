@@ -257,6 +257,7 @@ public:
     bool isProbe() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_PROBES); }
     bool isScale() const { return (m_deviceType == DeviceUtils::DEVICE_SCALE); }
     bool isThermometer() const { return (m_deviceType == DeviceUtils::DEVICE_THERMOMETER); }
+    bool isDeviceTheengs() const { return (m_deviceType >= DeviceUtils::DEVICE_THEENGS); }
 
     bool hasRealTime() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_REALTIME); }
     virtual bool hasHistory() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_HISTORY); }
