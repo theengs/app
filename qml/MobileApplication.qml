@@ -231,6 +231,7 @@ ApplicationWindow {
                 case Qt.ApplicationInactive:
                     //console.log("Qt.ApplicationInactive")
                     break
+
                 case Qt.ApplicationActive:
                     //console.log("Qt.ApplicationActive")
 

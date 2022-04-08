@@ -167,6 +167,10 @@ ApplicationWindow {
         target: Qt.application
         function onStateChanged() {
             switch (Qt.application.state) {
+                case Qt.ApplicationInactive:
+                    //console.log("Qt.ApplicationInactive")
+                    break
+
                 case Qt.ApplicationActive:
                     //console.log("Qt.ApplicationActive")
 
@@ -189,7 +193,15 @@ ApplicationWindow {
         }
     }
 
+    onVisibilityChanged: {
+        //console.log("onVisibilityChanged(" + visibility + ")")
+        if (visibility === Window.Minimized || visibility === Window.Hidden) {
+            deviceManager.refreshDevices_stop()
+        }
+    }
+
     onClosing: (close) => {
+        //console.log("onClosing")
         if (settingsManager.systray || Qt.platform.os === "osx") {
             close.accepted = false
             appWindow.hide()
