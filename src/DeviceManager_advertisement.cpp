@@ -71,6 +71,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                 doc["id"] = info.address().toString().toStdString();
                 doc["name"] = info.name().toStdString();
                 doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).toStdString() + info.manufacturerData(id).toHex().toStdString();
+                doc["rssi"] = info.rssi();
 
                 TheengsDecoder a;
                 JsonObject obj = doc.as<JsonObject>();
@@ -119,6 +120,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                 doc["name"] = info.name().toStdString();
                 doc["servicedata"] = info.serviceData(id).toHex().toStdString();
                 doc["servicedatauuid"] = id.toString().toStdString();
+                doc["rssi"] = info.rssi();
 
                 JsonObject obj = doc.as<JsonObject>();
 
@@ -185,6 +187,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
             doc["id"] = info.address().toString().toStdString();
             doc["name"] = info.name().toStdString();
             doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).toStdString() + info.manufacturerData(id).toHex().toStdString();
+            doc["rssi"] = info.rssi();
 
             TheengsDecoder dec;
             JsonObject obj = doc.as<JsonObject>();
@@ -224,6 +227,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
             doc["name"] = info.name().toStdString();
             doc["servicedata"] = info.serviceData(id).toHex().toStdString();
             doc["servicedatauuid"] = id.toString(QUuid::Id128).toStdString();
+            doc["rssi"] = info.rssi();
 
             TheengsDecoder dec;
             JsonObject obj = doc.as<JsonObject>();
