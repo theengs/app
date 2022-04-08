@@ -409,7 +409,9 @@ Rectangle {
             id: buttonSort
             height: compact ? 36 : 34
             anchors.verticalCenter: parent.verticalCenter
+
             visible: (appContent.state === "DeviceList")
+            enabled: visible
 
             source: "qrc:/assets/icons_material/baseline-filter_list-24px.svg"
             iconColor: Theme.colorHeaderContent
@@ -494,27 +496,7 @@ Rectangle {
 
             animation: "fade"
             animationRunning: deviceManager.scanning
-        }/*
-        ButtonCompactable {
-            id: buttonSyncAll
-            height: compact ? 36 : 34
-            anchors.verticalCenter: parent.verticalCenter
-
-            visible: (deviceManager.bluetooth && appContent.state === "DeviceList")
-            enabled: !deviceManager.scanning
-
-            text: qsTr("Sync sensors history")
-            tooltipText: text
-            source: "qrc:/assets/icons_custom/duotone-date_all-24px.svg"
-            iconColor: Theme.colorHeaderContent
-            textColor: Theme.colorHeaderContent
-            backgroundColor: Theme.colorHeaderHighlight
-
-            onClicked: syncButtonClicked()
-
-            animation: "fade"
-            animationRunning: deviceManager.syncing
-        }*/
+        }
         ButtonCompactable {
             id: buttonRefreshAll
             height: compact ? 36 : 34
@@ -532,8 +514,8 @@ Rectangle {
 
             onClicked: refreshButtonClicked()
 
-            animation: "rotate"
-            animationRunning: deviceManager.updating
+            animation: deviceManager.updating ? "rotate" : "fade"
+            animationRunning: (deviceManager.updating || deviceManager.listening)
         }
         Rectangle { // separator
             anchors.verticalCenter: parent.verticalCenter

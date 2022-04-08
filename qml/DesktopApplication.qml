@@ -193,7 +193,7 @@ ApplicationWindow {
         }
     }
 
-    onVisibilityChanged: {
+    onVisibilityChanged: (visibility) => {
         //console.log("onVisibilityChanged(" + visibility + ")")
         if (visibility === Window.Minimized || visibility === Window.Hidden) {
             deviceManager.refreshDevices_stop()
@@ -201,7 +201,7 @@ ApplicationWindow {
     }
 
     onClosing: (close) => {
-        //console.log("onClosing")
+        //console.log("onClosing(" + close + ")")
         if (settingsManager.systray || Qt.platform.os === "osx") {
             close.accepted = false
             appWindow.hide()
