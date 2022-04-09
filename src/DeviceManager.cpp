@@ -44,10 +44,6 @@
 #include "devices/device_theengs_probes.h"
 #include "devices/device_theengs_scales.h"
 
-#include <decoder.h> // Theengs decoder
-#include <string>
-#include "utils/utils_bits.h"
-
 #include <QList>
 #include <QDateTime>
 #include <QDebug>
@@ -158,51 +154,8 @@ DeviceManager::DeviceManager(bool daemon)
             else if (deviceName == "GeigerCounter")
                 d = new DeviceEsp32GeigerCounter(deviceAddr, deviceName, this);
 
-            if (!d) // Theengs devices?
-            {
-                TheengsDecoder dec;
-                QString device_props = QString::fromUtf8(dec.getTheengProperties(deviceModel_theengs.toLatin1()));
-
-                if (!deviceModel_theengs.isEmpty() && !device_props.isEmpty())
-                {
-                    if (deviceModel_theengs == "TPMS" ||
-                        deviceModel_theengs == "H5055"  ||
-                        deviceModel_theengs == "IBT-2X" ||
-                        deviceModel_theengs == "IBT-4XS"||
-                        deviceModel_theengs == "IBT-6XS/SOLIS-6")
-                    {
-                        d = new DeviceTheengsProbes(deviceAddr, deviceName,
-                                                    deviceModel_theengs, device_props, this);
-                    }
-                    else if (deviceModel_theengs == "XMTZC01HM/XMTZC04HM" ||
-                             deviceModel_theengs == "XMTZC02HM/XMTZC05HM")
-                    {
-                        d = new DeviceTheengsScales(deviceAddr, deviceName,
-                                                    deviceModel_theengs, device_props, this);
-                    }/*
-                    else if (deviceModel_theengs == "MUE4094RT" ||
-                             deviceModel_theengs == "CGPR1" ||
-                             deviceModel_theengs == "CGH1")
-                    {
-                        d = new DeviceTheengsMotions(deviceAddr, deviceName,
-                                                     deviceModel_theengs, device_props, this);
-                    }
-                    else if (deviceModel_theengs == "MiBand" ||
-                             deviceModel_theengs == "INEM" ||
-                             deviceModel_theengs == "Mokobeacon" ||
-                             deviceModel_theengs == "RuuviTag_RAWv1" ||
-                             deviceModel_theengs == "RuuviTag_RAWv2")
-                    {
-                        d = new DeviceTheengsBeacons(deviceAddr, deviceName,
-                                                     deviceModel_theengs, device_props, this);
-                    }*/
-                    else
-                    {
-                        d = new DeviceTheengsGeneric(deviceAddr, deviceName,
-                                                     deviceModel_theengs, device_props, this);
-                    }
-                }
-            }
+            // Theengs device maybe?
+            if (!d) d = createTheengsDevice_fromDb(deviceName, deviceModel_theengs, deviceAddr);
 
             if (d)
             {
@@ -210,11 +163,12 @@ DeviceManager::DeviceManager(bool daemon)
                 connect(d, &Device::deviceSynced, this, &DeviceManager::syncDevices_finished);
 
                 m_devices_model->addDevice(d);
-
                 //qDebug() << "* Device added (from database): " << deviceName << "/" << deviceAddr;
             }
         }
     }
+
+    //fakeTheengsDevices(); // Theengs fake devices //////////////////////////////
 }
 
 DeviceManager::~DeviceManager()
@@ -1518,83 +1472,9 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
         else if (info.name() == "GeigerCounter")
             d = new DeviceEsp32GeigerCounter(info, this);
     }
-    else // Theengs device maybe?
-    {
-        QString device_model_theengs;
-        QString device_modelid_theengs;
-        QString device_props;
 
-        const QList<quint16> &manufacturerIds = info.manufacturerIds();
-        for (const auto id: manufacturerIds)
-        {
-            if (d) break;
-
-            DynamicJsonDocument doc(512);
-            doc["id"] = info.address().toString().toStdString();
-            doc["name"] = info.name().toStdString();
-            doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).toStdString() + info.manufacturerData(id).toHex().toStdString();
-
-            TheengsDecoder dec;
-            JsonObject obj = doc.as<JsonObject>();
-
-            if (dec.decodeBLEJson(obj) >= 0)
-            {
-                device_model_theengs = QString::fromStdString(doc["model"]);
-                device_modelid_theengs = QString::fromStdString(doc["model_id"]);
-                device_props = QString::fromLatin1(dec.getTheengProperties(device_modelid_theengs.toLatin1()));
-
-                qDebug() << "addDevice() FOUND [mfd] :" << device_modelid_theengs << device_props;
-            }
-        }
-
-        const QList<QBluetoothUuid> &serviceIds = info.serviceIds();
-        for (const auto id: serviceIds)
-        {
-            if (d) break;
-
-            DynamicJsonDocument doc(512);
-            doc["id"] = info.address().toString().toStdString();
-            doc["name"] = info.name().toStdString();
-            doc["servicedata"] = info.serviceData(id).toHex().toStdString();
-            doc["servicedatauuid"] = id.toString(QUuid::Id128).toStdString();
-
-            TheengsDecoder dec;
-            JsonObject obj = doc.as<JsonObject>();
-
-            if (dec.decodeBLEJson(obj) >= 0)
-            {
-                device_model_theengs = QString::fromStdString(doc["model"]);
-                device_modelid_theengs = QString::fromStdString(doc["model_id"]);
-                device_props = QString::fromUtf8(dec.getTheengProperties(device_modelid_theengs.toLatin1()));
-
-                qDebug() << "addDevice() FOUND [svd] :" << device_modelid_theengs << device_props;
-            }
-        }
-
-        if ((!device_modelid_theengs.isEmpty() && !device_props.isEmpty()))
-        {
-            //qDebug() << "device_modelId[out]  " << device_modelId;
-            //qDebug() << "device_props[out] " << device_props;
-
-            if (device_modelid_theengs == "TPMS" ||
-                device_modelid_theengs == "H5055"  ||
-                device_modelid_theengs == "IBT-2X" ||
-                device_modelid_theengs == "IBT-4XS"||
-                device_modelid_theengs == "IBT-6XS/SOLIS-6")
-            {
-                d = new DeviceTheengsProbes(info, device_modelid_theengs, device_props, this);
-            }
-            else if (device_modelid_theengs == "XMTZC01HM/XMTZC04HM" ||
-                     device_modelid_theengs == "XMTZC02HM/XMTZC05HM")
-            {
-                d = new DeviceTheengsScales(info, device_modelid_theengs, device_props, this);
-            }
-            else
-            {
-                d = new DeviceTheengsGeneric(info, device_modelid_theengs, device_props, this);
-            }
-        }
-    }
+    // Theengs device maybe?
+    if (!d) d = createTheengsDevice_fromAdv(info);
 
     if (d)
     {
@@ -1762,8 +1642,3 @@ void DeviceManager::orderby_insideoutside()
 }
 
 /* ************************************************************************** */
-
-QString DeviceManager::getDeviceModelTheengs(const QString &modelid) const
-{
-    return QString::fromUtf8(TheengsDecoder().getTheengAttribute(modelid.toLatin1(), "model"));
-}

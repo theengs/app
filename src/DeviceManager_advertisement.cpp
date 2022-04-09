@@ -39,8 +39,7 @@
 
 void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetoothDeviceInfo::Fields updatedFields)
 {
-    //qDebug() << "updateBleDevice() " << info.name() << info.address();
-    //qDebug() << "updateBleDevice() " << info.name() << info.address() /*<< info.deviceUuid()*/ << " updatedFields: " << updatedFields;
+    //qDebug() << "updateBleDevice() " << info.name() << info.address(); // << info.deviceUuid() // << " updatedFields: " << updatedFields
 
     bool status = false;
     Q_UNUSED(updatedFields)
@@ -70,7 +69,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                 DynamicJsonDocument doc(512);
                 doc["id"] = info.address().toString().toStdString();
                 doc["name"] = info.name().toStdString();
-                doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).toStdString() + info.manufacturerData(id).toHex().toStdString();
+                doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + info.manufacturerData(id).toHex().toStdString();
                 doc["rssi"] = info.rssi();
 
                 TheengsDecoder a;
@@ -83,7 +82,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                     //qDebug() << "output:" << output.c_str();
 
                     DeviceTheengs *ddd = dynamic_cast<DeviceTheengs*>(dd);
-                    if (ddd) ddd->parseAdvertisementTheengs(QString::fromStdString(output));
+                    if (ddd) ddd->parseTheengsAdvertisement(QString::fromStdString(output));
 
                     SettingsManager *sm = SettingsManager::getInstance();
                     MqttManager *mq = MqttManager::getInstance();
@@ -119,7 +118,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                 doc["id"] = info.address().toString().toStdString();
                 doc["name"] = info.name().toStdString();
                 doc["servicedata"] = info.serviceData(id).toHex().toStdString();
-                doc["servicedatauuid"] = id.toString().toStdString();
+                doc["servicedatauuid"] = QByteArray::number(id.toUInt16(), 16).rightJustified(4, '0').toStdString();
                 doc["rssi"] = info.rssi();
 
                 JsonObject obj = doc.as<JsonObject>();
@@ -132,7 +131,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                     //qDebug() << "output:" << output.c_str();
 
                     DeviceTheengs *ddd = dynamic_cast<DeviceTheengs*>(dd);
-                    if (ddd) ddd->parseAdvertisementTheengs(QString::fromStdString(output));
+                    if (ddd) ddd->parseTheengsAdvertisement(QString::fromStdString(output));
 
                     SettingsManager *sm = SettingsManager::getInstance();
                     MqttManager *mq = MqttManager::getInstance();
@@ -186,7 +185,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
             DynamicJsonDocument doc(512);
             doc["id"] = info.address().toString().toStdString();
             doc["name"] = info.name().toStdString();
-            doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).toStdString() + info.manufacturerData(id).toHex().toStdString();
+            doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + info.manufacturerData(id).toHex().toStdString();
             doc["rssi"] = info.rssi();
 
             TheengsDecoder dec;
@@ -226,7 +225,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
             doc["id"] = info.address().toString().toStdString();
             doc["name"] = info.name().toStdString();
             doc["servicedata"] = info.serviceData(id).toHex().toStdString();
-            doc["servicedatauuid"] = id.toString(QUuid::Id128).toStdString();
+            doc["servicedatauuid"] = QByteArray::number(id.toUInt16(), 16).rightJustified(4, '0').toStdString();
             doc["rssi"] = info.rssi();
 
             TheengsDecoder dec;

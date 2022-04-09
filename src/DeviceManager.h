@@ -107,6 +107,11 @@ class DeviceManager: public QObject
     void checkBluetoothIos();
     void startBleAgent();
 
+    // THEENGS
+    QTimer m_faker;
+    Device *createTheengsDevice_fromDb(const QString &deviceName, const QString &deviceModel_theengs, const QString &deviceAddr);
+    Device *createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &deviceInfo);
+
 public:
     DeviceManager(bool daemon = false);
     ~DeviceManager();
@@ -165,9 +170,10 @@ public:
         return QVariant::fromValue(m_devices_filter->data(proxyIndex, DeviceModel::PointerRole));
     }
 
-    Q_INVOKABLE QString getDeviceModelTheengs(const QString &modelid) const;
-
     void invalidate();
+
+    // THEENGS
+    Q_INVOKABLE QString getDeviceModelTheengs(const QString &modelid) const;
 
 private slots:
     // QBluetoothLocalDevice related
@@ -184,6 +190,10 @@ private slots:
     void deviceDiscoveryError(QBluetoothDeviceDiscoveryAgent::Error);
     void deviceDiscoveryFinished();
     void deviceDiscoveryStopped();
+
+    // THEENGS
+    void fakeTheengsDevices();
+    void fakeTheengsData();
 
 Q_SIGNALS:
     void devicesListUpdated();

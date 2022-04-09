@@ -280,6 +280,19 @@ Component {
                             }
 
                             Text {
+                                anchors.right: parent.right
+                                anchors.rightMargin: 8
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                visible: (currentDevice.temperature1 < -80)
+                                text: qsTr("unplugged")
+                                opacity: 0.66
+                                font.pixelSize: 20
+                                font.bold: false
+                                color: cccc
+                            }
+
+                            Text {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 anchors.horizontalCenterOffset: 16
                                 anchors.verticalCenter: parent.verticalCenter
@@ -326,6 +339,19 @@ Component {
                             }
 
                             Text {
+                                anchors.right: parent.right
+                                anchors.rightMargin: 8
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                visible: (currentDevice.temperature2 < -80)
+                                text: qsTr("unplugged")
+                                opacity: 0.66
+                                font.pixelSize: 20
+                                font.bold: false
+                                color: cccc
+                            }
+
+                            Text {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 anchors.horizontalCenterOffset: 16
                                 anchors.verticalCenter: parent.verticalCenter
@@ -354,6 +380,7 @@ Component {
 
                     Row {
                         spacing: 48
+                        visible: currentDevice.hasTemperature3
 
                         Rectangle {
                             width: 180
@@ -369,6 +396,19 @@ Component {
                                 anchors.verticalCenter: parent.verticalCenter
 
                                 text: "#3"
+                                opacity: 0.66
+                                font.pixelSize: 20
+                                font.bold: false
+                                color: cccc
+                            }
+
+                            Text {
+                                anchors.right: parent.right
+                                anchors.rightMargin: 8
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                visible: (currentDevice.temperature3 < -80)
+                                text: qsTr("unplugged")
                                 opacity: 0.66
                                 font.pixelSize: 20
                                 font.bold: false
@@ -422,6 +462,19 @@ Component {
                             }
 
                             Text {
+                                anchors.right: parent.right
+                                anchors.rightMargin: 8
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                visible: (currentDevice.temperature4 < -80)
+                                text: qsTr("unplugged")
+                                opacity: 0.66
+                                font.pixelSize: 20
+                                font.bold: false
+                                color: cccc
+                            }
+
+                            Text {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 anchors.horizontalCenterOffset: 16
                                 anchors.verticalCenter: parent.verticalCenter
@@ -450,6 +503,7 @@ Component {
 
                     Row {
                         spacing: 48
+                        visible: currentDevice.hasTemperature5
 
                         Rectangle {
                             width: 180
@@ -464,7 +518,20 @@ Component {
                                 anchors.leftMargin: 8
                                 anchors.verticalCenter: parent.verticalCenter
 
-                                text: "#3"
+                                text: "#5"
+                                opacity: 0.66
+                                font.pixelSize: 20
+                                font.bold: false
+                                color: cccc
+                            }
+
+                            Text {
+                                anchors.right: parent.right
+                                anchors.rightMargin: 8
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                visible: (currentDevice.temperature5 < -80)
+                                text: qsTr("unplugged")
                                 opacity: 0.66
                                 font.pixelSize: 20
                                 font.bold: false
@@ -511,6 +578,19 @@ Component {
                                 anchors.verticalCenter: parent.verticalCenter
 
                                 text: "#6"
+                                opacity: 0.66
+                                font.pixelSize: 20
+                                font.bold: false
+                                color: cccc
+                            }
+
+                            Text {
+                                anchors.right: parent.right
+                                anchors.rightMargin: 8
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                visible: (currentDevice.temperature6 < -80)
+                                text: qsTr("unplugged")
                                 opacity: 0.66
                                 font.pixelSize: 20
                                 font.bold: false

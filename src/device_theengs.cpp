@@ -75,37 +75,7 @@ void DeviceTheengs::addLowEnergyService(const QBluetoothUuid &uuid)
 bool DeviceTheengs::hasData() const
 {
     // If we have immediate data (<12h old)
-/*
-    if (isPlantSensor())
-    {
-        if (m_soilMoisture > -80.f)
-            return true;
-    }
-    else if (isThermometer())
-    {
-        if (m_temperature > -80.f)
-            return true;
-    }
-    else if (isEnvironmentalSensor())
-    {
-        if (m_dbInternal || m_dbExternal)
-        {
-            QSqlQuery hasData;
-            hasData.prepare("SELECT COUNT(*) FROM sensorData WHERE deviceAddr = :deviceAddr;");
-            hasData.bindValue(":deviceAddr", getAddress());
 
-            if (hasData.exec() == false)
-                qWarning() << "> hasData.exec(DeviceTheengs) ERROR" << hasData.lastError().type() << ":" << hasData.lastError().text();
-
-            while (hasData.next())
-            {
-                if (hasData.value(0).toInt() > 0) // data count
-                    return true;
-            }
-        }
-    }
-    else
-*/
     if (isProbe())
     {
         if (m_temperature1 > -80.f || m_temperature2 > -80.f)
@@ -166,20 +136,6 @@ float DeviceTheengs::getTemp6() const
 }
 
 /* ************************************************************************** */
-
-void DeviceTheengs::parseAdvertisementData(const QByteArray &value)
-{
-    //qDebug() << "DeviceTheengs::parseAdvertisementData()";
-    //qDebug() << "DATA: 0x" << value.toHex();
-}
-
-void DeviceTheengs::parseAdvertisementTheengs(const QString &json)
-{
-    //qDebug() << "DeviceTheengs::parseAdvertisementTheengs()";
-    //qDebug() << "JSON:" << json;
-
-    parseTheengsAdvertisement(json);
-}
 
 void DeviceTheengs::parseTheengsProps(const QString &json)
 {

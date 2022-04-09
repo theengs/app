@@ -316,10 +316,10 @@ Loader {
                                         anchors.verticalCenter: parent.verticalCenter
 
                                         text: "Ω"
-                                        opacity: 0.66
                                         font.pixelSize: 22
                                         font.bold: false
                                         color: cccc
+                                        opacity: 0.66
                                     }
                                 }
                             }
@@ -337,6 +337,19 @@ Loader {
                                 source: UtilsDeviceSensors.getDeviceBatteryIcon(currentDevice.deviceBattery)
                                 fillMode: Image.PreserveAspectCrop
                                 color: cccc
+                            }
+
+                            Text {
+                                anchors.bottom: parent.bottom
+                                anchors.bottomMargin: 12
+                                anchors.horizontalCenter: parent.horizontalCenter
+
+                                visible: (currentDevice.weightMode)
+
+                                text: currentDevice.weightMode
+                                font.pixelSize: 22
+                                color: cccc
+                                opacity: 0.66
                             }
                         }
                     }

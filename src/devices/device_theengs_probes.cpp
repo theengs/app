@@ -71,8 +71,8 @@ DeviceTheengsProbes::~DeviceTheengsProbes()
 
 void DeviceTheengsProbes::parseTheengsProps(const QString &json)
 {
-    qDebug() << "DeviceTheengsProbes::parseTheengsProps()";
-    qDebug() << "JSON:" << json;
+    //qDebug() << "DeviceTheengsProbes::parseTheengsProps()";
+    //qDebug() << "JSON:" << json;
 
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
     QJsonObject prop = doc.object()["properties"].toObject();
@@ -96,8 +96,8 @@ void DeviceTheengsProbes::parseTheengsProps(const QString &json)
 
 void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
 {
-    qDebug() << "DeviceTheengsProbes::parseTheengsAdvertisement()";
-    qDebug() << "JSON:" << json;
+    //qDebug() << "DeviceTheengsProbes::parseTheengsAdvertisement()";
+    //qDebug() << "JSON:" << json;
 
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
     QJsonObject obj = doc.object();
@@ -141,12 +141,12 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
     else //if (obj["model"].toString().contains("BBQ"))
     {
         if (obj.contains("tempc")) m_temperature1 = obj["tempc"].toDouble();
-        if (obj.contains("temp1c")) m_temperature1 = obj["temp1c"].toDouble();
-        if (obj.contains("temp2c")) m_temperature2 = obj["temp2c"].toDouble();
-        if (obj.contains("temp3c")) m_temperature3 = obj["temp3c"].toDouble();
-        if (obj.contains("temp4c")) m_temperature4 = obj["temp4c"].toDouble();
-        if (obj.contains("temp5c")) m_temperature5 = obj["temp5c"].toDouble();
-        if (obj.contains("temp6c")) m_temperature6 = obj["temp6c"].toDouble();
+        if (obj.contains("tempc1")) m_temperature1 = obj["tempc1"].toDouble();
+        if (obj.contains("tempc2")) m_temperature2 = obj["tempc2"].toDouble();
+        if (obj.contains("tempc3")) m_temperature3 = obj["tempc3"].toDouble();
+        if (obj.contains("tempc4")) m_temperature4 = obj["tempc4"].toDouble();
+        if (obj.contains("tempc5")) m_temperature5 = obj["tempc5"].toDouble();
+        if (obj.contains("tempc6")) m_temperature6 = obj["tempc6"].toDouble();
     }
 
     //if (x > -99)

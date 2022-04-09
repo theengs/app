@@ -67,8 +67,8 @@ DeviceTheengsGeneric::~DeviceTheengsGeneric()
 
 void DeviceTheengsGeneric::parseTheengsProps(const QString &json)
 {
-    qDebug() << "DeviceTheengsGeneric::parseTheengsProps()";
-    qDebug() << "JSON:" << json;
+    //qDebug() << "DeviceTheengsGeneric::parseTheengsProps()";
+    //qDebug() << "JSON:" << json;
 
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
     QJsonObject prop = doc.object()["properties"].toObject();
@@ -92,6 +92,7 @@ void DeviceTheengsGeneric::parseTheengsProps(const QString &json)
 
     // Device type
     if (hasSoilMoistureSensor() && hasSoilConductivitySensor()) m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR;
+    else if (hasHchoSensor()) m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
     else if (hasWeight()) m_deviceType = DeviceUtils::DEVICE_SCALE;
     else if (hasTemperatureSensor() && hasHumiditySensor()) m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
     else m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
@@ -154,7 +155,7 @@ void DeviceTheengsGeneric::parseTheengsAdvertisement(const QString &json)
 
     if (obj.contains("for")) {
         if (m_hcho != obj["for"].toDouble()) {
-            m_hcho = obj["for"].toDouble();
+            m_hcho = obj["for"].toDouble() * 1000.0;
             Q_EMIT dataUpdated();
         }
     }
