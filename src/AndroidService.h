@@ -49,7 +49,7 @@ private slots:
     void gotowork();
 
 public:
-    AndroidService(DeviceManager *dm, SettingsManager *sm, QObject *parent = nullptr);
+    AndroidService(QObject *parent = nullptr);
     ~AndroidService();
 
     static void service_start();

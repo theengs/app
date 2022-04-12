@@ -238,6 +238,9 @@ ApplicationWindow {
                     // Check if we need an 'automatic' theme change
                     Theme.loadTheme(settingsManager.appTheme)
 
+                    // MQTT
+                    mqttManager.reconnect()
+
                     if (appContent.state === "DeviceBrowser") {
                         // Restart the device browser
                         deviceManager.scanNearby_start()

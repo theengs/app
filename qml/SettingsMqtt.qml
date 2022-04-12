@@ -200,7 +200,7 @@ Item {
 
                     onEditingFinished: {
                         settingsManager.mqttHost = text
-                        mqttManager.reconnect()
+                        mqttManager.reconnect_forced()
                     }
 
                     IconSvg {
@@ -226,7 +226,7 @@ Item {
 
                     onEditingFinished: {
                         settingsManager.mqttPort = parseInt(text, 10)
-                        mqttManager.reconnect()
+                        mqttManager.reconnect_forced()
                     }
 
                     IconSvg {
@@ -251,7 +251,7 @@ Item {
 
                     onEditingFinished: {
                         settingsManager.mqttUser = text
-                        mqttManager.reconnect()
+                        mqttManager.reconnect_forced()
                     }
 
                     IconSvg {
@@ -277,7 +277,7 @@ Item {
 
                     onEditingFinished: {
                         settingsManager.mqttPassword = text
-                        mqttManager.reconnect()
+                        mqttManager.reconnect_forced()
                     }
 
                     IconSvg {
@@ -331,7 +331,7 @@ Item {
 
                     onEditingFinished: {
                         settingsManager.mqttTopicA = text
-                        mqttManager.reconnect()
+                        mqttManager.reconnect_forced()
                     }
 
                     IconSvg {
@@ -356,7 +356,7 @@ Item {
 
                     onEditingFinished: {
                         settingsManager.mqttTopicB = text
-                        mqttManager.reconnect()
+                        mqttManager.reconnect_forced()
                     }
 
                     IconSvg {
@@ -384,7 +384,7 @@ Item {
 
                     onClicked: {
                         focus = true
-                        if (settingsManager.mqtt) mqttManager.reconnect()
+                        if (settingsManager.mqtt) mqttManager.reconnect_forced()
                     }
                 }
 /*

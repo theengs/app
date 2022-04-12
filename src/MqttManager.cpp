@@ -86,7 +86,7 @@ void MqttManager::disconnect()
     }
 }
 
-void MqttManager::reconnect()
+void MqttManager::reconnect_forced()
 {
     SettingsManager *sm = SettingsManager::getInstance();
     if (sm && sm->getMQTT())
@@ -96,7 +96,7 @@ void MqttManager::reconnect()
     }
 }
 
-void MqttManager::reconnect2()
+void MqttManager::reconnect()
 {
     SettingsManager *sm = SettingsManager::getInstance();
     if (sm && sm->getMQTT())

@@ -63,8 +63,8 @@ public:
 
     Q_INVOKABLE bool connect();
     Q_INVOKABLE void disconnect();
+    Q_INVOKABLE void reconnect_forced();
     Q_INVOKABLE void reconnect();
-    Q_INVOKABLE void reconnect2();
 
     bool publish(QString topic, QString str);
     bool subscribe(QString topic);

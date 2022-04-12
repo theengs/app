@@ -78,11 +78,7 @@ int main(int argc, char *argv[])
         SettingsManager *sm = SettingsManager::getInstance();
         if (sm && sm->getSysTray())
         {
-            DatabaseManager *db = DatabaseManager::getInstance();
-            DeviceManager *dm = new DeviceManager(true);
-            if (!db || !dm) return EXIT_FAILURE;
-
-            AndroidService *as = new AndroidService(dm, sm);
+            AndroidService *as = new AndroidService();
             if (!as) return EXIT_FAILURE;
 
             return app.exec();

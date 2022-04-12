@@ -34,11 +34,16 @@
 
 /* ************************************************************************** */
 
-AndroidService::AndroidService(DeviceManager *dm, SettingsManager *sm, QObject *parent) : QObject(parent)
+AndroidService::AndroidService(QObject *parent) : QObject(parent)
 {
-    // Save the managers
-    m_deviceManager = dm;
-    m_settingsManager = sm;
+    DatabaseManager *db = DatabaseManager::getInstance();
+
+    m_settingsManager = SettingsManager::getInstance();
+
+    //m_notificationManager = NotificationManager::getInstance();
+    //m_notificationManager->setNotification2("Theengs AndroidService", QDateTime::currentDateTime().toString());
+
+    m_deviceManager = new DeviceManager(true);
 
     // Configure update timer
     connect(&m_workTimer, &QTimer::timeout, this, &AndroidService::gotowork);
@@ -60,21 +65,27 @@ void AndroidService::setWorkTimer(int workInterval_mins)
 
 void AndroidService::gotowork()
 {
+    if (m_deviceManager)
+    {
+        delete m_deviceManager;
+        m_deviceManager = new DeviceManager(true);
+    }
+
     if (m_deviceManager && m_deviceManager->areDevicesAvailable())
     {
+        // Restart timer
+        setWorkTimer(m_settingsManager->getUpdateIntervalBackground());
+
         // Reload a few things
-        SettingsManager *sm = SettingsManager::getInstance();
-        sm->reloadSettings();
+        m_settingsManager->reloadSettings();
 
-        MqttManager *mq = MqttManager::getInstance();
-        if (sm->getMQTT()) mq->reconnect2();
+        if (m_settingsManager->getMQTT())
+        {
+            MqttManager *mq = MqttManager::getInstance();
+            mq->reconnect();
+        }
 
-        setWorkTimer(sm->getUpdateIntervalBackground());
-
-        //NotificationManager *nm = NotificationManager::getInstance();
-        //nm->setNotification2("Theengs AndroidService", QDateTime::currentDateTime().toString());
-
-        // Start background refresh
+        // Start background refresh process
         m_deviceManager->refreshDevices_background();
     }
 }
