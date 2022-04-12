@@ -44,8 +44,11 @@ private:
                                   const int soilMoisture, const int soilConductivity,
                                   const float temperature, const int luminosity);
 
-    bool areValuesValid_thermometer(const float t, const float h) const;
-    bool addDatabaseRecord_thermometer(const int64_t timestamp, const float t, const float h);
+    bool areValuesValid_thermometer(const float t) const;
+    bool addDatabaseRecord_thermometer(const int64_t timestamp, const float t);
+
+    bool areValuesValid_hygrometer(const float t, const float h) const;
+    bool addDatabaseRecord_hygrometer(const int64_t timestamp, const float t, const float h);
 
 public:
     DeviceTheengsGeneric(const QString &deviceAddr, const QString &deviceName,

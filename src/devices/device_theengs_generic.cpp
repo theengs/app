@@ -94,7 +94,7 @@ void DeviceTheengsGeneric::parseTheengsProps(const QString &json)
     if (hasSoilMoistureSensor() && hasSoilConductivitySensor()) m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR;
     else if (hasHchoSensor()) m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
     else if (hasWeight()) m_deviceType = DeviceUtils::DEVICE_SCALE;
-    else if (hasTemperatureSensor() && hasHumiditySensor()) m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
+    else if (hasTemperatureSensor() || hasHumiditySensor()) m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
     else m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
 }
 
@@ -174,8 +174,12 @@ void DeviceTheengsGeneric::parseTheengsAdvertisement(const QString &json)
             }
             else if (isThermometer())
             {
-                addDatabaseRecord_thermometer(m_lastUpdate.toSecsSinceEpoch(),
-                                              m_temperature, m_humidity);
+                if (hasTemperatureSensor() && hasHumiditySensor())
+                    addDatabaseRecord_hygrometer(m_lastUpdate.toSecsSinceEpoch(),
+                                                 m_temperature, m_humidity);
+                else if (hasTemperatureSensor())
+                    addDatabaseRecord_thermometer(m_lastUpdate.toSecsSinceEpoch(),
+                                                  m_temperature);
             }
             else if (isEnvironmentalSensor())
             {
@@ -246,7 +250,58 @@ bool DeviceTheengsGeneric::addDatabaseRecord_plants(const int64_t timestamp,
 
 /* ************************************************************************** */
 
-bool DeviceTheengsGeneric::areValuesValid_thermometer(const float t, const float h) const
+bool DeviceTheengsGeneric::areValuesValid_thermometer(const float t) const
+{
+    if (t <= 0.f) return false;
+    if (t < -20.f || t > 100.f) return false;
+
+    return true;
+}
+
+bool DeviceTheengsGeneric::addDatabaseRecord_thermometer(const int64_t timestamp, const float t)
+{
+    bool status = false;
+
+    if (areValuesValid_thermometer(t))
+    {
+        if (m_dbInternal || m_dbExternal)
+        {
+            // SQL date format YYYY-MM-DD HH:MM:SS
+            // We only save one record every 30m
+
+            QDateTime tmcd = QDateTime::fromSecsSinceEpoch(timestamp);
+            QDateTime tmcd_rounded = QDateTime::fromSecsSinceEpoch(timestamp + (1800 - timestamp % 1800) - 1800);
+
+            QSqlQuery addData;
+            addData.prepare("REPLACE INTO plantData (deviceAddr, ts, ts_full, temperature)"
+                            " VALUES (:deviceAddr, :ts, :ts_full, :temp)");
+            addData.bindValue(":deviceAddr", getAddress());
+            addData.bindValue(":ts", tmcd_rounded.toString("yyyy-MM-dd hh:mm:00"));
+            addData.bindValue(":ts_full", tmcd.toString("yyyy-MM-dd hh:mm:ss"));
+            addData.bindValue(":temp", t);
+            status = addData.exec();
+
+            if (status)
+            {
+                m_lastUpdateDatabase = tmcd;
+            }
+            else
+            {
+                qWarning() << "> DeviceTheengsGeneric addData.exec() ERROR" << addData.lastError().type() << ":" << addData.lastError().text();
+            }
+        }
+    }
+    else
+    {
+        qWarning() << "DeviceTheengsGeneric values are INVALID";
+    }
+
+    return status;
+}
+
+/* ************************************************************************** */
+
+bool DeviceTheengsGeneric::areValuesValid_hygrometer(const float t, const float h) const
 {
     if (t <= 0.f && h <= 0.f) return false;
     if (t < -20.f || t > 100.f) return false;
@@ -255,11 +310,11 @@ bool DeviceTheengsGeneric::areValuesValid_thermometer(const float t, const float
     return true;
 }
 
-bool DeviceTheengsGeneric::addDatabaseRecord_thermometer(const int64_t timestamp, const float t, const float h)
+bool DeviceTheengsGeneric::addDatabaseRecord_hygrometer(const int64_t timestamp, const float t, const float h)
 {
     bool status = false;
 
-    if (areValuesValid_thermometer(t, h))
+    if (areValuesValid_hygrometer(t, h))
     {
         if (m_dbInternal || m_dbExternal)
         {

@@ -53,9 +53,9 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName,
     if (!deviceModel_theengs.isEmpty() && !device_props.isEmpty())
     {
         if (deviceModel_theengs == "TPMS" ||
-            deviceModel_theengs == "H5055"  ||
+            deviceModel_theengs == "H5055" ||
             deviceModel_theengs == "IBT-2X" ||
-            deviceModel_theengs == "IBT-4XS"||
+            deviceModel_theengs == "IBT-4XS" ||
             deviceModel_theengs == "IBT-6XS/SOLIS-6")
         {
             device = new DeviceTheengsProbes(deviceAddr, deviceName,
@@ -88,6 +88,10 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName,
             device = new DeviceTheengsGeneric(deviceAddr, deviceName,
                                               deviceModel_theengs, device_props, this);
         }
+    }
+    else
+    {
+        qWarning() << "Unkonwn device model: " << deviceModel_theengs << device_props;
     }
 
     return device;
@@ -282,6 +286,18 @@ void DeviceManager::fakeTheengsDevices()
             qDebug() << "* Device added (from FAKER): " << deviceName << "/" << deviceAddr;
         }
     }
+    {
+        QString deviceName = "tps";
+        QString deviceModel_theengs = "IBS-TH2";
+        QString deviceAddr = "48:57:43:01:5C:3A";
+
+        Device *d = createTheengsDevice_fromDb(deviceName, deviceModel_theengs, deviceAddr);
+        if (d)
+        {
+            m_devices_model->addDevice(d);
+            qDebug() << "* Device added (from FAKER): " << deviceName << "/" << deviceAddr;
+        }
+    }
 }
 
 /* ************************************************************************** */
@@ -291,7 +307,7 @@ void DeviceManager::fakeTheengsData()
     //qDebug() << "DeviceManager::fakeTheengsData()";
 
     QBluetoothDeviceInfo info;
-    int rrdd = (rand() % 7);
+    int rrdd = (rand() % 8);
 
     if (rrdd == 0) // JQJCY01YM
     {
@@ -340,7 +356,6 @@ void DeviceManager::fakeTheengsData()
         qDebug() << "DeviceManager::fakeTheengsDevices(TPMS)";
 
         info = QBluetoothDeviceInfo(QBluetoothAddress("43:57:43:01:5C:3A"), "TPMS1_10CA8F", 0);
-
         info.setManufacturerData(256, QByteArray::fromHex("80eaca10ca8ff46503007c0c00003300"));
     }
 
@@ -407,6 +422,18 @@ void DeviceManager::fakeTheengsData()
         info = QBluetoothDeviceInfo(QBluetoothAddress("47:57:43:01:5C:3A"), "sps", 0);
         info.setManufacturerData(endian_flip_16(0x660a), QByteArray::fromHex("03150110805908"));
     }
+
+    if (rrdd == 7) // IBS-TH2
+    {
+        qDebug() << "DeviceManager::fakeTheengsDevices(IBS-TH2)";
+
+        info = QBluetoothDeviceInfo(QBluetoothAddress("48:57:43:01:5C:3A"), "tps", 0);
+
+        int rrrr = (rand() % 1);
+        if (rrrr == 0) info.setManufacturerData(endian_flip_16(0x660a), QByteArray::fromHex("03150110805908"));
+        else if (rrrr == 1) info.setManufacturerData(endian_flip_16(0x76fb), QByteArray::fromHex("03150110805908"));
+        else qWarning() << "RAND ERROR";
+            }
 
     updateBleDevice(info, QBluetoothDeviceInfo::Field::None);
 }

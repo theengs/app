@@ -746,7 +746,7 @@ Item {
             function updateData() {
                 if (boxDevice.isThermometer) {
                     textTemp.text = boxDevice.temperature.toFixed(1) + "°"
-                    textHygro.text = boxDevice.humidity.toFixed(0) + "%"
+                    if (boxDevice.humidity > 0) textHygro.text = boxDevice.humidity.toFixed(0) + "%"
                 } else if (boxDevice.isEnvironmentalSensor) {
                     if (boxDevice.hasGeigerCounter) {
                         textTemp.text = ""
