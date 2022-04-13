@@ -56,9 +56,9 @@ class Device: public QObject
     Q_PROPERTY(QString deviceFirmware READ getFirmware NOTIFY sensorUpdated)
     Q_PROPERTY(bool deviceFirmwareUpToDate READ isFirmwareUpToDate NOTIFY sensorUpdated)
 
-    Q_PROPERTY(bool isEnvironmentalSensor READ isEnvironmentalSensor NOTIFY sensorUpdated)
     Q_PROPERTY(bool isPlantSensor READ isPlantSensor NOTIFY sensorUpdated)
     Q_PROPERTY(bool isThermometer READ isThermometer NOTIFY sensorUpdated)
+    Q_PROPERTY(bool isEnvironmentalSensor READ isEnvironmentalSensor NOTIFY sensorUpdated)
     Q_PROPERTY(bool isProbe READ isProbe NOTIFY sensorUpdated)
     Q_PROPERTY(bool isScale READ isScale NOTIFY sensorUpdated)
 
@@ -252,11 +252,11 @@ public:
     bool hasBluetoothConnection() const { return (m_deviceBluetoothMode & DeviceUtils::DEVICE_BLE_CONNECTION); }
     bool hasBluetoothAdvertisement() const { return (m_deviceBluetoothMode & DeviceUtils::DEVICE_BLE_ADVERTISEMENT); }
 
-    bool isEnvironmentalSensor() const { return (m_deviceType == DeviceUtils::DEVICE_ENVIRONMENTAL); }
     bool isPlantSensor() const { return (m_deviceType == DeviceUtils::DEVICE_PLANTSENSOR); }
+    bool isThermometer() const { return (m_deviceType == DeviceUtils::DEVICE_THERMOMETER); }
+    bool isEnvironmentalSensor() const { return (m_deviceType == DeviceUtils::DEVICE_ENVIRONMENTAL); }
     bool isProbe() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_PROBES); }
     bool isScale() const { return (m_deviceType == DeviceUtils::DEVICE_SCALE); }
-    bool isThermometer() const { return (m_deviceType == DeviceUtils::DEVICE_THERMOMETER); }
     bool isDeviceTheengs() const { return (m_deviceType >= DeviceUtils::DEVICE_THEENGS); }
 
     bool hasRealTime() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_REALTIME); }
