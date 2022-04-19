@@ -43,7 +43,7 @@ class AndroidService: public QObject
 
     DeviceManager *m_deviceManager = nullptr;
     SettingsManager *m_settingsManager = nullptr;
-    //NotificationManager *m_notificationManager = nullptr;
+    NotificationManager *m_notificationManager = nullptr;
 
 private slots:
     void gotowork();
