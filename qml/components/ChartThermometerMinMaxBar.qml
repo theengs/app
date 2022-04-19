@@ -55,9 +55,9 @@ Item {
                 rectangle_water_low.visible = false
             } else {
                 text_temp_low.visible = true
-                rectangle_water_low.visible = true
+                rectangle_water_low.visible = currentDevice.hasHumiditySensor
             }
-            rectangle_water_high.visible = true
+            rectangle_water_high.visible = currentDevice.hasHumiditySensor
         }
     }
 

@@ -162,11 +162,11 @@ Loader {
                         sensorTemp.text = currentDevice.getTempString()
                         sensorTemp.visible = true
                     }
-                    if (currentDevice.humidity >= 0) {
+                    if (currentDevice.hasHumiditySensor && currentDevice.humidity >= 0) {
                         sensorHygro.text = currentDevice.humidity.toFixed(0) + "% " + qsTr("humidity")
                         sensorHygro.visible = true
                     }
-                    if (currentDevice.temperatureC >= 27 && currentDevice.humidity >= 40) {
+                    if (currentDevice.hasHumiditySensor && currentDevice.temperatureC >= 27 && currentDevice.humidity >= 40) {
                         if (currentDevice.getHeatIndex() > (currentDevice.temperature + 1)) {
                             heatIndex.text = qsTr("feels like %1").arg(currentDevice.getHeatIndexString())
                             heatIndex.visible = true
@@ -237,7 +237,7 @@ Loader {
                     property int dimboxh: Math.max(deviceThermometer.height * 0.333, isPhone ? 180 : 256)
 
                     width: singleColumn ? parent.width : dimboxw
-                    height: singleColumn ? dimboxh: parent.height
+                    height: singleColumn ? dimboxh : parent.height
                     color: Theme.colorHeader
                     z: 5
 

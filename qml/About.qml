@@ -289,7 +289,7 @@ Item {
                     anchors.leftMargin: 48
                     anchors.verticalCenter: parent.verticalCenter
 
-                    text: qsTr("About permissions")
+                    text: qsTr("About app permissions")
                     textFormat: Text.PlainText
                     font.pixelSize: Theme.fontSizeContent
                     color: Theme.colorText

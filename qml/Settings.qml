@@ -265,9 +265,10 @@ Item {
             }
 
             Item { // spacer
-                height: 1
                 anchors.left: parent.left
                 anchors.right: parent.right
+                height: 1
+                visible: isDesktop
             }
 
             ////////
@@ -434,7 +435,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
 
                     color: Theme.colorIcon
-                    source: "qrc:/assets/icons_material/baseline-bluetooth_disabled-24px.svg"
+                    source: "qrc:/assets/icons_material/duotone-settings_bluetooth-24px.svg"
                 }
 
                 Text {
@@ -482,7 +483,7 @@ Item {
                 color: Theme.colorSubText
                 font.pixelSize: Theme.fontSizeContentSmall
             }
-
+/*
             Rectangle {
                 height: 1
                 anchors.left: parent.left
@@ -494,7 +495,7 @@ Item {
             }
 
             ////////
-/*
+
             Item {
                 id: element_bluetoothSimUpdate
                 height: 48
@@ -596,8 +597,44 @@ Item {
                 color: Theme.colorSeparator
                 visible: (Qt.platform.os !== "ios")
             }
-*/
-            ////////
+*/            
+            ////////////////
+
+            Rectangle {
+                height: 48
+                anchors.left: parent.left
+                anchors.right: parent.right
+                color: Theme.colorForeground
+
+                IconSvg {
+                    id: image_service
+                    width: 24
+                    height: 24
+                    anchors.left: parent.left
+                    anchors.leftMargin: screenPaddingLeft + 16
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    color: Theme.colorIcon
+                    source: "qrc:/assets/icons_material/duotone-tap_and_play_black-24px.svg"
+                }
+
+                Text {
+                    id: text_service
+                    anchors.left: image_service.right
+                    anchors.leftMargin: 24
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    text: qsTr("Background updates")
+                    textFormat: Text.PlainText
+                    font.pixelSize: Theme.fontSizeContent
+                    font.bold: false
+                    color: Theme.colorText
+                    wrapMode: Text.WordWrap
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            ////////////////
 
             Item {
                 id: element_worker
@@ -615,13 +652,21 @@ Item {
                     width: 24
                     height: 24
                     anchors.left: parent.left
-                    anchors.leftMargin: 16
+                    anchors.leftMargin: screenPaddingLeft + 16
                     anchors.verticalCenter: parent.verticalCenter
 
                     color: Theme.colorIcon
                     source: "qrc:/assets/icons_material/baseline-autorenew-24px.svg"
                 }
 
+                SwitchThemedDesktop {
+                    anchors.left: image_worker.right
+                    anchors.leftMargin: 24
+                    text: settingsManager.systray ? qsTr("Enabled") : qsTr("Disabled")
+                    checked: settingsManager.systray
+                    onClicked: settingsManager.systray = checked
+                }
+/*
                 Text {
                     id: text_worker
                     height: 40
@@ -638,7 +683,6 @@ Item {
                     color: Theme.colorText
                     verticalAlignment: Text.AlignVCenter
                 }
-
                 SwitchThemedMobile {
                     id: switch_worker
                     anchors.right: parent.right
@@ -649,6 +693,7 @@ Item {
                     checked: settingsManager.systray
                     onClicked: settingsManager.systray = checked
                 }
+*/
             }
             Text {
                 id: legend_worker_mobile
@@ -659,7 +704,7 @@ Item {
                 topPadding: -12
                 bottomPadding: 0
 
-                visible: (element_worker.visible && Qt.platform.os === "android")
+                visible: (settingsManager.systray && element_worker.visible && Qt.platform.os === "android")
 
                 text: qsTr("Wake up at a predefined interval to refresh sensor data. Only if Bluetooth (or Bluetooth control) is enabled.")
                 textFormat: Text.PlainText
@@ -676,7 +721,7 @@ Item {
                 topPadding: -12
                 bottomPadding: 12
 
-                visible: (element_worker.visible && isDesktop)
+                visible: (settingsManager.systray && element_worker.visible && isDesktop)
 
                 text: qsTr("Theengs will remain active in the system tray, and will wake up at a regular interval to refresh sensor data.")
                 textFormat: Text.PlainText
@@ -694,6 +739,8 @@ Item {
                 anchors.leftMargin: screenPaddingLeft
                 anchors.right: parent.right
                 anchors.rightMargin: screenPaddingRight
+
+                visible: (settingsManager.systray && element_worker.visible)
 
                 IconSvg {
                     id: image_update_background
@@ -716,7 +763,7 @@ Item {
                     anchors.rightMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
 
-                    text: qsTr("Background update interval")
+                    text: qsTr("Update interval")
                     textFormat: Text.PlainText
                     font.pixelSize: Theme.fontSizeContent
                     color: Theme.colorText

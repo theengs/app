@@ -204,7 +204,7 @@ Loader {
                     property int dimboxh: Math.max(deviceScale.height * 0.333, isPhone ? 180 : 256)
 
                     width: singleColumn ? parent.width : dimboxw
-                    height: singleColumn ? dimboxh: parent.height
+                    height: singleColumn ? dimboxh : parent.height
                     color: Theme.colorHeader
                     z: 5
 
@@ -229,8 +229,8 @@ Loader {
                         spacing: 0
 
                         Rectangle { // scale
-                            width: singleColumn ? 210 : 256
-                            height: singleColumn ? 210 : 256
+                            width: singleColumn ? tempBox.height * 0.75 : tempBox.width * 0.75
+                            height: width
                             radius: 16
                             color: Qt.alpha(cccc, 0.1)
                             border.width: 2
@@ -284,7 +284,7 @@ Loader {
                                 Text {
                                     anchors.horizontalCenter: parent.horizontalCenter
                                     text: currentDevice.weight.toFixed(1)
-                                    font.pixelSize: 32
+                                    font.pixelSize: isPhone ? 30 : 32
                                     color: cccc
 
                                     Text {
@@ -295,7 +295,7 @@ Loader {
 
                                         text: (settingsManager.tempUnit === 'C') ? "kg" : "p"
                                         opacity: 0.66
-                                        font.pixelSize: 22
+                                        font.pixelSize: isPhone ? 20 : 22
                                         font.bold: false
                                         color: cccc
                                     }
@@ -305,7 +305,7 @@ Loader {
                                     anchors.horizontalCenter: parent.horizontalCenter
                                     text: currentDevice.impedance
                                     color: cccc
-                                    font.pixelSize: 28
+                                    font.pixelSize: isPhone ? 26 : 28
 
                                     visible: (currentDevice.impedance > 0)
                                     //visible: currentDevice.hasImpedance
@@ -316,7 +316,7 @@ Loader {
                                         anchors.verticalCenter: parent.verticalCenter
 
                                         text: "Ω"
-                                        font.pixelSize: 22
+                                        font.pixelSize: isPhone ? 20 : 22
                                         font.bold: false
                                         color: cccc
                                         opacity: 0.66
@@ -347,7 +347,7 @@ Loader {
                                 visible: (currentDevice.weightMode)
 
                                 text: currentDevice.weightMode
-                                font.pixelSize: 22
+                                font.pixelSize: isPhone ? 20 : 22
                                 color: cccc
                                 opacity: 0.66
                             }

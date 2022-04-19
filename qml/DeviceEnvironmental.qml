@@ -373,7 +373,7 @@ Loader {
                     property int dimboxh: Math.max(deviceEnvironmental.height * 0.333, isPhone ? 160 : 256)
 
                     width: singleColumn ? parent.width : dimboxw
-                    height: singleColumn ? dimboxh: parent.height
+                    height: singleColumn ? dimboxh : parent.height
 
                     color: Theme.colorHeader
                     z: 5

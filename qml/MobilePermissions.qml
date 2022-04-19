@@ -116,7 +116,7 @@ Item {
 
                     source: (validperm) ? "qrc:/assets/icons_material/baseline-check-24px.svg" : "qrc:/assets/icons_material/baseline-close-24px.svg"
                     iconColor: (validperm) ? "white" : "white"
-                    backgroundColor: (validperm) ? Theme.colorPrimary : Theme.colorSubText
+                    backgroundColor: (validperm) ? Theme.colorSuccess : Theme.colorSubText
                     background: true
 
                     onClicked: validperm = utilsApp.getMobileBleLocationPermission()
@@ -204,7 +204,7 @@ Item {
 
                     source: (validperm) ? "qrc:/assets/icons_material/baseline-check-24px.svg" : "qrc:/assets/icons_material/baseline-close-24px.svg"
                     iconColor: (validperm) ? "white" : "white"
-                    backgroundColor: (validperm) ? Theme.colorPrimary : Theme.colorSubText
+                    backgroundColor: (validperm) ? Theme.colorSuccess : Theme.colorSubText
                     background: true
 
                     onClicked: validperm = utilsApp.getMobileBackgroundLocationPermission()
@@ -279,7 +279,7 @@ Item {
 
                     source: (validperm) ? "qrc:/assets/icons_material/baseline-check-24px.svg" : "qrc:/assets/icons_material/baseline-close-24px.svg"
                     iconColor: (validperm) ? "white" : "white"
-                    backgroundColor: (validperm) ? Theme.colorPrimary : Theme.colorSubText
+                    backgroundColor: (validperm) ? Theme.colorSuccess : Theme.colorSubText
                     background: true
 
                     onClicked: validperm = utilsApp.isMobileGpsEnabled()
@@ -354,7 +354,7 @@ Item {
 
                     source: (validperm) ? "qrc:/assets/icons_material/baseline-check-24px.svg" : "qrc:/assets/icons_material/baseline-close-24px.svg"
                     iconColor: (validperm) ? "white" : "white"
-                    backgroundColor: (validperm) ? Theme.colorPrimary : Theme.colorSubText
+                    backgroundColor: (validperm) ? Theme.colorSuccess : Theme.colorSubText
                     background: true
                 }
 

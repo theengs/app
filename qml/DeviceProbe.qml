@@ -200,11 +200,11 @@ Component {
             Rectangle {
                 id: tempBox
 
-                property int dimboxw: Math.min(deviceProbe.width * 0.4, isPhone ? 320 : 600)
-                property int dimboxh: Math.max(deviceProbe.height * 0.333, isPhone ? 180 : 256)
+                property int dimboxw: (deviceProbe.width * 0.4)
+                property int dimboxh: (deviceProbe.height * (columnTPMS.visible ? 0.5 : 0.333))
 
                 width: singleColumn ? parent.width : dimboxw
-                height: singleColumn ? dimboxh: parent.height
+                height: singleColumn ? dimboxh : parent.height
                 color: Theme.colorHeader
                 z: 5
 
@@ -222,7 +222,12 @@ Component {
                     color: cccc
                 }
 
+
+
+
                 Column { // column BBQ probe ///////////////////////////////////
+                    id: columnBBQ
+
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.verticalCenterOffset: -(appHeader.height / 2)
@@ -230,14 +235,23 @@ Component {
 
                     visible: (currentDevice.deviceName.includes("BBQ") && currentDevice.hasData)
 
+                    property int psw: isPhone ? 160 : 180
+                    property int psh: isPhone ? 44 : 48
+                    property int pss: isPhone ? 24 : 48
+                    property int fz1: isPhone ? 28 : 32
+                    property int fz2: isPhone ? 24 : 28
+
                     Row {
                         anchors.horizontalCenter: parent.horizontalCenter
                         spacing: 12
 
+                        visible: isDesktop
+
                         Text { // deviceName
                             anchors.verticalCenter: parent.verticalCenter
+
                             text: currentDevice.deviceName
-                            font.pixelSize: 28
+                            font.pixelSize: columnTPMS.fz2
                             font.bold: false
                             color: cccc
                             opacity: 0.66
@@ -257,11 +271,11 @@ Component {
                     }
 
                     Row {
-                        spacing: 48
+                        spacing: columnBBQ.pss
 
                         Rectangle {
-                            width: 180
-                            height: 48
+                            width: columnBBQ.psw
+                            height: columnBBQ.psh
                             radius: 8
                             color: Qt.alpha(cccc, 0.1)
                             border.width: 2
@@ -319,8 +333,8 @@ Component {
                         }
 
                         Rectangle {
-                            width: 180
-                            height: 48
+                            width: columnBBQ.psw
+                            height: columnBBQ.psh
                             radius: 8
                             color: Qt.alpha(cccc, 0.1)
                             border.width: 2
@@ -379,12 +393,12 @@ Component {
                     }
 
                     Row {
-                        spacing: 48
+                        spacing: columnBBQ.pss
                         visible: currentDevice.hasTemperature3
 
                         Rectangle {
-                            width: 180
-                            height: 48
+                            width: columnBBQ.psw
+                            height: columnBBQ.psh
                             radius: 8
                             color: Qt.alpha(cccc, 0.1)
                             border.width: 2
@@ -442,8 +456,8 @@ Component {
                         }
 
                         Rectangle {
-                            width: 180
-                            height: 48
+                            width: columnBBQ.psw
+                            height: columnBBQ.psh
                             radius: 8
                             color: Qt.alpha(cccc, 0.1)
                             border.width: 2
@@ -502,12 +516,12 @@ Component {
                     }
 
                     Row {
-                        spacing: 48
+                        spacing: columnBBQ.pss
                         visible: currentDevice.hasTemperature5
 
                         Rectangle {
-                            width: 180
-                            height: 48
+                            width: columnBBQ.psw
+                            height: columnBBQ.psh
                             radius: 8
                             color: Qt.alpha(cccc, 0.1)
                             border.width: 2
@@ -565,8 +579,8 @@ Component {
                         }
 
                         Rectangle {
-                            width: 180
-                            height: 48
+                            width: columnBBQ.psw
+                            height: columnBBQ.psh
                             radius: 8
                             color: Qt.alpha(cccc, 0.1)
                             border.width: 2
@@ -625,6 +639,9 @@ Component {
                     }
                 }
 
+
+
+
                 Column { // column TPMS probe //////////////////////////////////
                     id: columnTPMS
 
@@ -635,8 +652,11 @@ Component {
 
                     visible: (currentDevice.deviceName.includes("TPMS") && currentDevice.hasData)
 
-                    property int tsp: singleColumn ? 48 : 80
-                    property int tsz: singleColumn ? 140 : 180
+                    property int tsp: singleColumn ? (isPhone ? 40 : 48) : 80
+                    property int tsz: singleColumn ? (isPhone ? 132 : 140) : 180
+                    property int fz1: isPhone ? 28 : 32
+                    property int fz2: isPhone ? 24 : 28
+                    property int fz3: isPhone ? 16 : 20
 
                     Row {
                         spacing: columnTPMS.tsp
@@ -668,7 +688,7 @@ Component {
                                 Text {
                                     text: (currentDevice.pressure1 / 1000).toFixed(1)
                                     font.bold: false
-                                    font.pixelSize: 32
+                                    font.pixelSize: columnTPMS.fz1
                                     color: cccc
 
                                     Text {
@@ -678,14 +698,14 @@ Component {
                                         anchors.topMargin: 2
                                         text: "bar"
                                         opacity: 0.66
-                                        font.pixelSize: 20
+                                        font.pixelSize: columnTPMS.fz3
                                         font.bold: false
                                         color: cccc
                                     }
                                 }
                                 Text {
                                     text: currentDevice.temperature1.toFixed(1)
-                                    font.pixelSize: 28
+                                    font.pixelSize: columnTPMS.fz2
                                     font.bold: false
                                     color: cccc
 
@@ -695,7 +715,7 @@ Component {
                                         anchors.topMargin: 2
                                         text: (settingsManager.tempUnit === 'C') ? "°C" : "°F"
                                         opacity: 0.66
-                                        font.pixelSize: 20
+                                        font.pixelSize: columnTPMS.fz3
                                         font.bold: false
                                         color: cccc
                                     }
@@ -740,7 +760,7 @@ Component {
                                 Text {
                                     text: (currentDevice.pressure2 / 1000).toFixed(1)
                                     font.bold: false
-                                    font.pixelSize: 32
+                                    font.pixelSize: columnTPMS.fz1
                                     color: cccc
 
                                     Text {
@@ -750,14 +770,14 @@ Component {
                                         anchors.topMargin: 2
                                         text: "bar"
                                         opacity: 0.66
-                                        font.pixelSize: 20
+                                        font.pixelSize: columnTPMS.fz3
                                         font.bold: false
                                         color: cccc
                                     }
                                 }
                                 Text {
                                     text: currentDevice.temperature2.toFixed(1)
-                                    font.pixelSize: 28
+                                    font.pixelSize: columnTPMS.fz2
                                     font.bold: false
                                     color: cccc
 
@@ -767,7 +787,7 @@ Component {
                                         anchors.topMargin: 2
                                         text: (settingsManager.tempUnit === 'C') ? "°C" : "°F"
                                         opacity: 0.66
-                                        font.pixelSize: 20
+                                        font.pixelSize: columnTPMS.fz3
                                         font.bold: false
                                         color: cccc
                                     }
@@ -816,7 +836,7 @@ Component {
                                 Text {
                                     text: (currentDevice.pressure3 / 1000).toFixed(1)
                                     font.bold: false
-                                    font.pixelSize: 32
+                                    font.pixelSize: columnTPMS.fz1
                                     color: cccc
 
                                     Text {
@@ -826,14 +846,14 @@ Component {
                                         anchors.topMargin: 2
                                         text: "bar"
                                         opacity: 0.66
-                                        font.pixelSize: 20
+                                        font.pixelSize: columnTPMS.fz3
                                         font.bold: false
                                         color: cccc
                                     }
                                 }
                                 Text {
                                     text: currentDevice.temperature3.toFixed(1)
-                                    font.pixelSize: 28
+                                    font.pixelSize: columnTPMS.fz2
                                     font.bold: false
                                     color: cccc
 
@@ -843,7 +863,7 @@ Component {
                                         anchors.topMargin: 2
                                         text: (settingsManager.tempUnit === 'C') ? "°C" : "°F"
                                         opacity: 0.66
-                                        font.pixelSize: 20
+                                        font.pixelSize: columnTPMS.fz3
                                         font.bold: false
                                         color: cccc
                                     }
@@ -888,7 +908,7 @@ Component {
                                 Text {
                                     text: (currentDevice.pressure4 / 1000).toFixed(1)
                                     font.bold: false
-                                    font.pixelSize: 32
+                                    font.pixelSize: columnTPMS.fz1
                                     color: cccc
 
                                     Text {
@@ -898,14 +918,14 @@ Component {
                                         anchors.topMargin: 2
                                         text: "bar"
                                         opacity: 0.66
-                                        font.pixelSize: 20
+                                        font.pixelSize: columnTPMS.fz3
                                         font.bold: false
                                         color: cccc
                                     }
                                 }
                                 Text {
                                     text: currentDevice.temperature4.toFixed(1)
-                                    font.pixelSize: 28
+                                    font.pixelSize: columnTPMS.fz2
                                     font.bold: false
                                     color: cccc
 
@@ -915,7 +935,7 @@ Component {
                                         anchors.topMargin: 2
                                         text: (settingsManager.tempUnit === 'C') ? "°C" : "°F"
                                         opacity: 0.66
-                                        font.pixelSize: 20
+                                        font.pixelSize: columnTPMS.fz3
                                         font.bold: false
                                         color: cccc
                                     }
@@ -937,10 +957,10 @@ Component {
 
                 Text { // deviceName
                     anchors.centerIn: columnTPMS
-                    visible: columnTPMS.visible
+                    visible: (columnTPMS.visible && isDesktop)
 
                     text: currentDevice.deviceName
-                    font.pixelSize: 28
+                    font.pixelSize: columnTPMS.fz2
                     font.bold: false
                     color: cccc
                     opacity: 0.66
