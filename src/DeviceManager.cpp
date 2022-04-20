@@ -907,12 +907,6 @@ void DeviceManager::refreshDevices_background()
         }
     }
 */
-    // Make sure we have Bluetooth
-    if (!checkBluetooth())
-    {
-        return;
-    }
-
     // Background refresh (if background location permission)
     listenDevices();
 /*

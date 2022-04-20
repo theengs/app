@@ -40,10 +40,8 @@ AndroidService::AndroidService(QObject *parent) : QObject(parent)
 
     m_settingsManager = SettingsManager::getInstance();
 
-    //m_notificationManager = NotificationManager::getInstance(); // DEBUG
-    //m_notificationManager->setNotification2("AndroidService starting", QDateTime::currentDateTime().toString());
-
-    m_deviceManager = new DeviceManager(true);
+    m_notificationManager = NotificationManager::getInstance(); // DEBUG
+    m_notificationManager->setNotification2("AndroidService starting", QDateTime::currentDateTime().toString());
 
     // Configure update timer
     connect(&m_workTimer, &QTimer::timeout, this, &AndroidService::gotowork);
@@ -65,32 +63,38 @@ void AndroidService::setWorkTimer(int workInterval_mins)
 
 void AndroidService::gotowork()
 {
-    if (m_deviceManager)
+    // Reload settings, user might have changed them
+    m_settingsManager->reloadSettings();
+
+    // Is the background service enabled?
+    if (m_settingsManager->getSysTray())
     {
-        delete m_deviceManager;
+        // Reload the device manager, a new scan might have occured
+        if (m_deviceManager) delete m_deviceManager;
         m_deviceManager = new DeviceManager(true);
-    }
 
-    if (m_deviceManager && m_deviceManager->areDevicesAvailable())
-    {
-        // Restart timer
-        setWorkTimer(m_settingsManager->getUpdateIntervalBackground());
-
-        // Reload a few things
-        m_settingsManager->reloadSettings();
-
-        if (m_settingsManager->getMQTT())
+        // Device manager is operational?
+        if (m_deviceManager &&
+            m_deviceManager->checkBluetooth() &&
+            m_deviceManager->areDevicesAvailable())
         {
-            MqttManager *mq = MqttManager::getInstance();
-            mq->reconnect();
+            m_notificationManager = NotificationManager::getInstance(); // DEBUG
+            m_notificationManager->setNotification2("AndroidService working", QDateTime::currentDateTime().toString());
+
+            // Reload MQTT settings, user might have changed them
+            if (m_settingsManager->getMQTT())
+            {
+                MqttManager *mq = MqttManager::getInstance();
+                mq->reconnect();
+            }
+
+            // Start background refresh process
+            m_deviceManager->refreshDevices_background();
         }
-
-        //m_notificationManager = NotificationManager::getInstance(); // DEBUG
-        //m_notificationManager->setNotification2("AndroidService working", QDateTime::currentDateTime().toString());
-
-        // Start background refresh process
-        m_deviceManager->refreshDevices_background();
     }
+
+    // Restart timer
+    setWorkTimer(m_settingsManager->getUpdateIntervalBackground());
 }
 
 /* ************************************************************************** */
