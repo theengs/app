@@ -6,7 +6,7 @@ import DeviceUtils 1.0
 import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
 
 Loader {
-    id: deviceScale
+    id: deviceMotionSensor
 
     sourceComponent: null
     asynchronous: false
@@ -18,40 +18,38 @@ Loader {
     function loadDevice(clickedDevice) {
         // set device
         if (typeof clickedDevice === "undefined" || !clickedDevice) return
-        if (!clickedDevice.isScale) return
+        if (!clickedDevice.isMotionSensor) return
         if (clickedDevice === currentDevice) return
         currentDevice = clickedDevice
 
         // load screen
         if (!sourceComponent) {
-            sourceComponent = componentDeviceScale
+            sourceComponent = componentDeviceMotionSensor
         }
-        deviceScale.item.loadDevice()
+        deviceMotionSensor.item.loadDevice()
     }
 
     ////////
 
     function isHistoryMode() {
-        if (sourceComponent) return deviceScale.item.isHistoryMode()
+        if (sourceComponent) return deviceMotionSensor.item.isHistoryMode()
         return false
     }
     function resetHistoryMode() {
-        if (sourceComponent) deviceScale.item.resetHistoryMode()
+        if (sourceComponent) deviceMotionSensor.item.resetHistoryMode()
     }
 
     ////////////////////////////////////////////////////////////////////////////
 
     Component {
-        id: componentDeviceScale
+        id: componentDeviceMotionSensor
 
         Item {
-            id: itemDeviceScale
+            id: itemDeviceMotionSensor
             width: 480
             height: 720
 
             focus: parent.focus
-
-            property alias weightChart: graphLoader.item
 
             property string cccc: headerUnicolor ? Theme.colorHeaderContent : "white"
 
@@ -122,9 +120,7 @@ Loader {
             ////////
 
             function loadDevice() {
-                //console.log("DeviceScale // loadDevice() >> " + currentDevice)
-
-                graphLoader.source = "" // force graph reload
+                //console.log("deviceMotionSensor // loadDevice() >> " + currentDevice)
 
                 loadGraph()
                 updateHeader()
@@ -133,8 +129,8 @@ Loader {
 
             function updateHeader() {
                 if (typeof currentDevice === "undefined" || !currentDevice) return
-                if (!currentDevice.isScale) return
-                //console.log("DeviceScale // updateHeader() >> " + currentDevice)
+                if (!currentDevice.isMotionSensor) return
+                //console.log("deviceMotionSensor // updateHeader() >> " + currentDevice)
 
                 // Status
                 updateStatusText()
@@ -142,14 +138,14 @@ Loader {
 
             function updateData() {
                 if (typeof currentDevice === "undefined" || !currentDevice) return
-                if (!currentDevice.isScale) return
-                //console.log("DeviceScale // updateData() >> " + currentDevice)
+                if (!currentDevice.isMotionSensor) return
+                //console.log("deviceMotionSensor // updateData() >> " + currentDevice)
             }
 
             function updateStatusText() {
                 if (typeof currentDevice === "undefined" || !currentDevice) return
-                if (!currentDevice.isScale) return
-                //console.log("DeviceScale // updateStatusText() >> " + currentDevice)
+                if (!currentDevice.isMotionSensor) return
+                //console.log("deviceMotionSensor // updateStatusText() >> " + currentDevice)
 
                 // Status
                 textStatus.text = UtilsDeviceSensors.getDeviceStatusText(currentDevice.status)
@@ -164,32 +160,17 @@ Loader {
             }
 
             function loadGraph() {
-                var reload = !(settingsManager.graphThermometer === "lines" && graphLoader.source === "ChartPlantDataAio.qml") ||
-                             !(settingsManager.graphThermometer === "minmax" && graphLoader.source === "ChartThermometerMinMax.qml")
-
-                //if (graphLoader.status != Loader.Ready || reload) {
-                //    if (settingsManager.graphThermometer === "lines") {
-                //        graphLoader.source = "ChartPlantDataAio.qml"
-                //    } else {
-                //        graphLoader.source = "ChartThermometerMinMax.qml"
-                //    }
-                //}
-
-                //if (graphLoader.status == Loader.Ready) {
-                //    weightChart.loadGraph()
-                //    weightChart.updateGraph()
-                //}
+                //
             }
             function updateGraph() {
-                //if (graphLoader.status == Loader.Ready) weightChart.updateGraph()
+                //
             }
 
             function isHistoryMode() {
-                //if (graphLoader.status == Loader.Ready) return weightChart.isIndicator()
                 return false
             }
             function resetHistoryMode() {
-                //if (graphLoader.status == Loader.Ready) weightChart.resetIndicator()
+                //
             }
 
             ////////////////////////////////////////////////////////////////////////////
@@ -198,10 +179,10 @@ Loader {
                 anchors.fill: parent
 
                 Rectangle {
-                    id: scaleBox
+                    id: motionBox
 
-                    property int dimboxw: Math.min(deviceScale.width * 0.4, isPhone ? 320 : 600)
-                    property int dimboxh: Math.max(deviceScale.height * 0.333, isPhone ? 180 : 256)
+                    property int dimboxw: Math.min(deviceMotionSensor.width * 0.4, isPhone ? 320 : 600)
+                    property int dimboxh: Math.max(deviceMotionSensor.height * 0.333, isPhone ? 180 : 256)
 
                     width: singleColumn ? parent.width : dimboxw
                     height: singleColumn ? dimboxh : parent.height
@@ -222,134 +203,69 @@ Loader {
                         color: cccc
                     }
 
-                    Column {
+                    Rectangle { // round indicator
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.verticalCenterOffset: -(appHeader.height / 3)
-                        spacing: 0
 
-                        Rectangle { // scale
-                            width: singleColumn ? scaleBox.height * 0.75 : scaleBox.width * 0.66
-                            height: width
-                            radius: 16
-                            color: Qt.alpha(cccc, 0.1)
-                            border.width: 2
-                            border.color: Qt.alpha(cccc, 0.33)
+                        width: singleColumn ? motionBox.height * 0.75 : motionBox.width * 0.66
+                        height: width
+                        radius: width
+                        color: Qt.alpha(cccc, 0.1)
+                        border.width: 2
+                        border.color: Qt.alpha(cccc, 0.33)
 
-                            Rectangle {
-                                anchors.top: parent.top
-                                anchors.left: parent.left
-                                anchors.margins: 12
-                                width: 28; height: 28; radius: 28;
-                                color: Qt.alpha(cccc, 0.33)
-                            }
-                            Rectangle {
-                                anchors.top: parent.top
-                                anchors.right: parent.right
-                                anchors.margins: 12
-                                width: 28; height: 28; radius: 28;
-                                color: Qt.alpha(cccc, 0.33)
-                            }
-                            Rectangle {
-                                anchors.bottom: parent.bottom
-                                anchors.left: parent.left
-                                anchors.margins: 12
-                                width: 28; height: 28; radius: 28;
-                                color: Qt.alpha(cccc, 0.33)
-                            }
-                            Rectangle {
-                                anchors.bottom: parent.bottom
-                                anchors.right: parent.right
-                                anchors.margins: 12
-                                width: 28; height: 28; radius: 28;
-                                color: Qt.alpha(cccc, 0.33)
-                            }
+                        Column {
+                            anchors.centerIn: parent
+                            spacing: isPhone ? 0 : 8
 
-                            Rectangle {
-                                anchors.top: parent.top
+                            Text { // legend
                                 anchors.horizontalCenter: parent.horizontalCenter
-                                anchors.margins: 12
-                                width: 64; height: 28; radius: 12;
-                                color: Qt.alpha(cccc, 0.1)
-                                border.width: 2
-                                border.color: Qt.alpha(cccc, 0.33)
-                            }
 
-                            Column {
-                                id: stuff
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.verticalCenterOffset: 4
-
-                                Text {
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                    text: currentDevice.weight.toFixed(1)
-                                    font.pixelSize: isPhone ? 30 : 32
-                                    color: cccc
-
-                                    Text {
-                                        anchors.left: parent.right
-                                        anchors.leftMargin: 2
-                                        anchors.bottom: parent.bottom
-                                        anchors.bottomMargin: 2
-
-                                        text: (settingsManager.tempUnit === 'C') ? "kg" : "p"
-                                        opacity: 0.66
-                                        font.pixelSize: isPhone ? 20 : 22
-                                        font.bold: false
-                                        color: cccc
-                                    }
+                                text: {
+                                    if (currentDevice.hasOpen) return "door"
+                                    else if (currentDevice.hasMovement) return "movement"
+                                    else if (currentDevice.hasPresence) return "presence"
                                 }
 
-                                Text {
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                    text: currentDevice.impedance
-                                    color: cccc
-                                    font.pixelSize: isPhone ? 26 : 28
-
-                                    visible: (currentDevice.impedance > 0)
-                                    //visible: currentDevice.hasImpedance
-
-                                    Text {
-                                        anchors.left: parent.right
-                                        anchors.leftMargin: 2
-                                        anchors.verticalCenter: parent.verticalCenter
-
-                                        text: "Ω"
-                                        font.pixelSize: isPhone ? 20 : 22
-                                        font.bold: false
-                                        color: cccc
-                                        opacity: 0.66
-                                    }
-                                }
-                            }
-
-                            IconSvg {
-                                id: imageBattery
-                                width: isPhone ? 20 : 24
-                                height: isPhone ? 32 : 36
-                                rotation: 90
-                                anchors.top: stuff.bottom
-                                anchors.topMargin: 4
-                                anchors.horizontalCenter: parent.horizontalCenter
-
-                                visible: (currentDevice.hasBattery && currentDevice.deviceBattery >= 0)
-                                source: UtilsDeviceSensors.getDeviceBatteryIcon(currentDevice.deviceBattery)
-                                fillMode: Image.PreserveAspectCrop
-                                color: cccc
-                            }
-
-                            Text {
-                                anchors.bottom: parent.bottom
-                                anchors.bottomMargin: 12
-                                anchors.horizontalCenter: parent.horizontalCenter
-
-                                visible: (currentDevice.weightMode)
-
-                                text: currentDevice.weightMode
-                                font.pixelSize: isPhone ? 20 : 22
+                                font.pixelSize: isPhone ? 22 : 26
+                                font.bold: false
                                 color: cccc
                                 opacity: 0.66
+                            }
+
+                            Text { // value
+                                anchors.horizontalCenter: parent.horizontalCenter
+
+                                text: {
+                                    if (currentDevice.hasOpen) return (currentDevice.open) ? "opened" : "closed"
+                                    else if (currentDevice.hasMovement) return (currentDevice.movement) ? "yes" : "no"
+                                    else if (currentDevice.hasPresence) return (currentDevice.presence) ? "yes" : "no"
+                                }
+
+                                font.pixelSize: isPhone ? 26 : 30
+                                font.bold: true
+                                color: cccc
+                                opacity: 1
+                            }
+
+                            Row {
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                spacing: 8
+                                visible: (currentDevice.hasLuminositySensor && currentDevice.luminosityLux >= 0)
+
+                                Text {
+                                    text: currentDevice.luminosityLux
+                                    font.pixelSize: isPhone ? 22 : 24
+                                    color: cccc
+                                    opacity: 1
+                                }
+                                Text {
+                                    text: "lux"
+                                    font.pixelSize: isPhone ? 20 : 22
+                                    color: cccc
+                                    opacity: 0.66
+                                }
                             }
                         }
                     }
@@ -484,30 +400,10 @@ Loader {
                 ////////////////
 
                 Item {
-                    width: singleColumn ? parent.width : (parent.width - scaleBox.width)
-                    height: singleColumn ? (parent.height - scaleBox.height) : parent.height
+                    width: singleColumn ? parent.width : (parent.width - motionBox.width)
+                    height: singleColumn ? (parent.height - motionBox.height) : parent.height
 
-                    ItemBannerSync {
-                        id: bannersync
-                        z: 5
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                    }
-
-                    Loader {
-                        id: graphLoader
-                        anchors.top: bannersync.bottom
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.bottom: parent.bottom
-
-                        asynchronous: true
-                        onLoaded: {
-                            weightChart.loadGraph()
-                            weightChart.updateGraph()
-                        }
-                    }
+                    // EMPTY
                 }
             }
         }

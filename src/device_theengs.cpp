@@ -86,6 +86,10 @@ bool DeviceTheengs::hasData() const
         if (m_weight > -80.f)
             return true;
     }
+    else if (isMotionSensor())
+    {
+        return true;
+    }
     else
     {
         return DeviceSensor::hasData();

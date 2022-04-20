@@ -78,6 +78,15 @@ class DeviceTheengs: public DeviceSensor
     Q_PROPERTY(QString weightUnit READ getWeightUnit NOTIFY dataUpdated)
     Q_PROPERTY(int impedance READ getImpedance NOTIFY dataUpdated)
 
+    // motion sensor data
+    Q_PROPERTY(bool hasOpen READ hasOpen NOTIFY sensorsUpdated)
+    Q_PROPERTY(bool hasMovement READ hasMovement NOTIFY sensorsUpdated)
+    Q_PROPERTY(bool hasPresence READ hasPresence NOTIFY sensorsUpdated)
+
+    Q_PROPERTY(bool open READ getOpen NOTIFY dataUpdated)
+    Q_PROPERTY(bool movement READ getMovement NOTIFY dataUpdated)
+    Q_PROPERTY(bool presence READ getPresence NOTIFY dataUpdated)
+
 protected:
     int m_deviceSensorsTheengs = 0;     //!< See DeviceSensorsTheengs enum
 
@@ -106,6 +115,11 @@ protected:
     QString m_weightUnit;
     QString m_weightMode;
     int m_impedance = -99;
+
+    // motion sensor data
+    bool m_open = false;
+    bool m_movement = false;
+    bool m_presence = false;
 
     virtual bool hasData() const;
 
@@ -168,6 +182,15 @@ public:
     QString getWeightUnit() const { return m_weightUnit; }
     QString getWeightMode() const { return m_weightMode; }
     int getImpedance() const { return m_impedance; }
+
+    // motion sensor data
+    bool hasOpen() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_OPEN); }
+    bool hasMovement() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_MOVEMENT); }
+    bool hasPresence() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_PRESENCE); }
+
+    bool getOpen() const { return m_open; }
+    bool getMovement() const { return m_movement; }
+    bool getPresence() const { return m_presence; }
 
 private:
     // QLowEnergyController related

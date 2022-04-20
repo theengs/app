@@ -89,6 +89,12 @@ Item {
             } else {
                 imageDevice.source = "qrc:/assets/icons_material/outline-settings_remote-24px.svg"
             }
+        } else if (boxDevice.isScale) {
+            imageDevice.source = "qrc:/assets/icons_material/baseline-monitor_weight-24px.svg"
+        } else if (boxDevice.isMotionSensor) {
+            imageDevice.source = "qrc:/assets/icons_material/baseline-sensors-24px.svg"
+        } else if (boxDevice.isProbe) {
+            imageDevice.source = "qrc:/assets/icons_material/baseline-settings_input_component-24px.svg"
         } else {
             imageDevice.source = "qrc:/assets/icons_material/outline-settings_remote-24px.svg"
         }
@@ -128,7 +134,10 @@ Item {
 
         if (boxDevice.status === DeviceUtils.DEVICE_OFFLINE) {
             if (boxDevice.isDataFresh()) {
-                textStatus.color = Theme.colorGreen
+                if (boxDevice.lastUpdateMin >= 0 && boxDevice.lastUpdateMin <= 1)
+                    textStatus.color = Theme.colorGreen
+                else
+                    textStatus.color = Theme.colorYellow
                 textStatus.text = qsTr("Synced")
             } else if (boxDevice.isDataToday()) {
                 textStatus.color = Theme.colorYellow
@@ -318,16 +327,6 @@ Item {
             onClicked: (mouse) => {
                 if (typeof boxDevice === "undefined" || !boxDevice) return
 
-                // multi selection
-                if (mouse.button === Qt.MiddleButton) {
-                    if (!boxDevice.selected) {
-                        screenDeviceList.selectDevice(index)
-                    } else {
-                        screenDeviceList.deselectDevice(index)
-                    }
-                    return
-                }
-
                 if (mouse.button === Qt.LeftButton) {
                     // multi selection
                     if ((mouse.modifiers & Qt.ControlModifier) ||
@@ -359,10 +358,23 @@ Item {
                         } else if (boxDevice.isScale) {
                             screenDeviceScale.loadDevice(boxDevice)
                             appContent.state = "DeviceScale"
+                        } else if (boxDevice.isMotionSensor) {
+                            screenDeviceMotionSensor.loadDevice(boxDevice)
+                            appContent.state = "DeviceMotionSensor"
                         } else {
                             //
                         }
                     }
+                }
+
+                if (mouse.button === Qt.MiddleButton) {
+                   // multi selection
+                   if (!boxDevice.selected) {
+                       screenDeviceList.selectDevice(index)
+                   } else {
+                       screenDeviceList.deselectDevice(index)
+                   }
+                   return
                 }
             }
 
@@ -760,6 +772,8 @@ Item {
                 } else if (boxDevice.isScale) {
                     textTemp.text = boxDevice.weight.toFixed(1) + " " + ((settingsManager.tempUnit === 'C') ? "kg" : "p")
                     if (boxDevice.impedance > 0) textHygro.text = boxDevice.impedance + " Ω"
+                } else if (boxDevice.isMotionSensor) {
+                    //
                 } else if (boxDevice.isProbe) {
                     //
                 } else {

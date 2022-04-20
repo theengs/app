@@ -233,7 +233,7 @@ Component {
                     anchors.verticalCenterOffset: -(appHeader.height / 2)
                     spacing: 24
 
-                    visible: (currentDevice.deviceName.includes("BBQ") && currentDevice.hasData)
+                    visible: (!currentDevice.deviceName.includes("TPMS") && currentDevice.hasData)
 
                     property int psw: isPhone ? 160 : 180
                     property int psh: isPhone ? 44 : 48

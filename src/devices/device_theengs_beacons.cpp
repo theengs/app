@@ -82,7 +82,6 @@ void DeviceTheengsBeacons::parseTheengsProps(const QString &json)
     Q_EMIT capabilitiesUpdated();
 
     // Sensors
-    //
     Q_EMIT sensorsUpdated();
 }
 
@@ -98,15 +97,6 @@ void DeviceTheengsBeacons::parseTheengsAdvertisement(const QString &json)
 
     if (obj.contains("batt")) setBattery(obj["batt"].toInt());
     if (obj.contains("mac")) setSetting("mac", obj["mac"].toString());
-
-    if (obj["model"].toString() == "TPMS")
-    {
-        //
-    }
-    else //if (obj["model"].toString().contains("BBQ"))
-    {
-        //
-    }
 
     //if (x > -99)
     {

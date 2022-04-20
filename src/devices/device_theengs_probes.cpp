@@ -138,7 +138,7 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
             m_alarm4 = alarm;
         }
     }
-    else //if (obj["model"].toString().contains("BBQ"))
+    else // temperature probes
     {
         if (obj.contains("tempc")) m_temperature1 = obj["tempc"].toDouble();
         if (obj.contains("tempc1")) m_temperature1 = obj["tempc1"].toDouble();

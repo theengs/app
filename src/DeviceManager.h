@@ -95,7 +95,7 @@ class DeviceManager: public QObject
     bool m_syncing = false;
     bool isSyncing() const;
 
-    static const int ble_scanning_duration = 20;
+    static const int ble_scanning_duration = 30;
     static const int ble_listening_duration = 0;
     static const int ble_listening_duration_nearby = 60;
     static const int ble_listening_duration_background = 30;

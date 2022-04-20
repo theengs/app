@@ -831,7 +831,9 @@ bool DeviceSensor::hasData() const
 
 bool DeviceSensor::isDataFresh() const
 {
-    return (getLastUpdateInt() >= 0 && getLastUpdateInt() <= 1);
+    SettingsManager *sm = SettingsManager::getInstance();
+    int maxMin = hasSoilMoistureSensor() ? sm->getUpdateIntervalPlant() : sm->getUpdateIntervalThermo();
+    return (getLastUpdateInt() >= 0 && getLastUpdateInt() < maxMin);
 }
 
 bool DeviceSensor::isDataToday() const

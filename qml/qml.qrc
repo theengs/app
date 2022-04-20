@@ -20,6 +20,7 @@
         <file>DevicePlantSensorSettings.qml</file>
         <file>DeviceProbe.qml</file>
         <file>DeviceScale.qml</file>
+        <file>DeviceMotionSensor.qml</file>
         <file>DeviceThermometer.qml</file>
         <file>DeviceEnvironmental.qml</file>
         <file>ThemeEngine.qml</file>

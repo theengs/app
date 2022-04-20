@@ -604,6 +604,7 @@ Rectangle {
                   appContent.state !== "DeviceEnvironmental" &&
                   appContent.state !== "DeviceProbe" &&
                   appContent.state !== "DeviceScale" &&
+                  appContent.state !== "DeviceMotionSensor" &&
                   appContent.state !== "Tutorial")
 
         height: 2

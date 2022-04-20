@@ -61,6 +61,7 @@ class Device: public QObject
     Q_PROPERTY(bool isEnvironmentalSensor READ isEnvironmentalSensor NOTIFY sensorUpdated)
     Q_PROPERTY(bool isProbe READ isProbe NOTIFY sensorUpdated)
     Q_PROPERTY(bool isScale READ isScale NOTIFY sensorUpdated)
+    Q_PROPERTY(bool isMotionSensor READ isMotionSensor NOTIFY sensorUpdated)
 
     Q_PROPERTY(bool hasBluetoothConnection READ hasBluetoothConnection CONSTANT)
     Q_PROPERTY(bool hasBluetoothAdvertisement READ hasBluetoothAdvertisement CONSTANT)
@@ -255,8 +256,9 @@ public:
     bool isPlantSensor() const { return (m_deviceType == DeviceUtils::DEVICE_PLANTSENSOR); }
     bool isThermometer() const { return (m_deviceType == DeviceUtils::DEVICE_THERMOMETER); }
     bool isEnvironmentalSensor() const { return (m_deviceType == DeviceUtils::DEVICE_ENVIRONMENTAL); }
-    bool isProbe() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_PROBES); }
+    bool isMotionSensor() const { return (m_deviceType == DeviceUtils::DEVICE_MOTION); }
     bool isScale() const { return (m_deviceType == DeviceUtils::DEVICE_SCALE); }
+    bool isProbe() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_PROBES); }
     bool isDeviceTheengs() const { return (m_deviceType >= DeviceUtils::DEVICE_THEENGS); }
 
     bool hasRealTime() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_REALTIME); }

@@ -43,7 +43,7 @@ DeviceTheengsMotions::DeviceTheengsMotions(const QString &deviceAddr, const QStr
     DeviceTheengs(deviceAddr, deviceName, deviceModel, parent)
 {
     m_deviceModel = deviceModel;
-    m_deviceType = DeviceUtils::DEVICE_BEACON;
+    m_deviceType = DeviceUtils::DEVICE_MOTION;
     m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 
     parseTheengsProps(devicePropsJson);
@@ -55,7 +55,7 @@ DeviceTheengsMotions::DeviceTheengsMotions(const QBluetoothDeviceInfo &d,
     DeviceTheengs(d, deviceModel, parent)
 {
     m_deviceModel = deviceModel;
-    m_deviceType = DeviceUtils::DEVICE_BEACON;
+    m_deviceType = DeviceUtils::DEVICE_MOTION;
     m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 
     parseTheengsProps(devicePropsJson);
@@ -82,7 +82,11 @@ void DeviceTheengsMotions::parseTheengsProps(const QString &json)
     Q_EMIT capabilitiesUpdated();
 
     // Sensors
-    //
+    if (prop.contains("open")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_OPEN;
+    if (prop.contains("move")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_MOVEMENT;
+    if (prop.contains("pres")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_PRESENCE;
+    if (prop.contains("darkness")) m_deviceSensors += DeviceUtils::SENSOR_LUMINOSITY;
+    if (prop.contains("lux")) m_deviceSensors += DeviceUtils::SENSOR_LUMINOSITY;
     Q_EMIT sensorsUpdated();
 }
 
@@ -99,13 +103,36 @@ void DeviceTheengsMotions::parseTheengsAdvertisement(const QString &json)
     if (obj.contains("batt")) setBattery(obj["batt"].toInt());
     if (obj.contains("mac")) setSetting("mac", obj["mac"].toString());
 
-    if (obj["model"].toString() == "TPMS")
-    {
-        //
+    if (obj.contains("open")) {
+        if (m_open != obj["open"].toBool()) {
+            m_open = obj["open"].toBool();
+            Q_EMIT dataUpdated();
+        }
     }
-    else //if (obj["model"].toString().contains("BBQ"))
-    {
-        //
+    if (obj.contains("movement")) {
+        if (m_movement != obj["movement"].toBool()) {
+            m_movement = obj["movement"].toBool();
+            Q_EMIT dataUpdated();
+        }
+    }
+    if (obj.contains("pres")) {
+        if (m_presence != obj["pres"].toBool()) {
+            m_presence = obj["pres"].toBool();
+            Q_EMIT dataUpdated();
+        }
+    }
+
+    if (obj.contains("darkness")) {
+        if (m_luminosityLux != obj["darkness"].toInt()) {
+            m_luminosityLux = obj["darkness"].toInt();
+            Q_EMIT dataUpdated();
+        }
+    }
+    if (obj.contains("lux")) {
+        if (m_luminosityLux != obj["lux"].toInt()) {
+            m_luminosityLux = obj["lux"].toInt();
+            Q_EMIT dataUpdated();
+        }
     }
 
     //if (x > -99)

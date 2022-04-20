@@ -57,6 +57,7 @@
         <file>icons_material/baseline-iso-24px.svg</file>
         <file>icons_material/baseline-menu-24px.svg</file>
         <file>icons_material/baseline-more_vert-24px.svg</file>
+        <file>icons_material/baseline-monitor_weight-24px.svg</file>
         <file>icons_material/baseline-near_me-24px.svg</file>
         <file>icons_material/baseline-new_releases-24px.svg</file>
         <file>icons_material/baseline-notifications_none-24px.svg</file>
@@ -66,7 +67,9 @@
         <file>icons_material/baseline-radar-24px.svg</file>
         <file>icons_material/baseline-refresh-24px.svg</file>
         <file>icons_material/baseline-search-24px.svg</file>
+        <file>icons_material/baseline-sensors-24px.svg</file>
         <file>icons_material/baseline-settings-20px.svg</file>
+        <file>icons_material/baseline-settings_input_component-24px.svg</file>
         <file>icons_material/baseline-sort-24px.svg</file>
         <file>icons_material/baseline-stars-24px.svg</file>
         <file>icons_material/baseline-storage-24px.svg</file>
