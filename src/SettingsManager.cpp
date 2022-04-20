@@ -307,7 +307,7 @@ void SettingsManager::resetSettings()
     Q_EMIT bluetoothControlChanged();
     m_bluetoothLimitScanningRange = false;
     Q_EMIT bluetoothLimitScanningRangeChanged();
-    m_bluetoothSimUpdates = 2;
+    m_bluetoothSimUpdates = 3;
     Q_EMIT bluetoothSimUpdatesChanged();
 
     m_appUnits = QLocale().measurementSystem();
@@ -345,7 +345,7 @@ void SettingsManager::resetSettings()
 
     m_mqtt = false;
     m_mqttHost = "";
-    m_mqttPort = 3306;
+    m_mqttPort = 1883;
     m_mqttName = "theengs";
     m_mqttUser = "theengs";
     m_mqttPassword = "theengs";

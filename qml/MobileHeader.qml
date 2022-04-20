@@ -148,8 +148,7 @@ Rectangle {
                     opacity: 0
                     Behavior on opacity { OpacityAnimator { duration: 333 } }
 
-                    NumberAnimation on rotation {
-                        //id: refreshAnimation
+                    NumberAnimation on rotation { //  refreshAnimation
                         from: 0
                         to: 360
                         duration: 2000
@@ -160,8 +159,7 @@ Rectangle {
                         onStarted: workingIndicator.opacity = 1
                         onStopped: workingIndicator.opacity = 0
                     }
-                    SequentialAnimation on opacity {
-                        //id: rescanAnimation
+                    SequentialAnimation on opacity { // rescanAnimation
                         loops: Animation.Infinite
                         running: (deviceManager.scanning || deviceManager.listening || deviceManager.syncing)
                         onStopped: workingIndicator.opacity = 0
@@ -181,7 +179,7 @@ Rectangle {
                 visible: (deviceManager.bluetooth &&
                           (appContent.state === "DevicePlantSensor" ||
                            appContent.state === "DeviceThermometer" ||
-                           appContent.state === "DeviceEnvironmental"))
+                           (appContent.state === "DeviceEnvironmental" && selectedDevice.hasBluetoothConnection)))
 
                 onClicked: {
                     rightMenuClicked()

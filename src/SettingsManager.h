@@ -103,7 +103,7 @@ class SettingsManager: public QObject
 
     bool m_bluetoothControl = false;
     bool m_bluetoothLimitScanningRange = false;
-    unsigned m_bluetoothSimUpdates = 4;
+    unsigned m_bluetoothSimUpdates = 3;
 
     unsigned m_updateIntervalBackground = BACKGROUND_UPDATE_INTERVAL;
     unsigned m_updateIntervalPlant = PLANT_UPDATE_INTERVAL;

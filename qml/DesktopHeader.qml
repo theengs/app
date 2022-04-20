@@ -83,7 +83,7 @@ Rectangle {
     DragHandler {
         // make that surface draggable
         // also, prevent clicks below this area
-        onActiveChanged: if (active) appWindow.startSystemMove();
+        onActiveChanged: if (active) appWindow.startSystemMove()
         target: null
     }
 
@@ -154,7 +154,7 @@ Rectangle {
         spacing: 12
         visible: true
 
-        ////////////
+        // DEVICE ACTIONS //////////
 
         ButtonCompactable {
             id: buttonThermoChart
@@ -251,15 +251,21 @@ Rectangle {
             onClicked: deviceLedButtonClicked()
         }
 
+        ////////////
+
         Rectangle { // separator
             anchors.verticalCenter: parent.verticalCenter
             height: 40
             width: Theme.componentBorderWidth
             color: Theme.colorHeaderHighlight
-            visible: (!singleColumn && (buttonThermoChart.visible || buttonWatering.visible ||
-                                        buttonCalibrate.visible || buttonReboot.visible ||
-                                        buttonLed.visible))
+            visible: (!singleColumn &&
+                      (buttonThermoChart.visible || buttonWatering.visible ||
+                       buttonCalibrate.visible || buttonReboot.visible ||
+                       buttonLed.visible) &&
+                      (buttonRefreshHistory.visible || buttonRefreshData.visible))
         }
+
+        ////////////
 
         ButtonCompactable {
             id: buttonRefreshHistory
@@ -296,6 +302,8 @@ Rectangle {
             onClicked: deviceClearButtonClicked()
         }
 
+        ////////////
+
         Rectangle { // separator
             anchors.verticalCenter: parent.verticalCenter
             height: 40
@@ -303,6 +311,8 @@ Rectangle {
             color: Theme.colorHeaderHighlight
             visible: (!singleColumn && buttonRefreshHistory.visible)
         }
+
+        ////////////
 
         ButtonCompactable {
             id: buttonRefreshRealtime
@@ -346,6 +356,8 @@ Rectangle {
             animationRunning: selectedDevice ? selectedDevice.updating : false
         }
 
+        ////////////
+
         Rectangle { // separator
             anchors.verticalCenter: parent.verticalCenter
             height: 40
@@ -353,14 +365,13 @@ Rectangle {
             color: Theme.colorHeaderHighlight
             visible: (!singleColumn && appContent.state === "DevicePlantSensor")
         }
-
         Item { // spacer
             width: 1; height: 1;
             anchors.verticalCenter: parent.verticalCenter
             visible: (appContent.state === "DeviceThermometer" || appContent.state === "DeviceEnvironmental")
         }
 
-        ////////////
+        // DEVICE MENU //////////
 
         Row {
             id: menuDevice
@@ -403,7 +414,7 @@ Rectangle {
             }
         }
 
-        ////////////
+        // MAIN MENU ACTIONS //////////
 
         ButtonCompactable {
             id: buttonSort
@@ -456,6 +467,7 @@ Rectangle {
                 }
             }
         }
+
         Rectangle { // separator
             anchors.verticalCenter: parent.verticalCenter
             height: 40
@@ -463,6 +475,7 @@ Rectangle {
             color: Theme.colorHeaderHighlight
             visible: (deviceManager.bluetooth && appContent.state === "DeviceList")
         }
+
         ButtonCompactable {
             id: buttonScan
             height: compact ? 36 : 34
@@ -500,9 +513,15 @@ Rectangle {
 
             onClicked: refreshButtonClicked()
 
-            animation: deviceManager.updating ? "rotate" : "fade"
+            animation: {
+                if (deviceManager.updating && deviceManager.listening) return "both"
+                if (deviceManager.updating) return "rotate"
+                if (deviceManager.listening) return "fade"
+                return ""
+            }
             animationRunning: (deviceManager.updating || deviceManager.listening)
         }
+
         Rectangle { // separator
             anchors.verticalCenter: parent.verticalCenter
             height: 40
@@ -511,7 +530,7 @@ Rectangle {
             visible: (deviceManager.bluetooth && appContent.state === "DeviceList")
         }
 
-        ////////////
+        // MAIN MENU //////////
 
         Row {
             id: menuMain

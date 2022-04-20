@@ -16,8 +16,8 @@ Popup {
     focus: isMobile
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
-    enter: Transition { NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 133; } }
-    exit: Transition { NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: 133; } }
+    enter: Transition { NumberAnimation { property: "opacity"; from: 0.33; to: 1.0; duration: 133; } }
+    exit: Transition { NumberAnimation { property: "opacity"; from: 1.0; to: 0.33; duration: 133; } }
 
     property int layoutDirection: Qt.RightToLeft
 
@@ -51,7 +51,7 @@ Popup {
             text: qsTr("Update data")
             source: "qrc:/assets/icons_material/baseline-refresh-24px.svg"
             layoutDirection: actionMenu.layoutDirection
-            visible: (deviceManager.bluetooth && selectedDevice)
+            visible: (deviceManager.bluetooth && (selectedDevice && selectedDevice.hasBluetoothConnection))
 
             onClicked: {
                 deviceRefreshButtonClicked()
@@ -121,7 +121,7 @@ Popup {
         Rectangle {
             width: parent.width; height: 1;
             color: Theme.colorSeparator
-            visible: (actionLed.visible || actionWatering.visible || actionGraphMode.visible)
+            visible: (actionUpdate.visible || actionHistoryRefresh.visible) && (actionLed.visible || actionWatering.visible || actionGraphMode.visible)
         }
 
         ActionMenuItem {

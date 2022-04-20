@@ -385,6 +385,8 @@ Item {
                 anchors.right: parent.right
                 color: Theme.colorForeground
 
+                visible: (element_bluetoothControl.visible) // || element_bluetoothSimUpdate.visible)
+
                 IconSvg {
                     id: image_ble
                     width: 24
@@ -664,7 +666,10 @@ Item {
                     anchors.leftMargin: 24
                     text: settingsManager.systray ? qsTr("Enabled") : qsTr("Disabled")
                     checked: settingsManager.systray
-                    onClicked: settingsManager.systray = checked
+                    onClicked: {
+                        settingsManager.systray = checked
+                        utilsApp.getMobileBackgroundLocationPermission()
+                    }
                 }
 /*
                 Text {

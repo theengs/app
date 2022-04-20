@@ -557,6 +557,8 @@ ApplicationWindow {
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; enabled: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; enabled: false; }
                 PropertyChanges { target: screenDeviceEnvironmental; visible: false; enabled: false; }
+                PropertyChanges { target: screenDeviceProbe; visible: false; enabled: false; }
+                PropertyChanges { target: screenDeviceScale; visible: false; enabled: false; }
                 PropertyChanges { target: screenSettingsMqtt; visible: false; enabled: false; }
                 PropertyChanges { target: screenSettings; visible: false; enabled: false; }
                 PropertyChanges { target: screenPermissions; visible: false; enabled: false; }
@@ -591,15 +593,19 @@ ApplicationWindow {
 
     Rectangle {
         id: exitWarning
-        height: 40
 
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.margins: 12
 
+        height: 40
         radius: 4
-        color: Theme.colorSeparator
+
+        color: Theme.colorComponentBackground
+        border.color: Theme.colorSeparator
+        border.width: 1
+
         opacity: 0
         Behavior on opacity { OpacityAnimator { duration: 233 } }
 

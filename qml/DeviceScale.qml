@@ -229,7 +229,7 @@ Loader {
                         spacing: 0
 
                         Rectangle { // scale
-                            width: singleColumn ? tempBox.height * 0.75 : tempBox.width * 0.75
+                            width: singleColumn ? tempBox.height * 0.75 : tempBox.width * 0.66
                             height: width
                             radius: 16
                             color: Qt.alpha(cccc, 0.1)
