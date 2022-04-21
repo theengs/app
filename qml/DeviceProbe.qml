@@ -198,7 +198,7 @@ Component {
             anchors.fill: parent
 
             Rectangle {
-                id: tempBox
+                id: probeBox
 
                 property int dimboxw: (deviceProbe.width * 0.4)
                 property int dimboxh: (deviceProbe.height * (columnTPMS.visible ? 0.5 : 0.333))
@@ -233,7 +233,7 @@ Component {
                     anchors.verticalCenterOffset: -(appHeader.height / 2)
                     spacing: 24
 
-                    visible: (!currentDevice.deviceName.includes("TPMS") && currentDevice.hasData)
+                    visible: (!currentDevice.hasProbesTPMS && currentDevice.hasData)
 
                     property int psw: isPhone ? 160 : 200
                     property int psh: isPhone ? 44 : 48
@@ -1096,8 +1096,8 @@ Component {
             ////////////////
 
             Item {
-                width: singleColumn ? parent.width : (parent.width - tempBox.width)
-                height: singleColumn ? (parent.height - tempBox.height) : parent.height
+                width: singleColumn ? parent.width : (parent.width - probeBox.width)
+                height: singleColumn ? (parent.height - probeBox.height) : parent.height
 
                 ItemBannerSync {
                     id: bannersync

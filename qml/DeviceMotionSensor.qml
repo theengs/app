@@ -191,18 +191,6 @@ Loader {
 
                     MouseArea { anchors.fill: parent } // prevent clicks below this area
 
-                    IconSvg { // sensorDisconnected
-                        width: isMobile ? 96 : 128
-                        height: isMobile ? 96 : 128
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.verticalCenterOffset: -(appHeader.height / 3)
-
-                        visible: !currentDevice.hasData
-                        source: "qrc:/assets/icons_material/baseline-bluetooth_disabled-24px.svg"
-                        color: cccc
-                    }
-
                     Rectangle { // round indicator
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -215,9 +203,21 @@ Loader {
                         border.width: 2
                         border.color: Qt.alpha(cccc, 0.33)
 
+                        IconSvg { // sensorDisconnected
+                            width: isMobile ? 96 : 128
+                            height: isMobile ? 96 : 128
+                            anchors.centerIn: parent
+
+                            visible: !currentDevice.hasData
+                            source: "qrc:/assets/icons_material/baseline-bluetooth_disabled-24px.svg"
+                            color: cccc
+                        }
+
                         Column {
                             anchors.centerIn: parent
-                            spacing: isPhone ? 0 : 8
+                            spacing: 0
+
+                            visible: currentDevice.hasData
 
                             Text { // legend
                                 anchors.horizontalCenter: parent.horizontalCenter
@@ -241,6 +241,7 @@ Loader {
                                     if (currentDevice.hasOpen) return (currentDevice.open) ? "opened" : "closed"
                                     else if (currentDevice.hasMovement) return (currentDevice.movement) ? "yes" : "no"
                                     else if (currentDevice.hasPresence) return (currentDevice.presence) ? "yes" : "no"
+                                    else return "?"
                                 }
 
                                 font.pixelSize: isPhone ? 26 : 30
@@ -249,6 +250,11 @@ Loader {
                                 opacity: 1
                             }
 
+                            Item {
+                                width: 12
+                                height: 12
+                                visible: (currentDevice.hasLuminositySensor && currentDevice.luminosityLux >= 0)
+                            }
                             Row {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 spacing: 8

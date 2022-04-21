@@ -74,7 +74,7 @@ T.SpinBox {
                 height: control.height
                 anchors.verticalCenter: parent.verticalCenter
 
-                color: Theme.colorComponentText
+                color: enabled ? Theme.colorComponentText : Theme.colorSubText
                 selectionColor: Theme.colorText
                 selectedTextColor: "white"
 
@@ -98,7 +98,7 @@ T.SpinBox {
                 anchors.verticalCenter: parent.verticalCenter
 
                 visible: control.legend
-                color: Theme.colorComponentText
+                color: enabled ? Theme.colorComponentText : Theme.colorSubText
 
                 text: control.legend
                 textFormat: Text.PlainText

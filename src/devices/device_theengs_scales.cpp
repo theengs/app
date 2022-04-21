@@ -125,7 +125,7 @@ void DeviceTheengsScales::parseTheengsAdvertisement(const QString &json)
         }
     }
 
-    if (m_weight > -99)
+    //if (m_weight > -99)
     {
         m_lastUpdate = QDateTime::currentDateTime();
 

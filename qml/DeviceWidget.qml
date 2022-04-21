@@ -104,16 +104,27 @@ Item {
             if (boxDevice.isPlantSensor) {
                 loaderIndicators.sourceComponent = componentPlantSensor
             } else if (boxDevice.isThermometer) {
-                loaderIndicators.sourceComponent = componentThermometer
+                if (boxDevice.hasHumiditySensor)
+                    loaderIndicators.sourceComponent = componentText_2l
+                else
+                    loaderIndicators.sourceComponent = componentText_1l
             } else if (boxDevice.isEnvironmentalSensor) {
                 if (boxDevice.deviceName === "GeigerCounter")
-                    loaderIndicators.sourceComponent = componentThermometer
+                    loaderIndicators.sourceComponent = componentText_2l
                 else
                     loaderIndicators.sourceComponent = componentEnvironmentalGauge
             } else if (boxDevice.isProbe) {
-                // ?
+                if (boxDevice.hasProbesTPMS)
+                    loaderIndicators.sourceComponent = componentTPMS
+                else
+                    loaderIndicators.sourceComponent = componentText_3l
             } else if (boxDevice.isScale) {
-                loaderIndicators.sourceComponent = componentThermometer
+                if (boxDevice.hasImpedance)
+                    loaderIndicators.sourceComponent = componentText_2l
+                else
+                    loaderIndicators.sourceComponent = componentText_1l
+            } else if (boxDevice.isMotionSensor) {
+                loaderIndicators.sourceComponent = componentText_2l
             }
 
             if (loaderIndicators.item) {
@@ -427,7 +438,7 @@ Item {
                     textFormat: Text.PlainText
                     color: Theme.colorText
                     font.pixelSize: bigAssMode ? 22 : 20
-                    font.capitalization: Font.Capitalize
+                    //font.capitalization: Font.Capitalize
                     verticalAlignment: Text.AlignVCenter
                     elide: Text.ElideRight
                 }
@@ -439,7 +450,7 @@ Item {
                     textFormat: Text.PlainText
                     color: Theme.colorSubText
                     font.pixelSize: bigAssMode ? 20 : 18
-                    font.capitalization: Font.Capitalize
+                    //font.capitalization: Font.Capitalize
                     verticalAlignment: Text.AlignVCenter
                     elide: Text.ElideRight
                 }
@@ -745,64 +756,277 @@ Item {
     ////////////////
 
     Component {
-        id: componentThermometer
+        id: componentText_1l
 
-        Column {
-            id: rectangleHygroTemp
+        Row {
             anchors.verticalCenter: parent.verticalCenter
+            spacing: 4
 
-            function initData() {
-                //
-            }
+            function initData() { }
 
             function updateData() {
                 if (boxDevice.isThermometer) {
-                    textTemp.text = boxDevice.temperature.toFixed(1) + "°"
-                    if (boxDevice.humidity > 0) textHygro.text = boxDevice.humidity.toFixed(0) + "%"
+                    text.text = boxDevice.temperature.toFixed(1)
+                    unit.text = "°"
                 } else if (boxDevice.isEnvironmentalSensor) {
                     if (boxDevice.hasGeigerCounter) {
-                        textTemp.text = ""
-                        textHygro.font.pixelSize = bigAssMode ? 24 : 22
-                        textHygro.text = boxDevice.radioactivityH.toFixed(2) + " " + qsTr("µSv/h")
-                    } else if (boxDevice.hasVocSensor) {
-                        textTemp.font.pixelSize = bigAssMode ? 28 : 26
-                        textTemp.text = (boxDevice.voc).toFixed(0) + " " + qsTr("µg/m³")
-                        textHygro.text = boxDevice.temperature.toFixed(1) + "°"
+                        text.text = boxDevice.radioactivityH.toFixed(2)
+                        unit.text = qsTr("µSv/h")
                     }
                 } else if (boxDevice.isScale) {
-                    textTemp.text = boxDevice.weight.toFixed(1) + " " + ((settingsManager.tempUnit === 'C') ? "kg" : "p")
-                    if (boxDevice.impedance > 0) textHygro.text = boxDevice.impedance + " Ω"
-                } else if (boxDevice.isMotionSensor) {
-                    //
-                } else if (boxDevice.isProbe) {
-                    //
-                } else {
-                    textTemp.text = boxDevice.temperature.toFixed(1) + "°"
-                    textHygro.text = boxDevice.humidity.toFixed(0) + "%"
+                    text.text = boxDevice.weight.toFixed(1)
+                    unit.text = (settingsManager.tempUnit === 'C') ? "kg" : "p"
                 }
             }
 
             Text {
-                id: textTemp
+                id: text
+                anchors.verticalCenter: parent.verticalCenter
+
+                textFormat: Text.PlainText
+                color: Theme.colorText
+                font.letterSpacing: -1.4
+                font.pixelSize: bigAssMode ? 28 : 24
+            }
+            Text {
+                id: unit
+                anchors.verticalCenter: parent.verticalCenter
+
+                textFormat: Text.PlainText
+                color: Theme.colorSubText
+                font.letterSpacing: -1.4
+                font.pixelSize: bigAssMode ? 24 : 20
+            }
+        }
+    }
+
+    ////////////////
+
+    Component {
+        id: componentText_2l
+
+        Column {
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 0
+
+            function initData() { }
+
+            function updateData() {
+                if (boxDevice.isThermometer) {
+                    textOne.text = boxDevice.temperature.toFixed(1) + "°"
+                    if (boxDevice.humidity > 0) textTwo.text = boxDevice.humidity.toFixed(0) + "%"
+                } else if (boxDevice.isEnvironmentalSensor) {
+                    if (boxDevice.hasVocSensor) {
+                        textOne.font.pixelSize = bigAssMode ? 28 : 26
+                        textOne.text = (boxDevice.voc).toFixed(0) + " " + qsTr("µg/m³")
+                        textTwo.text = boxDevice.temperature.toFixed(1) + "°"
+                    }
+                } else if (boxDevice.isScale) {
+                    textOne.text = boxDevice.weight.toFixed(1) + " " + ((settingsManager.tempUnit === 'C') ? "kg" : "p")
+                    if (boxDevice.impedance > 0) textTwo.text = boxDevice.impedance + " Ω"
+                } else if (boxDevice.isMotionSensor) {
+                    textOne.font.pixelSize = bigAssMode ? 26 : 24
+                    textTwo.font.pixelSize = bigAssMode ? 22 : 20
+                    if (boxDevice.hasPresence) {
+                        if (boxDevice.presence) textOne.text = qsTr("presence")
+                        else textOne.text = qsTr("noone")
+                    } else if (boxDevice.hasOpen) {
+                        if (boxDevice.open) textOne.text = qsTr("opened")
+                        else textOne.text = qsTr("closed")
+                    }
+                    if (boxDevice.hasLuminositySensor) {
+                        textTwo.text = boxDevice.luminosityLux + " " + "lux"
+                    }
+                } else if (boxDevice.isProbe) {
+                    //
+                } else {
+                    textOne.text = boxDevice.temperature.toFixed(1) + "°"
+                    textTwo.text = boxDevice.humidity.toFixed(0) + "%"
+                }
+            }
+
+            Text {
+                id: textOne
                 anchors.right: parent.right
-                anchors.rightMargin: 0
 
                 textFormat: Text.PlainText
                 color: Theme.colorText
                 font.letterSpacing: -1.4
                 font.pixelSize: bigAssMode ? 32 : 28
-                //font.family: "Tahoma"
             }
 
             Text {
-                id: textHygro
+                id: textTwo
                 anchors.right: parent.right
-                anchors.rightMargin: 0
 
                 textFormat: Text.PlainText
                 color: Theme.colorSubText
                 font.pixelSize: bigAssMode ? 26 : 22
-                //font.family: "Tahoma"
+            }
+        }
+    }
+
+    ////////////////
+
+    Component {
+        id: componentText_3l
+
+        Column {
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 0
+
+            function initData() { }
+
+            function updateData() { }
+
+            Row {
+                anchors.right: parent.right
+                spacing: 8
+                visible: boxDevice.hasTemperature1
+
+                Text {
+                    width: 48
+                    text: {
+                        if (boxDevice.temperature1 > -40)
+                            return boxDevice.temperature1.toFixed(0) + "°"
+                        return "-"
+                    }
+                    textFormat: Text.PlainText
+                    color: Theme.colorSubText
+                    font.pixelSize: 22
+                    horizontalAlignment: Text.AlignHCenter
+                }
+                Text {
+                    width: 48
+                    text: {
+                        if (boxDevice.temperature2 > -40)
+                            return boxDevice.temperature2.toFixed(0) + "°"
+                        return "-"
+                    }
+                    textFormat: Text.PlainText
+                    color: Theme.colorSubText
+                    font.pixelSize: 22
+                    horizontalAlignment: Text.AlignHCenter
+                }
+            }
+            Row {
+                anchors.right: parent.right
+                spacing: 8
+                visible: boxDevice.hasTemperature3
+
+                Text {
+                    width: 48
+                    text: {
+                        if (boxDevice.temperature3 > -40)
+                            return boxDevice.temperature3.toFixed(0) + "°"
+                        return "-"
+                    }
+                    textFormat: Text.PlainText
+                    color: Theme.colorSubText
+                    font.pixelSize: 22
+                    horizontalAlignment: Text.AlignHCenter
+                }
+                Text {
+                    width: 48
+                    text: {
+                        if (boxDevice.temperature4 > -40)
+                            return boxDevice.temperature4.toFixed(0) + "°"
+                        return "-"
+                    }
+                    textFormat: Text.PlainText
+                    color: Theme.colorSubText
+                    font.pixelSize: 22
+                    horizontalAlignment: Text.AlignHCenter
+                }
+            }
+            Row {
+                anchors.right: parent.right
+                spacing: 8
+                visible: boxDevice.hasTemperature5
+
+                Text {
+                    width: 48
+                    text: {
+                        if (boxDevice.temperature5 > -40)
+                            return boxDevice.temperature5.toFixed(0) + "°"
+                        return "-"
+                    }
+                    textFormat: Text.PlainText
+                    color: Theme.colorSubText
+                    font.pixelSize: 22
+                    horizontalAlignment: Text.AlignHCenter
+                }
+                Text {
+                    width: 48
+                    text: {
+                        if (boxDevice.temperature6 > -40)
+                            return boxDevice.temperature6.toFixed(0) + "°"
+                        return "-"
+                    }
+                    textFormat: Text.PlainText
+                    color: Theme.colorSubText
+                    font.pixelSize: 22
+                    horizontalAlignment: Text.AlignHCenter
+                }
+            }
+        }
+    }
+
+    ////////////////
+
+    Component {
+        id: componentTPMS
+
+        Column {
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 12
+
+            function initData() { }
+            function updateData() { }
+
+            Row {
+                anchors.right: parent.right
+                spacing: 14
+
+                Rectangle {
+                    width: 28; height: 28; radius: 28;
+                    color: {
+                        if (boxDevice.alarm1) return Theme.colorRed
+                        else if (boxDevice.temperature1 < -80) return Theme.colorSeparator
+                        return Theme.colorGreen
+                    }
+                }
+                Rectangle {
+                    width: 28; height: 28; radius: 28;
+                    color: {
+                        if (boxDevice.alarm2) return Theme.colorRed
+                        else if (boxDevice.temperature2 < -80) return Theme.colorSeparator
+                        return Theme.colorGreen
+                    }
+                }
+            }
+            Row {
+                anchors.right: parent.right
+                spacing: 14
+
+                Rectangle {
+                    width: 28; height: 28; radius: 28;
+                    color: {
+                        if (boxDevice.alarm3) return Theme.colorRed
+                        else if (boxDevice.temperature3 < -80) return Theme.colorSeparator
+                        return Theme.colorGreen
+                    }
+                }
+                Rectangle {
+                    width: 28; height: 28; radius: 28;
+                    color: {
+                        if (boxDevice.alarm4) return Theme.colorRed
+                        else if (boxDevice.temperature4 < -80) return Theme.colorSeparator
+                        return Theme.colorGreen
+                    }
+                }
             }
         }
     }
@@ -905,36 +1129,6 @@ Item {
 
                 background: true
                 backgroundOpacity: 0.33
-/*
-                Item {
-                    anchors.fill:parent
-                    rotation: 45 + UtilsNumber.mapNumber(limitMin, gaugeValue.from, gaugeValue.to, 0, 270)
-
-                    Rectangle {
-                        anchors.bottom: parent.bottom
-                        anchors.bottomMargin: gaugeValue.arcWidth
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        width: 3
-                        height: 3
-                        color: Theme.colorSubText
-                        antialiasing: true
-                    }
-                }
-                Item {
-                    anchors.fill:parent
-                    rotation: 45 + UtilsNumber.mapNumber(limitMax, gaugeValue.from, gaugeValue.to, 0, 270)
-
-                    Rectangle {
-                        anchors.bottom: parent.bottom
-                        anchors.bottomMargin: gaugeValue.arcWidth
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        width: 3
-                        height: 3
-                        color: Theme.colorSubText
-                        antialiasing: true
-                    }
-                }
-*/
             }
         }
     }

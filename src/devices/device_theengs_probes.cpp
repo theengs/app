@@ -83,6 +83,7 @@ void DeviceTheengsProbes::parseTheengsProps(const QString &json)
 
     // Sensors
     if (prop.contains("tempc")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_1;
+    if (prop.contains("tempc1")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_1;
     if (prop.contains("tempc2")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_2;
     if (prop.contains("tempc3")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_3;
     if (prop.contains("tempc4")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_4;
@@ -113,25 +114,29 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
         int batt = obj["batt"].toInt();
         bool alarm = obj["alarm"].toBool();
 
-        if (idx == 1) {
+        if (idx == 1)
+        {
             m_pressure1 = pres;
             m_temperature1 = temp;
             m_battery1 = batt;
             m_alarm1 = alarm;
         }
-        else if (idx == 2) {
+        else if (idx == 2)
+        {
             m_pressure2 = pres;
             m_temperature2 = temp;
             m_battery2 = batt;
             m_alarm2 = alarm;
         }
-        else if (idx == 3) {
+        else if (idx == 3)
+        {
             m_pressure3 = pres;
             m_temperature3 = temp;
             m_battery3 = batt;
             m_alarm3 = alarm;
         }
-        else if (idx == 4) {
+        else if (idx == 4)
+        {
             m_pressure4 = pres;
             m_temperature4 = temp;
             m_battery4 = batt;

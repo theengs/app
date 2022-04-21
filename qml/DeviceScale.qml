@@ -307,8 +307,7 @@ Loader {
                                     color: cccc
                                     font.pixelSize: isPhone ? 26 : 28
 
-                                    visible: (currentDevice.impedance > 0)
-                                    //visible: currentDevice.hasImpedance
+                                    visible: (currentDevice.hasImpedance && currentDevice.impedance > 0)
 
                                     Text {
                                         anchors.left: parent.right

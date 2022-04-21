@@ -660,7 +660,7 @@ Item {
                     color: Theme.colorIcon
                     source: "qrc:/assets/icons_material/baseline-autorenew-24px.svg"
                 }
-
+/*
                 SwitchThemedDesktop {
                     anchors.left: image_worker.right
                     anchors.leftMargin: 24
@@ -671,7 +671,7 @@ Item {
                         utilsApp.getMobileBackgroundLocationPermission()
                     }
                 }
-/*
+*/
                 Text {
                     id: text_worker
                     height: 40
@@ -696,9 +696,11 @@ Item {
                     z: 1
 
                     checked: settingsManager.systray
-                    onClicked: settingsManager.systray = checked
+                    onClicked: {
+                        settingsManager.systray = checked
+                        utilsApp.getMobileBackgroundLocationPermission()
+                    }
                 }
-*/
             }
             Text {
                 id: legend_worker_mobile
@@ -709,7 +711,7 @@ Item {
                 topPadding: -12
                 bottomPadding: 0
 
-                visible: (settingsManager.systray && element_worker.visible && Qt.platform.os === "android")
+                visible: (Qt.platform.os === "android") // && (settingsManager.systray && element_worker.visible)
 
                 text: qsTr("Wake up at a predefined interval to refresh sensor data. Only if Bluetooth (or Bluetooth control) is enabled.")
                 textFormat: Text.PlainText
@@ -724,9 +726,9 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 12
                 topPadding: -12
-                bottomPadding: 12
+                bottomPadding: 0
 
-                visible: (settingsManager.systray && element_worker.visible && isDesktop)
+                visible: isDesktop // && (settingsManager.systray && element_worker.visible)
 
                 text: qsTr("Theengs will remain active in the system tray, and will wake up at a regular interval to refresh sensor data.")
                 textFormat: Text.PlainText
@@ -745,7 +747,7 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: screenPaddingRight
 
-                visible: (settingsManager.systray && element_worker.visible)
+                //visible: (settingsManager.systray && element_worker.visible)
 
                 IconSvg {
                     id: image_update_background
@@ -784,6 +786,8 @@ Item {
                     anchors.rightMargin: 12
                     anchors.verticalCenter: parent.verticalCenter
                     z: 1
+
+                    enabled: (settingsManager.systray && element_worker.visible)
 
                     legend: " " + qsTr("m.", "short for minutes")
                     from: 5

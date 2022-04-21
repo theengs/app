@@ -78,7 +78,9 @@ bool DeviceTheengs::hasData() const
 
     if (isProbe())
     {
-        if (m_temperature1 > -80.f || m_temperature2 > -80.f)
+        if (m_temperature1 > -80.f || m_temperature2 > -80.f ||
+            m_temperature3 > -80.f || m_temperature4 > -80.f ||
+            m_temperature5 > -80.f || m_temperature6 > -80.f)
             return true;
     }
     else if (isScale())
