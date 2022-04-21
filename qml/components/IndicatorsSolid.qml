@@ -123,8 +123,8 @@ Item {
             value: currentDevice.soilMoisture
             valueMin: 0
             valueMax: settingsManager.dynaScale ? Math.ceil(currentDevice.hygroMax*1.10) : 50
-            limitMin: currentDevice.limitHygroMin
-            limitMax: currentDevice.limitHygroMax
+            //limitMin: currentDevice.limitHygroMin
+            //limitMax: currentDevice.limitHygroMax
         }
 
         ////////
@@ -142,8 +142,8 @@ Item {
             value: currentDevice.soilConductivity
             valueMin: 0
             valueMax: settingsManager.dynaScale ? Math.ceil(currentDevice.conduMax*1.10) : 2000
-            limitMin: currentDevice.limitConduMin
-            limitMax: currentDevice.limitConduMax
+            //limitMin: currentDevice.limitConduMin
+            //limitMax: currentDevice.limitConduMax
         }
 
         ////////
@@ -162,8 +162,8 @@ Item {
             value: tempHelper(currentDevice.soilTemperature)
             valueMin: tempHelper(settingsManager.dynaScale ? Math.floor(currentDevice.tempMin*0.80) : tempHelper(0))
             valueMax: tempHelper(settingsManager.dynaScale ? (currentDevice.tempMax*1.20) : tempHelper(40))
-            limitMin: 0
-            limitMax: 0
+            //limitMin: 0
+            //limitMax: 0
         }
 
         ////////
@@ -182,8 +182,8 @@ Item {
             value: currentDevice.waterTankLevel
             valueMin: 0
             valueMax: currentDevice.waterTankCapacity
-            limitMin: currentDevice.waterTankCapacity * 0.15
-            limitMax: currentDevice.waterTankCapacity
+            //limitMin: currentDevice.waterTankCapacity * 0.15
+            //limitMax: currentDevice.waterTankCapacity
         }
 
         ////////
@@ -203,8 +203,8 @@ Item {
             value: currentDevice.temperature
             valueMin: tempHelper(settingsManager.dynaScale ? Math.floor(currentDevice.tempMin*0.80) : tempHelper(0))
             valueMax: tempHelper(settingsManager.dynaScale ? (currentDevice.tempMax*1.20) : tempHelper(40))
-            limitMin: tempHelper(currentDevice.limitTempMin)
-            limitMax: tempHelper(currentDevice.limitTempMax)
+            //limitMin: tempHelper(currentDevice.limitTempMin)
+            //limitMax: tempHelper(currentDevice.limitTempMax)
         }
 
         ////////
@@ -222,8 +222,8 @@ Item {
             value: currentDevice.humidity
             valueMin: 0
             valueMax: 100
-            limitMin: 0
-            limitMax: 100
+            //limitMin: 0
+            //limitMax: 100
         }
 
         ////////
@@ -241,8 +241,8 @@ Item {
             value: currentDevice.luminosityLux
             valueMin: 0
             valueMax: settingsManager.dynaScale ? Math.ceil(currentDevice.luxMax*1.10) : 10000
-            limitMin: currentDevice.limitLuxMin
-            limitMax: currentDevice.limitLuxMax
+            //limitMin: currentDevice.limitLuxMin
+            //limitMax: currentDevice.limitLuxMax
         }
 
         ////////
