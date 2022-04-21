@@ -128,6 +128,9 @@ public:
     DeviceTheengs(const QBluetoothDeviceInfo &d, const QString &deviceModel, QObject *parent = nullptr);
     virtual ~DeviceTheengs();
 
+    virtual bool needsUpdateRt() const;
+    virtual bool needsUpdateDb() const;
+
     // theengs decoder
     virtual void parseTheengsProps(const QString &json);
     virtual void parseTheengsAdvertisement(const QString &json);

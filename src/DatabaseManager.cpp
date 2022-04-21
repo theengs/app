@@ -446,17 +446,46 @@ void DatabaseManager::createDatabase()
 
     if (!tableExists("sensorTheengs"))
     {
-        //qDebug() << "+ Adding 'sensorTheengs' table to local database";
-        //QSqlQuery createSensorTheengs;
-        //createSensorTheengs.prepare("CREATE TABLE sensorTheengs (" \
-        //                            "deviceID INT," \
-        //                            "deviceAddr CHAR(38)," \
-        //                            "todo INT," \
-        //                            " FOREIGN KEY(deviceAddr) REFERENCES devices(deviceAddr) ON DELETE CASCADE ON UPDATE NO ACTION " \
-        //                            ");");
+        qDebug() << "+ Adding 'sensorTheengs' table to local database";
+        QSqlQuery createSensorTheengs;
+        createSensorTheengs.prepare("CREATE TABLE sensorTheengs (" \
+                                    "deviceID INT," \
+                                    "deviceAddr CHAR(38)," \
+                                     "timestamp DATETIME," \
+                                     "temperature1 FLOAT," \
+                                     "temperature2 FLOAT," \
+                                     "temperature3 FLOAT," \
+                                     "temperature4 FLOAT," \
+                                     "temperature5 FLOAT," \
+                                     "temperature6 FLOAT," \
+                                     "pressure1 INT," \
+                                     "pressure2 INT," \
+                                     "pressure3 INT," \
+                                     "pressure4 INT," \
+                                     "battery1 INT," \
+                                     "battery2 INT," \
+                                     "battery3 INT," \
+                                     "battery4 INT," \
+                                     "alarm1 BOOLEAN," \
+                                     "alarm2 BOOLEAN," \
+                                     "alarm3 BOOLEAN," \
+                                     "alarm4 BOOLEAN," \
+                                     "weight FLOAT," \
+                                     "weightUnit VARCHAR(32)," \
+                                     "weightMode VARCHAR(32)," \
+                                     "impedance INT," \
+                                     "acclX FLOAT," \
+                                     "acclY FLOAT," \
+                                     "acclZ FLOAT," \
+                                     "gyroX FLOAT," \
+                                     "gyroY FLOAT," \
+                                     "gyroZ FLOAT," \
+                                     "steps INT," \
+                                    " FOREIGN KEY(deviceAddr) REFERENCES devices(deviceAddr) ON DELETE CASCADE ON UPDATE NO ACTION " \
+                                    ");");
 
-        //if (createSensorTheengs.exec() == false)
-        //    qWarning() << "> createSensorTheengs.exec() ERROR" << createSensorTheengs.lastError().type() << ":" << createSensorTheengs.lastError().text();
+        if (createSensorTheengs.exec() == false)
+            qWarning() << "> createSensorTheengs.exec() ERROR" << createSensorTheengs.lastError().type() << ":" << createSensorTheengs.lastError().text();
     }
 }
 

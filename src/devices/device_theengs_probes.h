@@ -52,6 +52,12 @@ public:
     // theengs decoder
     void parseTheengsProps(const QString &json);
     void parseTheengsAdvertisement(const QString &json);
+
+    // Chart probe AIO
+    Q_INVOKABLE void getChartData_probeAIO(int maxDays, QDateTimeAxis *axis,
+                                           QLineSeries *temp1, QLineSeries *temp2,
+                                           QLineSeries *temp3, QLineSeries *temp4,
+                                           QLineSeries *temp5, QLineSeries *temp6);
 };
 
 /* ************************************************************************** */

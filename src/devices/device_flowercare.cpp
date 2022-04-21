@@ -823,6 +823,7 @@ bool DeviceFlowerCare::addDatabaseRecord(const int64_t timestamp,
             addData.bindValue(":condu", soilConductivity);
             addData.bindValue(":temp", temperature);
             addData.bindValue(":lumi", luminosity);
+
             status = addData.exec();
 
             if (status)
@@ -831,7 +832,8 @@ bool DeviceFlowerCare::addDatabaseRecord(const int64_t timestamp,
             }
             else
             {
-                qWarning() << "> DeviceFlowerCare addData.exec() ERROR" << addData.lastError().type() << ":" << addData.lastError().text();
+                qWarning() << "> DeviceFlowerCare addData.exec() ERROR"
+                           << addData.lastError().type() << ":" << addData.lastError().text();
             }
         }
     }

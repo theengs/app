@@ -84,9 +84,6 @@ Component {
                 updateData()
                 updateStatusText()
             }
-            function onGraphThermometerChanged() {
-                loadGraph()
-            }
         }
 
         Connections {
@@ -164,32 +161,29 @@ Component {
         }
 
         function loadGraph() {
-            //var reload = !(settingsManager.graphThermometer === "lines" && graphLoader.source === "ChartPlantDataAio.qml") ||
-            //             !(settingsManager.graphThermometer === "minmax" && graphLoader.source === "ChartThermometerMinMax.qml")
+            if (currentDevice.hasProbesTPMS) return
 
-            //if (graphLoader.status != Loader.Ready || reload) {
-            //    if (settingsManager.graphThermometer === "lines") {
-            //        graphLoader.source = "ChartPlantDataAio.qml"
-            //    } else {
-            //        graphLoader.source = "ChartThermometerMinMax.qml"
-            //    }
-            //}
+            if (graphLoader.status != Loader.Ready) {
+                graphLoader.source = "ChartProbeDataAio.qml"
+            }
 
-            //if (graphLoader.status == Loader.Ready) {
-            //    probeChart.loadGraph()
-            //    probeChart.updateGraph()
-            //}
+            if (graphLoader.status == Loader.Ready) {
+                probeChart.loadGraph()
+                probeChart.updateGraph()
+            }
         }
         function updateGraph() {
-            //if (graphLoader.status == Loader.Ready) probeChart.updateGraph()
+            if (currentDevice.hasProbesTPMS) return
+
+            if (graphLoader.status == Loader.Ready) probeChart.updateGraph()
         }
 
         function isHistoryMode() {
-            //if (graphLoader.status == Loader.Ready) return probeChart.isIndicator()
+            if (graphLoader.status == Loader.Ready) return probeChart.isIndicator()
             return false
         }
         function resetHistoryMode() {
-            //if (graphLoader.status == Loader.Ready) probeChart.resetIndicator()
+            if (graphLoader.status == Loader.Ready) probeChart.resetIndicator()
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -1099,25 +1093,17 @@ Component {
                 width: singleColumn ? parent.width : (parent.width - probeBox.width)
                 height: singleColumn ? (parent.height - probeBox.height) : parent.height
 
-                ItemBannerSync {
-                    id: bannersync
-                    z: 5
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                }
-
                 Loader {
                     id: graphLoader
-                    anchors.top: bannersync.bottom
+                    anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
 
                     asynchronous: true
                     onLoaded: {
-                        //probeChart.loadGraph()
-                        //probeChart.updateGraph()
+                        probeChart.loadGraph()
+                        probeChart.updateGraph()
                     }
                 }
             }

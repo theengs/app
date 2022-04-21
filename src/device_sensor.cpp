@@ -43,12 +43,13 @@ DeviceSensor::DeviceSensor(const QString &deviceAddr, const QString &deviceName,
         m_dbExternal = db->hasDatabaseExternal();
     }
 
-    // Load device infos and limits
+    // Load device infos, bias, limits and initial data
     if (m_dbInternal || m_dbExternal)
     {
         getSqlDeviceInfos();
         //getSqlSensorBias();
         getSqlPlantLimits();
+
         // Load initial data into the GUI (if they are no more than 12h old)
         bool data = false;
         if (!data) data = getSqlPlantData(12*60);
@@ -78,12 +79,13 @@ DeviceSensor::DeviceSensor(const QBluetoothDeviceInfo &d, QObject *parent) :
         m_dbExternal = db->hasDatabaseExternal();
     }
 
-    // Load device infos and limits
+    // Load device infos, bias, limits and initial data
     if (m_dbInternal || m_dbExternal)
     {
         getSqlDeviceInfos();
         //getSqlSensorBias();
         getSqlPlantLimits();
+
         // Load initial data into the GUI (if they are no more than 12h old)
         bool data = false;
         if (!data) data = getSqlPlantData(12*60);
@@ -1750,11 +1752,13 @@ void DeviceSensor::getChartData_plantAIO(int maxDays, QDateTimeAxis *axis,
             }
             qint64 timecode = date.toMSecsSinceEpoch();
 
+            // data
             hygro->append(timecode, graphData.value(1).toReal());
             condu->append(timecode, graphData.value(2).toReal());
             temp->append(timecode, graphData.value(3).toReal());
             lumi->append(timecode, graphData.value(4).toReal());
 
+            // min/max
             if (graphData.value(1).toInt() < m_soilMoistureMin) { m_soilMoistureMin = graphData.value(1).toInt(); minmaxChanged = true; }
             if (graphData.value(2).toInt() < m_soilConduMin) { m_soilConduMin = graphData.value(2).toInt(); minmaxChanged = true; }
             if (graphData.value(3).toFloat() < m_tempMin) { m_tempMin = graphData.value(3).toFloat(); minmaxChanged = true; }

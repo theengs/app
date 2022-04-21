@@ -163,7 +163,7 @@ void DeviceTheengsGeneric::parseTheengsAdvertisement(const QString &json)
     {
         m_lastUpdate = QDateTime::currentDateTime();
 
-        //if (needsUpdateDb()) // always on for theengs advertising
+        if (needsUpdateDb())
         {
             if (isPlantSensor())
             {
@@ -233,6 +233,7 @@ bool DeviceTheengsGeneric::addDatabaseRecord_plants(const int64_t timestamp,
             addData.bindValue(":condu", soilConductivity);
             addData.bindValue(":temp", temperature);
             addData.bindValue(":lumi", luminosity);
+
             status = addData.exec();
 
             if (status)
@@ -241,7 +242,8 @@ bool DeviceTheengsGeneric::addDatabaseRecord_plants(const int64_t timestamp,
             }
             else
             {
-                qWarning() << "> DeviceTheengsGeneric addData.exec() ERROR" << addData.lastError().type() << ":" << addData.lastError().text();
+                qWarning() << "> DeviceTheengsGeneric addData.exec() ERROR"
+                           << addData.lastError().type() << ":" << addData.lastError().text();
             }
         }
     }

@@ -164,32 +164,25 @@ Loader {
             }
 
             function loadGraph() {
-                var reload = !(settingsManager.graphThermometer === "lines" && graphLoader.source === "ChartPlantDataAio.qml") ||
-                             !(settingsManager.graphThermometer === "minmax" && graphLoader.source === "ChartThermometerMinMax.qml")
+                if (graphLoader.status != Loader.Ready) {
+                    //graphLoader.source = "ChartScaleDataAio.qml"
+                }
 
-                //if (graphLoader.status != Loader.Ready || reload) {
-                //    if (settingsManager.graphThermometer === "lines") {
-                //        graphLoader.source = "ChartPlantDataAio.qml"
-                //    } else {
-                //        graphLoader.source = "ChartThermometerMinMax.qml"
-                //    }
-                //}
-
-                //if (graphLoader.status == Loader.Ready) {
-                //    weightChart.loadGraph()
-                //    weightChart.updateGraph()
-                //}
+                if (graphLoader.status == Loader.Ready) {
+                    weightChart.loadGraph()
+                    weightChart.updateGraph()
+                }
             }
             function updateGraph() {
-                //if (graphLoader.status == Loader.Ready) weightChart.updateGraph()
+                if (graphLoader.status == Loader.Ready) weightChart.updateGraph()
             }
 
             function isHistoryMode() {
-                //if (graphLoader.status == Loader.Ready) return weightChart.isIndicator()
+                if (graphLoader.status == Loader.Ready) return weightChart.isIndicator()
                 return false
             }
             function resetHistoryMode() {
-                //if (graphLoader.status == Loader.Ready) weightChart.resetIndicator()
+                if (graphLoader.status == Loader.Ready) weightChart.resetIndicator()
             }
 
             ////////////////////////////////////////////////////////////////////////////
@@ -486,17 +479,9 @@ Loader {
                     width: singleColumn ? parent.width : (parent.width - scaleBox.width)
                     height: singleColumn ? (parent.height - scaleBox.height) : parent.height
 
-                    ItemBannerSync {
-                        id: bannersync
-                        z: 5
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                    }
-
                     Loader {
                         id: graphLoader
-                        anchors.top: bannersync.bottom
+                        anchors.top: parent.top
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom

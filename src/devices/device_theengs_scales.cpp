@@ -125,22 +125,34 @@ void DeviceTheengsScales::parseTheengsAdvertisement(const QString &json)
         }
     }
 
-    //if (m_weight > -99)
+    if (m_weight > -99 || m_impedance > -99)
     {
         m_lastUpdate = QDateTime::currentDateTime();
 
-        //if (needsUpdateDb()) // always on for theengs advertising
+        if (needsUpdateDb())
         {
-            // TODO
+            if (m_dbInternal || m_dbExternal)
+            {
+                // SQL date format YYYY-MM-DD HH:MM:SS
+
+                QSqlQuery addData;
+                addData.prepare("REPLACE INTO sensorTheengs (deviceAddr, timestamp, weight, impedance)"
+                                " VALUES (:deviceAddr, :ts, :weight, :impedance)");
+                addData.bindValue(":deviceAddr", getAddress());
+                addData.bindValue(":ts", m_lastUpdate.toString("yyyy-MM-dd hh:mm:ss"));
+                addData.bindValue(":weight", m_weight);
+                addData.bindValue(":impedance", m_impedance);
+
+                if (addData.exec())
+                    m_lastUpdateDatabase = m_lastUpdate;
+                else
+                    qWarning() << "> DeviceTheengsScales addData.exec() ERROR"
+                               << addData.lastError().type() << ":" << addData.lastError().text();
+            }
         }
 
         refreshDataFinished(true);
     }
 }
-
-/* ************************************************************************** */
-/* ************************************************************************** */
-
-// TODO db
 
 /* ************************************************************************** */

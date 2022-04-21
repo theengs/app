@@ -102,6 +102,16 @@ bool DeviceTheengs::hasData() const
     return false;
 }
 
+bool DeviceTheengs::needsUpdateRt() const
+{
+    return !isDataFresh();
+}
+
+bool DeviceTheengs::needsUpdateDb() const
+{
+    return (getLastUpdateDbInt() < 0 || getLastUpdateDbInt() > 10);
+}
+
 /* ************************************************************************** */
 
 float DeviceTheengs::getTemp1() const
