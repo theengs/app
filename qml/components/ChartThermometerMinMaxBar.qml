@@ -25,7 +25,7 @@ Item {
     function computeSize() {
         if (typeof modelData === "undefined" || !modelData) return
 
-        if (modelData.tempMean < -10) {
+        if (modelData.tempMean < -30) {
             rectangle_temp.visible = false
             rectangle_water_low.visible = false
             rectangle_water_high.visible = false

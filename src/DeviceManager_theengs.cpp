@@ -198,8 +198,6 @@ QString DeviceManager::getDeviceModelTheengs(const QString &modelid) const
 
 void DeviceManager::fakeTheengsDevices()
 {
-    //qDebug() << "DeviceManager::fakeTheengsDevices()";
-
     // Theengs fake data ///////////////////////////////////////////////////////
     {
         connect(&m_faker, &QTimer::timeout, this, &DeviceManager::fakeTheengsData);
@@ -348,15 +346,11 @@ void DeviceManager::fakeTheengsDevices()
 
 void DeviceManager::fakeTheengsData()
 {
-    //qDebug() << "DeviceManager::fakeTheengsData()";
-
     QBluetoothDeviceInfo info;
     int rrdd = (rand() % 11);
 
     if (rrdd == 0) // JQJCY01YM
     {
-        qDebug() << "DeviceManager::fakeTheengsDevices(JQJCY01YM)";
-
         info = QBluetoothDeviceInfo(QBluetoothAddress("41:57:43:01:5C:3A"), "JQJCY01YM", 0);
 
         int rrrr = (rand() % 4);
@@ -369,8 +363,6 @@ void DeviceManager::fakeTheengsData()
 
     if (rrdd == 1) // IBT-4XS
     {
-        qDebug() << "DeviceManager::fakeTheengsDevices(IBT-4XS)";
-
         info = QBluetoothDeviceInfo(QBluetoothAddress("42:57:43:01:5C:3A"), "iBBQ", 0);
 /*
         // IBT-2X
@@ -397,16 +389,12 @@ void DeviceManager::fakeTheengsData()
 
     if (rrdd == 2) // TPMS
     {
-        qDebug() << "DeviceManager::fakeTheengsDevices(TPMS)";
-
         info = QBluetoothDeviceInfo(QBluetoothAddress("43:57:43:01:5C:3A"), "TPMS1_10CA8F", 0);
         info.setManufacturerData(256, QByteArray::fromHex("80eaca10ca8ff46503007c0c00003300"));
     }
 
     if (rrdd == 3) // Xiaomi scale
     {
-        qDebug() << "DeviceManager::fakeTheengsDevices(Xiaomi scale)";
-
         info = QBluetoothDeviceInfo(QBluetoothAddress("44:57:43:01:5C:3A"), "Xiaomi scale", 0);
 
         // Mi_Smart_Scale
@@ -441,8 +429,6 @@ void DeviceManager::fakeTheengsData()
 
     if (rrdd == 4) // H5072
     {
-        qDebug() << "DeviceManager::fakeTheengsDevices(GVH5072_1234)";
-
         info = QBluetoothDeviceInfo(QBluetoothAddress("45:57:43:01:5C:3A"), "GVH5072_1234", 0);
 
         int rrrr = (rand() % 2);
@@ -452,8 +438,6 @@ void DeviceManager::fakeTheengsData()
     }
     if (rrdd == 5) // H5075
     {
-        qDebug() << "DeviceManager::fakeTheengsDevices(GVH5055)";
-
         info = QBluetoothDeviceInfo(QBluetoothAddress("51:57:43:01:5C:3A"), "GVH5055", 0);
 
         int rrrr = (rand() % 4);
@@ -466,24 +450,18 @@ void DeviceManager::fakeTheengsData()
 
     if (rrdd == 6) // BM_V23
     {
-        qDebug() << "DeviceManager::fakeTheengsDevices(BM_V23)";
-
         info = QBluetoothDeviceInfo(QBluetoothAddress("46:57:43:01:5C:3A"), "V23", 0);
         info.setManufacturerData(endian_flip_16(0x3301), QByteArray::fromHex("17560e10177000ef01b3006c0100"));
     }
 
     if (rrdd == 7) // IBS-TH1
     {
-        qDebug() << "DeviceManager::fakeTheengsDevices(IBS-TH1)";
-
         info = QBluetoothDeviceInfo(QBluetoothAddress("47:57:43:01:5C:3A"), "sps", 0);
         info.setManufacturerData(endian_flip_16(0x660a), QByteArray::fromHex("03150110805908"));
     }
 
     if (rrdd == 8) // IBS-TH2
     {
-        qDebug() << "DeviceManager::fakeTheengsDevices(IBS-TH2)";
-
         info = QBluetoothDeviceInfo(QBluetoothAddress("48:57:43:01:5C:3A"), "tps", 0);
 
         int rrrr = (rand() % 2);
@@ -494,15 +472,11 @@ void DeviceManager::fakeTheengsData()
 
     if (rrdd == 9) // CGPR1
     {
-        qDebug() << "DeviceManager::fakeTheengsDevices(CGPR1)";
-
         info = QBluetoothDeviceInfo(QBluetoothAddress("49:57:43:01:5C:3A"), "CGPR1", 0);
         info.setServiceData(QUuid(0), QByteArray::fromHex("0812443660342d580201530f0118090400000000"));
     }
     if (rrdd == 10) // CGH1
     {
-        qDebug() << "DeviceManager::fakeTheengsDevices(CGH1)";
-
         info = QBluetoothDeviceInfo(QBluetoothAddress("50:57:43:01:5C:3A"), "CGH1", 0);
 
         int rrrr = (rand() % 4);
@@ -513,6 +487,7 @@ void DeviceManager::fakeTheengsData()
         else qWarning() << "RAND ERROR";
     }
 
+    //qDebug() << "DeviceManager::fakeTheengsData(" << info.name() << ")";
     updateBleDevice(info, QBluetoothDeviceInfo::Field::None);
 }
 

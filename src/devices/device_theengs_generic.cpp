@@ -162,9 +162,8 @@ void DeviceTheengsGeneric::parseTheengsAdvertisement(const QString &json)
 
     {
         m_lastUpdate = QDateTime::currentDateTime();
-        refreshDataFinished(true);
 
-        if (needsUpdateDb())
+        //if (needsUpdateDb()) // always on for theengs advertising
         {
             if (isPlantSensor())
             {
@@ -175,17 +174,23 @@ void DeviceTheengsGeneric::parseTheengsAdvertisement(const QString &json)
             else if (isThermometer())
             {
                 if (hasTemperatureSensor() && hasHumiditySensor())
+                {
                     addDatabaseRecord_hygrometer(m_lastUpdate.toSecsSinceEpoch(),
                                                  m_temperature, m_humidity);
+                }
                 else if (hasTemperatureSensor())
+                {
                     addDatabaseRecord_thermometer(m_lastUpdate.toSecsSinceEpoch(),
                                                   m_temperature);
+                }
             }
             else if (isEnvironmentalSensor())
             {
                 //
             }
         }
+
+        refreshDataFinished(true);
     }
 }
 
@@ -197,7 +202,7 @@ bool DeviceTheengsGeneric::areValuesValid_plants(const int soilMoisture, const i
 {
     if (hasSoilMoistureSensor() && (soilMoisture < 0 || soilMoisture > 100)) return false;
     if (hasSoilConductivitySensor() && (soilConductivity < 0 || soilConductivity > 20000)) return false;
-    if (hasTemperatureSensor() && (temperature < -20.f || temperature > 100.f)) return false;
+    if (hasTemperatureSensor() && (temperature < -30.f || temperature > 100.f)) return false;
     if (hasLuminositySensor() && (luminosity < 0 || luminosity > 150000)) return false;
 
     return true;
@@ -252,8 +257,7 @@ bool DeviceTheengsGeneric::addDatabaseRecord_plants(const int64_t timestamp,
 
 bool DeviceTheengsGeneric::areValuesValid_thermometer(const float t) const
 {
-    if (t <= 0.f) return false;
-    if (t < -20.f || t > 100.f) return false;
+    if (t < -30.f || t > 100.f) return false;
 
     return true;
 }
@@ -261,6 +265,8 @@ bool DeviceTheengsGeneric::areValuesValid_thermometer(const float t) const
 bool DeviceTheengsGeneric::addDatabaseRecord_thermometer(const int64_t timestamp, const float t)
 {
     bool status = false;
+
+    //qDebug() << "DeviceTheengsGeneric::addDatabaseRecord_thermometer()" << t;
 
     if (areValuesValid_thermometer(t))
     {
@@ -304,7 +310,7 @@ bool DeviceTheengsGeneric::addDatabaseRecord_thermometer(const int64_t timestamp
 bool DeviceTheengsGeneric::areValuesValid_hygrometer(const float t, const float h) const
 {
     if (t <= 0.f && h <= 0.f) return false;
-    if (t < -20.f || t > 100.f) return false;
+    if (t < -30.f || t > 100.f) return false;
     if (h < 0.f || t > 100.f) return false;
 
     return true;
@@ -313,6 +319,8 @@ bool DeviceTheengsGeneric::areValuesValid_hygrometer(const float t, const float 
 bool DeviceTheengsGeneric::addDatabaseRecord_hygrometer(const int64_t timestamp, const float t, const float h)
 {
     bool status = false;
+
+    //qDebug() << "DeviceTheengsGeneric::addDatabaseRecord_hygrometer()" << t << h;
 
     if (areValuesValid_hygrometer(t, h))
     {

@@ -71,8 +71,8 @@ DeviceTheengsBeacons::~DeviceTheengsBeacons()
 
 void DeviceTheengsBeacons::parseTheengsProps(const QString &json)
 {
-    qDebug() << "DeviceTheengsBeacons::parseTheengsProps()";
-    qDebug() << "JSON:" << json;
+    //qDebug() << "DeviceTheengsBeacons::parseTheengsProps()";
+    //qDebug() << "JSON:" << json;
 
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
     QJsonObject prop = doc.object()["properties"].toObject();
@@ -89,8 +89,8 @@ void DeviceTheengsBeacons::parseTheengsProps(const QString &json)
 
 void DeviceTheengsBeacons::parseTheengsAdvertisement(const QString &json)
 {
-    qDebug() << "DeviceTheengsBeacons::parseTheengsAdvertisement()";
-    qDebug() << "JSON:" << json;
+    //qDebug() << "DeviceTheengsBeacons::parseTheengsAdvertisement()";
+    //qDebug() << "JSON:" << json;
 
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
     QJsonObject obj = doc.object();
@@ -98,15 +98,15 @@ void DeviceTheengsBeacons::parseTheengsAdvertisement(const QString &json)
     if (obj.contains("batt")) setBattery(obj["batt"].toInt());
     if (obj.contains("mac")) setSetting("mac", obj["mac"].toString());
 
-    //if (x > -99)
     {
         m_lastUpdate = QDateTime::currentDateTime();
-        refreshDataFinished(true);
 
-        if (needsUpdateDb())
+        //if (needsUpdateDb()) // always on for theengs advertising
         {
-            // TODO // UPDATE DB
+            // TODO
         }
+
+        refreshDataFinished(true);
     }
 }
 

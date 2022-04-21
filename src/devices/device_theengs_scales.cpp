@@ -128,12 +128,13 @@ void DeviceTheengsScales::parseTheengsAdvertisement(const QString &json)
     if (m_weight > -99)
     {
         m_lastUpdate = QDateTime::currentDateTime();
-        refreshDataFinished(true);
 
-        if (needsUpdateDb())
+        //if (needsUpdateDb()) // always on for theengs advertising
         {
-            // TODO // UPDATE DB
+            // TODO
         }
+
+        refreshDataFinished(true);
     }
 }
 

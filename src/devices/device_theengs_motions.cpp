@@ -71,8 +71,8 @@ DeviceTheengsMotions::~DeviceTheengsMotions()
 
 void DeviceTheengsMotions::parseTheengsProps(const QString &json)
 {
-    qDebug() << "DeviceTheengsMotions::parseTheengsProps()";
-    qDebug() << "JSON:" << json;
+    //qDebug() << "DeviceTheengsMotions::parseTheengsProps()";
+    //qDebug() << "JSON:" << json;
 
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
     QJsonObject prop = doc.object()["properties"].toObject();
@@ -94,8 +94,8 @@ void DeviceTheengsMotions::parseTheengsProps(const QString &json)
 
 void DeviceTheengsMotions::parseTheengsAdvertisement(const QString &json)
 {
-    qDebug() << "DeviceTheengsMotions::parseTheengsAdvertisement()";
-    qDebug() << "JSON:" << json;
+    //qDebug() << "DeviceTheengsMotions::parseTheengsAdvertisement()";
+    //qDebug() << "JSON:" << json;
 
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
     QJsonObject obj = doc.object();
@@ -135,15 +135,15 @@ void DeviceTheengsMotions::parseTheengsAdvertisement(const QString &json)
         }
     }
 
-    //if (x > -99)
     {
         m_lastUpdate = QDateTime::currentDateTime();
-        refreshDataFinished(true);
 
-        if (needsUpdateDb())
+        //if (needsUpdateDb()) // always on for theengs advertising
         {
-            // TODO // UPDATE DB
+            // TODO
         }
+
+        refreshDataFinished(true);
     }
 }
 

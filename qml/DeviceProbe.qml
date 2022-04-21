@@ -235,9 +235,9 @@ Component {
 
                     visible: (!currentDevice.deviceName.includes("TPMS") && currentDevice.hasData)
 
-                    property int psw: isPhone ? 160 : 180
+                    property int psw: isPhone ? 160 : 200
                     property int psh: isPhone ? 44 : 48
-                    property int pss: isPhone ? 24 : 48
+                    property int pss: isPhone ? 24 : 32
                     property int fz1: isPhone ? 28 : 32
                     property int fz2: isPhone ? 24 : 28
 

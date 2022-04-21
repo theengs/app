@@ -149,15 +149,15 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
         if (obj.contains("tempc6")) m_temperature6 = obj["tempc6"].toDouble();
     }
 
-    //if (x > -99)
     {
         m_lastUpdate = QDateTime::currentDateTime();
-        refreshDataFinished(true);
 
-        if (needsUpdateDb())
+        //if (needsUpdateDb()) // always on for theengs advertising
         {
-            // TODO // UPDATE DB
+            // TODO
         }
+
+        refreshDataFinished(true);
     }
 }
 

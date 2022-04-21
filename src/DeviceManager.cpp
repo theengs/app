@@ -1084,10 +1084,16 @@ void DeviceManager::refreshDevices_continue()
             m_updating = false;
             Q_EMIT updatingChanged();
 
-            QSqlQuery writeLastSync;
-            writeLastSync.prepare("INSERT INTO lastSync (lastSync) VALUES (:lastSync)");
-            writeLastSync.bindValue(":lastSync", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
-            writeLastSync.exec();
+            //QSqlQuery writeLastSync;
+            //writeLastSync.prepare("INSERT INTO lastSync (lastSync) VALUES (:lastSync)");
+            //writeLastSync.bindValue(":lastSync", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+            //writeLastSync.exec();
+
+            QSqlQuery updateLastSync;
+            updateLastSync.prepare("UPDATE lastSync SET lastSync=:lastSync");
+            updateLastSync.bindValue(":lastSync", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+            if (updateLastSync.exec() == false)
+                qWarning() << "> updateLastSync.exec() ERROR" << updateLastSync.lastError().type() << ":" << updateLastSync.lastError().text();
         }
     }
 }
