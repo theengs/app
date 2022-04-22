@@ -61,7 +61,7 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName,
             deviceModel_theengs == "IBT-6XS/SOLIS-6")
         {
             device = new DeviceTheengsProbes(deviceAddr, deviceName,
-                                        deviceModel_theengs, device_props, this);
+                                             deviceModel_theengs, device_props, this);
         }
         else if (deviceModel_theengs == "XMTZC01HM/XMTZC04HM" ||
                  deviceModel_theengs == "XMTZC02HM/XMTZC05HM")
@@ -112,7 +112,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
     {
         if (device) break;
 
-        DynamicJsonDocument doc(512);
+        DynamicJsonDocument doc(1024);
         doc["id"] = deviceInfo.address().toString().toStdString();
         doc["name"] = deviceInfo.name().toStdString();
         doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).toStdString() + deviceInfo.manufacturerData(id).toHex().toStdString();
@@ -135,7 +135,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
     {
         if (device) break;
 
-        DynamicJsonDocument doc(512);
+        DynamicJsonDocument doc(1024);
         doc["id"] = deviceInfo.address().toString().toStdString();
         doc["name"] = deviceInfo.name().toStdString();
         doc["servicedata"] = deviceInfo.serviceData(id).toHex().toStdString();
@@ -447,7 +447,7 @@ void DeviceManager::fakeTheengsData()
     if (rrdd == 1) // TPMS
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("21:57:43:01:5C:3A"), "TPMS1_10CA8F", 0);
-        info.setManufacturerData(256, QByteArray::fromHex("80eaca10ca8ff46503007c0c00003300"));
+        info.setManufacturerData(0x0001, QByteArray::fromHex("80eaca10ca8ff46503007c0c00003300"));
     }
     if (rrdd == 2) // H5055
     {
