@@ -112,7 +112,7 @@ class SettingsManager: public QObject
     QString m_graphThermometer = "minmax";
     bool m_graphShowDots = true;
     bool m_compactView = true;
-    bool m_bigIndicator = true;
+    bool m_bigIndicator = false;
     bool m_dynaScale = true;
     QString m_orderBy = "model";
 
