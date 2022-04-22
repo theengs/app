@@ -40,9 +40,9 @@
 #include "devices/device_ess_generic.h"
 #include "devices/device_theengs_generic.h"
 #include "devices/device_theengs_beacons.h"
-#include "devices/device_theengs_motions.h"
 #include "devices/device_theengs_probes.h"
 #include "devices/device_theengs_scales.h"
+#include "devices/device_theengs_motionsensors.h"
 
 #include <QList>
 #include <QDateTime>

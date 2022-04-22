@@ -27,9 +27,9 @@
 #include "device_theengs.h"
 #include "devices/device_theengs_generic.h"
 #include "devices/device_theengs_beacons.h"
-#include "devices/device_theengs_motions.h"
 #include "devices/device_theengs_probes.h"
 #include "devices/device_theengs_scales.h"
+#include "devices/device_theengs_motionsensors.h"
 
 #include <string>
 
@@ -73,8 +73,8 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName,
                  deviceModel_theengs == "CGPR1" ||
                  deviceModel_theengs == "CGH1")
         {
-            device = new DeviceTheengsMotions(deviceAddr, deviceName,
-                                              deviceModel_theengs, device_props, this);
+            device = new DeviceTheengsMotionSensors(deviceAddr, deviceName,
+                                                    deviceModel_theengs, device_props, this);
         }/*
         else if (deviceModel_theengs == "MiBand" ||
                  deviceModel_theengs == "INEM" ||
@@ -178,7 +178,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
                  device_modelid_theengs == "CGPR1" ||
                  device_modelid_theengs == "CGH1")
         {
-            device = new DeviceTheengsMotions(deviceInfo, device_modelid_theengs, device_props, this);
+            device = new DeviceTheengsMotionSensors(deviceInfo, device_modelid_theengs, device_props, this);
         }
         else
         {
@@ -447,7 +447,7 @@ void DeviceManager::fakeTheengsData()
     if (rrdd == 1) // TPMS
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("21:57:43:01:5C:3A"), "TPMS1_10CA8F", 0);
-        info.setManufacturerData(0x0001, QByteArray::fromHex("80eaca10ca8ff46503007c0c00003300"));
+        info.setManufacturerData(endian_flip_16(0x0001), QByteArray::fromHex("80eaca10ca8ff46503007c0c00003300"));
     }
     if (rrdd == 2) // H5055
     {
@@ -541,7 +541,7 @@ void DeviceManager::fakeTheengsData()
     if (rrdd == 10) // H5102
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("43:57:43:01:5C:3A"), "GVH5102_1234", 0);
-        info.setManufacturerData(endian_flip_16(0x1000), QByteArray::fromHex("010103590e64"));
+        info.setManufacturerData(endian_flip_16(0x0100), QByteArray::fromHex("010103590e64"));
     }
     if (rrdd == 11) // BM_V23
     {

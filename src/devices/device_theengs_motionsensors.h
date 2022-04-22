@@ -16,8 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DEVICE_THEENGS_MOTIONS_H
-#define DEVICE_THEENGS_MOTIONS_H
+#ifndef DEVICE_THEENGS_MOTIONSENSORS_H
+#define DEVICE_THEENGS_MOTIONSENSORS_H
 /* ************************************************************************** */
 
 #include "device_theengs.h"
@@ -34,18 +34,18 @@
  * Theengs motion detector:
  * -
  */
-class DeviceTheengsMotions: public DeviceTheengs
+class DeviceTheengsMotionSensors: public DeviceTheengs
 {
     Q_OBJECT
 
 public:
-    DeviceTheengsMotions(const QString &deviceAddr, const QString &deviceName,
-                         const QString &deviceModel, const QString &devicePropsJson,
-                         QObject *parent = nullptr);
-    DeviceTheengsMotions(const QBluetoothDeviceInfo &d,
-                         const QString &deviceModel, const QString &devicePropsJson,
-                         QObject *parent = nullptr);
-    ~DeviceTheengsMotions();
+    DeviceTheengsMotionSensors(const QString &deviceAddr, const QString &deviceName,
+                               const QString &deviceModel, const QString &devicePropsJson,
+                               QObject *parent = nullptr);
+    DeviceTheengsMotionSensors(const QBluetoothDeviceInfo &d,
+                               const QString &deviceModel, const QString &devicePropsJson,
+                               QObject *parent = nullptr);
+    ~DeviceTheengsMotionSensors();
 
     // theengs decoder
     void parseTheengsProps(const QString &json);
@@ -53,4 +53,4 @@ public:
 };
 
 /* ************************************************************************** */
-#endif // DEVICE_THEENGS_MOTIONS_H
+#endif // DEVICE_THEENGS_MOTIONSENSORS_H

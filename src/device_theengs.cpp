@@ -72,6 +72,175 @@ void DeviceTheengs::addLowEnergyService(const QBluetoothUuid &uuid)
 
 /* ************************************************************************** */
 
+bool DeviceTheengs::getSqlProbeData(int minutes)
+{
+    //qDebug() << "DeviceSensor::getSqlProbeData(" << m_deviceAddress << ")";
+    bool status = false;
+
+    QSqlQuery cachedData;
+    if (m_dbInternal) // sqlite
+    {
+        cachedData.prepare("SELECT timestamp, temperature1, temperature2, temperature3, temperature4, temperature5, temperature6 " \
+                           "FROM sensorTheengs " \
+                           "WHERE deviceAddr = :deviceAddr AND timestamp >= datetime('now', 'localtime', '-" + QString::number(minutes) + " minutes') " \
+                           "ORDER BY timestamp DESC " \
+                           "LIMIT 1;");
+    }
+    cachedData.bindValue(":deviceAddr", getAddress());
+
+    if (cachedData.exec() == false)
+    {
+        qWarning() << "> cachedDataProbe.exec() ERROR"
+                   << cachedData.lastError().type() << ":" << cachedData.lastError().text();
+    }
+
+    while (cachedData.next())
+    {
+        m_temperature1 =  cachedData.value(1).toFloat();
+        m_temperature2 = cachedData.value(2).toFloat();
+        m_temperature3 = cachedData.value(3).toFloat();
+        m_temperature4 = cachedData.value(4).toFloat();
+        m_temperature5 = cachedData.value(5).toFloat();
+        m_temperature6 = cachedData.value(6).toFloat();
+
+        QString datetime = cachedData.value(0).toString();
+        m_lastUpdateDatabase = m_lastUpdate = QDateTime::fromString(datetime, "yyyy-MM-dd hh:mm:ss");
+/*
+        qDebug() << ">> timestamp" << m_lastUpdate;
+        qDebug() << "- m_temperature1:" << m_temperature1;
+        qDebug() << "- m_temperature2:" << m_temperature2;
+        qDebug() << "- m_temperature3:" << m_temperature3;
+        qDebug() << "- m_temperature4:" << m_temperature4;
+        qDebug() << "- m_temperature5:" << m_temperature5;
+        qDebug() << "- m_temperature6:" << m_temperature6;
+*/
+        status = true;
+    }
+
+    refreshDataFinished(status, true);
+    return status;
+}
+
+bool DeviceTheengs::getSqlTpmsData(int minutes)
+{
+    //qDebug() << "DeviceSensor::getSqlTpmsData(" << m_deviceAddress << ")";
+    bool status = false;
+
+    QSqlQuery cachedData;
+    if (m_dbInternal) // sqlite
+    {
+        cachedData.prepare("SELECT timestamp, temperature1, temperature2, temperature3, temperature4, " \
+                             "pressure1, pressure2, pressure3, pressure4, " \
+                             "battery1, battery2, battery3, battery4, " \
+                             "alarm1, alarm2, alarm3, alarm4 " \
+                           "FROM sensorTheengs " \
+                           "WHERE deviceAddr = :deviceAddr AND timestamp >= datetime('now', 'localtime', '-" + QString::number(minutes) + " minutes') " \
+                           "ORDER BY timestamp DESC " \
+                           "LIMIT 1;");
+    }
+    cachedData.bindValue(":deviceAddr", getAddress());
+
+    if (cachedData.exec() == false)
+    {
+        qWarning() << "> cachedDataTPMS.exec() ERROR"
+                   << cachedData.lastError().type() << ":" << cachedData.lastError().text();
+    }
+
+    while (cachedData.next())
+    {
+        if (!cachedData.value(1).isNull())
+        {
+            m_temperature1 = cachedData.value(1).toFloat();
+            m_pressure1 = cachedData.value(5).toInt();
+            m_battery1 = cachedData.value(9).toInt();
+            m_alarm1 = cachedData.value(13).toBool();
+        }
+        if (!cachedData.value(2).isNull())
+        {
+            m_temperature2 = cachedData.value(2).toFloat();
+            m_pressure2 = cachedData.value(6).toInt();
+            m_battery2 = cachedData.value(10).toInt();
+            m_alarm2 = cachedData.value(14).toBool();
+        }
+        if (!cachedData.value(2).isNull())
+        {
+            m_temperature3 = cachedData.value(3).toFloat();
+            m_pressure3 = cachedData.value(7).toInt();
+            m_battery3 = cachedData.value(11).toInt();
+            m_alarm3 = cachedData.value(15).toBool();
+        }
+        if (!cachedData.value(2).isNull())
+        {
+            m_temperature4 = cachedData.value(4).toFloat();
+            m_pressure4 = cachedData.value(8).toInt();
+            m_battery4 = cachedData.value(12).toInt();
+            m_alarm4 = cachedData.value(16).toBool();
+        }
+
+        QString datetime = cachedData.value(0).toString();
+        m_lastUpdateDatabase = m_lastUpdate = QDateTime::fromString(datetime, "yyyy-MM-dd hh:mm:ss");
+/*
+        qDebug() << ">> timestamp" << m_lastUpdate;
+        qDebug() << "- m_temperature1:" << m_temperature1;
+        qDebug() << "- m_temperature2:" << m_temperature2;
+        qDebug() << "- m_temperature3:" << m_temperature3;
+        qDebug() << "- m_temperature4:" << m_temperature4;
+
+        qDebug() << "- m_pressure1:" << m_pressure1;
+        qDebug() << "- m_pressure2:" << m_pressure2;
+        qDebug() << "- m_pressure3:" << m_pressure3;
+        qDebug() << "- m_pressure4:" << m_pressure4;
+*/
+        status = true;
+    }
+
+    refreshDataFinished(status, true);
+    return status;
+}
+
+bool DeviceTheengs::getSqlScaleData(int minutes)
+{
+    //qDebug() << "DeviceSensor::getSqlScaleData(" << m_deviceAddress << ")";
+    bool status = false;
+
+    QSqlQuery cachedData;
+    if (m_dbInternal) // sqlite
+    {
+        cachedData.prepare("SELECT timestamp, weight, impedance " \
+                           "FROM sensorTheengs " \
+                           "WHERE deviceAddr = :deviceAddr AND timestamp >= datetime('now', 'localtime', '-" + QString::number(minutes) + " minutes') " \
+                           "ORDER by timestamp DESC " \
+                           "LIMIT 1;");
+    }
+    cachedData.bindValue(":deviceAddr", getAddress());
+
+    if (cachedData.exec() == false)
+    {
+        qWarning() << "> cachedDataScale.exec() ERROR"
+                   << cachedData.lastError().type() << ":" << cachedData.lastError().text();
+    }
+
+    while (cachedData.next())
+    {
+        m_weight =  cachedData.value(1).toFloat();
+        m_impedance = cachedData.value(2).toInt();
+
+        QString datetime = cachedData.value(0).toString();
+        m_lastUpdateDatabase = m_lastUpdate = QDateTime::fromString(datetime, "yyyy-MM-dd hh:mm:ss");
+/*
+        qDebug() << ">> timestamp" << m_lastUpdate;
+        qDebug() << "- m_weight:" << m_weight;
+        qDebug() << "- m_impedance:" << m_impedance;
+*/
+        status = true;
+    }
+
+    refreshDataFinished(status, true);
+    return status;
+}
+
+/* ************************************************************************** */
+
 bool DeviceTheengs::hasData() const
 {
     // If we have immediate data (<12h old)

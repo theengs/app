@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "device_theengs_motions.h"
+#include "device_theengs_motionsensors.h"
 
 #include <cstdint>
 #include <cmath>
@@ -37,31 +37,31 @@
 
 /* ************************************************************************** */
 
-DeviceTheengsMotions::DeviceTheengsMotions(const QString &deviceAddr, const QString &deviceName,
-                                           const QString &deviceModel, const QString &devicePropsJson,
-                                           QObject *parent):
+DeviceTheengsMotionSensors::DeviceTheengsMotionSensors(const QString &deviceAddr, const QString &deviceName,
+                                                       const QString &deviceModel, const QString &devicePropsJson,
+                                                       QObject *parent):
     DeviceTheengs(deviceAddr, deviceName, deviceModel, parent)
 {
     m_deviceModel = deviceModel;
-    m_deviceType = DeviceUtils::DEVICE_MOTION;
+    m_deviceType = DeviceUtils::DEVICE_THEENGS_MOTIONSENSOR;
     m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 
     parseTheengsProps(devicePropsJson);
 }
 
-DeviceTheengsMotions::DeviceTheengsMotions(const QBluetoothDeviceInfo &d,
-                                           const QString &deviceModel, const QString &devicePropsJson,
-                                           QObject *parent):
+DeviceTheengsMotionSensors::DeviceTheengsMotionSensors(const QBluetoothDeviceInfo &d,
+                                                       const QString &deviceModel, const QString &devicePropsJson,
+                                                       QObject *parent):
     DeviceTheengs(d, deviceModel, parent)
 {
     m_deviceModel = deviceModel;
-    m_deviceType = DeviceUtils::DEVICE_MOTION;
+    m_deviceType = DeviceUtils::DEVICE_THEENGS_MOTIONSENSOR;
     m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 
     parseTheengsProps(devicePropsJson);
 }
 
-DeviceTheengsMotions::~DeviceTheengsMotions()
+DeviceTheengsMotionSensors::~DeviceTheengsMotionSensors()
 {
     //
 }
@@ -69,7 +69,7 @@ DeviceTheengsMotions::~DeviceTheengsMotions()
 /* ************************************************************************** */
 /* ************************************************************************** */
 
-void DeviceTheengsMotions::parseTheengsProps(const QString &json)
+void DeviceTheengsMotionSensors::parseTheengsProps(const QString &json)
 {
     //qDebug() << "DeviceTheengsMotions::parseTheengsProps()";
     //qDebug() << "JSON:" << json;
@@ -92,7 +92,7 @@ void DeviceTheengsMotions::parseTheengsProps(const QString &json)
 
 /* ************************************************************************** */
 
-void DeviceTheengsMotions::parseTheengsAdvertisement(const QString &json)
+void DeviceTheengsMotionSensors::parseTheengsAdvertisement(const QString &json)
 {
     //qDebug() << "DeviceTheengsMotions::parseTheengsAdvertisement()";
     //qDebug() << "JSON:" << json;

@@ -39,6 +39,7 @@ class DeviceTheengs: public DeviceSensor
     Q_OBJECT
 
     // probe data
+    Q_PROPERTY(bool hasProbesTPMS READ hasProbesTPMS NOTIFY sensorsUpdated)
     Q_PROPERTY(bool hasTemperature1 READ hasTemp1 NOTIFY sensorsUpdated)
     Q_PROPERTY(bool hasTemperature2 READ hasTemp2 NOTIFY sensorsUpdated)
     Q_PROPERTY(bool hasTemperature3 READ hasTemp3 NOTIFY sensorsUpdated)
@@ -51,9 +52,7 @@ class DeviceTheengs: public DeviceSensor
     Q_PROPERTY(float temperature3 READ getTemp3 NOTIFY dataUpdated)
     Q_PROPERTY(float temperature4 READ getTemp4 NOTIFY dataUpdated)
     Q_PROPERTY(float temperature5 READ getTemp5 NOTIFY dataUpdated)
-    Q_PROPERTY(float temperature6 READ getTemp6 NOTIFY dataUpdated)
-
-    Q_PROPERTY(bool hasProbesTPMS READ hasProbesTPMS NOTIFY sensorsUpdated)
+    Q_PROPERTY(float temperature6 READ getTemp6 NOTIFY dataUpdated)    
     Q_PROPERTY(int battery1 READ getBattery1 NOTIFY dataUpdated)
     Q_PROPERTY(int battery2 READ getBattery2 NOTIFY dataUpdated)
     Q_PROPERTY(int battery3 READ getBattery3 NOTIFY dataUpdated)
@@ -90,6 +89,9 @@ class DeviceTheengs: public DeviceSensor
 protected:
     int m_deviceSensorsTheengs = 0;     //!< See DeviceSensorsTheengs enum
 
+    // beacon data
+    // TODO
+
     // probe data
     float m_temperature1 = -99.f;
     float m_temperature2 = -99.f;
@@ -97,14 +99,14 @@ protected:
     float m_temperature4 = -99.f;
     float m_temperature5 = -99.f;
     float m_temperature6 = -99.f;
-    int m_battery1 = -99;
-    int m_battery2 = -99;
-    int m_battery3 = -99;
-    int m_battery4 = -99;
     int m_pressure1 = -99;
     int m_pressure2 = -99;
     int m_pressure3 = -99;
     int m_pressure4 = -99;
+    int m_battery1 = -99;
+    int m_battery2 = -99;
+    int m_battery3 = -99;
+    int m_battery4 = -99;
     bool m_alarm1 = false;
     bool m_alarm2 = false;
     bool m_alarm3 = false;
@@ -121,6 +123,11 @@ protected:
     bool m_movement = false;
     bool m_presence = false;
 
+protected:
+    virtual bool getSqlProbeData(int minutes);
+    virtual bool getSqlTpmsData(int minutes);
+    virtual bool getSqlScaleData(int minutes);
+
     virtual bool hasData() const;
 
 public:
@@ -134,6 +141,9 @@ public:
     // theengs decoder
     virtual void parseTheengsProps(const QString &json);
     virtual void parseTheengsAdvertisement(const QString &json);
+
+    // beacon data
+    // TODO
 
     // probe data
     bool hasProbesTPMS() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_PROBES_TPMS); }

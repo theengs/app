@@ -47,7 +47,7 @@ DeviceSensor::DeviceSensor(const QString &deviceAddr, const QString &deviceName,
     if (m_dbInternal || m_dbExternal)
     {
         getSqlDeviceInfos();
-        //getSqlSensorBias();
+        getSqlPlantBias();
         getSqlPlantLimits();
 
         // Load initial data into the GUI (if they are no more than 12h old)
@@ -278,6 +278,16 @@ bool DeviceSensor::getSqlDeviceInfos()
     return status;
 }
 
+bool DeviceSensor::getSqlPlantBias()
+{
+    //qDebug() << "DeviceSensor::getSqlPlantBias(" << m_deviceAddress << ")";
+    bool status = false;
+
+    // TODO
+
+    return status;
+}
+
 bool DeviceSensor::getSqlPlantLimits()
 {
     //qDebug() << "DeviceSensor::getSqlPlantLimits(" << m_deviceAddress << ")";
@@ -324,24 +334,24 @@ bool DeviceSensor::getSqlPlantData(int minutes)
     {
         cachedData.prepare("SELECT ts_full, soilMoisture, soilConductivity, soilTemperature, soilPH, temperature, humidity, luminosity, watertank " \
                            "FROM plantData " \
-                           "WHERE deviceAddr = :deviceAddr AND ts_full >= datetime('now', 'localtime', '-" + QString::number(minutes) + " minutes');");
+                           "WHERE deviceAddr = :deviceAddr AND ts_full >= datetime('now', 'localtime', '-" + QString::number(minutes) + " minutes') " \
+                           "ORDER BY ts_full DESC " \
+                           "LIMIT 1;");
     }
     else if (m_dbExternal) // mysql
     {
         cachedData.prepare("SELECT DATE_FORMAT(ts_full, '%Y-%m-%e %H:%i:%s')," \
                            " soilMoisture, soilConductivity, soilTemperature, soilPH, temperature, humidity, luminosity, watertank " \
                            "FROM plantData " \
-                           "WHERE deviceAddr = :deviceAddr AND ts_full >= TIMESTAMPADD(MINUTE,-" + QString::number(minutes) + ",NOW());");
+                           "WHERE deviceAddr = :deviceAddr AND ts_full >= TIMESTAMPADD(MINUTE,-" + QString::number(minutes) + ",NOW()) " \
+                           "ORDER BY ts_full DESC " \
+                           "LIMIT 1;");
     }
     cachedData.bindValue(":deviceAddr", getAddress());
 
     if (cachedData.exec() == false)
     {
         qWarning() << "> cachedDataPlant.exec() ERROR" << cachedData.lastError().type() << ":" << cachedData.lastError().text();
-    }
-    else
-    {
-        //qDebug() << "* Device loaded:" << getAddress();
     }
 
     while (cachedData.next())
@@ -406,8 +416,9 @@ bool DeviceSensor::getSqlSensorBias()
     return status;
 }
 
-bool DeviceSensor::setDbBias()
+bool DeviceSensor::setSqlSensorBias()
 {
+    //qDebug() << "DeviceSensor::setSqlSensorBias(" << m_deviceAddress << ")";
     bool status = false;
 
     if (m_dbInternal || m_dbExternal)
@@ -451,7 +462,7 @@ bool DeviceSensor::getSqlSensorLimits()
     return status;
 }
 
-bool DeviceSensor::setDbLimits()
+bool DeviceSensor::setSqlPlantLimits()
 {
     bool status = false;
 
@@ -503,24 +514,24 @@ bool DeviceSensor::getSqlSensorData(int minutes)
         cachedData.prepare("SELECT timestamp, temperature, humidity, pressure, luminosity, uv, sound, water, windDirection, windSpeed, " \
                              "pm1, pm25, pm10, o2, o3, co, co2, no2, so2, voc, hcho, geiger " \
                            "FROM sensorData " \
-                           "WHERE deviceAddr = :deviceAddr AND timestamp >= datetime('now', 'localtime', '-" + QString::number(minutes) + " minutes');");
+                           "WHERE deviceAddr = :deviceAddr AND timestamp >= datetime('now', 'localtime', '-" + QString::number(minutes) + " minutes')" \
+                           "ORDER BY timestamp DESC " \
+                           "LIMIT 1;");
     }
     else if (m_dbExternal) // mysql
     {
         cachedData.prepare("SELECT DATE_FORMAT(timestamp, '%Y-%m-%e %H:%i:%s'), temperature, humidity, pressure, luminosity, uv, sound, water, windDirection, windSpeed, " \
                              "pm1, pm25, pm10, o2, o3, co, co2, no2, so2, voc, hcho, geiger " \
                            "FROM sensorData " \
-                           "WHERE deviceAddr = :deviceAddr AND timestamp >= TIMESTAMPADD(MINUTE,-" + QString::number(minutes) + ",NOW());");
+                           "WHERE deviceAddr = :deviceAddr AND timestamp >= TIMESTAMPADD(MINUTE,-" + QString::number(minutes) + ",NOW()) " \
+                           "ORDER BY timestamp DESC " \
+                           "LIMIT 1;");
     }
     cachedData.bindValue(":deviceAddr", getAddress());
 
     if (cachedData.exec() == false)
     {
         qWarning() << "> cachedDataSensor.exec() ERROR" << cachedData.lastError().type() << ":" << cachedData.lastError().text();
-    }
-    else
-    {
-        //qDebug() << "* Device loaded:" << getAddress();
     }
 
     while (cachedData.next())
@@ -1032,7 +1043,7 @@ void DeviceSensor::updateChartData_history_day()
                               "FROM plantData " \
                               "WHERE deviceAddr = :deviceAddr AND ts >= datetime('now','-1 day') " \
                               "GROUP BY strftime('%d-%H', ts) " \
-                              "ORDER BY ts DESC "
+                              "ORDER BY ts DESC " \
                               "LIMIT 24;");
         }
         else if (m_dbExternal) // mysql
@@ -1043,7 +1054,7 @@ void DeviceSensor::updateChartData_history_day()
                               "FROM plantData " \
                               "WHERE deviceAddr = :deviceAddr AND ts >= DATE_SUB(NOW(), INTERVAL -1 DAY) " \
                               "GROUP BY DATE_FORMAT(ts, '%d-%H') " \
-                              "ORDER BY ts DESC "
+                              "ORDER BY ts DESC " \
                               "LIMIT 24;");
         }
         graphData.bindValue(":deviceAddr", getAddress());

@@ -43,7 +43,7 @@ DeviceTheengsBeacons::DeviceTheengsBeacons(const QString &deviceAddr, const QStr
     DeviceTheengs(deviceAddr, deviceName, deviceModel, parent)
 {
     m_deviceModel = deviceModel;
-    m_deviceType = DeviceUtils::DEVICE_BEACON;
+    m_deviceType = DeviceUtils::DEVICE_THEENGS_BEACON;
     m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 
     parseTheengsProps(devicePropsJson);
@@ -55,7 +55,7 @@ DeviceTheengsBeacons::DeviceTheengsBeacons(const QBluetoothDeviceInfo &d,
     DeviceTheengs(d, deviceModel, parent)
 {
     m_deviceModel = deviceModel;
-    m_deviceType = DeviceUtils::DEVICE_BEACON;
+    m_deviceType = DeviceUtils::DEVICE_THEENGS_BEACON;
     m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 
     parseTheengsProps(devicePropsJson);

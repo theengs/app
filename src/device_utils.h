@@ -89,7 +89,10 @@ public:
         DEVICE_MOTION,
 
         DEVICE_THEENGS = 16,
-        DEVICE_THEENGS_PROBES,
+        DEVICE_THEENGS_BEACON,
+        DEVICE_THEENGS_PROBE,
+        DEVICE_THEENGS_SCALE,
+        DEVICE_THEENGS_MOTIONSENSOR,
     };
     Q_ENUM(DeviceType)
 

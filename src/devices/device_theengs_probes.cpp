@@ -43,10 +43,13 @@ DeviceTheengsProbes::DeviceTheengsProbes(const QString &deviceAddr, const QStrin
     DeviceTheengs(deviceAddr, deviceName, deviceModel, parent)
 {
     m_deviceModel = deviceModel;
-    m_deviceType = DeviceUtils::DEVICE_THEENGS_PROBES;
+    m_deviceType = DeviceUtils::DEVICE_THEENGS_PROBE;
     m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 
     parseTheengsProps(devicePropsJson);
+
+    if (m_deviceModel == "TPMS") getSqlTpmsData(12*60);
+    else  getSqlProbeData(12*60);
 }
 
 DeviceTheengsProbes::DeviceTheengsProbes(const QBluetoothDeviceInfo &d,
@@ -55,10 +58,13 @@ DeviceTheengsProbes::DeviceTheengsProbes(const QBluetoothDeviceInfo &d,
     DeviceTheengs(d, deviceModel, parent)
 {
     m_deviceModel = deviceModel;
-    m_deviceType = DeviceUtils::DEVICE_THEENGS_PROBES;
+    m_deviceType = DeviceUtils::DEVICE_THEENGS_PROBE;
     m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 
     parseTheengsProps(devicePropsJson);
+
+    if (m_deviceModel == "TPMS") getSqlTpmsData(12*60);
+    else  getSqlProbeData(12*60);
 }
 
 DeviceTheengsProbes::~DeviceTheengsProbes()
@@ -106,36 +112,38 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
     if (obj.contains("batt")) setBattery(obj["batt"].toInt());
     if (obj.contains("mac")) setSetting("mac", obj["mac"].toString());
 
+    int tmps_idx = -1;
+
     if (obj["model"].toString() == "TPMS")
     {
-        int idx = obj["count"].toInt();
+        tmps_idx = obj["count"].toInt();
         float pres = obj["pres"].toDouble() * 10.0;
         float temp = obj["tempc"].toDouble();
         int batt = obj["batt"].toInt();
         bool alarm = obj["alarm"].toBool();
 
-        if (idx == 1)
+        if (tmps_idx == 1)
         {
             m_pressure1 = pres;
             m_temperature1 = temp;
             m_battery1 = batt;
             m_alarm1 = alarm;
         }
-        else if (idx == 2)
+        else if (tmps_idx == 2)
         {
             m_pressure2 = pres;
             m_temperature2 = temp;
             m_battery2 = batt;
             m_alarm2 = alarm;
         }
-        else if (idx == 3)
+        else if (tmps_idx == 3)
         {
             m_pressure3 = pres;
             m_temperature3 = temp;
             m_battery3 = batt;
             m_alarm3 = alarm;
         }
-        else if (idx == 4)
+        else if (tmps_idx == 4)
         {
             m_pressure4 = pres;
             m_temperature4 = temp;
@@ -163,7 +171,54 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
             {
                 if (obj["model"].toString() == "TPMS")
                 {
-                    // TODO?
+                    QSqlQuery addData;
+
+                    if (tmps_idx == 1)
+                    {
+                        addData.prepare("REPLACE INTO sensorTheengs (deviceAddr, timestamp, temperature1, pressure1, battery1, alarm1)"
+                                        " VALUES (:deviceAddr, :ts, :temp, :pres, :batt, :alrm)");
+                        addData.bindValue(":temp", m_temperature1);
+                        addData.bindValue(":pres", m_pressure1);
+                        addData.bindValue(":batt", m_battery1);
+                        addData.bindValue(":alrm", m_alarm1);
+                    }
+                    else if (tmps_idx == 2)
+                    {
+                        addData.prepare("REPLACE INTO sensorTheengs (deviceAddr, timestamp, temperature2, pressure2, battery2, alarm2)"
+                                        " VALUES (:deviceAddr, :ts, :temp, :pres, :batt, :alrm)");
+                        addData.bindValue(":temp", m_temperature2);
+                        addData.bindValue(":pres", m_pressure2);
+                        addData.bindValue(":batt", m_battery2);
+                        addData.bindValue(":alrm", m_alarm2);
+                    }
+                    else if (tmps_idx == 3)
+                    {
+                        addData.prepare("REPLACE INTO sensorTheengs (deviceAddr, timestamp, temperature3, pressure3, battery3, alarm3)"
+                                        " VALUES (:deviceAddr, :ts, :temp, :pres, :batt, :alrm)");
+                        addData.bindValue(":temp", m_temperature3);
+                        addData.bindValue(":pres", m_pressure3);
+                        addData.bindValue(":batt", m_battery3);
+                        addData.bindValue(":alrm", m_alarm3);
+                        //
+                    }
+                    else if (tmps_idx == 4)
+                    {
+                        addData.prepare("REPLACE INTO sensorTheengs (deviceAddr, timestamp, temperature4, pressure4, battery4, alarm4)"
+                                        " VALUES (:deviceAddr, :ts, :temp, :pres, :batt, :alrm)");
+                        addData.bindValue(":temp", m_temperature4);
+                        addData.bindValue(":pres", m_pressure4);
+                        addData.bindValue(":batt", m_battery4);
+                        addData.bindValue(":alrm", m_alarm4);
+                    }
+
+                    addData.bindValue(":deviceAddr", getAddress());
+                    addData.bindValue(":ts", m_lastUpdate.toString("yyyy-MM-dd hh:mm:ss"));
+
+                    if (addData.exec())
+                        m_lastUpdateDatabase = m_lastUpdate;
+                    else
+                        qWarning() << "> DeviceTheengsProbes TPMS addData.exec() ERROR"
+                                   << addData.lastError().type() << ":" << addData.lastError().text();
                 }
                 else
                 {

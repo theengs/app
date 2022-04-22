@@ -58,13 +58,18 @@ Device::Device(const QString &deviceAddr, const QString &deviceName, QObject *pa
     m_deviceAddress = deviceAddr;
     m_deviceName = deviceName;
 
-    // Device name hack // Remove MAC address from device name
-    if (m_deviceName.startsWith("Flower power")) m_deviceName = "Flower power";
-    else if (m_deviceName.startsWith("Parrot pot")) m_deviceName = "Parrot pot";
-    else if (m_deviceName.startsWith("6003#")) m_deviceName = "WP6003";
-
+    // Check address validity
     if (m_bleDevice.isValid() == false)
+    {
         qWarning() << "Device() '" << m_deviceAddress << "' is an invalid QBluetoothDeviceInfo...";
+    }
+
+    // Device name hack // Remove MAC address from device name
+    {
+        if (m_deviceName.startsWith("Flower power")) m_deviceName = "Flower power";
+        else if (m_deviceName.startsWith("Parrot pot")) m_deviceName = "Parrot pot";
+        else if (m_deviceName.startsWith("6003#")) m_deviceName = "WP6003";
+    }
 
     // Configure timeout timer
     m_timeoutTimer.setSingleShot(true);
@@ -73,6 +78,7 @@ Device::Device(const QString &deviceAddr, const QString &deviceName, QObject *pa
     // Configure update timer (only started on desktop)
     connect(&m_updateTimer, &QTimer::timeout, this, &Device::refreshStart);
 
+    // Configure RSSI timer
     m_rssiTimer.setSingleShot(true);
     m_rssiTimer.setInterval(12*1000); // 12s
     connect(&m_rssiTimer, &QTimer::timeout, this, &Device::cleanRssi);
@@ -83,19 +89,24 @@ Device::Device(const QBluetoothDeviceInfo &d, QObject *parent) : QObject(parent)
     m_bleDevice = d;
     m_deviceName = m_bleDevice.name();
 
-    // Device name hack // Remove MAC address from device name
-    if (m_deviceName.startsWith("Flower power")) m_deviceName = "Flower power";
-    else if (m_deviceName.startsWith("Parrot pot")) m_deviceName = "Parrot pot";
-    else if (m_deviceName.startsWith("6003#")) m_deviceName = "WP6003";
-
 #if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
     m_deviceAddress = m_bleDevice.deviceUuid().toString();
 #else
     m_deviceAddress = m_bleDevice.address().toString();
 #endif
 
+    // Check address validity
     if (m_bleDevice.isValid() == false)
+    {
         qWarning() << "Device() '" << m_deviceAddress << "' is an invalid QBluetoothDeviceInfo...";
+    }
+
+    // Device name hack // Remove MAC address from device name
+    {
+        if (m_deviceName.startsWith("Flower power")) m_deviceName = "Flower power";
+        else if (m_deviceName.startsWith("Parrot pot")) m_deviceName = "Parrot pot";
+        else if (m_deviceName.startsWith("6003#")) m_deviceName = "WP6003";
+    }
 
     // Configure timeout timer
     m_timeoutTimer.setSingleShot(true);
@@ -104,6 +115,7 @@ Device::Device(const QBluetoothDeviceInfo &d, QObject *parent) : QObject(parent)
     // Configure update timer (only started on desktop)
     connect(&m_updateTimer, &QTimer::timeout, this, &Device::refreshStart);
 
+    // Configure RSSI timer
     m_rssiTimer.setSingleShot(true);
     m_rssiTimer.setInterval(12*1000); // 12s
     connect(&m_rssiTimer, &QTimer::timeout, this, &Device::cleanRssi);

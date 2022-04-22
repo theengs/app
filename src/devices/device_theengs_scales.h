@@ -39,6 +39,21 @@ class DeviceTheengsScales: public DeviceTheengs
 {
     Q_OBJECT
 
+    Q_PROPERTY(float weightMin READ getWeightMin NOTIFY minmaxUpdated)
+    Q_PROPERTY(float weightMax READ getWeightMax NOTIFY minmaxUpdated)
+    Q_PROPERTY(int impedanceMin READ getImpedanceMin NOTIFY minmaxUpdated)
+    Q_PROPERTY(int impedanceMax READ getImpedanceMax NOTIFY minmaxUpdated)
+
+    int m_weightMin = 999999;
+    int m_weightMax = -99;
+    int m_impedanceMin = 999999;
+    int m_impedanceMax = -99;
+
+    int getWeightMin() const { return m_weightMin; }
+    int getWeightMax() const { return m_weightMax; }
+    int getImpedanceMin() const { return m_impedanceMin; }
+    int getImpedanceMax() const { return m_impedanceMax; }
+
 public:
     DeviceTheengsScales(const QString &deviceAddr, const QString &deviceName,
                         const QString &deviceModel, const QString &devicePropsJson,
@@ -51,6 +66,10 @@ public:
     // theengs decoder
     void parseTheengsProps(const QString &json);
     void parseTheengsAdvertisement(const QString &json);
+
+    // Chart scale AIO
+    Q_INVOKABLE void getChartData_scaleAIO(int maxDays, QDateTimeAxis *axis,
+                                           QLineSeries *weight, QLineSeries *impedance);
 };
 
 /* ************************************************************************** */

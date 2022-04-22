@@ -93,7 +93,7 @@ void DeviceTheengsGeneric::parseTheengsProps(const QString &json)
     // Device type
     if (hasSoilMoistureSensor() && hasSoilConductivitySensor()) m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR;
     else if (hasHchoSensor()) m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
-    else if (hasWeight()) m_deviceType = DeviceUtils::DEVICE_SCALE;
+    else if (hasWeight()) m_deviceType = DeviceUtils::DEVICE_THEENGS_SCALE;
     else if (hasTemperatureSensor() || hasHumiditySensor()) m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
     else m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
 }

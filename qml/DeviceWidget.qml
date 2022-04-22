@@ -227,8 +227,8 @@ Item {
     }
 
     function updateSensorWarnings() {
-
         // Warnings icons (for sensors with available data)
+
         if (boxDevice.isDataToday()) {
 
             if (boxDevice.isPlantSensor) {
@@ -774,8 +774,8 @@ Item {
                         unit.text = qsTr("µSv/h")
                     }
                 } else if (boxDevice.isScale) {
-                    text.text = boxDevice.weight.toFixed(1)
-                    unit.text = (settingsManager.tempUnit === 'C') ? "kg" : "p"
+                    text.text = (settingsManager.tempUnit === 'C') ? boxDevice.weight.toFixed(1) : (boxDevice.weight * 2.20462).toFixed(1)
+                    unit.text = (settingsManager.tempUnit === 'C') ? qsTr("kg") : qsTr("lbs")
                 }
             }
 
@@ -816,17 +816,17 @@ Item {
                     textOne.text = boxDevice.temperature.toFixed(1) + "°"
                     if (boxDevice.humidity > 0) textTwo.text = boxDevice.humidity.toFixed(0) + "%"
                 } else if (boxDevice.isEnvironmentalSensor) {
-                    if (boxDevice.hasVocSensor) {
-                        textOne.font.pixelSize = bigAssMode ? 28 : 26
-                        textOne.text = (boxDevice.voc).toFixed(0) + " " + qsTr("µg/m³")
-                        textTwo.text = boxDevice.temperature.toFixed(1) + "°"
-                    }
+                    //
                 } else if (boxDevice.isScale) {
-                    textOne.text = boxDevice.weight.toFixed(1) + " " + ((settingsManager.tempUnit === 'C') ? "kg" : "p")
+                    textOne.font.pixelSize = bigAssMode ? 26 : 24
+                    textTwo.font.pixelSize = bigAssMode ? 22 : 20
+
+                    textOne.text = (settingsManager.tempUnit === 'C') ? boxDevice.weight.toFixed(1) + qsTr("kg") : (boxDevice.weight * 2.20462).toFixed(1) + qsTr("lbs")
                     if (boxDevice.impedance > 0) textTwo.text = boxDevice.impedance + " Ω"
                 } else if (boxDevice.isMotionSensor) {
                     textOne.font.pixelSize = bigAssMode ? 26 : 24
                     textTwo.font.pixelSize = bigAssMode ? 22 : 20
+
                     if (boxDevice.hasPresence) {
                         if (boxDevice.presence) textOne.text = qsTr("presence")
                         else textOne.text = qsTr("noone")
@@ -835,7 +835,7 @@ Item {
                         else textOne.text = qsTr("closed")
                     }
                     if (boxDevice.hasLuminositySensor) {
-                        textTwo.text = boxDevice.luminosityLux + " " + "lux"
+                        textTwo.text = boxDevice.luminosityLux + " " + qsTr("lux")
                     }
                 } else if (boxDevice.isProbe) {
                     //

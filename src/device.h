@@ -256,10 +256,12 @@ public:
     bool isPlantSensor() const { return (m_deviceType == DeviceUtils::DEVICE_PLANTSENSOR); }
     bool isThermometer() const { return (m_deviceType == DeviceUtils::DEVICE_THERMOMETER); }
     bool isEnvironmentalSensor() const { return (m_deviceType == DeviceUtils::DEVICE_ENVIRONMENTAL); }
-    bool isMotionSensor() const { return (m_deviceType == DeviceUtils::DEVICE_MOTION); }
-    bool isScale() const { return (m_deviceType == DeviceUtils::DEVICE_SCALE); }
-    bool isProbe() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_PROBES); }
+
     bool isDeviceTheengs() const { return (m_deviceType >= DeviceUtils::DEVICE_THEENGS); }
+    bool isBeacon() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_BEACON); }
+    bool isProbe() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_PROBE); }
+    bool isScale() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_SCALE); }
+    bool isMotionSensor() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_MOTIONSENSOR); }
 
     bool hasRealTime() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_REALTIME); }
     virtual bool hasHistory() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_HISTORY); }

@@ -331,6 +331,22 @@ ApplicationWindow {
                 } else {
                     appContent.state = "DeviceList"
                 }
+            } else if (appContent.state === "DeviceProbe") {
+                if (appHeader.rightMenuIsOpen()) {
+                    appHeader.rightMenuClose()
+                } else if (screenDeviceProbe.isHistoryMode()) {
+                    screenDeviceProbe.resetHistoryMode()
+                } else {
+                    appContent.state = "DeviceList"
+                }
+            } else if (appContent.state === "DeviceScale") {
+                if (appHeader.rightMenuIsOpen()) {
+                    appHeader.rightMenuClose()
+                } else if (screenDeviceScale.isHistoryMode()) {
+                    screenDeviceScale.resetHistoryMode()
+                } else {
+                    appContent.state = "DeviceList"
+                }
             } else if (appContent.state === "Permissions") {
                 appContent.state = "About"
             } else if (appContent.state === "PlantBrowser") {

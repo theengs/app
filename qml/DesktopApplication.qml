@@ -230,9 +230,16 @@ ApplicationWindow {
         } else if (appContent.state === "DeviceEnvironmental") {
             appContent.previousStates.pop()
             appContent.state = "DeviceList"
-        } else if (appContent.state === "PlantBrowser") {
-            if (screenPlantBrowser.isPlantClicked()) {
-                screenPlantBrowser.backAction()
+        } else if (appContent.state === "DeviceProbe") {
+            if (screenDeviceProbe.isHistoryMode()) {
+                screenDeviceProbe.resetHistoryMode()
+            } else {
+                appContent.previousStates.pop()
+                appContent.state = "DeviceList"
+            }
+        } else if (appContent.state === "DeviceScale") {
+            if (screenDeviceScale.isHistoryMode()) {
+                screenDeviceScale.resetHistoryMode()
             } else {
                 appContent.previousStates.pop()
                 appContent.state = "DeviceList"
@@ -269,6 +276,10 @@ ApplicationWindow {
             screenDevicePlantSensor.resetHistoryMode()
         } else if (appContent.state === "DeviceThermometer" && screenDeviceThermometer.isHistoryMode()) {
             screenDeviceThermometer.resetHistoryMode()
+        } else if (appContent.state === "DeviceProbe" && screenDeviceProbe.isHistoryMode()) {
+            screenDeviceProbe.resetHistoryMode()
+        } else if (appContent.state === "DeviceScale" && screenDeviceScale.isHistoryMode()) {
+            screenDeviceScale.resetHistoryMode()
         }
     }
 

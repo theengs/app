@@ -43,10 +43,11 @@ DeviceTheengsScales::DeviceTheengsScales(const QString &deviceAddr, const QStrin
     DeviceTheengs(deviceAddr, deviceName, deviceModel, parent)
 {
     m_deviceModel = deviceModel;
-    m_deviceType = DeviceUtils::DEVICE_SCALE;
+    m_deviceType = DeviceUtils::DEVICE_THEENGS_SCALE;
     m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 
     parseTheengsProps(devicePropsJson);
+    getSqlScaleData(12*60);
 }
 
 DeviceTheengsScales::DeviceTheengsScales(const QBluetoothDeviceInfo &d,
@@ -55,10 +56,11 @@ DeviceTheengsScales::DeviceTheengsScales(const QBluetoothDeviceInfo &d,
     DeviceTheengs(d, deviceModel, parent)
 {
     m_deviceModel = deviceModel;
-    m_deviceType = DeviceUtils::DEVICE_SCALE;
+    m_deviceType = DeviceUtils::DEVICE_THEENGS_SCALE;
     m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 
     parseTheengsProps(devicePropsJson);
+    getSqlScaleData(12*60);
 }
 
 DeviceTheengsScales::~DeviceTheengsScales()
@@ -152,6 +154,70 @@ void DeviceTheengsScales::parseTheengsAdvertisement(const QString &json)
         }
 
         refreshDataFinished(true);
+    }
+}
+
+/* ************************************************************************** */
+
+void DeviceTheengsScales::getChartData_scaleAIO(int maxDays, QDateTimeAxis *axis,
+                                                QLineSeries *weight, QLineSeries *impedance)
+{
+    if (m_dbInternal || m_dbExternal)
+    {
+        QString time = "datetime('now', 'localtime', '-" + QString::number(maxDays) + " days')";
+        if (m_dbExternal) time = "DATE_SUB(NOW(), INTERVAL " + QString::number(maxDays) + " DAY)";
+
+        QSqlQuery graphData;
+        graphData.prepare("SELECT timestamp, weight, impedance " \
+                          "FROM sensorTheengs " \
+                          "WHERE deviceAddr = :deviceAddr AND timestamp >= " + time + ";");
+        graphData.bindValue(":deviceAddr", getAddress());
+
+        if (graphData.exec() == false)
+        {
+            qWarning() << "> graphData.exec() ERROR" << graphData.lastError().type() << ":" << graphData.lastError().text();
+            return;
+        }
+
+        axis->setFormat("dd MMM");
+        axis->setMax(QDateTime::currentDateTime());
+        bool minSet = false;
+        bool minmaxChanged = false;
+
+        while (graphData.next())
+        {
+            QDateTime date = QDateTime::fromString(graphData.value(0).toString(), "yyyy-MM-dd hh:mm:ss");
+            if (!minSet)
+            {
+                axis->setMin(date);
+                minSet = true;
+            }
+            qint64 timecode = date.toMSecsSinceEpoch();
+
+            // data
+            weight->append(timecode, graphData.value(1).toReal());
+            impedance->append(timecode, graphData.value(2).toReal());
+
+            // min/max
+            if (graphData.value(1).toFloat() > -99 && graphData.value(1).toFloat() < m_weightMin) {
+                m_weightMin = graphData.value(1).toFloat();
+                minmaxChanged = true;
+            }
+            if (graphData.value(2).toInt() > -99 && graphData.value(2).toInt() < m_impedanceMin) {
+                m_impedanceMin = graphData.value(2).toInt();
+                minmaxChanged = true;
+            }
+            if (graphData.value(1).toFloat() > -99 && graphData.value(1).toFloat() > m_weightMax) {
+                m_weightMax = graphData.value(1).toFloat();
+                minmaxChanged = true;
+            }
+            if (graphData.value(2).toInt() > -99 && graphData.value(2).toInt() > m_impedanceMax) {
+                m_impedanceMax = graphData.value(2).toInt();
+                minmaxChanged = true;
+            }
+        }
+
+        if (minmaxChanged) { Q_EMIT minmaxUpdated(); }
     }
 }
 

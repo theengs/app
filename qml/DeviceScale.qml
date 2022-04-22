@@ -165,7 +165,7 @@ Loader {
 
             function loadGraph() {
                 if (graphLoader.status != Loader.Ready) {
-                    //graphLoader.source = "ChartScaleDataAio.qml"
+                    graphLoader.source = "ChartScaleDataAio.qml"
                 }
 
                 if (graphLoader.status == Loader.Ready) {
@@ -286,7 +286,7 @@ Loader {
                                         anchors.bottom: parent.bottom
                                         anchors.bottomMargin: 2
 
-                                        text: (settingsManager.tempUnit === 'C') ? "kg" : "p"
+                                        text: (settingsManager.tempUnit === 'C') ? "kg" : "lbs"
                                         opacity: 0.66
                                         font.pixelSize: isPhone ? 20 : 22
                                         font.bold: false
