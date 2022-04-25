@@ -276,7 +276,7 @@ Loader {
 
                                 Text {
                                     anchors.horizontalCenter: parent.horizontalCenter
-                                    text: currentDevice.weight.toFixed(1)
+                                    text: (settingsManager.tempUnit === 'C') ? currentDevice.weight.toFixed(1) : (currentDevice.weight * 2.20462).toFixed(1)
                                     font.pixelSize: isPhone ? 30 : 32
                                     color: cccc
 

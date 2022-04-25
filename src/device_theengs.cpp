@@ -266,7 +266,25 @@ bool DeviceTheengs::hasData() const
         return DeviceSensor::hasData();
     }
 
-    // TODO // also check db?
+    // Otherwise, check if we have stored data
+    if (m_dbInternal || m_dbExternal)
+    {
+        QSqlQuery hasData;
+        hasData.prepare("SELECT COUNT(*) FROM sensorTheengs WHERE deviceAddr = :deviceAddr;");
+        hasData.bindValue(":deviceAddr", getAddress());
+
+        if (hasData.exec() == false)
+        {
+            qWarning() << "> hasData.exec(t) ERROR" << hasData.lastError().type() << ":" << hasData.lastError().text();
+            qWarning() << "> hasData.exec(t) >" << hasData.lastQuery();
+        }
+
+        while (hasData.next())
+        {
+            if (hasData.value(0).toInt() > 0) // data count
+                return true;
+        }
+    }
 
     return false;
 }
