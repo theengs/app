@@ -56,6 +56,8 @@ class SystrayManager: public QObject
     SystrayManager();
     ~SystrayManager();
 
+    void initSystray();
+
 signals:
     void showClicked();
     void hideClicked();
@@ -67,7 +69,6 @@ public:
 
 public slots:
     void initSettings(QApplication *app, QQuickWindow *view);
-    void initSystray();
     bool installSystray();
     void REinstallSystray();
     void removeSystray();

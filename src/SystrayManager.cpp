@@ -79,6 +79,10 @@ void SystrayManager::initSettings(QApplication *app, QQuickWindow *view)
 
 void SystrayManager::initSystray()
 {
+#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
+    return;
+#endif
+
     if (!m_saved_app || !m_saved_view)
     {
         qWarning() << "SystrayManager::initSystray() no QApplication or QQuickWindow saved";
@@ -120,6 +124,10 @@ void SystrayManager::initSystray()
 
 bool SystrayManager::installSystray()
 {
+#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
+    return false;
+#endif
+
     bool status = false;
 
     if (QSystemTrayIcon::isSystemTrayAvailable())
