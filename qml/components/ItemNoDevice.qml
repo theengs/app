@@ -128,6 +128,9 @@ Item {
                     fullColor: true
                     primaryColor: Theme.colorPrimary
                     onClicked: {
+                        utilsApp.getMobileBleLocationPermission()
+                        utilsApp.getMobileBackgroundLocationPermission()
+
                         if (!deviceManager.updating) {
                             if (deviceManager.scanning) {
                                 deviceManager.scanDevices_stop()

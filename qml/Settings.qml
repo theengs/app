@@ -660,18 +660,7 @@ Item {
                     color: Theme.colorIcon
                     source: "qrc:/assets/icons_material/baseline-autorenew-24px.svg"
                 }
-/*
-                SwitchThemedDesktop {
-                    anchors.left: image_worker.right
-                    anchors.leftMargin: 24
-                    text: settingsManager.systray ? qsTr("Enabled") : qsTr("Disabled")
-                    checked: settingsManager.systray
-                    onClicked: {
-                        settingsManager.systray = checked
-                        utilsApp.getMobileBackgroundLocationPermission()
-                    }
-                }
-*/
+
                 Text {
                     id: text_worker
                     height: 40
@@ -698,6 +687,11 @@ Item {
                     checked: settingsManager.systray
                     onClicked: {
                         settingsManager.systray = checked
+
+                        if (settingsManager.systray) {
+                            popupBackgroundData.open()
+                        }
+
                         utilsApp.getMobileBackgroundLocationPermission()
                     }
                 }
@@ -911,7 +905,7 @@ Item {
             ////////////////
 
             Item {
-                id: element_thermometer_unit
+                id: element_units
                 height: 48
                 anchors.left: parent.left
                 anchors.leftMargin: screenPaddingLeft
@@ -919,7 +913,7 @@ Item {
                 anchors.rightMargin: screenPaddingRight
 
                 IconSvg {
-                    id: image_thermometer_unit
+                    id: image_units
                     width: 24
                     height: 24
                     anchors.left: parent.left
@@ -931,11 +925,11 @@ Item {
                 }
 
                 Text {
-                    id: text_thermometer_unit
+                    id: text_units
                     height: 40
-                    anchors.left: image_thermometer_unit.right
+                    anchors.left: image_units.right
                     anchors.leftMargin: 24
-                    anchors.right: row_thermometer_unit.left
+                    anchors.right: row_units.left
                     anchors.rightMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
 
@@ -948,10 +942,10 @@ Item {
                 }
 
                 Row {
-                    id: row_thermometer_unit
+                    id: row_units
                     anchors.right: parent.right
                     anchors.rightMargin: 12
-                    anchors.verticalCenter: text_thermometer_unit.verticalCenter
+                    anchors.verticalCenter: text_units.verticalCenter
                     spacing: 12
 
                     RadioButtonThemed {
