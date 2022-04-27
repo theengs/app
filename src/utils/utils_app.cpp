@@ -206,6 +206,15 @@ QString UtilsApp::getStandardPath_string(const QString &type)
 /* ************************************************************************** */
 /* ************************************************************************** */
 
+int UtilsApp::getAndroidSdkVersion()
+{
+#if defined(Q_OS_ANDROID)
+    return UtilsAndroid::getSdkVersion();
+#else
+    return 0;
+#endif
+}
+
 bool UtilsApp::checkMobileLocationPermission()
 {
 #if defined(Q_OS_ANDROID)

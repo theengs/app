@@ -42,6 +42,12 @@ class UtilsAndroid
 {
 public:
     /*!
+     * \brief getSdkVersion
+     * \return
+     */
+    static int getSdkVersion();
+
+    /*!
      * \note DEPRECATED in Android 12
      * \return True if R/W permissions on main storage have been previously obtained.
      */
