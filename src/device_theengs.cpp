@@ -96,7 +96,7 @@ bool DeviceTheengs::getSqlProbeData(int minutes)
 
     while (cachedData.next())
     {
-        m_temperature1 =  cachedData.value(1).toFloat();
+        m_temperature1 = cachedData.value(1).toFloat();
         m_temperature2 = cachedData.value(2).toFloat();
         m_temperature3 = cachedData.value(3).toFloat();
         m_temperature4 = cachedData.value(4).toFloat();
@@ -222,7 +222,7 @@ bool DeviceTheengs::getSqlScaleData(int minutes)
 
     while (cachedData.next())
     {
-        m_weight =  cachedData.value(1).toFloat();
+        m_weight = cachedData.value(1).toFloat();
         m_impedance = cachedData.value(2).toInt();
 
         QString datetime = cachedData.value(0).toString();

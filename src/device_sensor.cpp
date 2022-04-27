@@ -356,12 +356,12 @@ bool DeviceSensor::getSqlPlantData(int minutes)
 
     while (cachedData.next())
     {
-        m_soilMoisture =  cachedData.value(1).toInt();
+        m_soilMoisture = cachedData.value(1).toInt();
         m_soilConductivity = cachedData.value(2).toInt();
         m_soilTemperature = cachedData.value(3).toFloat();
         m_soilPH = cachedData.value(4).toFloat();
         m_temperature = cachedData.value(5).toFloat();
-        m_humidity =  cachedData.value(6).toFloat();
+        m_humidity = cachedData.value(6).toFloat();
         m_luminosityLux = cachedData.value(7).toInt();
         m_watertank_level = cachedData.value(8).toFloat();
 
@@ -605,7 +605,7 @@ void DeviceSensor::checkDataAvailability()
         SettingsManager *sm = SettingsManager::getInstance();
         int maxMin = isPlantSensor() ? sm->getUpdateIntervalPlant() : sm->getUpdateIntervalThermo();
 
-        bool status =  (getLastUpdateInt() >= 0 && getLastUpdateInt() < maxMin);
+        bool status = (getLastUpdateInt() >= 0 && getLastUpdateInt() < maxMin);
 
         if (status != m_hasDataFresh)
         {

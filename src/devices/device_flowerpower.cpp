@@ -237,7 +237,7 @@ void DeviceFlowerPower::serviceDetailsDiscovered_infos(QLowEnergyService::Servic
             if (cfw.value().size() > 0)
             {
                 QString fw = cfw.value();
-                fw =  fw.split('_')[1].split('-')[1];
+                fw = fw.split('_')[1].split('-')[1];
                 setFirmware(fw);
             }
 
