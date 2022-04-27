@@ -183,9 +183,9 @@ protected:
     float m_rs = -99.f;
 
     // plant limits
-    int m_limit_soilMoistureMin = 15;
+    int m_limit_soilMoistureMin = 0;
     int m_limit_soilMoistureMax = 50;
-    int m_limit_soilConduMin = 100;
+    int m_limit_soilConduMin = 000;
     int m_limit_soilConduMax = 500;
     float m_limit_soilPhMin = 6.5f;
     float m_limit_soilPhMax = 7.5f;
@@ -195,8 +195,8 @@ protected:
     int m_limit_humiMin = 40;
     int m_limit_humiMax = 60;
     // environmental limits
-    int m_limit_luxMin = 1000;
-    int m_limit_luxMax = 3000;
+    int m_limit_luxMin = 0000;
+    int m_limit_luxMax = 10000;
     int m_limit_mmolMin = 0;
     int m_limit_mmolMax = 0;
 
