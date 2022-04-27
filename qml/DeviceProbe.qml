@@ -646,11 +646,11 @@ Component {
 
                     visible: (currentDevice.deviceName.includes("TPMS") && currentDevice.hasData)
 
-                    property int tsp: singleColumn ? (isPhone ? 40 : 48) : 80
-                    property int tsz: singleColumn ? (isPhone ? 132 : 140) : 180
-                    property int fz1: isPhone ? 28 : 32
-                    property int fz2: isPhone ? 24 : 28
-                    property int fz3: isPhone ? 16 : 20
+                    property int tsp: singleColumn ? (isPhone ? 24 : 48) : 80
+                    property int tsz: singleColumn ? (isPhone ? 120 : 140) : 180
+                    property int fz1: isPhone ? 26 : 32
+                    property int fz2: isPhone ? 22 : 28
+                    property int fz3: isPhone ? 14 : 20
 
                     Row {
                         spacing: columnTPMS.tsp
@@ -672,12 +672,13 @@ Component {
                                 color: cccc
                             }
 
-                            Column {
+                            Column { // sensorData
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 anchors.horizontalCenterOffset: -8
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.verticalCenterOffset: 8
                                 visible: (currentDevice.temperature1 > -99)
+                                spacing: isPhone ? -2 : 0
 
                                 Text {
                                     text: (currentDevice.pressure1 / 1000).toFixed(1)
@@ -744,12 +745,13 @@ Component {
                                 color: cccc
                             }
 
-                            Column {
+                            Column { // sensorData
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 anchors.horizontalCenterOffset: -8
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.verticalCenterOffset: 8
                                 visible: (currentDevice.temperature2 > -99)
+                                spacing: isPhone ? -2 : 0
 
                                 Text {
                                     text: (currentDevice.pressure2 / 1000).toFixed(1)
@@ -820,12 +822,13 @@ Component {
                                 color: cccc
                             }
 
-                            Column {
+                            Column { // sensorData
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 anchors.horizontalCenterOffset: -8
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.verticalCenterOffset: 8
                                 visible: (currentDevice.temperature3 > -99)
+                                spacing: isPhone ? -2 : 0
 
                                 Text {
                                     text: (currentDevice.pressure3 / 1000).toFixed(1)
@@ -892,12 +895,13 @@ Component {
                                 color: cccc
                             }
 
-                            Column {
+                            Column { // sensorData
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 anchors.horizontalCenterOffset: -8
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.verticalCenterOffset: 8
                                 visible: (currentDevice.temperature4 > -99)
+                                spacing: isPhone ? -2 : 0
 
                                 Text {
                                     text: (currentDevice.pressure4 / 1000).toFixed(1)
