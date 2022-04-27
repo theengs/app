@@ -9,7 +9,9 @@
 function getDeviceStatusText(deviceStatus) {
     var txt = ""
 
-    if (deviceStatus === DeviceUtils.DeviceUtils.DEVICE_OFFLINE) {
+    if (deviceStatus === DeviceUtils.DeviceUtils.DEVICE_DISABLED) {
+        txt = qsTr("Disabled")
+    } else if (deviceStatus === DeviceUtils.DeviceUtils.DEVICE_OFFLINE) {
         txt = qsTr("Offline")
     } else if (deviceStatus === DeviceUtils.DeviceUtils.DEVICE_QUEUED) {
         txt = qsTr("Queued")
@@ -33,7 +35,9 @@ function getDeviceStatusText(deviceStatus) {
 function getDeviceStatusColor(deviceStatus) {
     var clr = ""
 
-    if (deviceStatus === DeviceUtils.DeviceUtils.DEVICE_OFFLINE) {
+    if (deviceStatus === DeviceUtils.DeviceUtils.DEVICE_DISABLED) {
+        clr = ThemeEngine.Theme.colorGrey
+    } else if (deviceStatus === DeviceUtils.DeviceUtils.DEVICE_OFFLINE) {
         clr = ThemeEngine.Theme.colorRed
     } else if (deviceStatus === DeviceUtils.DeviceUtils.DEVICE_QUEUED) {
         clr = ThemeEngine.Theme.colorYellow

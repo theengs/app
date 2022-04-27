@@ -160,11 +160,14 @@ Item {
             if (boxDevice.status === DeviceUtils.DEVICE_QUEUED) {
                 imageStatus.source = "qrc:/assets/icons_material/duotone-settings_bluetooth-24px.svg"
                 refreshAnimation.running = false
-            } else if (boxDevice.status === DeviceUtils.DEVICE_CONNECTING || boxDevice.status === DeviceUtils.DEVICE_CONNECTED) {
+            } else if (boxDevice.status === DeviceUtils.DEVICE_CONNECTING) {
+                imageStatus.source = "qrc:/assets/icons_material/duotone-bluetooth_searching-24px.svg"
+                refreshAnimation.running = true
+            } else if (boxDevice.status === DeviceUtils.DEVICE_CONNECTED) {
                 imageStatus.source = "qrc:/assets/icons_material/duotone-bluetooth_connected-24px.svg"
                 refreshAnimation.running = true
             } else if (boxDevice.status >= DeviceUtils.DEVICE_WORKING) {
-                imageStatus.source = "qrc:/assets/icons_material/duotone-bluetooth_searching-24px.svg"
+                imageStatus.source = "qrc:/assets/icons_material/duotone-bluetooth_connected-24px.svg"
                 refreshAnimation.running = true
             } else {
                 imageStatus.source = "qrc:/assets/icons_material/baseline-bluetooth_disabled-24px.svg"
