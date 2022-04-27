@@ -302,11 +302,20 @@ void Device::actionShutdown()
 
 /* ************************************************************************** */
 
-void Device::refreshQueue()
+void Device::refreshQueued()
 {
     if (m_ble_status == DeviceUtils::DEVICE_OFFLINE)
     {
         m_ble_status = DeviceUtils::DEVICE_QUEUED;
+        Q_EMIT statusUpdated();
+    }
+}
+
+void Device::refreshDequeued()
+{
+    if (m_ble_status == DeviceUtils::DEVICE_QUEUED)
+    {
+        m_ble_status = DeviceUtils::DEVICE_OFFLINE;
         Q_EMIT statusUpdated();
     }
 }
@@ -594,7 +603,7 @@ bool Device::getSqlDeviceInfos()
 
 bool Device::isErrored() const
 {
-    return (getLastErrorInt() >= 0 && getLastErrorInt() <= 12*60);
+    return (getLastErrorInt() >= 0 && getLastErrorInt() <= 5);
 }
 
 bool Device::isBusy() const

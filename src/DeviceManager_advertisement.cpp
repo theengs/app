@@ -156,15 +156,24 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
             // Dynamic updates
             if (m_listening)
             {
+                if (!dd->isEnabled()) return;
                 if (!dd->hasBluetoothConnection()) return;
                 if (dd->getName() == "ThermoBeacon") return;
 
-                if (dd->needsUpdateRt())
+                //qDebug() << "adding from ADV;";
+                //qDebug() << "last upd" << dd->getLastUpdateInt() << dd->needsUpdateRt();
+                //qDebug() << "last err" << dd->getLastErrorInt() << dd->isErrored();
+
+                // old or no data: go for refresh
+                // also, check if we didn't already fail to update in the last couple minutes
+                if (dd->needsUpdateRt() && !dd->isErrored())
                 {
-                    // old or no data: go for refresh
-                    m_devices_updating_queue.push_back(dd);
-                    dd->refreshQueue();
-                    refreshDevices_continue();
+                    if (!m_devices_updating_queue.contains(dd) && !m_devices_updating.contains(dd))
+                    {
+                        m_devices_updating_queue.push_back(dd);
+                        dd->refreshQueued();
+                        refreshDevices_continue();
+                    }
                 }
             }
 
