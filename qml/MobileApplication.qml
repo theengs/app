@@ -163,7 +163,7 @@ ApplicationWindow {
                 appDrawer.open()
             } else {
                 if (appContent.state === "Permissions")
-                    appContent.state = "About"
+                    appContent.state = screenPermissions.entryPoint
                 else
                     appContent.state = "DeviceList"
             }
@@ -351,7 +351,7 @@ ApplicationWindow {
                     appContent.state = "DeviceList"
                 }
             } else if (appContent.state === "Permissions") {
-                appContent.state = "About"
+                appContent.state = screenPermissions.entryPoint
             } else if (appContent.state === "PlantBrowser") {
                 if (screenPlantBrowser.isPlantClicked()) {
                     screenPlantBrowser.backAction()

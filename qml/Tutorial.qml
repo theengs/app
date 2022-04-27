@@ -14,26 +14,21 @@ Rectangle {
 
     ////////////////////////////////////////////////////////////////////////////
 
-    function open() {
-        entryPoint = "DeviceList"
-
+    function loadScreen() {
+        // Load the tutorial
         if (!tutorialLoader.sourceComponent) {
             tutorialLoader.sourceComponent = componentTutorial
+        } else {
+            tutorialLoader.item.reset()
         }
 
+        // Change screen
         appContent.state = "Tutorial"
     }
 
-    function reopen() {
-        entryPoint = "About"
-
-        if (!tutorialLoader.sourceComponent) {
-            tutorialLoader.sourceComponent = componentTutorial
-        }
-
-        tutorialLoader.item.reset()
-
-        appContent.state = "Tutorial"
+    function loadScreenFrom(screenname) {
+        entryPoint = screenname
+        loadScreen()
     }
 
     ////////////////////////////////////////////////////////////////////////////

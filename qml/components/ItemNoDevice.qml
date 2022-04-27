@@ -14,8 +14,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         anchors.verticalCenterOffset: -20
 
-        IconSvg {
-            id: imageSearch
+        IconSvg { // imageSearch
             width: (isDesktop || isTablet || (isPhone && appWindow.screenOrientation === Qt.LandscapeOrientation)) ? 256 : (parent.width*0.666)
             height: width
             anchors.horizontalCenter: parent.horizontalCenter

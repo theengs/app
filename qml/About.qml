@@ -308,7 +308,7 @@ Item {
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: screenPermissions.loadScreen()
+                    onClicked: screenPermissions.loadScreenFrom("About")
                 }
             }
 

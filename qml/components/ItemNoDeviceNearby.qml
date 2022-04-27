@@ -22,6 +22,7 @@ Rectangle {
         color: Theme.colorSubText
         opacity: 0.9
     }
+
     Text {
         anchors.top: parent.bottom
         anchors.topMargin: 24

@@ -1,5 +1,4 @@
 import QtQuick 2.15
-import QtQuick.Controls 2.15
 
 import ThemeEngine 1.0
 
@@ -15,7 +14,7 @@ Item {
         anchors.verticalCenterOffset: -20
         spacing: 16
 
-        IconSvg {
+        IconSvg { // imageNoBluetooth
             width: (isDesktop || isTablet || (isPhone && appWindow.screenOrientation === Qt.LandscapeOrientation)) ? 256 : (parent.width*0.666)
             height: width
             anchors.horizontalCenter: parent.horizontalCenter

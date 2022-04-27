@@ -219,8 +219,6 @@ bool UtilsApp::checkMobileLocationPermission()
 {
 #if defined(Q_OS_ANDROID)
     return UtilsAndroid::checkPermission_location();
-#elif defined(Q_OS_IOS)
-    return false;
 #else
     return true;
 #endif
@@ -230,8 +228,6 @@ bool UtilsApp::getMobileLocationPermission()
 {
 #if defined(Q_OS_ANDROID)
     return UtilsAndroid::getPermission_location();
-#elif defined(Q_OS_IOS)
-    return false;
 #else
     return true;
 #endif
@@ -241,8 +237,6 @@ bool UtilsApp::checkMobileBleLocationPermission()
 {
 #if defined(Q_OS_ANDROID)
     return UtilsAndroid::checkPermission_location_ble();
-#elif defined(Q_OS_IOS)
-    return false;
 #else
     return true;
 #endif
@@ -252,8 +246,6 @@ bool UtilsApp::getMobileBleLocationPermission()
 {
 #if defined(Q_OS_ANDROID)
     return UtilsAndroid::getPermission_location_ble();
-#elif defined(Q_OS_IOS)
-    return false;
 #else
     return true;
 #endif
@@ -263,8 +255,6 @@ bool UtilsApp::checkMobileBackgroundLocationPermission()
 {
 #if defined(Q_OS_ANDROID)
     return UtilsAndroid::checkPermission_location_background();
-#elif defined(Q_OS_IOS)
-    return false;
 #else
     return true;
 #endif
@@ -274,8 +264,6 @@ bool UtilsApp::getMobileBackgroundLocationPermission()
 {
 #if defined(Q_OS_ANDROID)
     return UtilsAndroid::getPermission_location_background();
-#elif defined(Q_OS_IOS)
-    return false;
 #else
     return true;
 #endif
@@ -386,8 +374,6 @@ QString UtilsApp::getMobileDeviceModel()
 {
 #if defined(Q_OS_ANDROID)
     return UtilsAndroid::getDeviceModel();
-#elif defined(Q_OS_IOS)
-    return QString();
 #else
     return QString();
 #endif
@@ -397,8 +383,6 @@ QString UtilsApp::getMobileDeviceSerial()
 {
 #if defined(Q_OS_ANDROID)
     return UtilsAndroid::getDeviceSerial();
-#elif defined(Q_OS_IOS)
-    return QString();
 #else
     return QString();
 #endif

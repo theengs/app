@@ -74,8 +74,7 @@ Rectangle {
         anchors.fill: parent
         anchors.topMargin: screenPaddingStatusbar + screenPaddingNotch
 
-        MouseArea {
-            id: leftArea
+        MouseArea { // left button
             width: headerHeight
             height: headerHeight
             anchors.top: parent.top
@@ -97,7 +96,7 @@ Rectangle {
             }
         }
 
-        Text {
+        Text { // title
             height: parent.height
             anchors.left: parent.left
             anchors.leftMargin: 64
@@ -111,10 +110,7 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
         }
 
-        ////////////
-
-        Row {
-            id: menu
+        Row { // right area
             anchors.top: parent.top
             anchors.right: parent.right
             anchors.rightMargin: 4
@@ -123,7 +119,7 @@ Rectangle {
             spacing: 4
             visible: true
 
-            Item {
+            Item { // right indicators
                 width: parent.height
                 height: width
                 anchors.verticalCenter: parent.verticalCenter
@@ -169,10 +165,7 @@ Rectangle {
                 }
             }
 
-            ////////////
-
-            MouseArea {
-                id: rightMenu
+            MouseArea { // right button
                 width: headerHeight
                 height: headerHeight
 
@@ -187,7 +180,6 @@ Rectangle {
                 }
 
                 IconSvg {
-                    id: rightMenuImg
                     width: (headerHeight/2)
                     height: (headerHeight/2)
                     anchors.horizontalCenter: parent.horizontalCenter

@@ -202,6 +202,11 @@ bool DeviceManager::hasBluetoothEnabled() const
     return m_btE;
 }
 
+bool DeviceManager::hasBluetoothPermissions() const
+{
+    return m_btP;
+}
+
 bool DeviceManager::isListening() const
 {
     return m_listening;
@@ -233,10 +238,9 @@ bool DeviceManager::checkBluetooth()
     return true;
 #endif
 
-    bool status = false;
-
     bool btA_was = m_btA;
     bool btE_was = m_btE;
+    bool btP_was = m_btP;
 
     // Check availability
     if (m_bluetoothAdapter && m_bluetoothAdapter->isValid())
@@ -246,7 +250,6 @@ bool DeviceManager::checkBluetooth()
         if (m_bluetoothAdapter->hostMode() > 0)
         {
             m_btE = true;
-            status = true;
         }
         else
         {
@@ -260,13 +263,15 @@ bool DeviceManager::checkBluetooth()
         m_btE = false;
     }
 
-    if (btA_was != m_btA || btE_was != m_btE)
+    checkBluetoothPermissions();
+
+    if (btA_was != m_btA || btE_was != m_btE || btP_was != m_btP)
     {
         // this function did changed the Bluetooth adapter status
         Q_EMIT bluetoothChanged();
     }
 
-    return status;
+    return (m_btA && m_btE);
 }
 
 void DeviceManager::enableBluetooth(bool enforceUserPermissionCheck)
@@ -280,6 +285,7 @@ void DeviceManager::enableBluetooth(bool enforceUserPermissionCheck)
 
     bool btA_was = m_btA;
     bool btE_was = m_btE;
+    bool btP_was = m_btP;
 /*
     // List Bluetooth adapters
     QList<QBluetoothHostInfo> adaptersList = QBluetoothLocalDevice::allDevices();
@@ -359,11 +365,36 @@ void DeviceManager::enableBluetooth(bool enforceUserPermissionCheck)
         m_btE = false;
     }
 
-    if (btA_was != m_btA || btE_was != m_btE)
+    checkBluetoothPermissions();
+
+    if (btA_was != m_btA || btE_was != m_btE || btP_was != m_btP)
     {
         // this function did changed the Bluetooth adapter status
         Q_EMIT bluetoothChanged();
     }
+}
+
+bool DeviceManager::checkBluetoothPermissions()
+{
+    bool btP_was = m_btP;
+
+    UtilsApp *utilsApp = UtilsApp::getInstance();
+    if (m_daemonMode)
+    {
+        m_btP = utilsApp->checkMobileBackgroundLocationPermission();
+    }
+    else
+    {
+        m_btP = utilsApp->checkMobileBleLocationPermission();
+    }
+
+    if (btP_was != m_btP)
+    {
+        // this function did changed the Bluetooth adapter status
+        Q_EMIT bluetoothChanged();
+    }
+
+    return m_btP;
 }
 
 /* ************************************************************************** */
@@ -600,13 +631,21 @@ void DeviceManager::scanNearby_start()
                     this, &DeviceManager::deviceDiscoveryStopped, Qt::UniqueConnection);
 
             m_discoveryAgent->setLowEnergyDiscoveryTimeout(ble_listening_duration_nearby*1000);
-            m_discoveryAgent->start(QBluetoothDeviceDiscoveryAgent::LowEnergyMethod);
 
-            if (m_discoveryAgent->isActive())
+            if (hasBluetoothPermissions())
             {
-                m_listening = true;
-                Q_EMIT listeningChanged();
-                qDebug() << "Listening (Bluetooth) for devices...";
+                m_discoveryAgent->start(QBluetoothDeviceDiscoveryAgent::LowEnergyMethod);
+
+                if (m_discoveryAgent->isActive())
+                {
+                    m_listening = true;
+                    Q_EMIT listeningChanged();
+                    qDebug() << "Listening (Bluetooth) for devices...";
+                }
+            }
+            else
+            {
+                qWarning() << "Cannot scan or listen without related Android permissions";
             }
         }
     }
@@ -744,13 +783,21 @@ void DeviceManager::scanDevices_start()
                         this, &DeviceManager::updateBleDevice, Qt::UniqueConnection);
 
                 m_discoveryAgent->setLowEnergyDiscoveryTimeout(ble_scanning_duration*1000);
-                m_discoveryAgent->start(QBluetoothDeviceDiscoveryAgent::LowEnergyMethod);
 
-                if (m_discoveryAgent->isActive())
+                if (hasBluetoothPermissions())
                 {
-                    m_scanning = true;
-                    Q_EMIT scanningChanged();
-                    qDebug() << "Scanning (Bluetooth) for devices...";
+                    m_discoveryAgent->start(QBluetoothDeviceDiscoveryAgent::LowEnergyMethod);
+
+                    if (m_discoveryAgent->isActive())
+                    {
+                        m_scanning = true;
+                        Q_EMIT scanningChanged();
+                        qDebug() << "Scanning (Bluetooth) for devices...";
+                    }
+                }
+                else
+                {
+                    qWarning() << "Cannot scan or listen without related Android permissions";
                 }
             }
         }
@@ -822,13 +869,21 @@ void DeviceManager::listenDevices()
             if (m_daemonMode) duration = ble_listening_duration_background*1000;
 
             m_discoveryAgent->setLowEnergyDiscoveryTimeout(duration);
-            m_discoveryAgent->start(QBluetoothDeviceDiscoveryAgent::LowEnergyMethod);
 
-            if (m_discoveryAgent->isActive())
+            if (hasBluetoothPermissions())
             {
-                m_listening = true;
-                Q_EMIT listeningChanged();
-                //qDebug() << "Listening for BLE advertisement devices...";
+                m_discoveryAgent->start(QBluetoothDeviceDiscoveryAgent::LowEnergyMethod);
+
+                if (m_discoveryAgent->isActive())
+                {
+                    m_listening = true;
+                    Q_EMIT listeningChanged();
+                    //qDebug() << "Listening for BLE advertisement devices...";
+                }
+            }
+            else
+            {
+                qWarning() << "Cannot scan or listen without related Android permissions";
             }
         }
     }
@@ -1034,7 +1089,7 @@ void DeviceManager::refreshDevices_start()
             {
                 if (dd->getName() == "ThermoBeacon") continue;
 
-                // as long as we didn't just update it: go for refresh
+                // as long as we didn't just finished updating it: go for refresh
                 m_devices_updating_queue.push_back(dd);
                 dd->refreshQueue();
             }
@@ -1198,7 +1253,7 @@ void DeviceManager::syncDevices_check()
 
                 if (dd->getLastHistorySync_int() < 0 || dd->getLastHistorySync_int() > 6*60*60)
                 {
-                    // old or no data: go for refresh
+                    // old or no data: go for sync
                     m_devices_syncing_queue.push_back(dd);
                     dd->refreshQueue();
                 }
@@ -1237,6 +1292,7 @@ void DeviceManager::syncDevices_start()
 
                 if (dd->getLastHistorySync_int() < 0 || dd->getLastHistorySync_int() > 6*60*60)
                 {
+                    // old or no data: go for sync
                     m_devices_syncing_queue.push_back(dd);
                     dd->refreshQueue();
                 }

@@ -7,11 +7,16 @@ Item {
     id: screenDeviceList
     anchors.fill: parent
 
+    ////////////////////////////////////////////////////////////////////////////
+
     property bool deviceAvailable: deviceManager.hasDevices
     property bool bluetoothAvailable: deviceManager.bluetooth
+    property bool bluetoothPermissionsAvailable: deviceManager.bluetoothPermissions
 
     Component.onCompleted: checkStatus()
+
     onBluetoothAvailableChanged: checkStatus()
+    onBluetoothPermissionsAvailableChanged: checkStatus()
     onDeviceAvailableChanged: {
         checkStatus()
         exitSelectionMode()
@@ -19,15 +24,26 @@ Item {
 
     function checkStatus() {
         if (deviceManager.bluetooth) {
-            if (deviceManager.hasDevices === false) {
-                rectangleStatus.setDeviceWarning()
+            if (deviceManager.bluetoothPermissions) {
+                if (deviceManager.hasDevices) {
+                    rectangleStatus.hide()
+                } else {
+                    rectangleStatus.setDeviceWarning()
+                }
             } else {
-                rectangleStatus.hide()
+                rectangleStatus.setPermissionWarning()
             }
         } else {
-            rectangleStatus.setBluetoothWarning()
+            if (deviceManager.bluetoothPermissions) {
+                rectangleStatus.setBluetoothWarning()
+            } else {
+                rectangleStatus.setPermissionWarning()
+            }
         }
+
     }
+
+    ////////////////////////////////////////////////////////////////////////////
 
     property bool selectionMode: false
     property var selectionList: []
@@ -102,11 +118,8 @@ Item {
     Column {
         id: rowbar
         anchors.top: parent.top
-        anchors.topMargin: 0
         anchors.left: parent.left
-        anchors.leftMargin: 0
         anchors.right: parent.right
-        anchors.rightMargin: 0
         z: 2
 
         ////////////////
@@ -132,7 +145,6 @@ Item {
                 anchors.leftMargin: 16
                 anchors.rightMargin: 16
 
-                text: qsTr("Bluetooth disabled...")
                 color: Theme.colorActionbarContent
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignLeft
@@ -140,20 +152,51 @@ Item {
                 font.pixelSize: Theme.fontSizeComponent
             }
 
-            ButtonWireframe {
-                id: buttonBluetooth
-                width: 128
-                height: 32
+            Row {
                 anchors.right: parent.right
                 anchors.rightMargin: 16
                 anchors.verticalCenter: parent.verticalCenter
+                spacing: 16
 
-                visible: false
-                fullColor: true
-                primaryColor: Theme.colorActionbarHighlight
+                ButtonWireframe {
+                    id: buttonBluetoothAbout
+                    height: 32
+                    anchors.verticalCenter: parent.verticalCenter
 
-                text: (Qt.platform.os === "android") ? qsTr("Enable") : qsTr("Retry")
-                onClicked: (Qt.platform.os === "android") ? deviceManager.enableBluetooth() : deviceManager.checkBluetooth()
+                    visible: !deviceManager.bluetoothPermissions
+                    fullColor: true
+                    primaryColor: Theme.colorActionbarHighlight
+
+                    text: qsTr("About")
+                    onClicked: screenPermissions.loadScreenFrom("DeviceList")
+                }
+
+                ButtonWireframe {
+                    id: buttonBluetoothRetry
+                    height: 32
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    visible: false
+                    fullColor: true
+                    primaryColor: Theme.colorActionbarHighlight
+
+                    text: {
+                        if (Qt.platform.os === "android") {
+                            if (!deviceManager.bluetooth) qsTr("Enable")
+                            if (!deviceManager.bluetoothPermissions) qsTr("Retry")
+                        } else {
+                            qsTr("Retry")
+                        }
+                    }
+                    onClicked: {
+                        if (Qt.platform.os === "android") {
+                            if (!deviceManager.bluetooth) deviceManager.enableBluetooth()
+                            if (!deviceManager.bluetoothPermissions) deviceManager.checkBluetoothPermissions()
+                        } else {
+                            deviceManager.checkBluetooth()
+                        }
+                    }
+                }
             }
 
             function hide() {
@@ -162,10 +205,20 @@ Item {
             }
             function setBluetoothWarning() {
                 if (deviceManager.hasDevices) {
+                    textStatus.text = qsTr("Bluetooth disabled...")
                     rectangleStatus.height = 48
-                    buttonBluetooth.visible = true
+                    buttonBluetoothRetry.visible = true
                 } else {
                     itemStatus.source = "ItemNoBluetooth.qml"
+                }
+            }
+            function setPermissionWarning() {
+                if (deviceManager.hasDevices) {
+                    textStatus.text = qsTr("Bluetooth permissions missing...")
+                    rectangleStatus.height = 48
+                    buttonBluetoothRetry.visible = false
+                } else {
+                    itemStatus.source = "ItemNoPermissions.qml"
                 }
             }
             function setDeviceWarning() {
@@ -273,7 +326,7 @@ Item {
         }
     }
 
-    ////////////////
+    ////////////////////////////////////////////////////////////////////////////
 
     GridView {
         id: devicesView

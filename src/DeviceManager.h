@@ -55,6 +55,7 @@ class DeviceManager: public QObject
     Q_PROPERTY(bool bluetooth READ hasBluetooth NOTIFY bluetoothChanged)
     Q_PROPERTY(bool bluetoothAdapter READ hasBluetoothAdapter NOTIFY bluetoothChanged)
     Q_PROPERTY(bool bluetoothEnabled READ hasBluetoothEnabled NOTIFY bluetoothChanged)
+    Q_PROPERTY(bool bluetoothPermissions READ hasBluetoothPermissions NOTIFY bluetoothChanged)
 
     Q_PROPERTY(DeviceFilter *devicesNearby READ getDevicesNearby NOTIFY devicesNearbyUpdated)
 
@@ -62,6 +63,7 @@ class DeviceManager: public QObject
     bool m_dbExternal = false;
     bool m_btA = false;
     bool m_btE = false;
+    bool m_btP = true;
 
     bool m_daemonMode = false;
 
@@ -103,6 +105,7 @@ class DeviceManager: public QObject
     bool hasBluetooth() const;
     bool hasBluetoothAdapter() const;
     bool hasBluetoothEnabled() const;
+    bool hasBluetoothPermissions() const;
 
     void checkBluetoothIos();
     void startBleAgent();
@@ -118,6 +121,8 @@ public:
 
     Q_INVOKABLE bool checkBluetooth();
     Q_INVOKABLE void enableBluetooth(bool enforceUserPermissionCheck = false);
+
+    Q_INVOKABLE bool checkBluetoothPermissions();
 
     Q_INVOKABLE bool areDevicesAvailable() const { return m_devices_model->hasDevices(); }
 
