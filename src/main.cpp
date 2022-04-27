@@ -185,7 +185,6 @@ int main(int argc, char *argv[])
     st->initSettings(&app, window);
     if (sm->getSysTray())
     {
-        st->initSystray();
         st->installSystray();
     }
 
