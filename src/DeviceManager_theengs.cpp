@@ -115,7 +115,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
         DynamicJsonDocument doc(1024);
         doc["id"] = deviceInfo.address().toString().toStdString();
         doc["name"] = deviceInfo.name().toStdString();
-        doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).toStdString() + deviceInfo.manufacturerData(id).toHex().toStdString();
+        doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + deviceInfo.manufacturerData(id).toHex().toStdString();
 
         TheengsDecoder dec;
         JsonObject obj = doc.as<JsonObject>();
