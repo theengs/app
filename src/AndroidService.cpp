@@ -40,8 +40,8 @@ AndroidService::AndroidService(QObject *parent) : QObject(parent)
 
     m_settingsManager = SettingsManager::getInstance();
 
-    m_notificationManager = NotificationManager::getInstance(); // DEBUG
-    m_notificationManager->setNotification2("AndroidService starting", QDateTime::currentDateTime().toString());
+    //m_notificationManager = NotificationManager::getInstance(); // DEBUG
+    //m_notificationManager->setNotification2("AndroidService starting", QDateTime::currentDateTime().toString());
 
     // Configure update timer
     connect(&m_workTimer, &QTimer::timeout, this, &AndroidService::gotowork);
@@ -63,6 +63,9 @@ void AndroidService::setWorkTimer(int workInterval_mins)
 
 void AndroidService::gotowork()
 {
+    //m_notificationManager = NotificationManager::getInstance(); // DEBUG
+    //m_notificationManager->setNotification2("AndroidService gotowork", QDateTime::currentDateTime().toString());
+
     // Reload settings, user might have changed them
     m_settingsManager->reloadSettings();
 
@@ -78,9 +81,6 @@ void AndroidService::gotowork()
             m_deviceManager->checkBluetooth() &&
             m_deviceManager->areDevicesAvailable())
         {
-            m_notificationManager = NotificationManager::getInstance(); // DEBUG
-            m_notificationManager->setNotification2("AndroidService working", QDateTime::currentDateTime().toString());
-
             // Reload MQTT settings, user might have changed them
             if (m_settingsManager->getMQTT())
             {

@@ -90,7 +90,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                         QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/";
                         topic += info.address().toString().remove(':');
 
-                        mq->publish(topic, QString::fromStdString(output));
+                        status = mq->publish(topic, QString::fromStdString(output));
                     }
 
                     status = true;
@@ -159,7 +159,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                 if (!dd->hasBluetoothConnection()) return;
                 if (dd->getName() == "ThermoBeacon") return;
 
-                //qDebug() << "adding from ADV;";
+                //qDebug() << "adding from updateBleDevice()";
                 //qDebug() << "last upd" << dd->getLastUpdateInt() << dd->needsUpdateRt();
                 //qDebug() << "last err" << dd->getLastErrorInt() << dd->isErrored();
 
@@ -214,7 +214,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                     QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/";
                     topic += info.address().toString().remove(':');
 
-                    mq->publish(topic, QString::fromStdString(output));
+                    status = mq->publish(topic, QString::fromStdString(output));
                 }
 
                 status = true;

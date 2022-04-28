@@ -444,17 +444,20 @@ void Device::refreshDataFinished(bool status, bool cached)
     }
     else
     {
-        // Set last error
-        m_lastError = QDateTime::currentDateTime();
-        Q_EMIT statusUpdated();
+        // Set last error (if coming from BLE)
+        if (!cached)
+        {
+            m_lastError = QDateTime::currentDateTime();
+            Q_EMIT statusUpdated();
 
-        // Set error timer value
-        setUpdateTimer(ERROR_UPDATE_INTERVAL);
+            // Set error timer value
+            setUpdateTimer(ERROR_UPDATE_INTERVAL);
+        }
     }
 
     checkDataAvailability();
 
-    // Inform device manager
+    // Inform device manager (if coming from BLE)
     if (!cached)
     {
         if (m_ble_action == DeviceUtils::ACTION_UPDATE)

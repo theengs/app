@@ -550,8 +550,19 @@ void DeviceManager::deviceDiscoveryFinished()
 {
     //qDebug() << "DeviceManager::deviceDiscoveryFinished()";
 
+    if (m_scanning)
+    {
+        m_scanning = false;
+        Q_EMIT scanningChanged();
+    }
+    if (m_listening)
+    {
+        m_listening = false;
+        Q_EMIT listeningChanged();
+    }
+
     // Now refresh devices data
-    refreshDevices_check();
+    //refreshDevices_check();
 }
 
 void DeviceManager::deviceDiscoveryStopped()
@@ -909,7 +920,7 @@ void DeviceManager::detectBleDevice(const QBluetoothDeviceInfo &info)
             if (!dd->hasBluetoothConnection()) return;
             if (dd->getName() == "ThermoBeacon") return;
 
-            //qDebug() << "adding from DET;";
+            //qDebug() << "adding from detectBleDevice()";
             //qDebug() << "last upd" << dd->getLastUpdateInt() << dd->needsUpdateRt();
             //qDebug() << "last err" << dd->getLastErrorInt() << dd->isErrored();
 
@@ -1595,6 +1606,7 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
                 {
                     m_devices_updating_queue.push_back(d);
                     d->refreshQueued();
+                    refreshDevices_continue();
                 }
             }
         }
