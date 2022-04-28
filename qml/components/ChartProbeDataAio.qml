@@ -282,166 +282,20 @@ Item {
 
     ////////////////
 
-    Rectangle {
-        id: dataTopIndicator
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        height: 32
-        color: Theme.colorForeground
-
-        Row {
-            anchors.centerIn: parent
-            spacing: 8
-
-            Rectangle { // #1
-                anchors.verticalCenter: parent.verticalCenter
-                width: 20; height: 20; radius: 20;
-
-                visible: indicatorTop1.visible
-                color: temp1Data.color
-                Text {
-                    anchors.centerIn: parent
-                    text: "1"
-                    color: "white"
-                    font.pixelSize: 15
-                    font.bold: true
-                }
-            }
-            Text {
-                id: indicatorTop1
-                anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 15
-                font.bold: true
-                color: Theme.colorSubText
-            }
-
-            Rectangle { // #2
-                anchors.verticalCenter: parent.verticalCenter
-                width: 20; height: 20; radius: 20;
-
-                visible: indicatorTop2.visible
-                color: temp2Data.color
-                Text {
-                    anchors.centerIn: parent
-                    text: "2"
-                    color: "white"
-                    font.pixelSize: 15
-                    font.bold: true
-                }
-            }
-            Text {
-                id: indicatorTop2
-                anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 15
-                font.bold: true
-                color: Theme.colorSubText
-            }
-
-            Rectangle { // #3
-                anchors.verticalCenter: parent.verticalCenter
-                width: 20; height: 20; radius: 20;
-
-                visible: indicatorTop3.visible
-                color: temp3Data.color
-                Text {
-                    anchors.centerIn: parent
-                    text: "3"
-                    color: "white"
-                    font.pixelSize: 15
-                    font.bold: true
-                }
-            }
-            Text {
-                id: indicatorTop3
-                anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 15
-                font.bold: true
-                color: Theme.colorSubText
-            }
-
-            Rectangle { // #4
-                anchors.verticalCenter: parent.verticalCenter
-                width: 20; height: 20; radius: 20;
-
-                visible: indicatorTop4.visible
-                color: temp4Data.color
-                Text {
-                    anchors.centerIn: parent
-                    text: "4"
-                    color: "white"
-                    font.pixelSize: 15
-                    font.bold: true
-                }
-            }
-            Text {
-                id: indicatorTop4
-                anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 15
-                font.bold: true
-                color: Theme.colorSubText
-            }
-
-            Rectangle { // #5
-                anchors.verticalCenter: parent.verticalCenter
-                width: 20; height: 20; radius: 20;
-
-                visible: indicatorTop5.visible
-                color: temp5Data.color
-                Text {
-                    anchors.centerIn: parent
-                    text: "5"
-                    color: "white"
-                    font.pixelSize: 15
-                    font.bold: true
-                }
-            }
-            Text {
-                id: indicatorTop5
-                anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 15
-                font.bold: true
-                color: Theme.colorSubText
-            }
-
-            Rectangle { // #6
-                anchors.verticalCenter: parent.verticalCenter
-                width: 20; height: 20; radius: 20;
-
-                visible: indicatorTop6.visible
-                color: temp6Data.color
-                Text {
-                    anchors.centerIn: parent
-                    text: "6"
-                    color: "white"
-                    font.pixelSize: 15
-                    font.bold: true
-                }
-            }
-            Text {
-                id: indicatorTop6
-                anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 15
-                font.bold: true
-                color: Theme.colorSubText
-            }
-        }
-    }
-
     Grid {
         id: indicators
-        //anchors.top: parent.top
-        //anchors.topMargin: isPhone ? 16 : 20
-        anchors.leftMargin: isPhone ? 20 : 24
-        anchors.rightMargin: isPhone ? 20 : 24
-        anchors.horizontalCenter: undefined
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: isPhone ? 16 : 20
+        anchors.top: parent.top
+        anchors.topMargin: isPhone ? 8 : 16
+        //anchors.left: parent.left
+        anchors.leftMargin: isPhone ? 8 : 16
+        //anchors.right: parent.right
+        anchors.rightMargin: isPhone ? 8 : 16
+        anchors.horizontalCenter: parent.horizontalCenter
 
-        spacing: 32
+        spacing: isPhone ? 8 : 16
         layoutDirection: "LeftToRight"
-        columns: 2
-        rows: 1
+        columns: 1
+        rows: 2
 
         transitions: Transition { AnchorAnimation { duration: 133; } }
         //move: Transition { NumberAnimation { properties: "x"; duration: 133; } }
@@ -476,47 +330,177 @@ Item {
             }
         ]
 
-        Text {
-            id: dateIndicator
+        Rectangle {
+            id: dataIndicator
 
-            visible: false
-            font.pixelSize: 15
-            font.bold: true
-            color: Theme.colorSubText
+            width: isPhone ? chartProbeDataAio.width - 16 : dataIndicatorContent.width + 24
+            height: 32
 
-            Rectangle {
-                anchors.fill: parent
-                anchors.topMargin: -8
-                anchors.leftMargin: -12
-                anchors.rightMargin: -12
-                anchors.bottomMargin: -8
-                z: -1
-                radius: 4
-                color: Theme.colorForeground
-                border.width: Theme.componentBorderWidth
-                border.color: Theme.colorSeparator
+            radius: 4
+            color: Theme.colorForeground
+            border.width: Theme.componentBorderWidth
+            border.color: Theme.colorSeparator
+
+            Row {
+                id: dataIndicatorContent
+                anchors.centerIn: parent
+                spacing: 8
+
+                Rectangle { // #1
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 20; height: 20; radius: 20;
+
+                    visible: indicatorTop1.visible
+                    color: temp1Data.color
+                    Text {
+                        anchors.centerIn: parent
+                        text: "1"
+                        color: "white"
+                        font.pixelSize: 15
+                        font.bold: true
+                    }
+                }
+                Text {
+                    id: indicatorTop1
+                    anchors.verticalCenter: parent.verticalCenter
+                    font.pixelSize: 15
+                    font.bold: true
+                    color: Theme.colorSubText
+                }
+
+                Rectangle { // #2
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 20; height: 20; radius: 20;
+
+                    visible: indicatorTop2.visible
+                    color: temp2Data.color
+                    Text {
+                        anchors.centerIn: parent
+                        text: "2"
+                        color: "white"
+                        font.pixelSize: 15
+                        font.bold: true
+                    }
+                }
+                Text {
+                    id: indicatorTop2
+                    anchors.verticalCenter: parent.verticalCenter
+                    font.pixelSize: 15
+                    font.bold: true
+                    color: Theme.colorSubText
+                }
+
+                Rectangle { // #3
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 20; height: 20; radius: 20;
+
+                    visible: indicatorTop3.visible
+                    color: temp3Data.color
+                    Text {
+                        anchors.centerIn: parent
+                        text: "3"
+                        color: "white"
+                        font.pixelSize: 15
+                        font.bold: true
+                    }
+                }
+                Text {
+                    id: indicatorTop3
+                    anchors.verticalCenter: parent.verticalCenter
+                    font.pixelSize: 15
+                    font.bold: true
+                    color: Theme.colorSubText
+                }
+
+                Rectangle { // #4
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 20; height: 20; radius: 20;
+
+                    visible: indicatorTop4.visible
+                    color: temp4Data.color
+                    Text {
+                        anchors.centerIn: parent
+                        text: "4"
+                        color: "white"
+                        font.pixelSize: 15
+                        font.bold: true
+                    }
+                }
+                Text {
+                    id: indicatorTop4
+                    anchors.verticalCenter: parent.verticalCenter
+                    font.pixelSize: 15
+                    font.bold: true
+                    color: Theme.colorSubText
+                }
+
+                Rectangle { // #5
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 20; height: 20; radius: 20;
+
+                    visible: indicatorTop5.visible
+                    color: temp5Data.color
+                    Text {
+                        anchors.centerIn: parent
+                        text: "5"
+                        color: "white"
+                        font.pixelSize: 15
+                        font.bold: true
+                    }
+                }
+                Text {
+                    id: indicatorTop5
+                    anchors.verticalCenter: parent.verticalCenter
+                    font.pixelSize: 15
+                    font.bold: true
+                    color: Theme.colorSubText
+                }
+
+                Rectangle { // #6
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 20; height: 20; radius: 20;
+
+                    visible: indicatorTop6.visible
+                    color: temp6Data.color
+                    Text {
+                        anchors.centerIn: parent
+                        text: "6"
+                        color: "white"
+                        font.pixelSize: 15
+                        font.bold: true
+                    }
+                }
+                Text {
+                    id: indicatorTop6
+                    anchors.verticalCenter: parent.verticalCenter
+                    font.pixelSize: 15
+                    font.bold: true
+                    color: Theme.colorSubText
+                }
             }
         }
 
-        Text {
-            id: dataIndicator
+        Rectangle {
+            id: dateIndicator
+            //anchors.horizontalCenter: parent.horizontalCenter
 
-            visible: false
-            font.pixelSize: 15
-            font.bold: true
-            color: Theme.colorSubText
+            //Layout.alignment: Qt.AlignHCenter
 
-            Rectangle {
-                anchors.fill: parent
-                anchors.topMargin: -8
-                anchors.leftMargin: -12
-                anchors.rightMargin: -12
-                anchors.bottomMargin: -8
-                z: -1
-                radius: 4
-                color: Theme.colorForeground
-                border.width: Theme.componentBorderWidth
-                border.color: Theme.colorSeparator
+            width: dateIndicatorContent.width + 24
+            height: 32
+
+            radius: 4
+            color: Theme.colorForeground
+            border.width: Theme.componentBorderWidth
+            border.color: Theme.colorSeparator
+
+            Text {
+                id: dateIndicatorContent
+                anchors.centerIn: parent
+
+                font.pixelSize: 15
+                font.bold: true
+                color: Theme.colorSubText
             }
         }
     }
@@ -538,7 +522,6 @@ Item {
     function resetIndicator() {
         dateIndicator.visible = false
         dataIndicator.visible = false
-        dataTopIndicator.visible = false
         verticalIndicator.visible = false
         verticalIndicator.clickedCoordinates = null
     }
@@ -558,7 +541,7 @@ Item {
         var date_string = date.toLocaleDateString()
         //: "at" is used for DATE at HOUR
         var time_string = qsTr("at") + " " + UtilsNumber.padNumber(date.getHours(), 2) + ":" + UtilsNumber.padNumber(date.getMinutes(), 2)
-        dateIndicator.text = date_string + " " + time_string
+        dateIndicatorContent.text = date_string + " " + time_string
 
         // search index corresponding to the timestamp
         var x1 = -1
@@ -585,7 +568,7 @@ Item {
         }
 
         // print data
-        dataTopIndicator.visible = true
+        dataIndicator.visible = true
         indicatorTop1.visible = (t1 > -40)
         indicatorTop1.text = t1.toFixed(1)
         indicatorTop2.visible = (t2 > -40)
