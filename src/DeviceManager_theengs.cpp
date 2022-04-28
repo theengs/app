@@ -101,6 +101,8 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName,
 
 Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &deviceInfo)
 {
+    //qDebug() << "createTheengsDevice_fromAdv(" << deviceInfo.name() << ")";
+
     Device *device = nullptr;
 
     QString device_model_theengs;
@@ -156,7 +158,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
 
     if ((!device_modelid_theengs.isEmpty() && !device_props.isEmpty()))
     {
-        //qDebug() << "device_modelId[out]  " << device_modelId;
+        //qDebug() << "device_modelId[out]  " << device_modelid_theengs;
         //qDebug() << "device_props[out] " << device_props;
 
         if (device_modelid_theengs == "TPMS" ||
@@ -447,7 +449,11 @@ void DeviceManager::fakeTheengsData()
     if (rrdd == 1) // TPMS
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("21:57:43:01:5C:3A"), "TPMS1_10CA8F", 0);
-        info.setManufacturerData(endian_flip_16(0x0001), QByteArray::fromHex("80eaca10ca8ff46503007c0c00003300"));
+
+        int rrrr = (rand() % 2);
+        if (rrrr == 0) info.setManufacturerData(endian_flip_16(0x0001), QByteArray::fromHex("80eaca10ca8ff46503007c0c00003300"));
+        else if (rrrr == 1) info.setManufacturerData(endian_flip_16(0x0001), QByteArray::fromHex("80eaca115a954b630100ef0900005700"));
+        else qWarning() << "RAND ERROR";
     }
     if (rrdd == 2) // H5055
     {

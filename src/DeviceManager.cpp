@@ -1342,6 +1342,7 @@ void DeviceManager::syncDevices_continue()
                 {
                     m_devices_syncing_queue.removeFirst();
                     m_devices_syncing.push_back(d);
+
                     if (!m_syncing)
                     {
                         m_syncing = true;

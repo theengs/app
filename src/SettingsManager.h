@@ -101,7 +101,7 @@ class SettingsManager: public QObject
     bool m_systrayEnabled = false;
     bool m_notificationsEnabled = false;
 
-    bool m_bluetoothControl = false;
+    bool m_bluetoothControl = true;
     bool m_bluetoothLimitScanningRange = false;
     unsigned m_bluetoothSimUpdates = 3;
 

@@ -40,9 +40,8 @@
 void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetoothDeviceInfo::Fields updatedFields)
 {
     //qDebug() << "updateBleDevice() " << info.name() << info.address(); // << info.deviceUuid() // << " updatedFields: " << updatedFields
-
-    bool status = false;
     Q_UNUSED(updatedFields)
+    bool status = false;
 
     if (info.address().toString() == info.name().replace('-', ':')) return; // skip beacons
 
