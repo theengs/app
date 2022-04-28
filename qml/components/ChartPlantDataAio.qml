@@ -36,15 +36,10 @@ Item {
         var days = 14
         var count = currentDevice.countDataNamed("temperature", days)
 
+        // graph visibility
+        aioGraph.visible = (count > 1)
+        noDataIndicator.visible = (count <= 0)
         showGraphDots = (settingsManager.graphShowDots && count < 16)
-
-        if (count > 1) {
-            aioGraph.visible = true
-            noDataIndicator.visible = false
-        } else {
-            aioGraph.visible = false
-            noDataIndicator.visible = true
-        }
 
         //// DATA
         hygroData.clear()
@@ -52,7 +47,7 @@ Item {
         tempData.clear()
         lumiData.clear()
 
-        currentDevice.getChartData_plantAIO(days, axisTime, hygroData, conduData, tempData, lumiData);
+        currentDevice.getChartData_plantAIO(days, axisTime, hygroData, conduData, tempData, lumiData)
 
         //// AXIS
         axisHygro.min = 0
@@ -65,23 +60,23 @@ Item {
         axisLumi.max = 100000
 
         // Max axis for hygrometry (no need to go higher than 100%)
-        if (currentDevice.hygroMax*1.15 > 100.0) axisHygro.max = 100.0;
-        else axisHygro.max = currentDevice.hygroMax*1.15;
+        if (currentDevice.hygroMax*1.15 > 100.0) axisHygro.max = 100.0
+        else axisHygro.max = currentDevice.hygroMax*1.15
 
         // Max axis for temperature
-        axisTemp.max = currentDevice.tempMax*1.15;
+        axisTemp.max = currentDevice.tempMax*1.15
 
         // Max axis for conductivity
-        axisCondu.max = currentDevice.conduMax*2.0;
+        axisCondu.max = currentDevice.conduMax*2.0
 
         // Max axis for luminosity?
-        axisLumi.max = currentDevice.luxMax*3.0;
+        axisLumi.max = currentDevice.luxMax*3.0
 
         // Min axis computation, only for thermometers
         if (!currentDevice.hasSoilMoistureSensor) {
-            if (currentDevice.hygroMin*0.85 < 0.0) axisHygro.min = 0.0;
-            else axisHygro.min = currentDevice.hygroMin*0.85;
-            axisTemp.min = currentDevice.tempMin*0.85;
+            if (currentDevice.hygroMin*0.85 < 0.0) axisHygro.min = 0.0
+            else axisHygro.min = currentDevice.hygroMin*0.85
+            axisTemp.min = currentDevice.tempMin*0.85
         }
 
         //// ADJUSTMENTS
@@ -100,7 +95,7 @@ Item {
                 //tempData.width = 3
 
                 // Luminosity can have min/max, cause values have a very wide range
-                axisLumi.max = currentDevice.luxMax*1.5;
+                axisLumi.max = currentDevice.luxMax*1.5
             } else {
                 //hygroData.width = 3 // Soil moisture is primary
             }
@@ -449,7 +444,7 @@ Item {
             var graph_at_x = tempData.at(i).x
             var dist = (graph_at_x - verticalIndicator.clickedCoordinates.x) / 1000000
 
-            if (Math.abs(dist) < 1) {
+            if (Math.abs(dist) < 0.5) {
                 // nearest neighbor
                 if (appContent.state === "DevicePlantSensor") {
                     dataIndicators.updateDataBars(hygroData.at(i).y, conduData.at(i).y, -99,
@@ -459,7 +454,7 @@ Item {
                     dataIndicator.text = (settingsManager.tempUnit === "F") ? UtilsNumber.tempCelsiusToFahrenheit(tempData.at(i).y).toFixed(1) + qsTr("°F") : tempData.at(i).y.toFixed(1) + qsTr("°C")
                     dataIndicator.text += " " + hygroData.at(i).y.toFixed(0) + "%"
                 }
-                break;
+                break
             } else {
                 if (dist < 0) {
                     if (x1 < i) x1 = i
@@ -469,7 +464,6 @@ Item {
                 }
             }
         }
-
         if (x1 >= 0 && x2 > x1) {
             // linear interpolation
             if (appContent.state === "DevicePlantSensor") {

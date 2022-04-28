@@ -557,15 +557,20 @@ void DeviceManager::fakeTheengsData()
     if (rrdd == 12) // IBS-TH1
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("45:57:43:01:5C:3A"), "sps", 0);
-        info.setManufacturerData(endian_flip_16(0x660a), QByteArray::fromHex("03150110805908"));
+
+        int rrrr = (rand() % 2);
+        if (rrrr == 0) info.setManufacturerData(endian_flip_16(0x660a), QByteArray::fromHex("03150110805908"));
+        else if (rrrr == 1) info.setManufacturerData(endian_flip_16(0xcd09), QByteArray::fromHex("a51901d03f0008"));
+        else qWarning() << "RAND ERROR";
     }
     if (rrdd == 13) // IBS-TH2
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("46:57:43:01:5C:3A"), "tps", 0);
 
-        int rrrr = (rand() % 2);
+        int rrrr = (rand() % 3);
         if (rrrr == 0) info.setManufacturerData(endian_flip_16(0x660a), QByteArray::fromHex("03150110805908"));
         else if (rrrr == 1) info.setManufacturerData(endian_flip_16(0x76fb), QByteArray::fromHex("03150110805908"));
+        else if (rrrr == 2) info.setManufacturerData(endian_flip_16(0xd8f8), QByteArray::fromHex("00000035733206"));
         else qWarning() << "RAND ERROR";
     }
 

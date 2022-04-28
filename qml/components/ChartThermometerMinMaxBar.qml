@@ -25,13 +25,13 @@ Item {
     function computeSize() {
         if (typeof modelData === "undefined" || !modelData) return
 
-        if (modelData.tempMean < -30) {
+        if (modelData.tempMean < -40) {
             rectangle_temp.visible = false
             rectangle_water_low.visible = false
             rectangle_water_high.visible = false
         } else {
-            var ttt = 1.15
-            var bbb = 0.85
+            var ttt = graphMax > 0 ? 1.15 : 0.85
+            var bbb = graphMin > 0 ? 0.85 : 1.15
             var base = containerbar.height
             var base2 = containerbar.height - rectangle_temp_mean.height
             var h = UtilsNumber.normalize(modelData.tempMax, graphMin*bbb, graphMax*ttt)

@@ -35,17 +35,7 @@ Item {
         //console.log("chartProbeDataAio // updateGraph() >> " + currentDevice)
 
         var days = 14
-        var count = 20 // currentDevice.countDataNamed("temperature", days)
-
-        showGraphDots = (settingsManager.graphShowDots && count < 16)
-
-        if (count > 1) {
-            aioGraph.visible = true
-            noDataIndicator.visible = false
-        } else {
-            aioGraph.visible = false
-            noDataIndicator.visible = true
-        }
+        var count = 0 // currentDevice.countDataNamed("temperature", days)
 
         //// DATA
         temp1Data.clear()
@@ -58,15 +48,21 @@ Item {
         currentDevice.getChartData_probeAIO(days, axisTime,
                                             temp1Data, temp2Data,
                                             temp3Data, temp4Data,
-                                            temp5Data, temp6Data);
+                                            temp5Data, temp6Data)
 
         //// AXIS
         axisTemp.min = 0
         axisTemp.max = 100
 
         // Max axis for temperature
-        axisTemp.max = currentDevice.tempMax*1.15;
-        axisTemp.min = currentDevice.tempMin*0.85;
+        axisTemp.max = currentDevice.tempMax*1.15
+        axisTemp.min = currentDevice.tempMin*0.85
+
+        // Graph visibility
+        count = temp1Data.count
+        aioGraph.visible = (count > 1)
+        noDataIndicator.visible = (count <= 0)
+        showGraphDots = (settingsManager.graphShowDots && count < 16)
 
         // Update indicator (only works if data are changed in database though...)
         //if (dateIndicator.visible) updateIndicator()
@@ -286,13 +282,161 @@ Item {
 
     ////////////////
 
+    Rectangle {
+        id: dataTopIndicator
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: 32
+        color: Theme.colorForeground
+
+        Row {
+            anchors.centerIn: parent
+            spacing: 8
+
+            Rectangle { // #1
+                anchors.verticalCenter: parent.verticalCenter
+                width: 20; height: 20; radius: 20;
+
+                visible: indicatorTop1.visible
+                color: temp1Data.color
+                Text {
+                    anchors.centerIn: parent
+                    text: "1"
+                    color: "white"
+                    font.pixelSize: 15
+                    font.bold: true
+                }
+            }
+            Text {
+                id: indicatorTop1
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 15
+                font.bold: true
+                color: Theme.colorSubText
+            }
+
+            Rectangle { // #2
+                anchors.verticalCenter: parent.verticalCenter
+                width: 20; height: 20; radius: 20;
+
+                visible: indicatorTop2.visible
+                color: temp2Data.color
+                Text {
+                    anchors.centerIn: parent
+                    text: "2"
+                    color: "white"
+                    font.pixelSize: 15
+                    font.bold: true
+                }
+            }
+            Text {
+                id: indicatorTop2
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 15
+                font.bold: true
+                color: Theme.colorSubText
+            }
+
+            Rectangle { // #3
+                anchors.verticalCenter: parent.verticalCenter
+                width: 20; height: 20; radius: 20;
+
+                visible: indicatorTop3.visible
+                color: temp3Data.color
+                Text {
+                    anchors.centerIn: parent
+                    text: "3"
+                    color: "white"
+                    font.pixelSize: 15
+                    font.bold: true
+                }
+            }
+            Text {
+                id: indicatorTop3
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 15
+                font.bold: true
+                color: Theme.colorSubText
+            }
+
+            Rectangle { // #4
+                anchors.verticalCenter: parent.verticalCenter
+                width: 20; height: 20; radius: 20;
+
+                visible: indicatorTop4.visible
+                color: temp4Data.color
+                Text {
+                    anchors.centerIn: parent
+                    text: "4"
+                    color: "white"
+                    font.pixelSize: 15
+                    font.bold: true
+                }
+            }
+            Text {
+                id: indicatorTop4
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 15
+                font.bold: true
+                color: Theme.colorSubText
+            }
+
+            Rectangle { // #5
+                anchors.verticalCenter: parent.verticalCenter
+                width: 20; height: 20; radius: 20;
+
+                visible: indicatorTop5.visible
+                color: temp5Data.color
+                Text {
+                    anchors.centerIn: parent
+                    text: "5"
+                    color: "white"
+                    font.pixelSize: 15
+                    font.bold: true
+                }
+            }
+            Text {
+                id: indicatorTop5
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 15
+                font.bold: true
+                color: Theme.colorSubText
+            }
+
+            Rectangle { // #6
+                anchors.verticalCenter: parent.verticalCenter
+                width: 20; height: 20; radius: 20;
+
+                visible: indicatorTop6.visible
+                color: temp6Data.color
+                Text {
+                    anchors.centerIn: parent
+                    text: "6"
+                    color: "white"
+                    font.pixelSize: 15
+                    font.bold: true
+                }
+            }
+            Text {
+                id: indicatorTop6
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 15
+                font.bold: true
+                color: Theme.colorSubText
+            }
+        }
+    }
+
     Grid {
         id: indicators
-        anchors.top: parent.top
-        anchors.topMargin: isPhone ? 16 : 20
+        //anchors.top: parent.top
+        //anchors.topMargin: isPhone ? 16 : 20
         anchors.leftMargin: isPhone ? 20 : 24
         anchors.rightMargin: isPhone ? 20 : 24
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenter: undefined
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: isPhone ? 16 : 20
 
         spacing: 32
         layoutDirection: "LeftToRight"
@@ -394,12 +538,20 @@ Item {
     function resetIndicator() {
         dateIndicator.visible = false
         dataIndicator.visible = false
+        dataTopIndicator.visible = false
         verticalIndicator.visible = false
         verticalIndicator.clickedCoordinates = null
     }
 
     function updateIndicator() {
         if (!dateIndicator.visible) return
+
+        var t1 = -99
+        var t2 = -99
+        var t3 = -99
+        var t4 = -99
+        var t5 = -99
+        var t6 = -99
 
         // set date & time
         var date = new Date(verticalIndicator.clickedCoordinates.x)
@@ -415,46 +567,36 @@ Item {
             var graph_at_x = temp1Data.at(i).x
             var dist = (graph_at_x - verticalIndicator.clickedCoordinates.x) / 1000000
 
-            if (Math.abs(dist) < 1) {
-/*
-                // nearest neighbor
-                if (appContent.state === "DevicePlantSensor") {
-                    dataIndicators.updateDataBars(hygroData.at(i).y, conduData.at(i).y, -99,
-                                                  temp1Data.at(i).y, -99, lumiData.at(i).y)
-                } else if (appContent.state === "DeviceThermometer") {
-                    dataIndicator.visible = true
-                    dataIndicator.text = (settingsManager.tempUnit === "F") ? UtilsNumber.tempCelsiusToFahrenheit(temp1Data.at(i).y).toFixed(1) + qsTr("°F") : temp1Data.at(i).y.toFixed(1) + qsTr("°C")
-                    dataIndicator.text += " " + hygroData.at(i).y.toFixed(0) + "%"
-                }
-*/
-                break;
+            if (dist < 0) {
+                if (x1 < i) x1 = i
             } else {
-                if (dist < 0) {
-                    if (x1 < i) x1 = i
-                } else {
-                    x2 = i
-                    break
-                }
+                x2 = i
+                break
             }
         }
-
         if (x1 >= 0 && x2 > x1) {
             // linear interpolation
-/*
-            if (appContent.state === "DevicePlantSensor") {
-                dataIndicators.updateDataBars(qpoint_lerp(hygroData.at(x1), hygroData.at(x2), verticalIndicator.clickedCoordinates.x),
-                                              qpoint_lerp(conduData.at(x1), conduData.at(x2), verticalIndicator.clickedCoordinates.x),
-                                              -99,
-                                              qpoint_lerp(temp1Data.at(x1), temp1Data.at(x2), verticalIndicator.clickedCoordinates.x),
-                                              -99,
-                                              qpoint_lerp(lumiData.at(x1), lumiData.at(x2), verticalIndicator.clickedCoordinates.x))
-            } else if (appContent.state === "DeviceThermometer") {
-                dataIndicator.visible = true
-                var temmp = qpoint_lerp(temp1Data.at(x1), temp1Data.at(x2), verticalIndicator.clickedCoordinates.x)
-                dataIndicator.text = (settingsManager.tempUnit === "F") ? UtilsNumber.tempCelsiusToFahrenheit(temmp).toFixed(1) + "°F" : temmp.toFixed(1) + "°C"
-                dataIndicator.text += " " + qpoint_lerp(hygroData.at(x1), hygroData.at(x2), verticalIndicator.clickedCoordinates.x).toFixed(0) + "%"
-            }
-*/
+            if (temp1Data.at(x1).y > -40) t1 = qpoint_lerp(temp1Data.at(x1), temp1Data.at(x2), verticalIndicator.clickedCoordinates.x)
+            if (temp2Data.at(x1).y > -40) t2 = qpoint_lerp(temp2Data.at(x1), temp2Data.at(x2), verticalIndicator.clickedCoordinates.x)
+            if (temp3Data.at(x1).y > -40) t3 = qpoint_lerp(temp3Data.at(x1), temp3Data.at(x2), verticalIndicator.clickedCoordinates.x)
+            if (temp4Data.at(x1).y > -40) t4 = qpoint_lerp(temp4Data.at(x1), temp4Data.at(x2), verticalIndicator.clickedCoordinates.x)
+            if (temp5Data.at(x1).y > -40) t5 = qpoint_lerp(temp5Data.at(x1), temp5Data.at(x2), verticalIndicator.clickedCoordinates.x)
+            if (temp6Data.at(x1).y > -40) t6 = qpoint_lerp(temp6Data.at(x1), temp6Data.at(x2), verticalIndicator.clickedCoordinates.x)
         }
+
+        // print data
+        dataTopIndicator.visible = true
+        indicatorTop1.visible = (t1 > -40)
+        indicatorTop1.text = t1.toFixed(1)
+        indicatorTop2.visible = (t2 > -40)
+        indicatorTop2.text = t2.toFixed(1)
+        indicatorTop3.visible = (t3 > -40)
+        indicatorTop3.text = t3.toFixed(1)
+        indicatorTop4.visible = (t4 > -40)
+        indicatorTop4.text = t4.toFixed(1)
+        indicatorTop5.visible = (t5 > -40)
+        indicatorTop5.text = t5.toFixed(1)
+        indicatorTop6.visible = (t6 > -40)
+        indicatorTop6.text = t6.toFixed(1)
     }
 }

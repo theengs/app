@@ -31,23 +31,13 @@ Item {
         //console.log("chartScaleDataAio // updateGraph() >> " + currentDevice)
 
         var days = 14
-        var count = 20 // currentDevice.countDataNamed("temperature", days)
-
-        showGraphDots = (settingsManager.graphShowDots && count < 16)
-
-        if (count > 1) {
-            aioGraph.visible = true
-            noDataIndicator.visible = false
-        } else {
-            aioGraph.visible = false
-            noDataIndicator.visible = true
-        }
+        var count = 0 // currentDevice.countDataNamed("weight", days)
 
         //// DATA
         weightData.clear()
         impedanceData.clear()
 
-        currentDevice.getChartData_scaleAIO(days, axisTime, weightData, impedanceData);
+        currentDevice.getChartData_scaleAIO(days, axisTime, weightData, impedanceData)
 
         //// AXIS
         axisWeight.min = 0
@@ -56,10 +46,16 @@ Item {
         axisImpedance.max = 1000
 
         // min/max axis
-        axisWeight.min = currentDevice.weightMin*0.85;
-        axisWeight.max = currentDevice.weightMax*1.15;
-        axisImpedance.min = currentDevice.impedanceMin*0.85;
-        axisImpedance.max = currentDevice.impedanceMax*1.15;
+        axisWeight.min = currentDevice.weightMin*0.85
+        axisWeight.max = currentDevice.weightMax*1.15
+        axisImpedance.min = currentDevice.impedanceMin*0.85
+        axisImpedance.max = currentDevice.impedanceMax*1.15
+
+        // Graph visibility
+        count = weightData.count
+        aioGraph.visible = (count > 1)
+        noDataIndicator.visible = (count <= 0)
+        showGraphDots = (settingsManager.graphShowDots && count < 16)
 
         // Update indicator (only works if data are changed in database though...)
         //if (dateIndicator.visible) updateIndicator()
@@ -384,30 +380,21 @@ Item {
             var graph_at_x = weightData.at(i).x
             var dist = (graph_at_x - verticalIndicator.clickedCoordinates.x) / 1000000
 
-            if (Math.abs(dist) < 1) {
-                // nearest neighbor
-                wei = weightData.at(i).y
-                imp = impedanceData.at(i).y
-                if (settingsManager.tempUnit === "F") wei *= 2.20462
-
-                break
+            if (dist < 0) {
+                if (x1 < i) x1 = i
             } else {
-                if (dist < 0) {
-                    if (x1 < i) x1 = i
-                } else {
-                    x2 = i
-                    break
-                }
+                x2 = i
+                break
             }
         }
-
         if (x1 >= 0 && x2 > x1) {
             // linear interpolation
-            wei = weightData.at(i).y
-            imp = impedanceData.at(i).y
+            wei = qpoint_lerp(weightData.at(x1), weightData.at(x2), verticalIndicator.clickedCoordinates.x)
+            imp = qpoint_lerp(impedanceData.at(x1), impedanceData.at(x2), verticalIndicator.clickedCoordinates.x)
             if (settingsManager.tempUnit === "F") wei *= 2.20462
         }
 
+        // print data
         if (wei > 0) {
             dataIndicator.visible = true
             dataIndicator.text = wei.toFixed(1) + (settingsManager.tempUnit === "F" ? "lbs" : "kg")
