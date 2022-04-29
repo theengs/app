@@ -223,6 +223,36 @@ linux:!android {
     #QMAKE_CLEAN += $${OUT_PWD}/appdir/
 }
 
+macx {
+    #QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
+    #message("QMAKE_MACOSX_DEPLOYMENT_TARGET: $$QMAKE_MACOSX_DEPLOYMENT_TARGET")
+
+    # Bundle name
+    QMAKE_TARGET_BUNDLE_PREFIX = com.theengs
+    QMAKE_BUNDLE = app
+
+    # OS
+    QMAKE_ASSET_CATALOGS_APP_ICON = "AppIcon"
+    QMAKE_ASSET_CATALOGS = $${PWD}/assets/macos/Images.xcassets
+
+    # OS infos
+    QMAKE_INFO_PLIST = $${PWD}/assets/macos/Info.plist
+
+    # macOS utils
+    SOURCES += src/utils/utils_os_macos.mm
+    HEADERS += src/utils/utils_os_macos.h
+    LIBS    += -framework IOKit
+    # macOS dock click handler
+    SOURCES += src/utils/utils_os_macosdock.mm
+    HEADERS += src/utils/utils_os_macosdock.h
+    LIBS    += -framework AppKit
+
+    # OS entitlement (sandbox and stuff)
+    ENTITLEMENTS.name = CODE_SIGN_ENTITLEMENTS
+    ENTITLEMENTS.value = $${PWD}/assets/macos/$$lower($${TARGET}).entitlements
+    QMAKE_MAC_XCODE_SETTINGS += ENTITLEMENTS
+}
+
 android {
     # ANDROID_TARGET_ARCH: [x86_64, armeabi-v7a, arm64-v8a]
     #message("ANDROID_TARGET_ARCH: $$ANDROID_TARGET_ARCH")
