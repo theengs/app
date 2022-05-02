@@ -5,21 +5,44 @@
 ### Features
 
 * Support many Bluetooth Low Energy sensors
+* MQTT support
 
 
 ## Documentation
 
 #### Dependencies
 
-You will need a C++17 compiler and Qt 6.3+ (with Qt Connectivity and Qt Charts modules).  
+You will need a C++17 compiler and Qt 6.3+ (with additional librairies).  
 For Android builds, you'll need the appropriates JDK (11) SDK (23+) and NDK (22+). You can customize Android build environment using the `assets/android/gradle.properties` file.  
 For Windows builds, you'll need the MSVC 2019+ compiler.  
+For macOS and iOS builds, you'll need Xcode installed.  
+
+Qt 6 'Additional Librairies':
+- Qt 5 Compatibility module
+- Qt Charts
+- Qt Connectivity
+- Qt Image Formats
+- Qt WebSockets
+
+#### Building QtMqtt
+
+https://github.com/qt/qtmqtt
+
+https://github.com/qt/qtmqtt/archive/refs/tags/v6.3.0.zip
+
+```bash
+mkdir build_desktop
+cd build_desktop/
+/home/usr/dev/Qt/6.3.0/gcc_64/bin/qt-configure-module ..
+cmake --build .
+cmake --install .
+```
 
 #### Building Theengs
 
 ```bash
-$ git clone https://github.com/theengs/app.git
-$ cd app/
+$ git clone https://github.com/theengs/app.git TheengsApp
+$ cd TheengsApp/
 $ qmake
 $ make
 ```
