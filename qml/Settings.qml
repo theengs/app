@@ -691,11 +691,13 @@ Item {
                     onClicked: {
                         settingsManager.systray = checked
 
-                        if (settingsManager.systray) {
-                            popupBackgroundData.open()
-                        }
+                        if (isMobile) {
+                            if (settingsManager.systray) {
+                                popupBackgroundData.open()
+                            }
 
-                        utilsApp.getMobileBackgroundLocationPermission()
+                            utilsApp.getMobileBackgroundLocationPermission()
+                        }
                     }
                 }
             }

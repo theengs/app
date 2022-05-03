@@ -65,7 +65,7 @@ DeviceHygrotempLYWSDCGQ::~DeviceHygrotempLYWSDCGQ()
 
 void DeviceHygrotempLYWSDCGQ::serviceScanDone()
 {
-    //qDebug() << "DeviceHygrotempLCD::serviceScanDone(" << m_deviceAddress << ")";
+    //qDebug() << "DeviceHygrotempLYWSDCGQ::serviceScanDone(" << m_deviceAddress << ")";
 
     if (serviceInfos)
     {
@@ -106,7 +106,7 @@ void DeviceHygrotempLYWSDCGQ::serviceScanDone()
 
 void DeviceHygrotempLYWSDCGQ::addLowEnergyService(const QBluetoothUuid &uuid)
 {
-    //qDebug() << "DeviceHygrotempLCD::addLowEnergyService(" << uuid.toString() << ")";
+    //qDebug() << "DeviceHygrotempLYWSDCGQ::addLowEnergyService(" << uuid.toString() << ")";
 
     if (uuid.toString() == "{0000180a-0000-1000-8000-00805f9b34fb}") // Infos service
     {
@@ -148,7 +148,7 @@ void DeviceHygrotempLYWSDCGQ::serviceDetailsDiscovered_infos(QLowEnergyService::
 {
     if (newState == QLowEnergyService::RemoteServiceDiscovered)
     {
-        //qDebug() << "DeviceHygrotempLCD::serviceDetailsDiscovered_infos(" << m_deviceAddress << ") > ServiceDiscovered";
+        //qDebug() << "DeviceHygrotempLYWSDCGQ::serviceDetailsDiscovered_infos(" << m_deviceAddress << ") > ServiceDiscovered";
 
         if (serviceInfos)
         {
@@ -177,7 +177,7 @@ void DeviceHygrotempLYWSDCGQ::serviceDetailsDiscovered_battery(QLowEnergyService
 {
     if (newState == QLowEnergyService::RemoteServiceDiscovered)
     {
-        //qDebug() << "DeviceHygrotempLCD::serviceDetailsDiscovered_battery(" << m_deviceAddress << ") > ServiceDiscovered";
+        //qDebug() << "DeviceHygrotempLYWSDCGQ::serviceDetailsDiscovered_battery(" << m_deviceAddress << ") > ServiceDiscovered";
 
         if (serviceBattery)
         {
@@ -198,7 +198,7 @@ void DeviceHygrotempLYWSDCGQ::serviceDetailsDiscovered_data(QLowEnergyService::S
 {
     if (newState == QLowEnergyService::RemoteServiceDiscovered)
     {
-        //qDebug() << "DeviceHygrotempLCD::serviceDetailsDiscovered_data(" << m_deviceAddress << ") > ServiceDiscovered";
+        //qDebug() << "DeviceHygrotempLYWSDCGQ::serviceDetailsDiscovered_data(" << m_deviceAddress << ") > ServiceDiscovered";
 
         if (serviceData)
         {
@@ -218,19 +218,19 @@ void DeviceHygrotempLYWSDCGQ::serviceDetailsDiscovered_data(QLowEnergyService::S
 
 void DeviceHygrotempLYWSDCGQ::bleWriteDone(const QLowEnergyCharacteristic &, const QByteArray &)
 {
-    //qDebug() << "DeviceHygrotempLCD::bleWriteDone(" << m_deviceAddress << ")";
+    //qDebug() << "DeviceHygrotempLYWSDCGQ::bleWriteDone(" << m_deviceAddress << ")";
     //qDebug() << "DATA: 0x" << value.toHex();
 }
 
 void DeviceHygrotempLYWSDCGQ::bleReadDone(const QLowEnergyCharacteristic &, const QByteArray &)
 {
-    //qDebug() << "DeviceHygrotempLCD::bleReadDone(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
+    //qDebug() << "DeviceHygrotempLYWSDCGQ::bleReadDone(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
     //qDebug() << "DATA: 0x" << value.toHex();
 }
 
 void DeviceHygrotempLYWSDCGQ::bleReadNotify(const QLowEnergyCharacteristic &c, const QByteArray &value)
 {
-    //qDebug() << "DeviceHygrotempLCD::bleReadNotify(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
+    //qDebug() << "DeviceHygrotempLYWSDCGQ::bleReadNotify(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
     //qDebug() << "DATA: 0x" << value.toHex();
 
     const quint8 *data = reinterpret_cast<const quint8 *>(value.constData());
@@ -265,7 +265,7 @@ void DeviceHygrotempLYWSDCGQ::bleReadNotify(const QLowEnergyCharacteristic &c, c
                 addData.bindValue(":temp", m_temperature);
                 addData.bindValue(":humi", m_humidity);
                 if (addData.exec() == false)
-                    qWarning() << "> DeviceHygrotempLCD addData.exec() ERROR" << addData.lastError().type() << ":" << addData.lastError().text();
+                    qWarning() << "> DeviceHygrotempLYWSDCGQ addData.exec() ERROR" << addData.lastError().type() << ":" << addData.lastError().text();
             }
 
             if (m_ble_action == DeviceUtils::ACTION_UPDATE_REALTIME)
@@ -278,7 +278,7 @@ void DeviceHygrotempLYWSDCGQ::bleReadNotify(const QLowEnergyCharacteristic &c, c
                 m_bleController->disconnectFromDevice();
             }
 /*
-            qDebug() << "* DeviceHygrotempLCD update:" << getAddress();
+            qDebug() << "* DeviceHygrotempLYWSDCGQ update:" << getAddress();
             qDebug() << "- m_firmware:" << m_deviceFirmware;
             qDebug() << "- m_battery:" << m_deviceBattery;
             qDebug() << "- m_temperature:" << m_temperature;
@@ -290,7 +290,7 @@ void DeviceHygrotempLYWSDCGQ::bleReadNotify(const QLowEnergyCharacteristic &c, c
 
 void DeviceHygrotempLYWSDCGQ::confirmedDescriptorWrite(const QLowEnergyDescriptor &d, const QByteArray &value)
 {
-    //qDebug() << "DeviceHygrotempLCD::confirmedDescriptorWrite!";
+    //qDebug() << "DeviceHygrotempLYWSDCGQ::confirmedDescriptorWrite!";
 
     if (d.isValid() && d == m_notificationDesc && value == QByteArray::fromHex("0000"))
     {

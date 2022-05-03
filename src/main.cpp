@@ -183,10 +183,7 @@ int main(int argc, char *argv[])
 
     // Set systray?
     st->initSettings(&app, window);
-    if (sm->getSysTray())
-    {
-        st->installSystray();
-    }
+    if (sm->getSysTray()) st->installSystray();
 
 #if defined(Q_OS_MACOS)
     MacOSDockHandler *dockIconHandler = MacOSDockHandler::getInstance();

@@ -133,6 +133,7 @@ ApplicationWindow {
         statusbarColor: isLoading ? "white" : Theme.colorStatusbar
         navbarColor: {
             if (isLoading) return "white"
+            if (appContent.state === "Tutorial") return Theme.colorHeader
             return Theme.colorBackground
         }
     }

@@ -123,7 +123,7 @@ Item {
 
             ////////
 
-            Item {
+            Item { // separator
                 id: element_bluetooth
                 height: 24
                 anchors.left: parent.left
@@ -178,7 +178,7 @@ Item {
 
             ////////
 
-            Item {
+            Item { // separator
                 height: 16
                 anchors.left: parent.left
                 anchors.right: parent.right
@@ -269,7 +269,7 @@ Item {
 
             ////////
 /*
-            Item {
+            Item { // separator
                 height: 16
                 anchors.left: parent.left
                 anchors.right: parent.right
@@ -347,7 +347,7 @@ Item {
 
             ////////
 /*
-            Item {
+            Item { // separator
                 height: 16
                 anchors.left: parent.left
                 anchors.right: parent.right
@@ -422,7 +422,7 @@ Item {
 
             ////////
 
-            Item {
+            Item { // separator
                 height: 16
                 anchors.left: parent.left
                 anchors.right: parent.right
