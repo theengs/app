@@ -82,6 +82,8 @@ deploy_dir = contribs_dir + "/deploy/"
 clean = False
 rebuild = False
 ANDROID_NDK_HOME = os.getenv('ANDROID_NDK_HOME', '')
+QT_INSTALL_DIR = os.getenv('QT_INSTALL_DIR', '')
+QT_VERSION = "6.3.0"
 
 # MSVC_GEN_VER
 if "14.0" in os.getenv('VisualStudioVersion', ''):
@@ -104,6 +106,7 @@ parser = argparse.ArgumentParser(prog='contribs.py',
 parser.add_argument('-c', '--clean', help="clean everything and exit (downloaded files and all temporary directories)", action='store_true')
 parser.add_argument('-r', '--rebuild', help="rebuild the contribs even if already built", action='store_true')
 parser.add_argument('--android-ndk', dest='androidndk', help="specify a custom path to the android-ndk (if ANDROID_NDK_HOME environment variable doesn't exists)")
+parser.add_argument('--qt-install-dir', dest='qtinstalldir', help="specify a custom path to the qt install root dir (if QT_INSTALL_DIR environment variable doesn't exists)")
 parser.add_argument('--msvc', dest='msvcversion', help="specify a version for Visual Studio (2015/2017/2019)")
 
 if len(sys.argv) > 1:
@@ -114,6 +117,8 @@ if len(sys.argv) > 1:
         rebuild = result.rebuild
     if result.androidndk:
         ANDROID_NDK_HOME = result.androidndk
+    if result.qtinstalldir:
+        QT_INSTALL_DIR = result.qtinstalldir
     if result.msvcversion:
         if result.msvcversion == 2015:
             MSVC_GEN_VER = "Visual Studio 14 2015"
@@ -167,32 +172,28 @@ def copytree_wildcard(src, dst, symlinks=False, ignore=None):
 
 ## TARGETS #####################################################################
 
-TARGETS = []
+TARGETS = [] # 1: OS_TARGET # 2: ARCH_TARGET # 3: QT_TARGET
 
 if OS_HOST == "Linux":
-    TARGETS.append(["linux", "x86_64"])
-    if ANDROID_NDK_HOME: # Android cross compilation
-        TARGETS.append(["android", "armv8"])
-        TARGETS.append(["android", "armv7"])
-        TARGETS.append(["android", "x86_64"])
-        TARGETS.append(["android", "x86"])
+    TARGETS.append(["linux", "x86_64", "gcc_64"])
     #TARGETS.append(["windows", "x86_64"]) # Windows cross compilation
 
 if OS_HOST == "Darwin":
-    TARGETS.append(["macOS", "x86_64"])
-    #TARGETS.append(["macOS", "arm64"])
-    #TARGETS.append(["iOS", "simulator"]) # iOS cross compilation
-    #TARGETS.append(["iOS", "armv8"])
-    #TARGETS.append(["iOS", "armv7"])
-    #if ANDROID_NDK_HOME: # Android cross compilation
-    #    TARGETS.append(["android", "armv8"])
-    #    TARGETS.append(["android", "armv7"])
-    #    TARGETS.append(["android", "x86_64"])
-    #    TARGETS.append(["android", "x86"])
+    TARGETS.append(["macOS", "x86_64", "macOS"])
+    #TARGETS.append(["macOS", "arm64", "macOS"])
+    #TARGETS.append(["iOS", "simulator", "iOS"]) # iOS cross compilation
+    #TARGETS.append(["iOS", "armv8", "iOS"])
+    #TARGETS.append(["iOS", "armv7", "iOS"])
 
 if OS_HOST == "Windows":
-    TARGETS.append(["windows", "x86_64"])
-    #TARGETS.append(["windows", "x86"])
+    TARGETS.append(["windows", "x86_64", ""])
+    #TARGETS.append(["windows", "x86", ""])
+
+if ANDROID_NDK_HOME: # Android cross compilation
+    TARGETS.append(["android", "armv8", "android_arm64_v8a"])
+    TARGETS.append(["android", "armv7", "android_armv7"])
+    TARGETS.append(["android", "x86_64", "android_x86_64"])
+    TARGETS.append(["android", "x86", "android_x86"])
 
 ## SOFTWARES ###################################################################
 
@@ -200,25 +201,25 @@ if OS_HOST == "Windows":
 FILE_theengsdecoder = "theengsdecoder-development.zip"
 DIR_theengsdecoder = "decoder-development"
 
-if not os.path.exists(src_dir + FILE_theengsdecoder):
-    print("> Downloading " + FILE_theengsdecoder + "...")
-    urllib.request.urlretrieve("https://github.com/theengs/decoder/archive/refs/heads/development.zip", src_dir + FILE_theengsdecoder)
+#if not os.path.exists(src_dir + FILE_theengsdecoder):
+#    print("> Downloading " + FILE_theengsdecoder + "...")
+#    urllib.request.urlretrieve("https://github.com/theengs/decoder/archive/refs/heads/development.zip", src_dir + FILE_theengsdecoder)
 
 ## ArduinoJson (version: git)
 FILE_arduinojson = "arduinojson-6.zip"
 DIR_arduinojson = "ArduinoJson-6.x"
 
-if not os.path.exists(src_dir + FILE_arduinojson):
-    print("> Downloading " + FILE_arduinojson + "...")
-    urllib.request.urlretrieve("https://github.com/bblanchon/ArduinoJson/archive/refs/heads/6.x.zip", src_dir + FILE_arduinojson)
+#if not os.path.exists(src_dir + FILE_arduinojson):
+#    print("> Downloading " + FILE_arduinojson + "...")
+#    urllib.request.urlretrieve("https://github.com/bblanchon/ArduinoJson/archive/refs/heads/6.x.zip", src_dir + FILE_arduinojson)
 
-## QtMqtt (version: 6.3.0)
-FILE_qtmqtt = "qtmqtt-6.3.0-rc1.zip"
-DIR_qtmqtt = "qtmqtt-6.3.0-rc1"
+## QtMqtt (version: QT_VERSION)
+FILE_qtmqtt = "qtmqtt-" + QT_VERSION + ".zip"
+DIR_qtmqtt = "qtmqtt-" + QT_VERSION
 
 if not os.path.exists(src_dir + FILE_qtmqtt):
     print("> Downloading " + FILE_qtmqtt + "...")
-    urllib.request.urlretrieve("https://github.com/qt/qtmqtt/archive/refs/tags/v6.3.0-rc1.zip", src_dir + FILE_qtmqtt)
+    urllib.request.urlretrieve("https://github.com/qt/qtmqtt/archive/refs/tags/v" + QT_VERSION + ".zip", src_dir + FILE_qtmqtt)
 
 ## Android OpenSSL (version: git)
 for TARGET in TARGETS:
@@ -250,9 +251,11 @@ for TARGET in TARGETS:
     ## PREPARE environment
     OS_TARGET = TARGET[0]
     ARCH_TARGET = TARGET[1]
+    QT_TARGET = TARGET[2]
 
     build_dir = contribs_dir + "/build/" + OS_TARGET + "_" + ARCH_TARGET + "/"
     env_dir = contribs_dir + "/env/" + OS_TARGET + "_" + ARCH_TARGET + "/"
+    qt6_dir = QT_INSTALL_DIR + "/" + QT_VERSION + "/" + QT_TARGET + "/bin/"
 
     try:
         os.makedirs(build_dir)
@@ -359,7 +362,9 @@ for TARGET in TARGETS:
     try: os.makedirs(build_dir + DIR_qtmqtt + "/build")
     except: print() # who cares
 
-    subprocess.check_call(CMAKE_cmd + ["-G", CMAKE_gen, "-DCMAKE_PREFIX_PATH=/home/emeric/Dev/tools/Qt/6.3.0/android_arm64_v8a/lib/cmake/Qt6/", "-DCMAKE_BUILD_TYPE=Release", "-DBUILD_SHARED_LIBS:BOOL=" + build_shared, "-DBUILD_STATIC_LIBS:BOOL=" + build_static, "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=TRUE", "-DCMAKE_INSTALL_PREFIX=" + env_dir + "/usr", "."], cwd=build_dir + DIR_qtmqtt)
-    subprocess.check_call(["cmake", "--build", ".", "--config", "Release"], cwd=build_dir + DIR_qtmqtt)
+    QT_CONF_MODULE_cmd = [qt6_dir + "qt-configure-module"]
+    subprocess.check_call(QT_CONF_MODULE_cmd + [".."], cwd=build_dir + DIR_qtmqtt + "/build")
+    subprocess.check_call(["cmake", "--build", ".", "--config", "Release"], cwd=build_dir + DIR_qtmqtt + "/build")
+    subprocess.check_call(["cmake", "--install", "."], cwd=build_dir + DIR_qtmqtt + "/build")
 
     ############################################################################

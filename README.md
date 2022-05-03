@@ -41,7 +41,7 @@ cmake --install .
 #### Building Theengs
 
 ```bash
-$ git clone https://github.com/theengs/app.git TheengsApp
+$ git clone https://github.com/theengs/app.git TheengsApp --recurse-submodules
 $ cd TheengsApp/
 $ qmake
 $ make
