@@ -18,7 +18,7 @@ For Windows builds, you'll need the MSVC 2019+ compiler.
 For macOS and iOS builds, you'll need Xcode installed.  
 
 Qt 6 'Additional Librairies':
-- Qt 5 Compatibility module
+- Qt 5 Compatibility Module
 - Qt Charts
 - Qt Connectivity
 - Qt Image Formats

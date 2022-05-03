@@ -76,6 +76,8 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
 
                 if (a.decodeBLEJson(obj) >= 0)
                 {
+                    obj.remove("manufacturerdata");
+
                     std::string output;
                     serializeJson(obj, output);
                     //qDebug() << "output:" << output.c_str();
@@ -125,6 +127,9 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                 TheengsDecoder dec;
                 if (dec.decodeBLEJson(obj) >= 0)
                 {
+                    obj.remove("servicedata");
+                    obj.remove("servicedatauuid");
+
                     std::string output;
                     serializeJson(obj, output);
                     //qDebug() << "output:" << output.c_str();
