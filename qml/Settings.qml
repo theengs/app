@@ -608,6 +608,9 @@ Item {
                 anchors.right: parent.right
                 color: Theme.colorForeground
 
+                // every platforms except iOS
+                visible: (Qt.platform.os !== "ios")
+
                 IconSvg {
                     id: image_service
                     width: 24
@@ -741,7 +744,8 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: screenPaddingRight
 
-                //visible: (settingsManager.systray && element_worker.visible)
+                // every platforms except iOS
+                visible: (Qt.platform.os !== "ios")
 
                 IconSvg {
                     id: image_update_background

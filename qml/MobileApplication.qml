@@ -157,6 +157,13 @@ ApplicationWindow {
     }
 
     Connections {
+        target: ThemeEngine
+        function onCurrentThemeChanged() {
+            mobileUI.statusbarTheme = Theme.themeStatusbar
+        }
+    }
+
+    Connections {
         target: appHeader
         function onLeftMenuClicked() {
             if (appContent.state === "DeviceList") {

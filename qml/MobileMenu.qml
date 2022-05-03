@@ -17,6 +17,7 @@ Rectangle {
 
     visible: (isTablet && (appContent.state === "DevicePlantSensor" ||
                            appContent.state === "DeviceList" ||
+                           appContent.state === "SettingsMqtt" ||
                            appContent.state === "Settings" ||
                            appContent.state === "About")) ||
              (isPhone && screenOrientation === Qt.PortraitOrientation &&
@@ -69,6 +70,7 @@ Rectangle {
         spacing: (!appWindow.wideMode || (appWindow.isPhone && utilsScreen.screenSize < 5.0)) ? -8 : 24
 
         visible: (appContent.state === "DeviceList" ||
+                  appContent.state === "SettingsMqtt" ||
                   appContent.state === "Settings" ||
                   appContent.state === "About")
 
