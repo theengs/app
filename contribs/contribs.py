@@ -106,7 +106,7 @@ parser = argparse.ArgumentParser(prog='contribs.py',
 parser.add_argument('-c', '--clean', help="clean everything and exit (downloaded files and all temporary directories)", action='store_true')
 parser.add_argument('-r', '--rebuild', help="rebuild the contribs even if already built", action='store_true')
 parser.add_argument('--android-ndk', dest='androidndk', help="specify a custom path to the android-ndk (if ANDROID_NDK_HOME environment variable doesn't exists)")
-parser.add_argument('--qt-install-dir', dest='qtinstalldir', help="specify a custom path to the qt install root dir (if QT_INSTALL_DIR environment variable doesn't exists)")
+parser.add_argument('--qt-install', dest='qtinstall', help="specify a custom path to the qt install root dir (if QT_INSTALL_DIR environment variable doesn't exists)")
 parser.add_argument('--msvc', dest='msvcversion', help="specify a version for Visual Studio (2015/2017/2019)")
 
 if len(sys.argv) > 1:
@@ -117,8 +117,8 @@ if len(sys.argv) > 1:
         rebuild = result.rebuild
     if result.androidndk:
         ANDROID_NDK_HOME = result.androidndk
-    if result.qtinstalldir:
-        QT_INSTALL_DIR = result.qtinstalldir
+    if result.qtinstall:
+        QT_INSTALL_DIR = result.qtinstall
     if result.msvcversion:
         if result.msvcversion == 2015:
             MSVC_GEN_VER = "Visual Studio 14 2015"
