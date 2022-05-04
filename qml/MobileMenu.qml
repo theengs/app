@@ -183,7 +183,7 @@ Rectangle {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-
+/*
     Row { // thermometer
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
@@ -203,6 +203,6 @@ Rectangle {
 
         visible: (appContent.state === "DeviceEnvironmental")
     }
-
+*/
     ////////////////////////////////////////////////////////////////////////////
 }

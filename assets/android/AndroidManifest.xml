@@ -33,6 +33,7 @@
 
         <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
                   android:name="org.qtproject.qt.android.bindings.QtActivity" android:label="Theengs"
+                  android:windowSoftInputMode="adjustResize"
                   android:screenOrientation="unspecified" android:launchMode="singleTop">
 
             <intent-filter>

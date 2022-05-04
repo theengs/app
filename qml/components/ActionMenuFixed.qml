@@ -190,17 +190,16 @@ Popup {
         }
 
         ActionMenuItem {
-            id: actionReboot
+            id: actionMacAddress
 
             index: 9
-            text: qsTr("Reboot sensor")
-            source: "qrc:/assets/icons_material/baseline-refresh-24px.svg"
+            text: qsTr("Set MAC address")
+            source: "qrc:/assets/icons_material/baseline-pin-24px.svg"
             layoutDirection: actionMenu.layoutDirection
-            visible: (deviceManager.bluetooth && (selectedDevice && selectedDevice.hasReboot))
+            //visible: (selectedDevice)// && (Qt.platform.os === "osx" || Qt.platform.os === "ios"))
 
             onClicked: {
-                deviceRebootButtonClicked()
-                menuSelected(index)
+                popupMacAddress.open()
                 close()
             }
         }

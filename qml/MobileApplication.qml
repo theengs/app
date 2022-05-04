@@ -301,6 +301,9 @@ ApplicationWindow {
     PopupDeleteData {
         id: popupDeleteData
     }
+    PopupMacAddress {
+        id: popupMacAddress
+    }
 
     FocusScope {
         id: appContent

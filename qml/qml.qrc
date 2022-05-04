@@ -31,6 +31,7 @@
         <file alias="PopupCalibration.qml">popups/PopupCalibration.qml</file>
         <file alias="PopupDeleteData.qml">popups/PopupDeleteData.qml</file>
         <file alias="PopupDeleteDevice.qml">popups/PopupDeleteDevice.qml</file>
+        <file alias="PopupMacAddress.qml">popups/PopupMacAddress.qml</file>
 
         <file alias="ActionMenuFixed.qml">components/ActionMenuFixed.qml</file>
         <file alias="AirQualityIndicator.qml">components/AirQualityIndicator.qml</file>
