@@ -70,7 +70,7 @@ jobs:
         run: |
              sudo apt-get install ninja-build libtool automake m4 gettext -y
              cd contribs
-             python3 contribs.py --qt-install ${{env.Qt6_DIR}}
+             python3 contribs.py --qt-install ${{env.Qt6_DIR}}/../../
              cd ..
 
       # Build application
@@ -115,7 +115,7 @@ jobs:
         run: |
              brew install ninja automake autoconf libtool pkg-config
              cd contribs
-             python3 contribs.py --qt-install ${{env.Qt6_DIR}}
+             python3 contribs.py --qt-install ${{env.Qt6_DIR}}/../../
              cd ..
 
       # Build application

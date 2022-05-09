@@ -266,6 +266,7 @@ for TARGET in TARGETS:
     print("> TARGET : " + str(TARGET))
     print("- build_dir : " + build_dir)
     print("- env_dir : " + env_dir)
+    print("- qt6_dir : " + qt6_dir)
 
     ## CMAKE command selection
     CMAKE_cmd = ["cmake"]
