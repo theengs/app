@@ -371,7 +371,11 @@ for TARGET in TARGETS:
     try: os.makedirs(build_dir + DIR_qtmqtt + "/build")
     except: print() # who cares
 
-    QT_CONF_MODULE_cmd = [qt6_dir + "qt-configure-module"]
+    if OS_HOST == "Windows":
+        QT_CONF_MODULE_cmd = [qt6_dir + "qt-configure-module.bat"]
+    else:
+        QT_CONF_MODULE_cmd = [qt6_dir + "qt-configure-module"]
+
     subprocess.check_call(QT_CONF_MODULE_cmd + [".."], cwd=build_dir + DIR_qtmqtt + "/build")
     subprocess.check_call(["cmake", "--build", ".", "--config", "Release"], cwd=build_dir + DIR_qtmqtt + "/build")
     subprocess.check_call(["cmake", "--install", "."], cwd=build_dir + DIR_qtmqtt + "/build")

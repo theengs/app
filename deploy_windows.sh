@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 
-echo "> TheengsApp packager (Windows x86_64)"
+echo "> Theengs App packager (Windows x86_64)"
 
-export APP_NAME="TheengsApp";
+export APP_NAME="Theengs";
 export APP_VERSION=1.0;
 export GIT_VERSION=$(git rev-parse --short HEAD);
 
 ## CHECKS ######################################################################
 
-#if [ ${PWD##*/} != "TheengsApp" ]; then
-#  echo "This script MUST be run from the TheengsApp/ directory"
+#if [ ${PWD##*/} != "Theengs" ]; then
+#  echo "This script MUST be run from the Theengs/ directory"
 #  exit 1
 #fi
 

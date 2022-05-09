@@ -129,7 +129,8 @@ RESOURCES   += qml/qml.qrc \
                assets/assets.qrc \
                assets/devices.qrc
 
-OTHER_FILES += .gitignore
+OTHER_FILES += .gitignore \
+               contribs/contribs.py
 
 lupdate_only {
     SOURCES += qml/*.qml qml/*.js \
