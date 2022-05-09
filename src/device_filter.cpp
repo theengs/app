@@ -142,6 +142,7 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
                 return "g";
             } else if (device->getName() == "ClearGrass Temp & RH" ||
                        device->getName() == "Qingping Temp RH Lite" ||
+                       device->getName() == "Qingping Temp & RH Lite" ||
                        device->getName().startsWith("Qingping Temp & RH")) {
                 return "h";
             } else if (device->getName() == "LYWSD02") {

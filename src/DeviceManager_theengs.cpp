@@ -93,7 +93,7 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName,
     }
     else
     {
-        qWarning() << "Unkonwn device model: " << deviceModel_theengs << device_props;
+        qWarning() << "Unknown device model: " << deviceModel_theengs << device_props;
     }
 
     return device;
@@ -112,7 +112,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
     const QList<quint16> &manufacturerIds = deviceInfo.manufacturerIds();
     for (const auto id: manufacturerIds)
     {
-        if (device) break;
+        if (device_modelid_theengs.isEmpty() == false) break;
 
         DynamicJsonDocument doc(1024);
         doc["id"] = deviceInfo.address().toString().toStdString();
@@ -129,13 +129,14 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
             device_props = QString::fromLatin1(dec.getTheengProperties(device_modelid_theengs.toLatin1()));
 
             qDebug() << "addDevice() FOUND [mfd] :" << device_modelid_theengs << device_props;
+            break;
         }
     }
 
     const QList<QBluetoothUuid> &serviceIds = deviceInfo.serviceIds();
     for (const auto id: serviceIds)
     {
-        if (device) break;
+        if (device_modelid_theengs.isEmpty() == false) break;
 
         DynamicJsonDocument doc(1024);
         doc["id"] = deviceInfo.address().toString().toStdString();
@@ -153,6 +154,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
             device_props = QString::fromUtf8(dec.getTheengProperties(device_modelid_theengs.toLatin1()));
 
             qDebug() << "addDevice() FOUND [svd] :" << device_modelid_theengs << device_props;
+            break;
         }
     }
 

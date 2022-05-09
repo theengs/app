@@ -132,8 +132,8 @@ DeviceManager::DeviceManager(bool daemon)
 
             else if (deviceName == "CGD1")
                 d = new DeviceHygrotempCGD1(deviceAddr, deviceName, this);
-            else if (deviceName == "Qingping Temp RH Lite")
-                d = new DeviceHygrotempCGDK2(deviceAddr, deviceName, this);
+            //else if (deviceName == "Qingping Temp & RH Lite" || deviceName == "Qingping Temp RH Lite")
+            //    d = new DeviceHygrotempCGDK2(deviceAddr, deviceName, this);
             else if (deviceName == "ClearGrass Temp & RH")
                 d = new DeviceHygrotempCGG1(deviceAddr, deviceName, this);
             else if (deviceName == "CGP1W")
@@ -1514,7 +1514,7 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
         info.name() == "ropot" ||
         info.name() == "MJ_HT_V1" ||
         info.name() == "ClearGrass Temp & RH" ||
-        info.name() == "Qingping Temp RH Lite" ||
+        //info.name() == "Qingping Temp & RH Lite" || info.name() == "Qingping Temp RH Lite" ||
         info.name() == "LYWSD02" || info.name() == "MHO-C303" ||
         info.name() == "LYWSD03MMC" || info.name() == "MHO-C401" || info.name() == "XMWSDJO4MMC" ||
         info.name() == "ThermoBeacon" ||
@@ -1537,8 +1537,8 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
 
         else if (info.name() == "CGD1")
             d = new DeviceHygrotempCGD1(info, this);
-        else if (info.name() == "Qingping Temp RH Lite")
-            d = new DeviceHygrotempCGDK2(info, this);
+        //else if (info.name() == "Qingping Temp & RH Lite" || info.name() == "Qingping Temp RH Lite")
+        //    d = new DeviceHygrotempCGDK2(info, this);
         else if (info.name() == "ClearGrass Temp & RH")
             d = new DeviceHygrotempCGG1(info, this);
         else if (info.name() == "CGP1W")
