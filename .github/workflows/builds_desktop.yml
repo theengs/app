@@ -36,6 +36,7 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
+          aqtversion: '==2.1.0'
           version: '6.3.0'
           modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
           cached: 'false'
@@ -43,9 +44,8 @@ jobs:
       # Install dependencies (from package manager)
       - name: Install dependencies (from package manager)
         run: |
-             sudo apt-get install libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-xinerama0 libzstd-dev -y;
              sudo apt-get install libgl1-mesa-dev -y;
-             sudo apt-get install ninja-build libtool automake m4 gettext -y;
+             sudo apt-get install cmake ninja-build libtool automake m4 -y;
              sudo apt-get install appstream -y;
 
       # Build dependencies (from contribs script)
@@ -93,6 +93,7 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
+          aqtversion: '==2.1.0'
           version: '6.3.0'
           modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
           cached: 'false'
@@ -145,6 +146,7 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
+          aqtversion: '==2.1.0'
           version: '6.3.0'
           modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
           cached: 'false'
