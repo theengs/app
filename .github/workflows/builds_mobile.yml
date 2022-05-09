@@ -1,0 +1,128 @@
+#-------------------------------------------------------------------------------
+# Workflow configuration
+#-------------------------------------------------------------------------------
+
+name: "Mobile CI builds"
+on: workflow_dispatch
+
+#-------------------------------------------------------------------------------
+# Define application name & version
+#-------------------------------------------------------------------------------
+
+env:
+  VERSION: "1.0"
+  APPLICATION: "Theengs"
+  QMAKE_PROJECT: "Theengs.pro"
+
+#-------------------------------------------------------------------------------
+# Workflow jobs
+#-------------------------------------------------------------------------------
+
+jobs:
+  ## Android build #############################################################
+  build-android:
+    name: "Android CI build"
+    runs-on: ubuntu-20.04
+    steps:
+      # Checkout the repository
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      # Java environment (already installed in 'ubuntu-20.04')
+      #- name: Install JDK environment
+      #  uses: actions/setup-java@v2
+      #  with:
+      #    distribution: 'zulu'
+      #    java-version: '11'
+
+      # Android environment (already installed in 'ubuntu-20.04')
+      #- name: Setup Android SDK
+      #  uses: android-actions/setup-android@v2
+      #- name: Install Android SDK / NDK / tools
+      #  run: |
+      #       sdkmanager "platforms;android-32"
+      #       sdkmanager "ndk;23.1.7779620"
+      #       sdkmanager "build-tools;30.0.3"
+
+      # Install Qt (desktop)
+      - name: Install Qt (desktop)
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: '6.3.0'
+          modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
+          cached: 'false'
+
+      # Install Qt (Android)
+      - name: Install Qt (Android)
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: '6.3.0'
+          host: 'linux'
+          target: 'android'
+          arch: 'android_arm64_v8a'
+          modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
+          cached: 'false'
+
+      # Build dependencies (from contribs script)
+      - name: Build dependencies (from contribs script)
+        run: |
+             sudo apt-get install ninja-build libtool automake m4 gettext -y
+             cd contribs
+             python3 contribs.py --qt-install ${{env.Qt6_DIR}}
+             cd ..
+
+      # Build application
+      - name: Build application
+        run: |
+             export PATH=$Qt6_DIR/bin:$PATH
+             qmake --version
+             qmake ${{env.QMAKE_PROJECT}} CONFIG+=release
+             make -j$(nproc)
+
+  ## iOS build #################################################################
+  build-ios:
+    name: "iOS CI build"
+    runs-on: macos-11
+    steps:
+      # Checkout the repository
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      # Install Qt (desktop)
+      - name: Install Qt (desktop)
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: '6.3.0'
+          modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
+          cached: 'false'
+
+      # Install Qt (iOS)
+      - name: Install Qt (iOS)
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: '6.3.0'
+          host: 'mac'
+          target: 'ios'
+          modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
+          cached: 'false'
+
+      # Build dependencies (from contribs script)
+      - name: Build dependencies (from contribs script)
+        run: |
+             brew install ninja automake autoconf libtool pkg-config
+             cd contribs
+             python3 contribs.py --qt-install ${{env.Qt6_DIR}}
+             cd ..
+
+      # Build application
+      - name: Build application
+        run: |
+             export PATH=$Qt6_DIR/bin:$PATH
+             ln -s /Users/runner/work/${{env.APPLICATION}}/Qt/6.3.0/macos /Users/runner/work/${{env.APPLICATION}}/Qt/6.3.0/clang_64
+             qmake --version
+             qmake ${{env.QMAKE_PROJECT}} CONFIG+=release
+             make -j$(nproc)

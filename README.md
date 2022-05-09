@@ -33,7 +33,7 @@ https://github.com/qt/qtmqtt/archive/refs/tags/v6.3.0.zip
 ```bash
 mkdir build_desktop
 cd build_desktop/
-/home/usr/dev/Qt/6.3.0/gcc_64/bin/qt-configure-module ..
+/home/USER/Qt/6.3.0/gcc_64/bin/qt-configure-module ..
 cmake --build .
 cmake --install .
 ```

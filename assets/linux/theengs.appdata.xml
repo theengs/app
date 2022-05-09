@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2022 Florian ROBERT -->
+
+<component type="desktop-application">
+  <id>com.theengs.app</id>
+  <name>Theengs</name>
+  <launchable type="desktop-id">theengs.desktop</launchable>
+
+  <summary>Efficient, portable and lightweight library for Internet of Things payload decoding</summary>
+  <description>
+    <p>Efficient, portable and lightweight library for Internet of Things payload decoding.</p>
+  </description>
+
+  <releases>
+    <release version="1.0" date="2022-05-xx" />
+  </releases>
+
+  <project_license>GPL-3.0+</project_license>
+  <metadata_license>CC0-1.0</metadata_license>
+  <content_rating type="oars-1.1" />
+
+  <developer_name>x</developer_name>
+  <updatecontact>x</updatecontact>
+  <url type="contact">x</url>
+  <url type="homepage">https://github.com/theengs/app</url>
+  <url type="bugtracker">https://github.com/theengs/app/issues</url>
+
+  <screenshots>
+  </screenshots>
+
+  <categories>
+    <category>Utility</category>
+    <category>DataVisualization</category>
+  </categories>
+
+  <keywords>
+    <keyword>mqtt</keyword>
+  </keywords>
+</component>

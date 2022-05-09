@@ -1,9 +1,6 @@
 
 # Application logo and icons:
-- assets/logos/logo.png                 //
-
-# Welcome screens:
-- assets/devices/welcome-*.svg          // Christian Díaz <christiandiaz.design@gmail.com> // CC BY-SA 4.0
+- assets/logos/logo*.*                  // Theengs
 
 # Device icons:
 - docs/flowercare.svg                   // Emeric Grange // CC BY-SA 4.0
@@ -41,3 +38,4 @@
 - assets/icons_custom/nuclear_icon_big.svg  // CC0
 - assets/logos/github.svg                   // https://github.com/logos // proprietary
 - assets/logos/gitlab.png                   // https://about.gitlab.com/press // proprietary
+- assets/logos/mqtt.svg                     // https://mqtt.org/mqtt-specification/ // proprietary
