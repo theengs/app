@@ -186,14 +186,22 @@ if OS_HOST == "Darwin":
     #TARGETS.append(["iOS", "armv7", "iOS"])
 
 if OS_HOST == "Windows":
-    TARGETS.append(["windows", "x86_64", ""])
-    #TARGETS.append(["windows", "x86", ""])
+    if "14.0" in os.getenv('VisualStudioVersion', ''):
+        TARGETS.append(["windows", "x86_64", "msvc2015_64"])
+    elif "15.0" in os.getenv('VisualStudioVersion', ''):
+        TARGETS.append(["windows", "x86_64", "msvc2017_64"])
+    elif "16.0" in os.getenv('VisualStudioVersion', ''):
+        TARGETS.append(["windows", "x86_64", "msvc2019_64"])
+    elif "17.0" in os.getenv('VisualStudioVersion', ''):
+        TARGETS.append(["windows", "x86_64", "msvc2019_64"])
+    else:
+        TARGETS.append(["windows", "x86_64", ""])
 
-if ANDROID_NDK_HOME: # Android cross compilation
-    TARGETS.append(["android", "armv8", "android_arm64_v8a"])
-    TARGETS.append(["android", "armv7", "android_armv7"])
-    TARGETS.append(["android", "x86_64", "android_x86_64"])
-    TARGETS.append(["android", "x86", "android_x86"])
+#if ANDROID_NDK_HOME: # Android cross compilation
+#    TARGETS.append(["android", "armv8", "android_arm64_v8a"])
+#    TARGETS.append(["android", "armv7", "android_armv7"])
+#    TARGETS.append(["android", "x86_64", "android_x86_64"])
+#    TARGETS.append(["android", "x86", "android_x86"])
 
 ## SOFTWARES ###################################################################
 
