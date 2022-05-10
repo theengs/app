@@ -224,6 +224,26 @@ linux:!android {
     #QMAKE_CLEAN += $${OUT_PWD}/appdir/
 }
 
+win32 {
+    # Windows utils
+    SOURCES += src/utils/utils_os_windows.cpp
+    HEADERS += src/utils/utils_os_windows.h
+
+    # OS icon
+    RC_ICONS = $${PWD}/assets/windows/$$lower($${TARGET}).ico
+
+    # Deploy step
+    deploy.commands = $$quote(windeployqt $${OUT_PWD}/$${DESTDIR}/ --qmldir qml/)
+    install.depends = deploy
+    QMAKE_EXTRA_TARGETS += install deploy
+
+    # Installation step
+    # TODO
+
+    # Clean step
+    # TODO
+}
+
 macx {
     #QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
     #message("QMAKE_MACOSX_DEPLOYMENT_TARGET: $$QMAKE_MACOSX_DEPLOYMENT_TARGET")

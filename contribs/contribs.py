@@ -195,7 +195,7 @@ if OS_HOST == "Windows":
     elif "17.0" in os.getenv('VisualStudioVersion', ''):
         TARGETS.append(["windows", "x86_64", "msvc2019_64"])
     else:
-        TARGETS.append(["windows", "x86_64", ""])
+        TARGETS.append(["windows", "x86_64", "msvc2019_64"])
 
 #if ANDROID_NDK_HOME: # Android cross compilation
 #    TARGETS.append(["android", "armv8", "android_arm64_v8a"])
@@ -372,12 +372,14 @@ for TARGET in TARGETS:
     except: print() # who cares
 
     if OS_HOST == "Windows":
-        QT_CONF_MODULE_cmd = [qt6_dir + "qt-configure-module.bat"]
+        QT_CONF_MODULE_cmd = qt6_dir + "qt-configure-module.bat"
+        #VCVARS_cmd = "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/" + "vcvarsall.bat"
+        #subprocess.check_call([VCVARS_cmd, "x86_amd64"], cwd="C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/")
     else:
-        QT_CONF_MODULE_cmd = [qt6_dir + "qt-configure-module"]
+        QT_CONF_MODULE_cmd = qt6_dir + "qt-configure-module"
 
-    subprocess.check_call(QT_CONF_MODULE_cmd + [".."], cwd=build_dir + DIR_qtmqtt + "/build")
-    subprocess.check_call(["cmake", "--build", ".", "--config", "Release"], cwd=build_dir + DIR_qtmqtt + "/build")
+    subprocess.check_call([QT_CONF_MODULE_cmd, ".."], cwd=build_dir + DIR_qtmqtt + "/build")
+    subprocess.check_call(["cmake", "--build", ".", "--target", "all"], cwd=build_dir + DIR_qtmqtt + "/build")
     subprocess.check_call(["cmake", "--install", "."], cwd=build_dir + DIR_qtmqtt + "/build")
 
     ############################################################################
