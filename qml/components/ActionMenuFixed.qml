@@ -199,7 +199,8 @@ Popup {
             //visible: (selectedDevice)// && (Qt.platform.os === "osx" || Qt.platform.os === "ios"))
 
             onClicked: {
-                popupMacAddress.open()
+                deviceMacButtonClicked()
+                menuSelected(index)
                 close()
             }
         }

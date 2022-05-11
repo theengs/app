@@ -37,6 +37,7 @@ Rectangle {
     function rightMenuIsOpen() { return actionMenu.visible; }
     function rightMenuClose() { actionMenu.close(); }
 
+    signal deviceMacButtonClicked()
     signal deviceRebootButtonClicked()
     signal deviceCalibrateButtonClicked()
     signal deviceWateringButtonClicked()
@@ -106,7 +107,7 @@ Rectangle {
             color: Theme.colorHeaderContent
             font.bold: true
             font.pixelSize: Theme.fontSizeHeader
-            font.capitalization: Font.Capitalize
+            //font.capitalization: Font.Capitalize
             verticalAlignment: Text.AlignVCenter
         }
 
@@ -144,18 +145,18 @@ Rectangle {
                     opacity: 0
                     Behavior on opacity { OpacityAnimator { duration: 333 } }
 
-                    NumberAnimation on rotation { //  refreshAnimation
+                    NumberAnimation on rotation { // refreshAnimation (rotate)
                         from: 0
                         to: 360
                         duration: 2000
                         loops: Animation.Infinite
                         easing.type: Easing.Linear
-                        running: deviceManager.updating
+                        running: (deviceManager.updating && !deviceManager.scanning && !deviceManager.syncing)
                         alwaysRunToEnd: true
                         onStarted: workingIndicator.opacity = 1
                         onStopped: workingIndicator.opacity = 0
                     }
-                    SequentialAnimation on opacity { // rescanAnimation
+                    SequentialAnimation on opacity { // rescanAnimation (fade)
                         loops: Animation.Infinite
                         running: (deviceManager.scanning || deviceManager.listening || deviceManager.syncing)
                         onStopped: workingIndicator.opacity = 0
@@ -180,10 +181,9 @@ Rectangle {
                 }
 
                 IconSvg {
-                    width: (headerHeight/2)
-                    height: (headerHeight/2)
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
+                    width: (headerHeight / 2)
+                    height: (headerHeight / 2)
+                    anchors.centerIn: parent
 
                     source: "qrc:/assets/icons_material/baseline-more_vert-24px.svg"
                     color: Theme.colorHeaderContent

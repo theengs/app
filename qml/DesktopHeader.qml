@@ -16,6 +16,7 @@ Rectangle {
     signal backButtonClicked()
     signal rightMenuClicked() // compatibility
 
+    signal deviceMacButtonClicked()
     signal deviceRebootButtonClicked()
     signal deviceCalibrateButtonClicked()
     signal deviceWateringButtonClicked()
@@ -192,6 +193,28 @@ Rectangle {
             backgroundColor: Theme.colorHeaderHighlight
 
             onClicked: deviceWateringButtonClicked()
+        }
+        ButtonCompactable {
+            id: buttonMAC
+            height: compact ? 36 : 34
+            anchors.verticalCenter: parent.verticalCenter
+
+            visible: (deviceManager.bluetooth && selectedDevice &&
+                      (Qt.platform.os === "osx" || Qt.platform.os === "ios") &&
+                      (appContent.state === "DevicePlantSensor" ||
+                       appContent.state === "DeviceThermometer" ||
+                       appContent.state === "DeviceEnvironmental" ||
+                       appContent.state === "DeviceProbe" ||
+                       appContent.state === "DeviceScale" ||
+                       appContent.state === "DeviceMotionSensor"))
+
+            source: "qrc:/assets/icons_material/baseline-pin-24px.svg"
+            tooltipText: qsTr("Set MAC address")
+            iconColor: Theme.colorHeaderContent
+            textColor: Theme.colorHeaderContent
+            backgroundColor: Theme.colorHeaderHighlight
+
+            onClicked: deviceMacButtonClicked()
         }
         ButtonCompactable {
             id: buttonCalibrate

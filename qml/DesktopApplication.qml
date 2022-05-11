@@ -82,6 +82,12 @@ ApplicationWindow {
             }
         }
 
+        function onDeviceMacButtonClicked() {
+            if (selectedDevice) {
+                popupMacAddress.open()
+            }
+        }
+
         function onDeviceLedButtonClicked() {
             if (selectedDevice) {
                 selectedDevice.actionLedBlink()
@@ -356,6 +362,9 @@ ApplicationWindow {
     }
     PopupDeleteData {
         id: popupDeleteData
+    }
+    PopupMacAddress {
+        id: popupMacAddress
     }
 
     DesktopHeader {

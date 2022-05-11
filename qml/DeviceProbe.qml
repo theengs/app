@@ -227,7 +227,7 @@ Component {
                     anchors.verticalCenterOffset: -(appHeader.height / 2)
                     spacing: 24
 
-                    visible: (!currentDevice.hasProbesTPMS && currentDevice.hasData)
+                    visible: (currentDevice.hasData && !currentDevice.hasProbesTPMS)
 
                     property int psw: isPhone ? 160 : 200
                     property int psh: isPhone ? 44 : 48
@@ -644,7 +644,7 @@ Component {
                     anchors.verticalCenterOffset: -(appHeader.height / 3)
                     spacing: columnTPMS.tsp
 
-                    visible: (currentDevice.deviceName.includes("TPMS") && currentDevice.hasData)
+                    visible: (currentDevice.hasData && currentDevice.hasProbesTPMS)
 
                     property int tsp: singleColumn ? (isPhone ? 24 : 48) : 80
                     property int tsz: singleColumn ? (isPhone ? 120 : 140) : 180

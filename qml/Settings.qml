@@ -637,6 +637,19 @@ Item {
                     wrapMode: Text.WordWrap
                     verticalAlignment: Text.AlignVCenter
                 }
+
+                ButtonWireframe {
+                    anchors.right: parent.right
+                    anchors.rightMargin: 16
+                    anchors.verticalCenter: parent.verticalCenter
+                    height: 32
+
+                    visible: (Qt.platform.os === "android")
+
+                    text: qsTr("experimental")
+                    primaryColor: Theme.colorRed
+                    borderColor: Theme.colorRed
+                }
             }
 
             ////////////////
