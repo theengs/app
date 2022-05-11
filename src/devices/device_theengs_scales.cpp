@@ -80,8 +80,11 @@ void DeviceTheengsScales::parseTheengsProps(const QString &json)
     QJsonObject prop = doc.object()["properties"].toObject();
 
     // Capabilities
-    if (prop.contains("batt")) m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
-    Q_EMIT capabilitiesUpdated();
+    if (prop.contains("batt"))
+    {
+        m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
+        Q_EMIT capabilitiesUpdated();
+    }
 
     // Sensors
     if (prop.contains("weighing_mode")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_WEIGHT_MODE;

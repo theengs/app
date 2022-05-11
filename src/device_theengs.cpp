@@ -301,6 +301,17 @@ bool DeviceTheengs::needsUpdateDb() const
 
 /* ************************************************************************** */
 
+bool DeviceTheengs::isValid() const
+{
+    if (m_deviceModel.isEmpty()) return false;
+    if (m_deviceType == 0 ) return false;
+    if (m_deviceSensors == 0) return false;
+
+    return true;
+}
+
+/* ************************************************************************** */
+
 float DeviceTheengs::getTemp1() const
 {
     SettingsManager *s = SettingsManager::getInstance();

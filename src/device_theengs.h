@@ -135,6 +135,8 @@ public:
     DeviceTheengs(const QBluetoothDeviceInfo &d, const QString &deviceModel, QObject *parent = nullptr);
     virtual ~DeviceTheengs();
 
+    virtual bool isValid() const;
+
     virtual bool needsUpdateRt() const;
     virtual bool needsUpdateDb() const;
 

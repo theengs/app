@@ -253,3 +253,5 @@ void DeviceHygrotempCGDK2::confirmedDescriptorWrite(const QLowEnergyDescriptor &
         //m_service = nullptr;
     }
 }
+
+/* ************************************************************************** */

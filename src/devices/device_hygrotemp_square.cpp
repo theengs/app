@@ -337,3 +337,5 @@ void DeviceHygrotempSquare::confirmedDescriptorWrite(const QLowEnergyDescriptor 
         //m_service = nullptr;
     }
 }
+
+/* ************************************************************************** */

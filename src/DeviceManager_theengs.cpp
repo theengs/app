@@ -103,7 +103,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
 {
     //qDebug() << "createTheengsDevice_fromAdv(" << deviceInfo.name() << ")";
 
-    Device *device = nullptr;
+    DeviceTheengs *device = nullptr;
 
     QString device_model_theengs;
     QString device_modelid_theengs;
@@ -188,6 +188,18 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
         {
             device = new DeviceTheengsGeneric(deviceInfo, device_modelid_theengs, device_props, this);
         }
+
+        if (!device->isValid())
+        {
+            qWarning() << "Device is invalid:" << deviceInfo.name();
+            delete device;
+            device = nullptr;
+        }
+    }
+
+    if (!device)
+    {
+        qWarning() << "Couldn't add device:" << deviceInfo.name();
     }
 
     return device;

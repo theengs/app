@@ -84,18 +84,27 @@ void DeviceTheengsProbes::parseTheengsProps(const QString &json)
     QJsonObject prop = doc.object()["properties"].toObject();
 
     // Capabilities
-    if (prop.contains("batt")) m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
-    Q_EMIT capabilitiesUpdated();
+    if (prop.contains("batt"))
+    {
+        m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
+        Q_EMIT capabilitiesUpdated();
+    }
 
     // Sensors
-    if (prop.contains("tempc")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_1;
-    if (prop.contains("tempc1")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_1;
-    if (prop.contains("tempc2")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_2;
-    if (prop.contains("tempc3")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_3;
-    if (prop.contains("tempc4")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_4;
-    if (prop.contains("tempc5")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_5;
-    if (prop.contains("tempc6")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_6;
-    if (prop.contains("count") && prop.contains("alarm")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_PROBES_TPMS;
+    if (prop.contains("count") && prop.contains("alarm"))
+    {
+        m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_PROBES_TPMS;
+    }
+    else
+    {
+        if (prop.contains("tempc")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_1;
+        if (prop.contains("tempc1")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_1;
+        if (prop.contains("tempc2")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_2;
+        if (prop.contains("tempc3")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_3;
+        if (prop.contains("tempc4")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_4;
+        if (prop.contains("tempc5")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_5;
+        if (prop.contains("tempc6")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_6;
+    }
     Q_EMIT sensorsUpdated();
 }
 
@@ -153,6 +162,13 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
     }
     else // temperature probes
     {
+        m_temperature1 = -99.f;
+        m_temperature2 = -99.f;
+        m_temperature3 = -99.f;
+        m_temperature4 = -99.f;
+        m_temperature5 = -99.f;
+        m_temperature6 = -99.f;
+
         if (obj.contains("tempc")) m_temperature1 = obj["tempc"].toDouble();
         if (obj.contains("tempc1")) m_temperature1 = obj["tempc1"].toDouble();
         if (obj.contains("tempc2")) m_temperature2 = obj["tempc2"].toDouble();

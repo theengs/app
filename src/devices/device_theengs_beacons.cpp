@@ -78,8 +78,11 @@ void DeviceTheengsBeacons::parseTheengsProps(const QString &json)
     QJsonObject prop = doc.object()["properties"].toObject();
 
     // Capabilities
-    if (prop.contains("batt")) m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
-    Q_EMIT capabilitiesUpdated();
+    if (prop.contains("batt"))
+    {
+        m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
+        Q_EMIT capabilitiesUpdated();
+    }
 
     // Sensors
     Q_EMIT sensorsUpdated();
