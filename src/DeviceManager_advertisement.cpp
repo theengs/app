@@ -51,10 +51,17 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
 
 #if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
         if (dd && dd->getAddress() == info.deviceUuid().toString())
+        {
+            QString mac_qstr = getSetting("mac");
 #else
         if (dd && dd->getAddress() == info.address().toString())
-#endif
         {
+            QString mac_qstr = info.address().toString();
+#endif
+            QString mac_qstr_clean = mac_qstr;
+            mac_qstr_clean.remove(':');
+            std::string mac_str = mac_qstr.toStdString();
+
             const QList<quint16> &manufacturerIds = info.manufacturerIds();
             for (const auto id: manufacturerIds)
             {
@@ -66,7 +73,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                 dd->parseAdvertisementData(info.manufacturerData(id));
 
                 DynamicJsonDocument doc(1024);
-                doc["id"] = info.address().toString().toStdString();
+                doc["id"] = mac_str;
                 doc["name"] = info.name().toStdString();
                 doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + info.manufacturerData(id).toHex().toStdString();
                 doc["rssi"] = info.rssi();
@@ -87,10 +94,9 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
 
                     SettingsManager *sm = SettingsManager::getInstance();
                     MqttManager *mq = MqttManager::getInstance();
-                    if (sm && mq)
+                    if (sm && mq && !mac_str.empty())
                     {
-                        QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/";
-                        topic += info.address().toString().remove(':');
+                        QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr_clean;
 
                         status = mq->publish(topic, QString::fromStdString(output));
                     }
@@ -116,7 +122,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                 dd->parseAdvertisementData(info.serviceData(id));
 
                 DynamicJsonDocument doc(1024);
-                doc["id"] = info.address().toString().toStdString();
+                doc["id"] = mac_str;
                 doc["name"] = info.name().toStdString();
                 doc["servicedata"] = info.serviceData(id).toHex().toStdString();
                 doc["servicedatauuid"] = QByteArray::number(id.toUInt16(), 16).rightJustified(4, '0').toStdString();
@@ -141,8 +147,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                     MqttManager *mq = MqttManager::getInstance();
                     if (sm && mq)
                     {
-                        QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/";
-                        topic += info.address().toString().remove(':');
+                        QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr_clean;
 
                         status = mq->publish(topic, QString::fromStdString(output));
                     }
@@ -187,6 +192,16 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
 
     if (!status) // UN-KNOWN DEVICES ///////////////////////////////////////////
     {
+#if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
+        // No need to try to handle unknown devices on macOS / iOS, because
+        // we don't have MAC addresses to ID them...
+        // Maybe later if Theengs decoder can output MAC from advertisement packets
+        break;
+#endif
+        QString mac_qstr = info.address().toString();
+        QString mac_qstr_clean = mac_qstr;
+        std::string mac_str = mac_qstr.toStdString();
+
         const QList<quint16> &manufacturerIds = info.manufacturerIds();
         for (const auto id: manufacturerIds)
         {
@@ -196,7 +211,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
             //         << "bytes:" << info.manufacturerData(id).toHex();
 
             DynamicJsonDocument doc(1024);
-            doc["id"] = info.address().toString().toStdString();
+            doc["id"] = mac_str;
             doc["name"] = info.name().toStdString();
             doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + info.manufacturerData(id).toHex().toStdString();
             doc["rssi"] = info.rssi();
@@ -216,8 +231,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                 MqttManager *mq = MqttManager::getInstance();
                 if (sm && mq)
                 {
-                    QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/";
-                    topic += info.address().toString().remove(':');
+                    QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr_clean;
 
                     status = mq->publish(topic, QString::fromStdString(output));
                 }
@@ -235,7 +249,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
             //         << "bytes:" << info.serviceData(id).toHex();
 
             DynamicJsonDocument doc(1024);
-            doc["id"] = info.address().toString().toStdString();
+            doc["id"] = mac_str;
             doc["name"] = info.name().toStdString();
             doc["servicedata"] = info.serviceData(id).toHex().toStdString();
             doc["servicedatauuid"] = QByteArray::number(id.toUInt16(), 16).rightJustified(4, '0').toStdString();
@@ -257,8 +271,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                 MqttManager *mq = MqttManager::getInstance();
                 if (sm && mq)
                 {
-                    QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/";
-                    topic += info.address().toString().remove(':');
+                    QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr_clean;
 
                     status = mq->publish(topic, QString::fromStdString(output));
                 }
