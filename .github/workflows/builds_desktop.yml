@@ -3,9 +3,7 @@
 #--------------------------------------------------------------------------------
 
 name: "Desktop CI builds"
-on:
-  push:
-  pull_request:
+on: workflow_dispatch
 
 #--------------------------------------------------------------------------------
 # Define application name & version

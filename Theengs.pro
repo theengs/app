@@ -129,8 +129,15 @@ RESOURCES   += qml/qml.qrc \
                assets/assets.qrc \
                assets/devices.qrc
 
-OTHER_FILES += .gitignore \
-               contribs/contribs.py
+OTHER_FILES += README.md \
+               deploy_linux.sh \
+               deploy_macos.sh \
+               deploy_windows.sh \
+               contribs/contribs.py \
+               .github/workflows/builds_desktop.yml \
+               .github/workflows/builds_mobile.yml \
+               .github/workflows/flatpak.yml \
+               .gitignore
 
 lupdate_only {
     SOURCES += qml/*.qml qml/*.js \
