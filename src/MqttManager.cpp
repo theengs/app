@@ -124,7 +124,7 @@ bool MqttManager::publish(QString topic, QString str)
             topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT";
         }
 
-        qDebug() << "MqttManager::publish(" << topic << " : " << str << ")";
+        //qDebug() << "MqttManager::publish(" << topic << " : " << str << ")";
 
         QMqttTopicName t(topic);
         QByteArray m(str.toLocal8Bit());
