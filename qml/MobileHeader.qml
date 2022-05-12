@@ -171,9 +171,11 @@ Rectangle {
                 height: headerHeight
 
                 visible: (deviceManager.bluetooth &&
-                          (appContent.state === "DevicePlantSensor" ||
-                           appContent.state === "DeviceThermometer" ||
-                           (appContent.state === "DeviceEnvironmental" && selectedDevice.hasBluetoothConnection)))
+                          (appContent.state === "DevicePlantSensor" || appContent.state === "DeviceThermometer" ||
+                           (appContent.state === "DeviceEnvironmental" && selectedDevice.hasBluetoothConnection))) ||
+                         ((Qt.platform.os === "osx" || Qt.platform.os === "ios") &&
+                          (appContent.state === "DevicePlantSensor" || appContent.state === "DeviceThermometer" || appContent.state === "DeviceEnvironmental" ||
+                           appContent.state === "DeviceProbe" || appContent.state === "DeviceScale" || appContent.state === "DeviceMotionSensor"))
 
                 onClicked: {
                     rightMenuClicked()

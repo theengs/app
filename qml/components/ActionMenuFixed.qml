@@ -196,7 +196,7 @@ Popup {
             text: qsTr("Set MAC address")
             source: "qrc:/assets/icons_material/baseline-pin-24px.svg"
             layoutDirection: actionMenu.layoutDirection
-            //visible: (selectedDevice)// && (Qt.platform.os === "osx" || Qt.platform.os === "ios"))
+            visible: (selectedDevice && (Qt.platform.os === "osx" || Qt.platform.os === "ios"))
 
             onClicked: {
                 deviceMacButtonClicked()
