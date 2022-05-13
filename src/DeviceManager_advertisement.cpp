@@ -52,7 +52,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
 #if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
         if (dd && dd->getAddress() == info.deviceUuid().toString())
         {
-            QString mac_qstr = getSetting("mac");
+            QString mac_qstr = dd->getSetting("mac").toString();
 #else
         if (dd && dd->getAddress() == info.address().toString())
         {
@@ -190,14 +190,17 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
         }
     }
 
-    if (!status) // UN-KNOWN DEVICES ///////////////////////////////////////////
-    {
+    // No need to try to handle unknown devices on macOS / iOS, because
+    // we don't have MAC addresses to ID them...
+    // Maybe later if Theengs decoder can output MAC from advertisement packets
 #if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
-        // No need to try to handle unknown devices on macOS / iOS, because
-        // we don't have MAC addresses to ID them...
-        // Maybe later if Theengs decoder can output MAC from advertisement packets
-        break;
+    bool appleOS = true;
+#else
+    bool appleOS = false;
 #endif
+
+    if (!status && !appleOS) // UN-KNOWN DEVICES ///////////////////////////////////////////
+    {
         QString mac_qstr = info.address().toString();
         QString mac_qstr_clean = mac_qstr;
         std::string mac_str = mac_qstr.toStdString();
