@@ -53,6 +53,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
         if (dd && dd->getAddress() == info.deviceUuid().toString())
         {
             QString mac_qstr = dd->getSetting("mac").toString();
+            if (mac_qstr.isEmpty()) return;
 #else
         if (dd && dd->getAddress() == info.address().toString())
         {
@@ -284,8 +285,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
         }
     }
 
-    // Dynamic scanning
-    if (m_scanning)
+    if (m_scanning) // Dynamic scanning ////////////////////////////////////////
     {
         //qDebug() << "addBleDevice() FROM DYNAMIC SCANNING";
         addBleDevice(info);

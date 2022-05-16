@@ -474,12 +474,16 @@ void Device::refreshDataFinished(bool status, bool cached)
 void Device::refreshHistoryFinished(bool status)
 {
     //qDebug() << "Device::refreshHistoryFinished()" << getAddress() << getName();
-    Q_UNUSED(status)
 
     m_timeoutTimer.stop();
 
     m_ble_status = DeviceUtils::DEVICE_OFFLINE;
     Q_EMIT statusUpdated();
+
+    if (status == true)
+    {
+        // TODO // Update 'last' data on success
+    }
 
     // Even if the status is false, we probably have some new data
     Q_EMIT dataUpdated();
@@ -595,6 +599,12 @@ bool Device::getSqlDeviceInfos()
         else
         {
             qWarning() << "> getInfos.exec() ERROR" << getInfos.lastError().type() << ":" << getInfos.lastError().text();
+        }
+
+        if (hasSetting("enabled"))
+        {
+            if (getSetting("enabled").toString() == "false") m_isEnabled = false;
+            Q_EMIT settingsUpdated();
         }
     }
 
@@ -842,11 +852,16 @@ void Device::setAssociatedName(const QString &name)
 
 void Device::setEnabled(const bool enabled)
 {
+    //qDebug() << "setEnabled(" << enabled << ")";
+
     if (m_isEnabled != enabled)
     {
-        m_isEnabled = enabled;
-        Q_EMIT settingsUpdated();
-
+        if (setSetting("enabled", enabled))
+        {
+            m_isEnabled = enabled;
+            Q_EMIT settingsUpdated();
+        }
+/*
         if (m_dbInternal || m_dbExternal)
         {
             QSqlQuery updateEnabled;
@@ -855,11 +870,14 @@ void Device::setEnabled(const bool enabled)
             updateEnabled.bindValue(":deviceAddr", getAddress());
             updateEnabled.exec();
         }
+*/
     }
 }
 
 void Device::setOutside(const bool outside)
 {
+    //qDebug() << "setOutside(" << outside << ")";
+
     if (m_isOutside != outside)
     {
         m_isOutside = outside;

@@ -155,6 +155,11 @@ Item {
                 textStatus.text = qsTr("Synced")
             }
         }
+        if (!boxDevice.deviceEnabled) {
+            textStatus.color = Theme.colorYellow
+            textStatus.text = qsTr("Disabled")
+        }
+
         // Image
         if (!boxDevice.isDataToday()) {
             if (boxDevice.status === DeviceUtils.DEVICE_QUEUED) {
@@ -333,6 +338,8 @@ Item {
         id: deviceWidgetRectangle
         anchors.fill: parent
         anchors.margins: 6
+
+        opacity: boxDevice.deviceEnabled ? 1 : 0.66
 
         MouseArea {
             anchors.fill: parent

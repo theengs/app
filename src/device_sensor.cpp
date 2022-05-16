@@ -130,28 +130,6 @@ void DeviceSensor::refreshDataFinished(bool status, bool cached)
             {
                 if (parent()) static_cast<DeviceManager *>(parent())->invalidate();
             }
-
-            // 'Water me' notification, if enabled
-            if (sm->getNotifs())
-            {
-                // Only if the sensor has a plant
-                if (m_soilMoisture > 0 && m_soilMoisture < m_limit_soilMoistureMin)
-                {
-                    NotificationManager *nm = NotificationManager::getInstance();
-                    if (nm)
-                    {
-                        QString message;
-                        if (!m_associatedName.isEmpty())
-                            message = tr("You need to water your '%1' now!").arg(m_associatedName);
-                        else if (!m_locationName.isEmpty())
-                            message = tr("You need to water the plant near '%1'").arg(m_locationName);
-                        else
-                            message = tr("You need to water one of your plant!");
-
-                        nm->setNotification2("Plant Alarm", message);
-                    }
-                }
-            }
         }
     }
 }
