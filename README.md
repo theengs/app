@@ -24,18 +24,11 @@ Qt 6 'Additional Librairies':
 - Qt Image Formats
 - Qt WebSockets
 
-#### Building QtMqtt
-
-https://github.com/qt/qtmqtt
-
-https://github.com/qt/qtmqtt/archive/refs/tags/v6.3.0.zip
+#### Building dependencies (with contribs script)
 
 ```bash
-mkdir build_desktop
-cd build_desktop/
-/home/USER/Qt/6.3.0/gcc_64/bin/qt-configure-module ..
-cmake --build .
-cmake --install .
+$ cd TheengsApp/contribs/
+$ python3 contribs.py --qt-directory /home/USER/Qt --android-ndk /home/USER/android-sdk/ndk/22.1.7171670/
 ```
 
 #### Building Theengs
