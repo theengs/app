@@ -29,42 +29,24 @@ Rectangle {
     ////////////////////////////////////////////////////////////////////////////
 
     Column {
-        id: col
         anchors.left: parent.left
         anchors.leftMargin: 12
         anchors.verticalCenter: parent.verticalCenter
-        spacing: 4
+        spacing: 0
 
-        Row {
-            spacing: 8
-
-            Text {
-                id: deviceTitle
-                text: device.deviceName
-                textFormat: Text.PlainText
-                font.pixelSize: Theme.fontSizeContent
-                color: Theme.colorText
-            }
+        Text {
+            id: deviceTitle
+            text: device.deviceName
+            textFormat: Text.PlainText
+            font.pixelSize: Theme.fontSizeContent
+            color: Theme.colorText
         }
-
-        Row {
-            spacing: 16
-
-            Text {
-                text: device.deviceAddress
-                textFormat: Text.PlainText
-                font.pixelSize: Theme.fontSizeContentSmall
-                color: Theme.colorSubText
-                visible: !(Qt.platform.os === "osx" || Qt.platform.os === "ios")
-            }
-/*
-            Text {
-                text: qsTr("RSSI -%1 dB").arg(Math.abs(device.deviceRssi))
-                textFormat: Text.PlainText
-                font.pixelSize: Theme.fontSizeContentSmall
-                color: Theme.colorSubText
-            }
-*/
+        Text {
+            text: device.deviceAddress
+            textFormat: Text.PlainText
+            font.pixelSize: Theme.fontSizeContentSmall
+            color: Theme.colorSubText
+            visible: !(Qt.platform.os === "osx" || Qt.platform.os === "ios")
         }
     }
 
