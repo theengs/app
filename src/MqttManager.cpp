@@ -61,7 +61,7 @@ bool MqttManager::connect()
 
     if (m_mqttclient)
     {
-        qDebug() << "MqttManager::connect()";
+        //qDebug() << "MqttManager::connect()";
 
         SettingsManager *sm = SettingsManager::getInstance();
         m_mqttclient->setHostname(sm->getMqttHost());
@@ -80,7 +80,7 @@ void MqttManager::disconnect()
 {
     if (m_mqttclient)
     {
-        qDebug() << "MqttManager::disconnect()";
+        //qDebug() << "MqttManager::disconnect()";
 
         m_mqttclient->disconnectFromHost();
     }
@@ -157,7 +157,7 @@ void MqttManager::updateStateChange()
 {
     if (m_mqttclient)
     {
-        qDebug() << "MqttManager::updateStateChange()" << m_mqttclient->state();
+        //qDebug() << "MqttManager::updateStateChange()" << m_mqttclient->state();
         Q_EMIT statusChanged();
 
         //if (m_mqttclient->state() == 0) m_mqttLog.push_front("status: disconnected \n");
@@ -169,7 +169,7 @@ void MqttManager::updateStateChange()
 
 void MqttManager::brokerConnected()
 {
-    qDebug() << "MqttManager::brokerConnected()" << m_mqttclient->state();
+    //qDebug() << "MqttManager::brokerConnected()" << m_mqttclient->state();
 
     if (m_mqttclient)
     {
@@ -187,12 +187,12 @@ void MqttManager::brokerConnected()
 
 void MqttManager::brokerDisconnected()
 {
-    qDebug() << "MqttManager::brokerDisconnected()";
+    //qDebug() << "MqttManager::brokerDisconnected()";
 }
 
 void MqttManager::handleMessage(const QMqttMessage &qmsg)
 {
-    qDebug() << "MqttManager::handleMessage()" << qmsg.topic();
+    //qDebug() << "MqttManager::handleMessage()" << qmsg.topic();
 }
 
 /* ************************************************************************** */

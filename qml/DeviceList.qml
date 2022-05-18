@@ -293,21 +293,6 @@ Item {
                 }
 
                 ButtonCompactable {
-                    id: buttonSync
-                    height: !wideMode ? 36 : 34
-                    anchors.verticalCenter: parent.verticalCenter
-                    visible: deviceManager.bluetooth
-
-                    compact: !wideMode
-                    iconColor: Theme.colorActionbarContent
-                    backgroundColor: Theme.colorActionbarHighlight
-                    onClicked: screenDeviceList.syncSelectedDevice()
-
-                    text: qsTr("Synchronize history")
-                    source: "qrc:/assets/icons_material/duotone-date_range-24px.svg"
-                }
-
-                ButtonCompactable {
                     id: buttonRefresh
                     height: !wideMode ? 36 : 34
                     anchors.verticalCenter: parent.verticalCenter

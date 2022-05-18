@@ -48,7 +48,7 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName,
 {
     Device *device = nullptr;
 
-    QString device_props = QString::fromUtf8(TheengsDecoder().getTheengProperties(deviceModel_theengs.toLatin1()));
+    QString device_props = QString::fromUtf8(TheengsDecoder().getTheengProperties(deviceModel_theengs.toLocal8Bit()));
 
     if (!deviceModel_theengs.isEmpty() && !device_props.isEmpty())
     {
@@ -83,7 +83,7 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName,
                  deviceModel_theengs == "RuuviTag_RAWv2")
         {
             device = new DeviceTheengsBeacons(deviceAddr, deviceName,
-                                         deviceModel_theengs, device_props, this);
+                                              deviceModel_theengs, device_props, this);
         }*/
         else
         {
@@ -126,7 +126,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
         {
             device_model_theengs = QString::fromStdString(doc["model"]);
             device_modelid_theengs = QString::fromStdString(doc["model_id"]);
-            device_props = QString::fromLatin1(dec.getTheengProperties(device_modelid_theengs.toLatin1()));
+            device_props = QString::fromUtf8(dec.getTheengProperties(device_modelid_theengs.toLocal8Bit()));
 
             qDebug() << "addDevice() FOUND [mfd] :" << device_modelid_theengs << device_props;
             break;
@@ -151,7 +151,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
         {
             device_model_theengs = QString::fromStdString(doc["model"]);
             device_modelid_theengs = QString::fromStdString(doc["model_id"]);
-            device_props = QString::fromUtf8(dec.getTheengProperties(device_modelid_theengs.toLatin1()));
+            device_props = QString::fromUtf8(dec.getTheengProperties(device_modelid_theengs.toLocal8Bit()));
 
             qDebug() << "addDevice() FOUND [svd] :" << device_modelid_theengs << device_props;
             break;
@@ -160,8 +160,8 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
 
     if ((!device_modelid_theengs.isEmpty() && !device_props.isEmpty()))
     {
-        //qDebug() << "device_modelId[out]  " << device_modelid_theengs;
-        //qDebug() << "device_props[out] " << device_props;
+        //qDebug() << "device_modelId[out]" << device_modelid_theengs;
+        //qDebug() << "device_props[out]  " << device_props;
 
         if (device_modelid_theengs == "TPMS" ||
             device_modelid_theengs == "H5055"  ||
@@ -204,9 +204,6 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
 
     return device;
 }
-
-/* ************************************************************************** */
-/* ************************************************************************** */
 
 QString DeviceManager::getDeviceModelTheengs(const QString &modelid) const
 {
@@ -440,6 +437,7 @@ void DeviceManager::fakeTheengsDevices()
     }
 }
 
+/* ************************************************************************** */
 /* ************************************************************************** */
 
 void DeviceManager::fakeTheengsData()

@@ -92,7 +92,7 @@ Item {
                             settingsManager.mqtt = checked
 
                             if (checked) mqttManager.connect()
-                            else  mqttManager.disconnect()
+                            else mqttManager.disconnect()
                         }
                     }
 */
@@ -155,7 +155,7 @@ Item {
                         settingsManager.mqtt = checked
 
                         if (checked) mqttManager.connect()
-                        else  mqttManager.disconnect()
+                        else mqttManager.disconnect()
                     }
                 }
             }

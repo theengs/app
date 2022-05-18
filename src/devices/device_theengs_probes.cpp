@@ -49,7 +49,7 @@ DeviceTheengsProbes::DeviceTheengsProbes(const QString &deviceAddr, const QStrin
     parseTheengsProps(devicePropsJson);
 
     if (m_deviceModel == "TPMS") getSqlTpmsData(12*60);
-    else  getSqlProbeData(12*60);
+    else getSqlProbeData(12*60);
 }
 
 DeviceTheengsProbes::DeviceTheengsProbes(const QBluetoothDeviceInfo &d,
@@ -64,7 +64,7 @@ DeviceTheengsProbes::DeviceTheengsProbes(const QBluetoothDeviceInfo &d,
     parseTheengsProps(devicePropsJson);
 
     if (m_deviceModel == "TPMS") getSqlTpmsData(12*60);
-    else  getSqlProbeData(12*60);
+    else getSqlProbeData(12*60);
 }
 
 DeviceTheengsProbes::~DeviceTheengsProbes()
@@ -93,7 +93,7 @@ void DeviceTheengsProbes::parseTheengsProps(const QString &json)
     // Sensors
     if (prop.contains("count") && prop.contains("alarm"))
     {
-        m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_PROBES_TPMS;
+        m_deviceSensorsTheengs = DeviceUtilsTheengs::SENSOR_PROBES_TPMS;
     }
     else
     {
