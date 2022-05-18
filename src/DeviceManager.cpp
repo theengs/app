@@ -885,6 +885,20 @@ void DeviceManager::listenDevices_start()
 
             if (hasBluetoothPermissions())
             {
+#if defined(Q_OS_ANDROID)
+                // Build and apply Android BLE scan filter
+                if (m_daemonMode)
+                {
+                    QStringList filteredAddr;
+                    for (auto d: qAsConst(m_devices_model->m_devices))
+                    {
+                        Device *dd = qobject_cast<Device*>(d);
+                        if (dd) filteredAddr += dd->getAddress();
+                    }
+                    m_discoveryAgent->setAndroidScanFilter(filteredAddr); // WIP
+                }
+#endif // Q_OS_ANDROID
+
                 m_discoveryAgent->start(QBluetoothDeviceDiscoveryAgent::LowEnergyMethod);
 
                 if (m_discoveryAgent->isActive())
