@@ -728,8 +728,9 @@ void DeviceManager::listenDevices_start()
 
             if (hasBluetoothPermissions())
             {
-#if defined(Q_OS_ANDROID)
+#if defined(Q_OS_ANDROID) && defined(QT_CONNECTIVITY_PATCHED)
                 // Build and apply Android BLE scan filter
+                // Needs a patched QtConnectivity (from https://github.com/emericg/qtconnectivity/tree/blescanfiltering_v1)
                 if (m_daemonMode)
                 {
                     QStringList filteredAddr;

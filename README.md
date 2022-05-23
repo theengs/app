@@ -36,7 +36,7 @@ $ python3 contribs.py --qt-directory /home/USER/Qt --android-ndk /home/USER/andr
 ```bash
 $ git clone https://github.com/theengs/app.git TheengsApp --recurse-submodules
 $ cd TheengsApp/
-$ qmake
+$ qmake DEFINES+=QT_CONNECTIVITY_PATCHED
 $ make
 ```
 

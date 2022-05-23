@@ -80,7 +80,7 @@ jobs:
         run: |
              export PATH=$Qt6_DIR/bin:$PATH
              qmake --version
-             qmake ${{env.QMAKE_PROJECT}} CONFIG+=release
+             qmake ${{env.QMAKE_PROJECT}} CONFIG+=release DEFINES+=QT_CONNECTIVITY_PATCHED
              make -j$(nproc)
 
   ## iOS build #################################################################
