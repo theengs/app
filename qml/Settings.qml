@@ -638,7 +638,7 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                 }
 
-                ButtonWireframe {
+                ButtonExperimental {
                     anchors.right: parent.right
                     anchors.rightMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
