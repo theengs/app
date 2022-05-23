@@ -130,27 +130,27 @@ DeviceManager::DeviceManager(bool daemon)
             else if (deviceName == "HiGrow")
                 d = new DeviceEsp32HiGrow(deviceAddr, deviceName, this);
 
-            else if (deviceName == "CGD1")
-                d = new DeviceHygrotempCGD1(deviceAddr, deviceName, this);
-            //else if (deviceName == "Qingping Temp & RH Lite" || deviceName == "Qingping Temp RH Lite")
-            //    d = new DeviceHygrotempCGDK2(deviceAddr, deviceName, this);
-            else if (deviceName == "ClearGrass Temp & RH")
-                d = new DeviceHygrotempCGG1(deviceAddr, deviceName, this);
-            else if (deviceName == "CGP1W")
-                d = new DeviceHygrotempCGP1W(deviceAddr, deviceName, this);
+            else if (deviceName == "ThermoBeacon")
+                d = new DeviceThermoBeacon(deviceAddr, deviceName, this);
             else if (deviceName == "MJ_HT_V1")
                 d = new DeviceHygrotempLYWSDCGQ(deviceAddr, deviceName, this);
             else if (deviceName == "LYWSD02" || deviceName == "MHO-C303")
                 d = new DeviceHygrotempClock(deviceAddr, deviceName, this);
             else if (deviceName == "LYWSD03MMC" || deviceName == "MHO-C401" || deviceName == "XMWSDJO4MMC")
                 d = new DeviceHygrotempSquare(deviceAddr, deviceName, this);
-            else if (deviceName == "ThermoBeacon")
-                d = new DeviceThermoBeacon(deviceAddr, deviceName, this);
+            else if (deviceName == "ClearGrass Temp & RH" || deviceName == "Qingping Temp & RH M")
+                d = new DeviceHygrotempCGG1(deviceAddr, deviceName, this);
+            else if (deviceName == "Qingping Temp RH Lite")
+                d = new DeviceHygrotempCGDK2(deviceAddr, deviceName, this);
+            else if (deviceName == "Qingping Alarm Clock")
+                d = new DeviceHygrotempCGD1(deviceAddr, deviceName, this);
+            else if (deviceName == "Qingping Temp RH Barometer")
+                d = new DeviceHygrotempCGP1W(deviceAddr, deviceName, this);
 
-            else if (deviceName.startsWith("JQJCY01YM"))
-                d = new DeviceJQJCY01YM(deviceAddr, deviceName, this);
             else if (deviceName.startsWith("WP6003"))
                 d = new DeviceWP6003(deviceAddr, deviceName, this);
+            else if (deviceName == "JQJCY01YM")
+                d = new DeviceJQJCY01YM(deviceAddr, deviceName, this);
             else if (deviceName == "AirQualityMonitor")
                 d = new DeviceEsp32AirQualityMonitor(deviceAddr, deviceName, this);
             else if (deviceName == "GeigerCounter")
@@ -470,9 +470,10 @@ void DeviceManager::checkBluetoothIos()
         disconnect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
                    this, &DeviceManager::addBleDevice);
         disconnect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
-                   this, &DeviceManager::detectBleDevice);
+                   this, &DeviceManager::updateBleDevice_simple);
         disconnect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceUpdated,
                    this, &DeviceManager::updateBleDevice);
+
         disconnect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
                    this, &DeviceManager::addNearbyBleDevice);
         disconnect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceUpdated,
@@ -599,164 +600,6 @@ void DeviceManager::bluetoothModeChangedIos()
 /* ************************************************************************** */
 /* ************************************************************************** */
 
-void DeviceManager::scanNearby_start()
-{
-    //qDebug() << "DeviceManager::scanNearby_start()";
-
-    if (hasBluetooth())
-    {
-        if (!m_devices_nearby_model)
-        {
-            m_devices_nearby_model = new DeviceModel(this);
-            m_devices_nearby_filter = new DeviceFilter(this);
-            m_devices_nearby_filter->setSourceModel(m_devices_nearby_model);
-
-            m_devices_nearby_filter->setSortRole(DeviceModel::DeviceRssiRole);
-            m_devices_nearby_filter->sort(0, Qt::AscendingOrder);
-            m_devices_nearby_filter->invalidate();
-        }
-
-        if (!m_discoveryAgent)
-        {
-            startBleAgent();
-        }
-
-        if (m_discoveryAgent)
-        {
-            if (m_discoveryAgent->isActive() && m_scanning)
-            {
-                m_discoveryAgent->stop();
-                m_scanning = false;
-                Q_EMIT scanningChanged();
-            }
-
-            disconnect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::finished,
-                       this, &DeviceManager::deviceDiscoveryFinished);
-
-            connect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
-                    this, &DeviceManager::addNearbyBleDevice, Qt::UniqueConnection);
-            connect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceUpdated,
-                    this, &DeviceManager::updateNearbyBleDevice, Qt::UniqueConnection);
-
-            connect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::finished,
-                    this, &DeviceManager::deviceDiscoveryStopped, Qt::UniqueConnection);
-            connect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::canceled,
-                    this, &DeviceManager::deviceDiscoveryStopped, Qt::UniqueConnection);
-
-            m_discoveryAgent->setLowEnergyDiscoveryTimeout(ble_listening_duration_nearby*1000);
-
-            if (hasBluetoothPermissions())
-            {
-                m_discoveryAgent->start(QBluetoothDeviceDiscoveryAgent::LowEnergyMethod);
-
-                if (m_discoveryAgent->isActive())
-                {
-                    m_listening = true;
-                    Q_EMIT listeningChanged();
-                    qDebug() << "Listening (Bluetooth) for devices...";
-                }
-            }
-            else
-            {
-                qWarning() << "Cannot scan or listen without related Android permissions";
-            }
-        }
-    }
-}
-
-void DeviceManager::scanNearby_stop()
-{
-    qDebug() << "DeviceManager::scanNearby_stop()";
-
-    if (m_discoveryAgent)
-    {
-        if (m_discoveryAgent->isActive())
-        {
-            disconnect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
-                       this, &DeviceManager::addNearbyBleDevice);
-            disconnect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceUpdated,
-                       this, &DeviceManager::updateNearbyBleDevice);
-
-            m_discoveryAgent->stop();
-
-            if (m_scanning)
-            {
-                m_scanning = false;
-                Q_EMIT scanningChanged();
-            }
-            if (m_listening)
-            {
-                m_listening = false;
-                Q_EMIT listeningChanged();
-            }
-        }
-    }
-}
-
-void DeviceManager::addNearbyBleDevice(const QBluetoothDeviceInfo &info)
-{
-    //qDebug() << "DeviceManager::addNearbyBleDevice()" << " > NAME" << info.name() << " > RSSI" << info.rssi();
-
-    if (info.rssi() >= 0) return; // we probably just hit the device cache
-
-    if (info.coreConfigurations() & QBluetoothDeviceInfo::LowEnergyCoreConfiguration)
-    {
-        // Check if it's not already in the UI
-        for (auto ed: qAsConst(m_devices_nearby_model->m_devices))
-        {
-            Device *edd = qobject_cast<Device*>(ed);
-#if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
-            if (edd && edd->getAddress() == info.deviceUuid().toString())
-#else
-            if (edd && edd->getAddress() == info.address().toString())
-#endif
-            {
-                return;
-            }
-        }
-
-        // Create the device
-        Device *d = new Device(info, this);
-        if (!d) return;
-        d->setRssi(info.rssi());
-
-        //connect(d, &Device::deviceUpdated, this, &DeviceManager::refreshDevices_finished);
-        //connect(d, &Device::deviceSynced, this, &DeviceManager::syncDevices_finished);
-
-        // Add it to the UI
-        m_devices_nearby_model->addDevice(d);
-        Q_EMIT devicesNearbyUpdated();
-
-        //qDebug() << "Device nearby added: " << d->getName() << "/" << d->getAddress();
-    }
-}
-
-void DeviceManager::updateNearbyBleDevice(const QBluetoothDeviceInfo &info, QBluetoothDeviceInfo::Fields updatedFields)
-{
-    //qDebug() << "DeviceManager::updateNearbyBleDevice()" << " > NAME" << info.name() << " > RSSI" << info.rssi();
-    Q_UNUSED(updatedFields)
-
-    // Check if it's not already in the UI
-    for (auto d: qAsConst(m_devices_nearby_model->m_devices))
-    {
-        Device *dd = qobject_cast<Device*>(d);
-
-#if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
-        if (dd && dd->getAddress() == info.deviceUuid().toString())
-#else
-        if (dd && dd->getAddress() == info.address().toString())
-#endif
-        {
-            dd->setRssi(info.rssi());
-            return;
-        }
-    }
-
-    addNearbyBleDevice(info);
-}
-
-/* ************************************************************************** */
-
 void DeviceManager::scanDevices_start()
 {
     //qDebug() << "DeviceManager::scanDevices_start()";
@@ -873,8 +716,8 @@ void DeviceManager::listenDevices_start()
             connect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::canceled,
                     this, &DeviceManager::deviceDiscoveryStopped, Qt::UniqueConnection);
 
-            //connect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
-            //        this, &DeviceManager::detectBleDevice, Qt::UniqueConnection);
+            connect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
+                    this, &DeviceManager::updateBleDevice_simple, Qt::UniqueConnection);
             connect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceUpdated,
                     this, &DeviceManager::updateBleDevice, Qt::UniqueConnection);
 
@@ -912,45 +755,6 @@ void DeviceManager::listenDevices_start()
             {
                 qWarning() << "Cannot scan or listen without related Android permissions";
             }
-        }
-    }
-}
-
-void DeviceManager::detectBleDevice(const QBluetoothDeviceInfo &info)
-{
-    //qDebug() << "detectBleDevice() " << info.address() /*<< info.deviceUuid()*/;
-
-    for (auto d: qAsConst(m_devices_model->m_devices))
-    {
-        Device *dd = qobject_cast<Device*>(d);
-
-#if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
-        if (dd && dd->getAddress() == info.deviceUuid().toString())
-#else
-        if (dd && dd->getAddress() == info.address().toString())
-#endif
-        {
-            if (!dd->isEnabled()) return;
-            if (!dd->hasBluetoothConnection()) return;
-            if (dd->getName() == "ThermoBeacon") return;
-
-            //qDebug() << "adding from detectBleDevice()";
-            //qDebug() << "last upd" << dd->getLastUpdateInt() << dd->needsUpdateRt();
-            //qDebug() << "last err" << dd->getLastErrorInt() << dd->isErrored();
-
-            // old or no data: go for refresh
-            // also, check if we didn't already fail to update in the last couple minutes
-            if (dd->needsUpdateRt() && !dd->isErrored())
-            {
-                if (!m_devices_updating_queue.contains(dd) && !m_devices_updating.contains(dd))
-                {
-                    m_devices_updating_queue.push_back(dd);
-                    dd->refreshQueued();
-                    refreshDevices_continue();
-                }
-            }
-
-            return;
         }
     }
 }
@@ -1230,6 +1034,10 @@ void DeviceManager::refreshDevices_stop()
         }
     }
 
+    m_devices_updating.clear();
+    m_updating = false;
+    Q_EMIT updatingChanged();
+
     if (!m_devices_updating_queue.empty())
     {
         for (auto d: qAsConst(m_devices_updating))
@@ -1239,10 +1047,6 @@ void DeviceManager::refreshDevices_stop()
         }
 
         m_devices_updating_queue.clear();
-        m_devices_updating.clear();
-
-        m_updating = false;
-        Q_EMIT updatingChanged();
     }
 }
 
@@ -1524,19 +1328,22 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
 
     // Regular WatchFlower device
     if (info.name() == "Flower care" || info.name() == "Flower mate" || info.name() == "Grow care garden" ||
+        info.name() == "ropot" ||
         info.name().startsWith("Flower power") ||
         info.name().startsWith("Parrot pot") ||
-        info.name() == "ropot" ||
+        info.name() == "HiGrow" ||
+        info.name() == "ThermoBeacon" ||
         info.name() == "MJ_HT_V1" ||
-        info.name() == "ClearGrass Temp & RH" ||
-        //info.name() == "Qingping Temp & RH Lite" || info.name() == "Qingping Temp RH Lite" ||
         info.name() == "LYWSD02" || info.name() == "MHO-C303" ||
         info.name() == "LYWSD03MMC" || info.name() == "MHO-C401" || info.name() == "XMWSDJO4MMC" ||
-        info.name() == "ThermoBeacon" ||
+        info.name() == "ClearGrass Temp & RH" || info.name() == "Qingping Temp & RH M" ||
+        info.name() == "Qingping Temp RH Lite" ||
+        info.name() == "Qingping Alarm Clock" ||
+        info.name() == "Qingping Temp RH Barometer" ||
         info.name().startsWith("6003#") ||
+        info.name() == "JQJCY01YM" ||
         info.name() == "AirQualityMonitor" ||
-        info.name() == "GeigerCounter" ||
-        info.name() == "HiGrow")
+        info.name() == "GeigerCounter")
     {
         // Create the device
         if (info.name() == "Flower care" || info.name() == "Flower mate" || info.name() == "Grow care garden")
@@ -1550,27 +1357,27 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
         else if (info.name() == "HiGrow")
             d = new DeviceEsp32HiGrow(info, this);
 
-        else if (info.name() == "CGD1")
-            d = new DeviceHygrotempCGD1(info, this);
-        //else if (info.name() == "Qingping Temp & RH Lite" || info.name() == "Qingping Temp RH Lite")
-        //    d = new DeviceHygrotempCGDK2(info, this);
-        else if (info.name() == "ClearGrass Temp & RH")
-            d = new DeviceHygrotempCGG1(info, this);
-        else if (info.name() == "CGP1W")
-            d = new DeviceHygrotempCGP1W(info, this);
+        else if (info.name() == "ThermoBeacon")
+            d = new DeviceThermoBeacon(info, this);
         else if (info.name() == "MJ_HT_V1")
             d = new DeviceHygrotempLYWSDCGQ(info, this);
         else if (info.name() == "LYWSD02" || info.name() == "MHO-C303")
             d = new DeviceHygrotempClock(info, this);
         else if (info.name() == "LYWSD03MMC" || info.name() == "MHO-C401" || info.name() == "XMWSDJO4MMC")
             d = new DeviceHygrotempSquare(info, this);
-        else if (info.name() == "ThermoBeacon")
-            d = new DeviceThermoBeacon(info, this);
+        else if (info.name() == "ClearGrass Temp & RH" || info.name() == "Qingping Temp & RH M")
+            d = new DeviceHygrotempCGG1(info, this);
+        else if (info.name() == "Qingping Temp RH Lite")
+            d = new DeviceHygrotempCGDK2(info, this);
+        else if (info.name() == "Qingping Alarm Clock")
+            d = new DeviceHygrotempCGD1(info, this);
+        else if (info.name() == "Qingping Temp RH Barometer")
+            d = new DeviceHygrotempCGP1W(info, this);
 
-        else if (info.name().startsWith("JQJCY01YM"))
-            d = new DeviceJQJCY01YM(info, this);
         else if (info.name().startsWith("6003#"))
             d = new DeviceWP6003(info, this);
+        else if (info.name() == "JQJCY01YM")
+            d = new DeviceJQJCY01YM(info, this);
         else if (info.name() == "AirQualityMonitor")
             d = new DeviceEsp32AirQualityMonitor(info, this);
         else if (info.name() == "GeigerCounter")

@@ -42,6 +42,7 @@ SOURCES  += src/main.cpp \
             src/MqttManager.cpp \
             src/DeviceManager.cpp \
             src/DeviceManager_advertisement.cpp \
+            src/DeviceManager_nearby.cpp \
             src/DeviceManager_theengs.cpp \
             src/device.cpp \
             src/device_infos.cpp \

@@ -38,7 +38,9 @@ DeviceHygrotempCGDK2::DeviceHygrotempCGDK2(const QString &deviceAddr, const QStr
 {
     m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
     m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
+    m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
     m_deviceCapabilities += DeviceUtils::DEVICE_REALTIME;
+    m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
     m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
     m_deviceSensors += DeviceUtils::SENSOR_HUMIDITY;
 }
@@ -48,7 +50,9 @@ DeviceHygrotempCGDK2::DeviceHygrotempCGDK2(const QBluetoothDeviceInfo &d, QObjec
 {
     m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
     m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
+    m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
     m_deviceCapabilities += DeviceUtils::DEVICE_REALTIME;
+    m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
     m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
     m_deviceSensors += DeviceUtils::SENSOR_HUMIDITY;
 }
@@ -215,8 +219,16 @@ void DeviceHygrotempCGDK2::bleReadNotify(const QLowEnergyCharacteristic &c, cons
                 addData.bindValue(":ts_full", tsFullStr);
                 addData.bindValue(":temp", m_temperature);
                 addData.bindValue(":humi", m_humidity);
-                if (addData.exec() == false)
-                    qWarning() << "> DeviceHygrotempCGDK2 addData.exec() ERROR" << addData.lastError().type() << ":" << addData.lastError().text();
+
+                if (addData.exec())
+                {
+                    m_lastUpdateDatabase = m_lastUpdate;
+                }
+                else
+                {
+                    qWarning() << "> DeviceHygrotempCGDK2 addData.exec() ERROR"
+                               << addData.lastError().type() << ":" << addData.lastError().text();
+                }
             }
 
             if (m_ble_action == DeviceUtils::ACTION_UPDATE_REALTIME)
@@ -251,6 +263,120 @@ void DeviceHygrotempCGDK2::confirmedDescriptorWrite(const QLowEnergyDescriptor &
         //m_control->disconnectFromDevice();
         //delete m_service;
         //m_service = nullptr;
+    }
+}
+
+/* ************************************************************************** */
+
+void DeviceHygrotempCGDK2::parseAdvertisementData(const QByteArray &value)
+{
+    //qDebug() << "DeviceHygrotempCGDK2::parseAdvertisementData(" << m_deviceAddress << ")" << value.size();
+    //qDebug() << "DATA: 0x" << value.toHex();
+
+    const quint8 *data = reinterpret_cast<const quint8 *>(value.constData());
+
+    if (value.size() == 17) // Qingping data protocol // 17 bytes messages
+    {
+#if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
+        QString mac;
+        mac += value.mid(7,1).toHex().toUpper();
+        mac += ':';
+        mac += value.mid(6,1).toHex().toUpper();
+        mac += ':';
+        mac += value.mid(5,1).toHex().toUpper();
+        mac += ':';
+        mac += value.mid(4,1).toHex().toUpper();
+        mac += ':';
+        mac += value.mid(3,1).toHex().toUpper();
+        mac += ':';
+        mac += value.mid(2,1).toHex().toUpper();
+
+        // Save mac address
+        setSetting("mac", mac);
+#else
+        QString mac;
+        Q_UNUSED(mac)
+#endif
+        int batt = -99;
+        float temp = -99.f;
+        float humi = -99.f;
+
+        // get data
+        if ((data[0] == 0x88 && data[1] == 0x16) || // CGG1
+            (data[0] == 0x08 && data[1] == 0x07) || // CGG1
+            (data[0] == 0x88 && data[1] == 0x10) || // CGDK2
+            (data[0] == 0x08 && data[1] == 0x10) || // CGDK2
+            (data[0] == 0x08 && data[1] == 0x09) || // CGP1W
+            (data[0] == 0x08 && data[1] == 0x0c))   // CGD1
+        {
+            temp = static_cast<int16_t>(data[10] + (data[11] << 8)) / 10.f;
+            if (temp != m_temperature)
+            {
+                if (temp > -30.f && temp < 100.f)
+                {
+                    m_temperature = temp;
+                    Q_EMIT dataUpdated();
+                }
+            }
+
+            humi = static_cast<int16_t>(data[12] + (data[13] << 8)) / 10.f;
+            if (humi != m_humidity)
+            {
+                if (humi >= 0.f && humi <= 100.f)
+                {
+                    m_humidity = humi;
+                    Q_EMIT dataUpdated();
+                }
+            }
+
+            batt = static_cast<int8_t>(data[16]);
+            setBattery(batt);
+        }
+
+        if (m_temperature > -99.f && m_humidity > -99.f)
+        {
+            m_lastUpdate = QDateTime::currentDateTime();
+
+            if (needsUpdateDb())
+            {
+                if (m_dbInternal || m_dbExternal)
+                {
+                    // SQL date format YYYY-MM-DD HH:MM:SS
+                    QString tsStr = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+                    QString tsFullStr = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+
+                    QSqlQuery addData;
+                    addData.prepare("REPLACE INTO plantData (deviceAddr, ts, ts_full, temperature, humidity)"
+                                    " VALUES (:deviceAddr, :ts, :ts_full, :temp, :humi)");
+                    addData.bindValue(":deviceAddr", getAddress());
+                    addData.bindValue(":ts", tsStr);
+                    addData.bindValue(":ts_full", tsFullStr);
+                    addData.bindValue(":temp", m_temperature);
+                    addData.bindValue(":humi", m_humidity);
+
+                    if (addData.exec())
+                    {
+                        m_lastUpdateDatabase = m_lastUpdate;
+                    }
+                    else
+                    {
+                        qWarning() << "> DeviceHygrotempCGDK2 addData.exec() ERROR"
+                                   << addData.lastError().type() << ":" << addData.lastError().text();
+                    }
+                }
+            }
+
+            refreshDataFinished(true);
+        }
+/*
+        if (batt > -99 || temp > -99 || humi > -99)
+        {
+            qDebug() << "* CGDK2 service data:" << getName() << getAddress() << "(" << value.size() << ") bytes";
+            if (!mac.isEmpty()) qDebug() << "- MAC:" << mac;
+            if (temp > -99) qDebug() << "- temperature:" << temp;
+            if (humi > -99) qDebug() << "- humidity:" << humi;
+        }
+*/
     }
 }
 

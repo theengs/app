@@ -100,7 +100,7 @@ class DeviceManager: public QObject
     static const int ble_scanning_duration = 30;
     static const int ble_listening_duration = 0;
     static const int ble_listening_duration_nearby = 60;
-    static const int ble_listening_duration_background = 30;
+    static const int ble_listening_duration_background = 60;
 
     bool hasBluetooth() const;
     bool hasBluetoothAdapter() const;
@@ -190,8 +190,8 @@ private slots:
     void addNearbyBleDevice(const QBluetoothDeviceInfo &info);
     void updateNearbyBleDevice(const QBluetoothDeviceInfo &info, QBluetoothDeviceInfo::Fields updatedFields);
     void addBleDevice(const QBluetoothDeviceInfo &info);
-    void detectBleDevice(const QBluetoothDeviceInfo &info);
     void updateBleDevice(const QBluetoothDeviceInfo &info, QBluetoothDeviceInfo::Fields updatedFields);
+    void updateBleDevice_simple(const QBluetoothDeviceInfo &info);
     void deviceDiscoveryError(QBluetoothDeviceDiscoveryAgent::Error);
     void deviceDiscoveryFinished();
     void deviceDiscoveryStopped();

@@ -44,6 +44,8 @@ public:
     DeviceHygrotempLYWSDCGQ(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
     ~DeviceHygrotempLYWSDCGQ();
 
+    void parseAdvertisementData(const QByteArray &value);
+
 private:
     // QLowEnergyController related
     void serviceScanDone();

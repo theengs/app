@@ -25,25 +25,28 @@
 #include <decoder.h> // Theengs decoder
 #include "device_theengs.h"
 
-#include <QBluetoothLocalDevice>
-#include <QBluetoothDeviceDiscoveryAgent>
-#include <QBluetoothAddress>
 #include <QBluetoothDeviceInfo>
-#include <QLowEnergyConnectionParameters>
-
 #include <QList>
-#include <QDateTime>
 #include <QDebug>
 
 /* ************************************************************************** */
 
-void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetoothDeviceInfo::Fields updatedFields)
+void DeviceManager::updateBleDevice_simple(const QBluetoothDeviceInfo &info)
+{
+    updateBleDevice(info, QBluetoothDeviceInfo::Field::None);
+}
+
+void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
+                                    QBluetoothDeviceInfo::Fields updatedFields)
 {
     //qDebug() << "updateBleDevice() " << info.name() << info.address(); // << info.deviceUuid() // << " updatedFields: " << updatedFields
-    Q_UNUSED(updatedFields)
     bool status = false;
 
-    if (info.address().toString() == info.name().replace('-', ':')) return; // skip beacons
+    // We don't use QBluetoothDeviceInfo::Fields, it's unreliable
+    Q_UNUSED(updatedFields)
+
+    if (info.name().isEmpty()) return; // skip beacons
+    if (info.name().replace('-', ':') == info.address().toString()) return; // skip beacons
 
     for (auto d: qAsConst(m_devices_model->m_devices)) // KNOWN DEVICES ////////
     {
@@ -187,7 +190,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info, QBluetooth
                 }
             }
 
-            return;
+            break;
         }
     }
 
