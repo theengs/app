@@ -284,8 +284,12 @@ void DeviceParrotPot::serviceDetailsDiscovered_infos(QLowEnergyService::ServiceS
                 updateDevice.prepare("UPDATE devices SET deviceFirmware = :firmware WHERE deviceAddr = :deviceAddr");
                 updateDevice.bindValue(":firmware", m_deviceFirmware);
                 updateDevice.bindValue(":deviceAddr", getAddress());
+
                 if (updateDevice.exec() == false)
-                    qWarning() << "> updateDevice.exec() ERROR" << updateDevice.lastError().type() << ":" << updateDevice.lastError().text();
+                {
+                    qWarning() << "> updateDevice.exec() ERROR"
+                               << updateDevice.lastError().type() << ":" << updateDevice.lastError().text();
+                }
             }
 
             Q_EMIT sensorUpdated();

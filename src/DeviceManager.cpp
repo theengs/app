@@ -1188,7 +1188,8 @@ void DeviceManager::refreshDevices_continue()
 
             if (updateLastSync.exec() == false)
             {
-                qWarning() << "> updateLastSync.exec() ERROR" << updateLastSync.lastError().type() << ":" << updateLastSync.lastError().text();
+                qWarning() << "> updateLastSync.exec() ERROR" <<
+                              updateLastSync.lastError().type() << ":" << updateLastSync.lastError().text();
             }
             if (updateLastSync.numRowsAffected() == 0)
             {
@@ -1660,7 +1661,10 @@ void DeviceManager::removeDevice(const QString &address)
                 removeDevice.prepare("DELETE FROM devices WHERE deviceAddr = :deviceAddr");
                 removeDevice.bindValue(":deviceAddr", dd->getAddress());
                 if (removeDevice.exec() == false)
-                    qWarning() << "> removeDevice.exec() ERROR" << removeDevice.lastError().type() << ":" << removeDevice.lastError().text();
+                {
+                    qWarning() << "> removeDevice.exec() ERROR"
+                               << removeDevice.lastError().type() << ":" << removeDevice.lastError().text();
+                }
             }
 
             // Remove device

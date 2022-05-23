@@ -203,7 +203,8 @@ void DeviceJQJCY01YM::parseAdvertisementData(const QByteArray &value)
                         }
                         else
                         {
-                            qWarning() << "> DeviceJQJCY01YM addData.exec() ERROR" << addData.lastError().type() << ":" << addData.lastError().text();
+                            qWarning() << "> DeviceJQJCY01YM addData.exec() ERROR"
+                                       << addData.lastError().type() << ":" << addData.lastError().text();
                         }
                     }
 
@@ -246,7 +247,10 @@ bool DeviceJQJCY01YM::hasData() const
         hasData.bindValue(":deviceAddr", getAddress());
 
         if (hasData.exec() == false)
-            qWarning() << "> hasData.exec(DeviceJQJCY01YM) ERROR" << hasData.lastError().type() << ":" << hasData.lastError().text();
+        {
+            qWarning() << "> hasData.exec(DeviceJQJCY01YM) ERROR"
+                       << hasData.lastError().type() << ":" << hasData.lastError().text();
+        }
 
         while (hasData.next())
         {

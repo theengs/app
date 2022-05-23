@@ -233,8 +233,7 @@ void DeviceRopot::serviceDetailsDiscovered_data(QLowEnergyService::ServiceState 
 
         if (serviceData && m_ble_action == DeviceUtils::ACTION_LED_BLINK)
         {
-            // Make LED blink
-            // TODO
+            // TODO // Make LED blink // If that's even possible?
         }
     }
 }
@@ -777,6 +776,7 @@ bool DeviceRopot::addDatabaseRecord(const int64_t timestamp,
             addData.bindValue(":hygro", soilMoisture);
             addData.bindValue(":condu", soilConductivity);
             addData.bindValue(":temp", temperature);
+
             status = addData.exec();
 
             if (status)
@@ -785,7 +785,8 @@ bool DeviceRopot::addDatabaseRecord(const int64_t timestamp,
             }
             else
             {
-                qWarning() << "> DeviceRopot addData.exec() ERROR" << addData.lastError().type() << ":" << addData.lastError().text();
+                qWarning() << "> DeviceRopot addData.exec() ERROR"
+                           << addData.lastError().type() << ":" << addData.lastError().text();
             }
         }
     }
@@ -837,7 +838,8 @@ bool DeviceRopot::addDatabaseRecord2(const int64_t timestamp,
             }
             else
             {
-                qWarning() << "> DeviceRopot addData.exec() ERROR" << addData.lastError().type() << ":" << addData.lastError().text();
+                qWarning() << "> DeviceRopot addData.exec() ERROR"
+                           << addData.lastError().type() << ":" << addData.lastError().text();
             }
         }
     }

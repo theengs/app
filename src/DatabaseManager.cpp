@@ -128,13 +128,19 @@ bool DatabaseManager::openDatabase_sqlite()
                             QSqlQuery sanitizePlantDataPast;
                             sanitizePlantDataPast.prepare("DELETE FROM plantData WHERE ts < DATE('now', '-90 days')");
                             if (sanitizePlantDataPast.exec() == false)
-                                qWarning() << "> sanitizeDataPast.exec() ERROR" << sanitizePlantDataPast.lastError().type() << ":" << sanitizePlantDataPast.lastError().text();
+                            {
+                                qWarning() << "> sanitizeDataPast.exec() ERROR"
+                                           << sanitizePlantDataPast.lastError().type() << ":" << sanitizePlantDataPast.lastError().text();
+                            }
 
                             // Delete everything that's in the future
                             QSqlQuery sanitizePlantDataFuture;
                             sanitizePlantDataFuture.prepare("DELETE FROM plantData WHERE ts > DATE('now', '+1 days')");
                             if (sanitizePlantDataFuture.exec() == false)
-                                qWarning() << "> sanitizeDataFuture.exec() ERROR" << sanitizePlantDataFuture.lastError().type() << ":" << sanitizePlantDataFuture.lastError().text();
+                            {
+                                qWarning() << "> sanitizeDataFuture.exec() ERROR"
+                                           << sanitizePlantDataFuture.lastError().type() << ":" << sanitizePlantDataFuture.lastError().text();
+                            }
                         }
                     }
                     else
@@ -323,7 +329,8 @@ void DatabaseManager::createDatabase()
         }
         else
         {
-            qWarning() << "> createDbVersion.exec() ERROR" << createDbVersion.lastError().type() << ":" << createDbVersion.lastError().text();
+            qWarning() << "> createDbVersion.exec() ERROR"
+                       << createDbVersion.lastError().type() << ":" << createDbVersion.lastError().text();
         }
     }
 
@@ -342,7 +349,8 @@ void DatabaseManager::createDatabase()
         }
         else
         {
-            qWarning() << "> createLastSync.exec() ERROR" << createLastSync.lastError().type() << ":" << createLastSync.lastError().text();
+            qWarning() << "> createLastSync.exec() ERROR"
+                       << createLastSync.lastError().type() << ":" << createLastSync.lastError().text();
         }
     }
 
@@ -366,7 +374,10 @@ void DatabaseManager::createDatabase()
                               ");");
 
         if (createDevices.exec() == false)
-            qWarning() << "> createDevices.exec() ERROR" << createDevices.lastError().type() << ":" << createDevices.lastError().text();
+        {
+            qWarning() << "> createDevices.exec() ERROR"
+                       << createDevices.lastError().type() << ":" << createDevices.lastError().text();
+        }
     }
 
     if (!tableExists("devicesBlacklist"))
@@ -379,7 +390,10 @@ void DatabaseManager::createDatabase()
                               ");");
 
         if (createDevicesBlacklist.exec() == false)
-            qWarning() << "> createDevicesBlacklist.exec() ERROR" << createDevicesBlacklist.lastError().type() << ":" << createDevicesBlacklist.lastError().text();
+        {
+            qWarning() << "> createDevicesBlacklist.exec() ERROR"
+                       << createDevicesBlacklist.lastError().type() << ":" << createDevicesBlacklist.lastError().text();
+        }
     }
 
     if (!tableExists("plantData"))
@@ -405,7 +419,10 @@ void DatabaseManager::createDatabase()
                                 ");");
 
         if (createPlantData.exec() == false)
-            qWarning() << "> createPlantData.exec() ERROR" << createPlantData.lastError().type() << ":" << createPlantData.lastError().text();
+        {
+            qWarning() << "> createPlantData.exec() ERROR"
+                       << createPlantData.lastError().type() << ":" << createPlantData.lastError().text();
+        }
     }
 
     if (!tableExists("sensorData"))
@@ -485,7 +502,10 @@ void DatabaseManager::createDatabase()
                                     ");");
 
         if (createSensorTheengs.exec() == false)
-            qWarning() << "> createSensorTheengs.exec() ERROR" << createSensorTheengs.lastError().type() << ":" << createSensorTheengs.lastError().text();
+        {
+            qWarning() << "> createSensorTheengs.exec() ERROR"
+                       << createSensorTheengs.lastError().type() << ":" << createSensorTheengs.lastError().text();
+        }
     }
 }
 
@@ -517,8 +537,12 @@ void DatabaseManager::migrateDatabase()
             QSqlQuery updateDbVersion;
             updateDbVersion.prepare("UPDATE version SET dbVersion=:dbVersion");
             updateDbVersion.bindValue(":dbVersion", CURRENT_DB_VERSION);
+
             if (updateDbVersion.exec() == false)
-                qWarning() << "> updateDbVersion.exec() ERROR" << updateDbVersion.lastError().type() << ":" << updateDbVersion.lastError().text();
+            {
+                qWarning() << "> updateDbVersion.exec() ERROR"
+                           << updateDbVersion.lastError().type() << ":" << updateDbVersion.lastError().text();
+            }
         }
     }
 }

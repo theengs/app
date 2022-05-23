@@ -36,7 +36,7 @@
 
 AndroidService::AndroidService(QObject *parent) : QObject(parent)
 {
-    DatabaseManager *db = DatabaseManager::getInstance();
+    DatabaseManager::getInstance();
 
     m_settingsManager = SettingsManager::getInstance();
 

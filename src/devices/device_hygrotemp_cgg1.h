@@ -31,7 +31,8 @@
 /* ************************************************************************** */
 
 /*!
- * ClearGrass "Digital Bluetooth Thermometer and Hygrometer"
+ * ClearGrass "Temp and RH Monitor"
+ * Qingping "Temp & RH Monitor M"
  * CGG1 device / round body / E-Ink
  */
 class DeviceHygrotempCGG1: public DeviceSensor

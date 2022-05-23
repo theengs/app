@@ -83,8 +83,10 @@ DeviceSensor::DeviceSensor(const QBluetoothDeviceInfo &d, QObject *parent) :
     if (m_dbInternal || m_dbExternal)
     {
         getSqlDeviceInfos();
-        //getSqlSensorBias();
+        getSqlPlantBias();
         getSqlPlantLimits();
+        getSqlSensorBias();
+        getSqlSensorLimits();
 
         // Load initial data into the GUI (if they are no more than 12h old)
         bool data = false;
@@ -120,11 +122,13 @@ void DeviceSensor::refreshDataFinished(bool status, bool cached)
 
     if (status == true)
     {
+        SettingsManager *sm = SettingsManager::getInstance();
+        NotificationManager *nm = NotificationManager::getInstance();
+        if (!sm || !nm) return;
+
         // Plant sensor?
         if (isPlantSensor())
         {
-            SettingsManager *sm = SettingsManager::getInstance();
-
             // Reorder the device list by water level, if needed
             if (sm->getOrderBy() == "waterlevel")
             {
@@ -133,6 +137,8 @@ void DeviceSensor::refreshDataFinished(bool status, bool cached)
         }
     }
 }
+
+/* ************************************************************************** */
 
 void DeviceSensor::refreshHistoryFinished(bool status)
 {
@@ -153,10 +159,14 @@ void DeviceSensor::refreshHistoryFinished(bool status)
         updateDeviceLastSync.bindValue(":sync", m_lastHistorySync.toString("yyyy-MM-dd hh:mm:ss"));
         updateDeviceLastSync.bindValue(":deviceAddr", getAddress());
         if (updateDeviceLastSync.exec() == false)
-            qWarning() << "> updateDeviceLastSync.exec() ERROR" << updateDeviceLastSync.lastError().type() << ":" << updateDeviceLastSync.lastError().text();
+        {
+            qWarning() << "> updateDeviceLastSync.exec() ERROR"
+                       << updateDeviceLastSync.lastError().type() << ":" << updateDeviceLastSync.lastError().text();
+        }
     }
 }
 
+/* ************************************************************************** */
 /* ************************************************************************** */
 
 bool DeviceSensor::getSqlDeviceInfos()
@@ -256,15 +266,73 @@ bool DeviceSensor::getSqlDeviceInfos()
     return status;
 }
 
+/* ************************************************************************** */
+
 bool DeviceSensor::getSqlPlantBias()
 {
     //qDebug() << "DeviceSensor::getSqlPlantBias(" << m_deviceAddress << ")";
     bool status = false;
 
-    // TODO
+    QSqlQuery getBias;
+    getBias.prepare("SELECT soilMoistureBias, soilConduBias, soilTempBias, soilPhBias," \
+                    " tempBias, humiBias, luminosityBias " \
+                    "FROM plantBias WHERE deviceAddr = :deviceAddr");
+    getBias.bindValue(":deviceAddr", getAddress());
+    getBias.exec();
+    while (getBias.next())
+    {
+        m_bias_soilMoisture = getBias.value(0).toFloat();
+        m_bias_soilConductivity = getBias.value(1).toFloat();
+        m_bias_soilTemperature = getBias.value(2).toFloat();
+        m_bias_soilPH = getBias.value(3).toFloat();
+        m_bias_temperature = getBias.value(4).toFloat();
+        m_bias_humidity = getBias.value(5).toFloat();
+        m_bias_luminosityLux = getBias.value(6).toFloat();
+
+        status = true;
+        Q_EMIT biasUpdated();
+    }
 
     return status;
 }
+
+bool DeviceSensor::setSqlPlantBias()
+{
+    //qDebug() << "DeviceSensor::setSqlPlantBias(" << m_deviceAddress << ")";
+    bool status = false;
+
+    if (m_dbInternal || m_dbExternal)
+    {
+        QSqlQuery updateBias;
+        updateBias.prepare("REPLACE INTO plantBias (deviceAddr, " \
+                           " soilMoistureBias, soilConduBias, soilTempBias, soilPhBias," \
+                           " tempBias, humiBias, luminosityBias)" \
+                           " VALUES (:deviceAddr, " \
+                                    ":soilMoistureBias, :soilConduBias, :soilTempBias, :soilPhBias, " \
+                                    ":tempBias, :humiBias, :luminosityBias)");
+        updateBias.bindValue(":deviceAddr", getAddress());
+        updateBias.bindValue(":soilMoistureBias", m_bias_soilMoisture);
+        updateBias.bindValue(":soilConduBias", m_bias_soilConductivity);
+        updateBias.bindValue(":soilTempBias", m_bias_soilTemperature);
+        updateBias.bindValue(":soilPhBias", m_bias_soilPH);
+        updateBias.bindValue(":tempBias", m_bias_temperature);
+        updateBias.bindValue(":humiBias", m_bias_humidity);
+        updateBias.bindValue(":luminosityBias", m_bias_luminosityLux);
+
+        status = updateBias.exec();
+        if (status == false)
+        {
+            qWarning() << "> updateBias.exec() ERROR"
+                       << updateBias.lastError().type() << ":" << updateBias.lastError().text();
+        }
+    }
+
+    Q_EMIT biasUpdated();
+
+    return status;
+}
+
+/* ************************************************************************** */
 
 bool DeviceSensor::getSqlPlantLimits()
 {
@@ -302,6 +370,51 @@ bool DeviceSensor::getSqlPlantLimits()
     return status;
 }
 
+bool DeviceSensor::setSqlPlantLimits()
+{
+    //qDebug() << "DeviceSensor::setSqlPlantLimits(" << m_deviceAddress << ")";
+    bool status = false;
+
+    if (m_dbInternal || m_dbExternal)
+    {
+        QSqlQuery updateLimits;
+        updateLimits.prepare("REPLACE INTO plantLimits (deviceAddr, " \
+                             " hygroMin, hygroMax, conduMin, conduMax, phMin, phMax, tempMin, tempMax," \
+                             " humiMin, humiMax, luxMin, luxMax, mmolMin, mmolMax)" \
+                             " VALUES (:deviceAddr, " \
+                                      ":hygroMin, :hygroMax, :conduMin, :conduMax, :phMin, :phMax, :tempMin, :tempMax, " \
+                                      ":humiMin, :humiMax, :luxMin, :luxMax, :mmolMin, :mmolMax)");
+        updateLimits.bindValue(":deviceAddr", getAddress());
+        updateLimits.bindValue(":hygroMin", m_limit_soilMoistureMin);
+        updateLimits.bindValue(":hygroMax", m_limit_soilMoistureMax);
+        updateLimits.bindValue(":conduMin", m_limit_soilConduMin);
+        updateLimits.bindValue(":conduMax", m_limit_soilConduMax);
+        updateLimits.bindValue(":phMin", m_limit_soilPhMin);
+        updateLimits.bindValue(":phMax", m_limit_soilPhMax);
+        updateLimits.bindValue(":tempMin", m_limit_tempMin);
+        updateLimits.bindValue(":tempMax", m_limit_tempMax);
+        updateLimits.bindValue(":humiMin", m_limit_humiMin);
+        updateLimits.bindValue(":humiMax", m_limit_humiMax);
+        updateLimits.bindValue(":luxMin", m_limit_luxMin);
+        updateLimits.bindValue(":luxMax", m_limit_luxMax);
+        updateLimits.bindValue(":mmolMin", m_limit_mmolMin);
+        updateLimits.bindValue(":mmolMax", m_limit_mmolMax);
+
+        status = updateLimits.exec();
+        if (status == false)
+        {
+            qWarning() << "> updateLimits.exec() ERROR"
+                       << updateLimits.lastError().type() << ":" << updateLimits.lastError().text();
+        }
+    }
+
+    Q_EMIT limitsUpdated();
+
+    return status;
+}
+
+/* ************************************************************************** */
+
 bool DeviceSensor::getSqlPlantData(int minutes)
 {
     //qDebug() << "DeviceSensor::getSqlPlantData(" << m_deviceAddress << ")";
@@ -329,7 +442,8 @@ bool DeviceSensor::getSqlPlantData(int minutes)
 
     if (cachedData.exec() == false)
     {
-        qWarning() << "> cachedDataPlant.exec() ERROR" << cachedData.lastError().type() << ":" << cachedData.lastError().text();
+        qWarning() << "> cachedDataPlant.exec() ERROR"
+                   << cachedData.lastError().type() << ":" << cachedData.lastError().text();
     }
 
     while (cachedData.next())
@@ -363,6 +477,7 @@ bool DeviceSensor::getSqlPlantData(int minutes)
     return status;
 }
 
+/* ************************************************************************** */
 /* ************************************************************************** */
 
 bool DeviceSensor::getSqlSensorBias()
@@ -415,12 +530,14 @@ bool DeviceSensor::setSqlSensorBias()
         updateBias.bindValue(":soilPhBias", m_bias_soilPH);
         updateBias.bindValue(":tempBias", m_bias_temperature);
         updateBias.bindValue(":humiBias", m_bias_humidity);
-        updateBias.bindValue(":pressureBias", m_bias_humidity);
         updateBias.bindValue(":luminosityBias", m_bias_luminosityLux);
 
         status = updateBias.exec();
         if (status == false)
-            qWarning() << "> updateBias.exec() ERROR" << updateBias.lastError().type() << ":" << updateBias.lastError().text();
+        {
+            qWarning() << "> updateBias.exec() ERROR"
+                       << updateBias.lastError().type() << ":" << updateBias.lastError().text();
+        }
     }
 
     Q_EMIT biasUpdated();
@@ -440,38 +557,14 @@ bool DeviceSensor::getSqlSensorLimits()
     return status;
 }
 
-bool DeviceSensor::setSqlPlantLimits()
+bool DeviceSensor::setSqlSensorLimits()
 {
+    //qDebug() << "DeviceSensor::setSqlSensorLimits(" << m_deviceAddress << ")";
     bool status = false;
 
     if (m_dbInternal || m_dbExternal)
     {
-        QSqlQuery updateLimits;
-        updateLimits.prepare("REPLACE INTO plantLimits (deviceAddr, " \
-                             " hygroMin, hygroMax, conduMin, conduMax, phMin, phMax, tempMin, tempMax," \
-                             " humiMin, humiMax, luxMin, luxMax, mmolMin, mmolMax)" \
-                             " VALUES (:deviceAddr, " \
-                                      ":hygroMin, :hygroMax, :conduMin, :conduMax, :phMin, :phMax, :tempMin, :tempMax, " \
-                                      ":humiMin, :humiMax, :luxMin, :luxMax, :mmolMin, :mmolMax)");
-        updateLimits.bindValue(":deviceAddr", getAddress());
-        updateLimits.bindValue(":hygroMin", m_limit_soilMoistureMin);
-        updateLimits.bindValue(":hygroMax", m_limit_soilMoistureMax);
-        updateLimits.bindValue(":conduMin", m_limit_soilConduMin);
-        updateLimits.bindValue(":conduMax", m_limit_soilConduMax);
-        updateLimits.bindValue(":phMin", m_limit_soilPhMin);
-        updateLimits.bindValue(":phMax", m_limit_soilPhMax);
-        updateLimits.bindValue(":tempMin", m_limit_tempMin);
-        updateLimits.bindValue(":tempMax", m_limit_tempMax);
-        updateLimits.bindValue(":humiMin", m_limit_humiMin);
-        updateLimits.bindValue(":humiMax", m_limit_humiMax);
-        updateLimits.bindValue(":luxMin", m_limit_luxMin);
-        updateLimits.bindValue(":luxMax", m_limit_luxMax);
-        updateLimits.bindValue(":mmolMin", m_limit_mmolMin);
-        updateLimits.bindValue(":mmolMax", m_limit_mmolMax);
-
-        status = updateLimits.exec();
-        if (status == false)
-            qWarning() << "> updateLimits.exec() ERROR" << updateLimits.lastError().type() << ":" << updateLimits.lastError().text();
+        // TODO
     }
 
     Q_EMIT limitsUpdated();
@@ -509,7 +602,8 @@ bool DeviceSensor::getSqlSensorData(int minutes)
 
     if (cachedData.exec() == false)
     {
-        qWarning() << "> cachedDataSensor.exec() ERROR" << cachedData.lastError().type() << ":" << cachedData.lastError().text();
+        qWarning() << "> cachedDataSensor.exec() ERROR"
+                   << cachedData.lastError().type() << ":" << cachedData.lastError().text();
     }
 
     while (cachedData.next())
@@ -752,7 +846,10 @@ int DeviceSensor::countDataNamed(const QString &dataName, int days) const
         dataCount.bindValue(":deviceAddr", getAddress());
 
         if (dataCount.exec() == false)
-            qWarning() << "> dataCount.exec() ERROR" << dataCount.lastError().type() << ":" << dataCount.lastError().text();
+        {
+            qWarning() << "> dataCount.exec() ERROR"
+                       << dataCount.lastError().type() << ":" << dataCount.lastError().text();
+        }
 
         while (dataCount.next())
         {
@@ -1039,7 +1136,8 @@ void DeviceSensor::updateChartData_history_day()
 
         if (graphData.exec() == false)
         {
-            qWarning() << "> graphData.exec() ERROR" << graphData.lastError().type() << ":" << graphData.lastError().text();
+            qWarning() << "> graphData.exec() ERROR"
+                       << graphData.lastError().type() << ":" << graphData.lastError().text();
             return;
         }
 
@@ -1136,7 +1234,8 @@ void DeviceSensor::updateChartData_history_day(const QDateTime &d)
 
         if (graphData.exec() == false)
         {
-            qWarning() << "> graphData.exec() ERROR" << graphData.lastError().type() << ":" << graphData.lastError().text();
+            qWarning() << "> graphData.exec() ERROR"
+                       << graphData.lastError().type() << ":" << graphData.lastError().text();
             return;
         }
 
@@ -1242,7 +1341,8 @@ void DeviceSensor::updateChartData_history_month(int maxDays)
 
         if (graphData.exec() == false)
         {
-            qWarning() << "> graphData.exec() ERROR" << graphData.lastError().type() << ":" << graphData.lastError().text();
+            qWarning() << "> graphData.exec() ERROR"
+                       << graphData.lastError().type() << ":" << graphData.lastError().text();
             return;
         }
 
@@ -1379,7 +1479,8 @@ void DeviceSensor::updateChartData_history_month(const QDateTime &f, const QDate
 
         if (graphData.exec() == false)
         {
-            qWarning() << "> graphData.exec() ERROR" << graphData.lastError().type() << ":" << graphData.lastError().text();
+            qWarning() << "> graphData.exec() ERROR"
+                       << graphData.lastError().type() << ":" << graphData.lastError().text();
             return;
         }
 
@@ -1483,7 +1584,8 @@ void DeviceSensor::updateChartData_environmentalVoc(int maxDays)
 
         if (graphData.exec() == false)
         {
-            qWarning() << "> graphData.exec() ERROR" << graphData.lastError().type() << ":" << graphData.lastError().text();
+            qWarning() << "> graphData.exec() ERROR"
+                       << graphData.lastError().type() << ":" << graphData.lastError().text();
             return;
         }
 
@@ -1597,7 +1699,8 @@ void DeviceSensor::updateChartData_thermometerMinMax(int maxDays)
 
         if (graphData.exec() == false)
         {
-            qWarning() << "> graphData.exec() ERROR" << graphData.lastError().type() << ":" << graphData.lastError().text();
+            qWarning() << "> graphData.exec() ERROR"
+                       << graphData.lastError().type() << ":" << graphData.lastError().text();
             return;
         }
 
@@ -1722,7 +1825,8 @@ void DeviceSensor::getChartData_plantAIO(int maxDays, QDateTimeAxis *axis,
 
         if (graphData.exec() == false)
         {
-            qWarning() << "> graphData.exec() ERROR" << graphData.lastError().type() << ":" << graphData.lastError().text();
+            qWarning() << "> graphData.exec() ERROR"
+                       << graphData.lastError().type() << ":" << graphData.lastError().text();
             return;
         }
 

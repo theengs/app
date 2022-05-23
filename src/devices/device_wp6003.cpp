@@ -242,7 +242,8 @@ void DeviceWP6003::bleReadNotify(const QLowEnergyCharacteristic &c, const QByteA
                 }
                 else
                 {
-                    qWarning() << "> DeviceWP6003 addData.exec() ERROR" << addData.lastError().type() << ":" << addData.lastError().text();
+                    qWarning() << "> DeviceWP6003 addData.exec() ERROR"
+                               << addData.lastError().type() << ":" << addData.lastError().text();
                 }
             }
 
@@ -279,7 +280,10 @@ bool DeviceWP6003::hasData() const
         hasData.bindValue(":deviceAddr", getAddress());
 
         if (hasData.exec() == false)
-            qWarning() << "> hasData.exec(DeviceWP6003) ERROR" << hasData.lastError().type() << ":" << hasData.lastError().text();
+        {
+            qWarning() << "> hasData.exec(DeviceWP6003) ERROR"
+                       << hasData.lastError().type() << ":" << hasData.lastError().text();
+        }
 
         while (hasData.next())
         {

@@ -271,7 +271,10 @@ bool DeviceEsp32AirQualityMonitor::hasData() const
         hasData.bindValue(":deviceAddr", getAddress());
 
         if (hasData.exec() == false)
-            qWarning() << "> hasData.exec(AQI) ERROR" << hasData.lastError().type() << ":" << hasData.lastError().text();
+        {
+            qWarning() << "> hasData.exec(AQI) ERROR"
+                       << hasData.lastError().type() << ":" << hasData.lastError().text();
+        }
 
         while (hasData.next())
         {
@@ -322,10 +325,14 @@ bool DeviceEsp32AirQualityMonitor::addDatabaseRecord(const int64_t timestamp,
             status = addData.exec();
 
             if (status)
+            {
                 m_lastUpdateDatabase = m_lastUpdate;
+            }
             else
+            {
                 qWarning() << "> DeviceEsp32AirQualityMonitor addData.exec() ERROR"
                            << addData.lastError().type() << ":" << addData.lastError().text();
+            }
         }
     }
     else
