@@ -18,8 +18,8 @@ Item {
 
         hygroData.visible = currentDevice.hasSoilMoistureSensor && currentDevice.hasDataNamed("soilMoisture")
         conduData.visible = currentDevice.hasSoilConductivitySensor && currentDevice.hasDataNamed("soilConductivity")
-        tempData.visible = currentDevice.hasTemperatureSensor
         hygroData.visible |= currentDevice.hasHumiditySensor && currentDevice.hasDataNamed("humidity")
+        tempData.visible = currentDevice.hasTemperatureSensor
         lumiData.visible = currentDevice.hasLuminositySensor
 
         dateIndicator.visible = false
@@ -263,13 +263,13 @@ Item {
             hoverEnabled: false
 
             onReleased: {
-                if (typeof (sensorPages) !== "undefined") sensorPages.interactive = isPhone
+                if (typeof (plantSensorPages) !== "undefined") plantSensorPages.interactive = isPhone
                 vanim.duration = 266
             }
             onPositionChanged: (mouse) => {
-                if (typeof (sensorPages) !== "undefined") {
+                if (typeof (plantSensorPages) !== "undefined") {
                     // So we don't swipe pages as we drag the indicator
-                    sensorPages.interactive = false
+                    plantSensorPages.interactive = false
                 }
                 vanim.duration = 16
 
@@ -464,6 +464,7 @@ Item {
                 }
             }
         }
+
         if (x1 >= 0 && x2 > x1) {
             // linear interpolation
             if (appContent.state === "DevicePlantSensor") {

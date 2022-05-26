@@ -334,23 +334,23 @@ void DatabaseManager::createDatabase()
         }
     }
 
-    if (!tableExists("lastSync"))
+    if (!tableExists("lastRun"))
     {
-        qDebug() << "+ Adding 'lastSync' table to local database";
+        qDebug() << "+ Adding 'lastRun' table to local database";
 
-        QSqlQuery createLastSync;
-        createLastSync.prepare("CREATE TABLE lastSync (lastSync DATETIME);");
-        if (createLastSync.exec())
+        QSqlQuery createLastRun;
+        createLastRun.prepare("CREATE TABLE lastRun (lastRun DATETIME);");
+        if (createLastRun.exec())
         {
-            QSqlQuery writeLastSync;
-            writeLastSync.prepare("INSERT INTO lastSync (lastSync) VALUES (:lastSync)");
-            writeLastSync.bindValue(":lastSync", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
-            writeLastSync.exec();
+            QSqlQuery writeLastRun;
+            writeLastRun.prepare("INSERT INTO lastRun (lastRun) VALUES (:lastRun)");
+            writeLastRun.bindValue(":lastRun", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+            writeLastRun.exec();
         }
         else
         {
-            qWarning() << "> createLastSync.exec() ERROR"
-                       << createLastSync.lastError().type() << ":" << createLastSync.lastError().text();
+            qWarning() << "> createLastRun.exec() ERROR"
+                       << createLastRun.lastError().type() << ":" << createLastRun.lastError().text();
         }
     }
 
@@ -361,15 +361,17 @@ void DatabaseManager::createDatabase()
         QSqlQuery createDevices;
         createDevices.prepare("CREATE TABLE devices (" \
                               "deviceAddr CHAR(38) PRIMARY KEY," \
-                              "deviceModel VARCHAR(255)," \
                               "deviceName VARCHAR(255)," \
+                              "deviceModel VARCHAR(255)," \
                               "deviceFirmware VARCHAR(255)," \
                               "deviceBattery INT," \
                               "associatedName VARCHAR(255)," \
                               "locationName VARCHAR(255)," \
-                              "lastSync DATETIME," \
+                              "lastSeen DATETIME," \
+                              "lastRun DATETIME," \
+                              "isEnabled BOOLEAN DEFAULT TRUE," \
+                              "isOutside BOOLEAN DEFAULT FALSE," \
                               "manualOrderIndex INT," \
-                              "isOutside BOOLEAN," \
                               "settings VARCHAR(255)" \
                               ");");
 

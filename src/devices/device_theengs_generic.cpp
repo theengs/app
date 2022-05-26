@@ -313,7 +313,7 @@ bool DeviceTheengsGeneric::areValuesValid_hygrometer(const float t, const float 
 {
     if (t <= 0.f && h <= 0.f) return false;
     if (t < -30.f || t > 100.f) return false;
-    if (h < 0.f || t > 100.f) return false;
+    if (h < 0.f || h > 100.f) return false;
 
     return true;
 }

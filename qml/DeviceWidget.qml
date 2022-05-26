@@ -70,7 +70,7 @@ Item {
             if (boxDevice.deviceName === "MJ_HT_V1" ||
                 boxDevice.deviceName === "ClearGrass Temp & RH" ||
                 boxDevice.deviceName === "Qingping Temp & RH M" || boxDevice.deviceName === "Qingping Temp & RH H" ||
-                boxDevice.deviceName === "Qingping Temp & RH Lite" || boxDevice.deviceName === "Qingping Temp RH Lite" ||
+                boxDevice.deviceName === "Qingping Temp RH Lite" ||
                 boxDevice.deviceName === "ThermoBeacon") {
                 imageDevice.source = "qrc:/assets/icons_material/baseline-trip_origin-24px.svg"
             } else if (boxDevice.deviceName === "LYWSD02" ||
@@ -110,7 +110,7 @@ Item {
                     loaderIndicators.sourceComponent = componentText_1l
             } else if (boxDevice.isEnvironmentalSensor) {
                 if (boxDevice.deviceName === "GeigerCounter")
-                    loaderIndicators.sourceComponent = componentText_2l
+                    loaderIndicators.sourceComponent = componentText_1l
                 else
                     loaderIndicators.sourceComponent = componentEnvironmentalGauge
             } else if (boxDevice.isProbe) {
@@ -268,10 +268,12 @@ Item {
 
                 // Air warning
                 if ((boxDevice.hasVocSensor && boxDevice.voc > 1000) ||
+                    (boxDevice.hasHchoSensor && boxDevice.hcho > 1000) ||
                     (boxDevice.hasCo2Sensor && boxDevice.co2 > 1500)) {
                     alarmVentilate.visible = true
                     alarmVentilate.color = Theme.colorRed
                 } else if ((boxDevice.hasVocSensor && boxDevice.voc > 500) ||
+                           (boxDevice.hasHchoSensor && boxDevice.hcho > 500) ||
                            (boxDevice.hasCo2Sensor && boxDevice.co2 > 850)) {
                     alarmVentilate.visible = true
                     alarmVentilate.color = Theme.colorYellow
