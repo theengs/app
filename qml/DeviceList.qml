@@ -23,7 +23,15 @@ Item {
     }
 
     function checkStatus() {
-        if (deviceManager.bluetooth) {
+
+        if (!utilsApp.checkMobileBleLocationPermission()) {
+            utilsApp.getMobileBleLocationPermission()
+        }
+        if (!deviceManager.hasDevices) {
+            rectangleStatus.setDeviceWarning()
+        }
+
+        else if (deviceManager.bluetooth) {
             if (deviceManager.bluetoothPermissions) {
                 if (deviceManager.hasDevices) {
                     rectangleStatus.hide()
