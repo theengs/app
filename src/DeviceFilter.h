@@ -21,9 +21,9 @@
 /* ************************************************************************** */
 
 #include "device.h"
-#include "device_sensor.h"
 
 #include <QObject>
+#include <QByteArray>
 #include <QMetaType>
 #include <QAbstractListModel>
 #include <QSortFilterProxyModel>

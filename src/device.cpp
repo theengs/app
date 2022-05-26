@@ -569,8 +569,14 @@ bool Device::getSqlDeviceInfos()
     if (m_dbInternal || m_dbExternal)
     {
         QSqlQuery getInfos;
-        getInfos.prepare("SELECT deviceModel, deviceFirmware, deviceBattery, associatedName, locationName, lastSync, isOutside, settings" \
-                         " FROM devices WHERE deviceAddr = :deviceAddr");
+        getInfos.prepare("SELECT deviceModel, deviceFirmware, deviceBattery," \
+                           "deviceAddrMAC," \
+                           "associatedName, locationName," \
+                           "lastSeen, lastSync," \
+                           "isEnabled, isOutside," \
+                           "manualOrderIndex," \
+                           "settings " \
+                         "FROM devices WHERE deviceAddr = :deviceAddr");
         getInfos.bindValue(":deviceAddr", getAddress());
         if (getInfos.exec())
         {
@@ -579,13 +585,24 @@ bool Device::getSqlDeviceInfos()
                 m_deviceModel = getInfos.value(0).toString();
                 m_deviceFirmware = getInfos.value(1).toString();
                 m_deviceBattery = getInfos.value(2).toInt();
-                m_associatedName = getInfos.value(3).toString();
-                m_locationName = getInfos.value(4).toString();
-                m_lastHistorySync = getInfos.value(5).toDateTime();
-                //m_manualOrderIndex = 0; // TODO
-                m_isOutside = getInfos.value(6).toBool();
 
-                QString settings = getInfos.value(7).toString();
+                m_deviceAddressMAC = getInfos.value(3).toString();
+
+                m_associatedName = getInfos.value(4).toString();
+                m_locationName = getInfos.value(5).toString();
+
+                m_lastHistorySeen = getInfos.value(6).toDateTime();
+                m_lastHistorySync = getInfos.value(7).toDateTime();
+
+                if (!getInfos.value(8).isNull())
+                    m_isEnabled = getInfos.value(8).toBool();
+                if (!getInfos.value(9).isNull())
+                    m_isOutside = getInfos.value(9).toBool();
+
+                if (!getInfos.value(10).isNull())
+                    m_manualOrderIndex = getInfos.value(10).toInt();
+
+                QString settings = getInfos.value(11).toString();
                 QJsonDocument doc = QJsonDocument::fromJson(settings.toUtf8());
                 if (!doc.isNull() && doc.isObject())
                 {
@@ -602,12 +619,6 @@ bool Device::getSqlDeviceInfos()
         {
             qWarning() << "> getInfos.exec() ERROR"
                        << getInfos.lastError().type() << ":" << getInfos.lastError().text();
-        }
-
-        if (hasSetting("enabled"))
-        {
-            if (getSetting("enabled").toString() == "false") m_isEnabled = false;
-            Q_EMIT settingsUpdated();
         }
     }
 
@@ -859,12 +870,9 @@ void Device::setEnabled(const bool enabled)
 
     if (m_isEnabled != enabled)
     {
-        if (setSetting("enabled", enabled))
-        {
-            m_isEnabled = enabled;
-            Q_EMIT settingsUpdated();
-        }
-/*
+        m_isEnabled = enabled;
+        Q_EMIT settingsUpdated();
+
         if (m_dbInternal || m_dbExternal)
         {
             QSqlQuery updateEnabled;
@@ -873,7 +881,6 @@ void Device::setEnabled(const bool enabled)
             updateEnabled.bindValue(":deviceAddr", getAddress());
             updateEnabled.exec();
         }
-*/
     }
 }
 
@@ -1194,7 +1201,7 @@ void Device::bleReadNotify(const QLowEnergyCharacteristic &, const QByteArray &)
 
 /* ************************************************************************** */
 
-void Device::parseAdvertisementData(const QByteArray &)
+void Device::parseAdvertisementData(const QByteArray &, const uint16_t)
 {
     //qDebug() << "Device::parseAdvertisementData(" << m_deviceAddress << ")";
 }

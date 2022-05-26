@@ -673,7 +673,7 @@ Item {
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
 
-                    height: UtilsNumber.normalize(boxDevice.soilMoisture, boxDevice.limitHygroMin - 1, boxDevice.limitHygroMax) * rowRight.height
+                    height: UtilsNumber.normalize(boxDevice.soilMoisture, boxDevice.soilMoisture_limitMin - 1, boxDevice.soilMoisture_limitMax) * rowRight.height
 
                     color: Theme.colorBlue
                     radius: rectangleSensors.sensorRadius
@@ -701,7 +701,7 @@ Item {
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
 
-                    height: UtilsNumber.normalize(boxDevice.soilConductivity, boxDevice.limitConduMin, boxDevice.limitConduMax) * rowRight.height
+                    height: UtilsNumber.normalize(boxDevice.soilConductivity, boxDevice.soilConductivity_limitMin, boxDevice.soilConductivity_limitMax) * rowRight.height
 
                     color: Theme.colorRed
                     radius: rectangleSensors.sensorRadius
@@ -727,7 +727,7 @@ Item {
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
 
-                    height: UtilsNumber.normalize(boxDevice.temperatureC, boxDevice.limitTempMin - 1, boxDevice.limitTempMax) * rowRight.height
+                    height: UtilsNumber.normalize(boxDevice.temperatureC, boxDevice.temperature_limitMin - 1, boxDevice.temperature_limitMax) * rowRight.height
 
                     color: Theme.colorGreen
                     radius: rectangleSensors.sensorRadius
@@ -755,7 +755,7 @@ Item {
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
 
-                    height: UtilsNumber.normalize(boxDevice.luminosityLux, boxDevice.limitLuxMin, boxDevice.limitLuxMax) * rowRight.height
+                    height: UtilsNumber.normalize(boxDevice.luminosityLux, boxDevice.luminosityLux_limitMin, boxDevice.luminosityLux_limitMax) * rowRight.height
 
                     color: Theme.colorYellow
                     radius: rectangleSensors.sensorRadius

@@ -34,7 +34,7 @@
 /* ************************************************************************** */
 
 DeviceJQJCY01YM::DeviceJQJCY01YM(const QString &deviceAddr, const QString &deviceName, QObject *parent):
-    DeviceSensor(deviceAddr, deviceName, parent)
+    DeviceEnvironmental(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
     m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
@@ -45,7 +45,7 @@ DeviceJQJCY01YM::DeviceJQJCY01YM(const QString &deviceAddr, const QString &devic
 }
 
 DeviceJQJCY01YM::DeviceJQJCY01YM(const QBluetoothDeviceInfo &d, QObject *parent):
-    DeviceSensor(d, parent)
+    DeviceEnvironmental(d, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
     m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
@@ -75,7 +75,7 @@ void DeviceJQJCY01YM::addLowEnergyService(const QBluetoothUuid &uuid)
 
 /* ************************************************************************** */
 
-void DeviceJQJCY01YM::parseAdvertisementData(const QByteArray &value)
+void DeviceJQJCY01YM::parseAdvertisementData(const QByteArray &value, const uint16_t identifier)
 {
     //qDebug() << "DeviceJQJCY01YM::parseAdvertisementData(" << m_deviceAddress << ")" << value.size();
     //qDebug() << "DATA: 0x" << value.toHex();

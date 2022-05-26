@@ -44,10 +44,13 @@ SOURCES  += src/main.cpp \
             src/DeviceManager_advertisement.cpp \
             src/DeviceManager_nearby.cpp \
             src/DeviceManager_theengs.cpp \
+            src/DeviceFilter.cpp \
             src/device.cpp \
             src/device_infos.cpp \
-            src/device_filter.cpp \
             src/device_sensor.cpp \
+            src/device_plantsensor.cpp \
+            src/device_thermometer.cpp \
+            src/device_environmental.cpp \
             src/devices/device_flowercare.cpp \
             src/devices/device_flowerpower.cpp \
             src/devices/device_ropot.cpp \
@@ -86,12 +89,15 @@ HEADERS  += src/SettingsManager.h \
             src/AndroidService.h \
             src/MqttManager.h \
             src/DeviceManager.h \
+            src/DeviceFilter.h \
             src/device.h \
             src/device_utils.h \
             src/device_utils_theengs.h \
             src/device_infos.h \
-            src/device_filter.h \
             src/device_sensor.h \
+            src/device_plantsensor.h \
+            src/device_thermometer.h \
+            src/device_environmental.h \
             src/devices/device_flowercare.h \
             src/devices/device_flowerpower.h \
             src/devices/device_ropot.h \

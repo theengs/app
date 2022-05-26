@@ -43,29 +43,12 @@ DeviceSensor::DeviceSensor(const QString &deviceAddr, const QString &deviceName,
         m_dbExternal = db->hasDatabaseExternal();
     }
 
-    // Load device infos, bias, limits and initial data
-    if (m_dbInternal || m_dbExternal)
-    {
-        getSqlDeviceInfos();
-        getSqlPlantBias();
-        getSqlPlantLimits();
-
-        // Load initial data into the GUI (if they are no more than 12h old)
-        bool data = false;
-        if (!data) data = getSqlPlantData(12*60);
-        if (!data) data = getSqlSensorData(12*60);
-    }
-
     // Configure timeout timer
     m_timeoutTimer.setSingleShot(true);
     connect(&m_timeoutTimer, &QTimer::timeout, this, &DeviceSensor::actionTimedout);
 
     // Configure update timer (only started on desktop)
     connect(&m_updateTimer, &QTimer::timeout, this, &DeviceSensor::refreshStart);
-
-    // Device infos
-    m_deviceInfos = new DeviceInfos(this);
-    m_deviceInfos->load(m_deviceName);
 }
 
 DeviceSensor::DeviceSensor(const QBluetoothDeviceInfo &d, QObject *parent) :
@@ -79,31 +62,12 @@ DeviceSensor::DeviceSensor(const QBluetoothDeviceInfo &d, QObject *parent) :
         m_dbExternal = db->hasDatabaseExternal();
     }
 
-    // Load device infos, bias, limits and initial data
-    if (m_dbInternal || m_dbExternal)
-    {
-        getSqlDeviceInfos();
-        getSqlPlantBias();
-        getSqlPlantLimits();
-        getSqlSensorBias();
-        getSqlSensorLimits();
-
-        // Load initial data into the GUI (if they are no more than 12h old)
-        bool data = false;
-        if (!data) data = getSqlPlantData(12*60);
-        if (!data) data = getSqlSensorData(12*60);
-    }
-
     // Configure timeout timer
     m_timeoutTimer.setSingleShot(true);
     connect(&m_timeoutTimer, &QTimer::timeout, this, &DeviceSensor::actionTimedout);
 
     // Configure update timer (only started on desktop)
     connect(&m_updateTimer, &QTimer::timeout, this, &DeviceSensor::refreshStart);
-
-    // Device infos
-    m_deviceInfos = new DeviceInfos(this);
-    if (m_deviceInfos) m_deviceInfos->load(m_deviceName);
 }
 
 DeviceSensor::~DeviceSensor()
@@ -267,30 +231,42 @@ bool DeviceSensor::getSqlDeviceInfos()
 }
 
 /* ************************************************************************** */
+/* ************************************************************************** */
 
 bool DeviceSensor::getSqlPlantBias()
 {
     //qDebug() << "DeviceSensor::getSqlPlantBias(" << m_deviceAddress << ")";
     bool status = false;
 
-    QSqlQuery getBias;
-    getBias.prepare("SELECT soilMoistureBias, soilConduBias, soilTempBias, soilPhBias," \
-                    " tempBias, humiBias, luminosityBias " \
-                    "FROM plantBias WHERE deviceAddr = :deviceAddr");
-    getBias.bindValue(":deviceAddr", getAddress());
-    getBias.exec();
-    while (getBias.next())
+    if (m_dbInternal || m_dbExternal)
     {
-        m_bias_soilMoisture = getBias.value(0).toFloat();
-        m_bias_soilConductivity = getBias.value(1).toFloat();
-        m_bias_soilTemperature = getBias.value(2).toFloat();
-        m_bias_soilPH = getBias.value(3).toFloat();
-        m_bias_temperature = getBias.value(4).toFloat();
-        m_bias_humidity = getBias.value(5).toFloat();
-        m_bias_luminosityLux = getBias.value(6).toFloat();
+        QSqlQuery getBias;
+        getBias.prepare("SELECT soilMoisture_bias, soilConductivity_bias, soilTemperature_bias, soilPH_bias," \
+                        " temperature_bias, humidity_bias, luminosity_bias " \
+                        "FROM plantBias WHERE deviceAddr = :deviceAddr");
+        getBias.bindValue(":deviceAddr", getAddress());
 
-        status = true;
-        Q_EMIT biasUpdated();
+        if (getBias.exec())
+        {
+            while (getBias.next())
+            {
+                m_soilMoisture_bias = getBias.value(0).toFloat();
+                m_soilConductivity_bias = getBias.value(1).toFloat();
+                m_soilTemperature_bias = getBias.value(2).toFloat();
+                m_soilPH_bias = getBias.value(3).toFloat();
+                m_temperature_bias = getBias.value(4).toFloat();
+                m_humidity_bias = getBias.value(5).toFloat();
+                m_luminosity_bias = getBias.value(6).toFloat();
+
+                status = true;
+                Q_EMIT biasUpdated();
+            }
+        }
+        else
+        {
+            qWarning() << "> getBias.exec(plant) ERROR"
+                       << getBias.lastError().type() << ":" << getBias.lastError().text();
+        }
     }
 
     return status;
@@ -304,25 +280,25 @@ bool DeviceSensor::setSqlPlantBias()
     if (m_dbInternal || m_dbExternal)
     {
         QSqlQuery updateBias;
-        updateBias.prepare("REPLACE INTO plantBias (deviceAddr, " \
-                           " soilMoistureBias, soilConduBias, soilTempBias, soilPhBias," \
-                           " tempBias, humiBias, luminosityBias)" \
-                           " VALUES (:deviceAddr, " \
-                                    ":soilMoistureBias, :soilConduBias, :soilTempBias, :soilPhBias, " \
-                                    ":tempBias, :humiBias, :luminosityBias)");
+        updateBias.prepare("REPLACE INTO plantBias (deviceAddr," \
+                             "soilMoisture_bias, soilConductivity_bias, soilTemperature_bias, soilPH_bias," \
+                             "temperature_bias, humidity_bias, luminosity_bias) " \
+                           "VALUES (:deviceAddr," \
+                                   ":soilMoist, :soilCondu, :soilTemp, :soilPH," \
+                                   ":temp, :humi, :lumi)");
         updateBias.bindValue(":deviceAddr", getAddress());
-        updateBias.bindValue(":soilMoistureBias", m_bias_soilMoisture);
-        updateBias.bindValue(":soilConduBias", m_bias_soilConductivity);
-        updateBias.bindValue(":soilTempBias", m_bias_soilTemperature);
-        updateBias.bindValue(":soilPhBias", m_bias_soilPH);
-        updateBias.bindValue(":tempBias", m_bias_temperature);
-        updateBias.bindValue(":humiBias", m_bias_humidity);
-        updateBias.bindValue(":luminosityBias", m_bias_luminosityLux);
+        updateBias.bindValue(":soilMoist", m_soilMoisture_bias);
+        updateBias.bindValue(":soilCondu", m_soilConductivity_bias);
+        updateBias.bindValue(":soilTemp", m_soilTemperature_bias);
+        updateBias.bindValue(":soilPH", m_soilPH_bias);
+        updateBias.bindValue(":temp", m_temperature_bias);
+        updateBias.bindValue(":humi", m_humidity_bias);
+        updateBias.bindValue(":lumi", m_luminosity_bias);
 
         status = updateBias.exec();
         if (status == false)
         {
-            qWarning() << "> updateBias.exec() ERROR"
+            qWarning() << "> updateBias.exec(plant) ERROR"
                        << updateBias.lastError().type() << ":" << updateBias.lastError().text();
         }
     }
@@ -339,32 +315,45 @@ bool DeviceSensor::getSqlPlantLimits()
     //qDebug() << "DeviceSensor::getSqlPlantLimits(" << m_deviceAddress << ")";
     bool status = false;
 
-    QSqlQuery getLimits;
-    getLimits.prepare("SELECT hygroMin, hygroMax, conduMin, conduMax, phMin, phMax, " \
-                      " tempMin, tempMax, humiMin, humiMax, " \
-                      " luxMin, luxMax, mmolMin, mmolMax " \
-                      "FROM plantLimits WHERE deviceAddr = :deviceAddr");
-    getLimits.bindValue(":deviceAddr", getAddress());
-    getLimits.exec();
-    while (getLimits.next())
+    if (m_dbInternal || m_dbExternal)
     {
-        m_limit_soilMoistureMin = getLimits.value(0).toInt();
-        m_limit_soilMoistureMax = getLimits.value(1).toInt();
-        m_limit_soilConduMin = getLimits.value(2).toInt();
-        m_limit_soilConduMax = getLimits.value(3).toInt();
-        m_limit_soilPhMin = getLimits.value(4).toInt();
-        m_limit_soilPhMax = getLimits.value(5).toInt();
-        m_limit_tempMin = getLimits.value(6).toInt();
-        m_limit_tempMax = getLimits.value(7).toInt();
-        m_limit_humiMin = getLimits.value(8).toInt();
-        m_limit_humiMax = getLimits.value(9).toInt();
-        m_limit_luxMin = getLimits.value(10).toInt();
-        m_limit_luxMax = getLimits.value(11).toInt();
-        m_limit_mmolMin = getLimits.value(12).toInt();
-        m_limit_mmolMax = getLimits.value(13).toInt();
+        QSqlQuery getLimits;
+        getLimits.prepare("SELECT soilMoisture_min, soilMoisture_max," \
+                            "soilConductivity_min, soilConductivity_max," \
+                            "soilPH_min, soilPH_max," \
+                            "temperature_min, temperature_max, humidity_min, humidity_max," \
+                            "luminosityLux_min, luminosityLux_max, luminosityMmol_min, luminosityMmol_max " \
+                          "FROM plantLimits WHERE deviceAddr = :deviceAddr");
+        getLimits.bindValue(":deviceAddr", getAddress());
 
-        status = true;
-        Q_EMIT limitsUpdated();
+        if (getLimits.exec())
+        {
+            while (getLimits.next())
+            {
+                m_soilMoisture_limit_min = getLimits.value(0).toInt();
+                m_soilMoisture_limit_max = getLimits.value(1).toInt();
+                m_soilConductivity_limit_min = getLimits.value(2).toInt();
+                m_soilConductivity_limit_max = getLimits.value(3).toInt();
+                m_soilPH_limit_min = getLimits.value(4).toInt();
+                m_soilPH_limit_max = getLimits.value(5).toInt();
+                m_temperature_limit_min = getLimits.value(6).toInt();
+                m_temperature_limit_max = getLimits.value(7).toInt();
+                m_humidity_limit_min = getLimits.value(8).toInt();
+                m_humidity_limit_max = getLimits.value(9).toInt();
+                m_luminosityLux_limit_min = getLimits.value(10).toInt();
+                m_luminosityLux_limit_max = getLimits.value(11).toInt();
+                m_luminosityMmol_limit_min = getLimits.value(12).toInt();
+                m_luminosityMmol_limit_max = getLimits.value(13).toInt();
+
+                status = true;
+                Q_EMIT limitsUpdated();
+            }
+        }
+        else
+        {
+            qWarning() << "> getLimits.exec(plant) ERROR"
+                       << getLimits.lastError().type() << ":" << getLimits.lastError().text();
+        }
     }
 
     return status;
@@ -378,32 +367,35 @@ bool DeviceSensor::setSqlPlantLimits()
     if (m_dbInternal || m_dbExternal)
     {
         QSqlQuery updateLimits;
-        updateLimits.prepare("REPLACE INTO plantLimits (deviceAddr, " \
-                             " hygroMin, hygroMax, conduMin, conduMax, phMin, phMax, tempMin, tempMax," \
-                             " humiMin, humiMax, luxMin, luxMax, mmolMin, mmolMax)" \
-                             " VALUES (:deviceAddr, " \
-                                      ":hygroMin, :hygroMax, :conduMin, :conduMax, :phMin, :phMax, :tempMin, :tempMax, " \
-                                      ":humiMin, :humiMax, :luxMin, :luxMax, :mmolMin, :mmolMax)");
+        updateLimits.prepare("REPLACE INTO plantLimits (deviceAddr," \
+                               "soilMoisture_min, soilMoisture_max," \
+                               "soilConductivity_min, soilConductivity_max," \
+                               "soilPH_min, soilPH_max,"
+                               "temperature_min, temperature_max, humidity_min, humidity_max," \
+                               "luminosityLux_min, luminosityLux_max, luminosityMmol_min, luminosityMmol_max) " \
+                             "VALUES (:deviceAddr," \
+                                     ":hygroMin, :hygroMax, :conduMin, :conduMax, :phMin, :phMax, :tempMin, :tempMax," \
+                                     ":humiMin, :humiMax, :luxMin, :luxMax, :mmolMin, :mmolMax)");
         updateLimits.bindValue(":deviceAddr", getAddress());
-        updateLimits.bindValue(":hygroMin", m_limit_soilMoistureMin);
-        updateLimits.bindValue(":hygroMax", m_limit_soilMoistureMax);
-        updateLimits.bindValue(":conduMin", m_limit_soilConduMin);
-        updateLimits.bindValue(":conduMax", m_limit_soilConduMax);
-        updateLimits.bindValue(":phMin", m_limit_soilPhMin);
-        updateLimits.bindValue(":phMax", m_limit_soilPhMax);
-        updateLimits.bindValue(":tempMin", m_limit_tempMin);
-        updateLimits.bindValue(":tempMax", m_limit_tempMax);
-        updateLimits.bindValue(":humiMin", m_limit_humiMin);
-        updateLimits.bindValue(":humiMax", m_limit_humiMax);
-        updateLimits.bindValue(":luxMin", m_limit_luxMin);
-        updateLimits.bindValue(":luxMax", m_limit_luxMax);
-        updateLimits.bindValue(":mmolMin", m_limit_mmolMin);
-        updateLimits.bindValue(":mmolMax", m_limit_mmolMax);
+        updateLimits.bindValue(":hygroMin", m_soilMoisture_limit_min);
+        updateLimits.bindValue(":hygroMax", m_soilMoisture_limit_max);
+        updateLimits.bindValue(":conduMin", m_soilConductivity_limit_min);
+        updateLimits.bindValue(":conduMax", m_soilConductivity_limit_max);
+        updateLimits.bindValue(":phMin", m_soilPH_limit_min);
+        updateLimits.bindValue(":phMax", m_soilPH_limit_max);
+        updateLimits.bindValue(":tempMin", m_temperature_limit_min);
+        updateLimits.bindValue(":tempMax", m_temperature_limit_max);
+        updateLimits.bindValue(":humiMin", m_humidity_limit_min);
+        updateLimits.bindValue(":humiMax", m_humidity_limit_max);
+        updateLimits.bindValue(":luxMin", m_luminosityLux_limit_min);
+        updateLimits.bindValue(":luxMax", m_luminosityLux_limit_max);
+        updateLimits.bindValue(":mmolMin", m_luminosityMmol_limit_min);
+        updateLimits.bindValue(":mmolMax", m_luminosityMmol_limit_max);
 
         status = updateLimits.exec();
         if (status == false)
         {
-            qWarning() << "> updateLimits.exec() ERROR"
+            qWarning() << "> updateLimits.exec(plant) ERROR"
                        << updateLimits.lastError().type() << ":" << updateLimits.lastError().text();
         }
     }
@@ -431,8 +423,7 @@ bool DeviceSensor::getSqlPlantData(int minutes)
     }
     else if (m_dbExternal) // mysql
     {
-        cachedData.prepare("SELECT DATE_FORMAT(ts_full, '%Y-%m-%e %H:%i:%s')," \
-                           " soilMoisture, soilConductivity, soilTemperature, soilPH, temperature, humidity, luminosity, watertank " \
+        cachedData.prepare("SELECT DATE_FORMAT(ts_full, '%Y-%m-%e %H:%i:%s'), soilMoisture, soilConductivity, soilTemperature, soilPH, temperature, humidity, luminosity, watertank " \
                            "FROM plantData " \
                            "WHERE deviceAddr = :deviceAddr AND ts_full >= TIMESTAMPADD(MINUTE,-" + QString::number(minutes) + ",NOW()) " \
                            "ORDER BY ts_full DESC " \
@@ -442,7 +433,7 @@ bool DeviceSensor::getSqlPlantData(int minutes)
 
     if (cachedData.exec() == false)
     {
-        qWarning() << "> cachedDataPlant.exec() ERROR"
+        qWarning() << "> cachedData.exec(plant) ERROR"
                    << cachedData.lastError().type() << ":" << cachedData.lastError().text();
     }
 
@@ -480,30 +471,198 @@ bool DeviceSensor::getSqlPlantData(int minutes)
 /* ************************************************************************** */
 /* ************************************************************************** */
 
+bool DeviceSensor::getSqlThermoBias()
+{
+    //qDebug() << "DeviceSensor::getSqlThermoBias(" << m_deviceAddress << ")";
+    bool status = false;
+
+    if (m_dbInternal || m_dbExternal)
+    {
+        QSqlQuery getBias;
+        getBias.prepare("SELECT temperature_bias, humidity_bias, pressure_bias " \
+                        "FROM thermoBias WHERE deviceAddr = :deviceAddr");
+        getBias.bindValue(":deviceAddr", getAddress());
+
+        if (getBias.exec())
+        {
+            while (getBias.next())
+            {
+                m_temperature_bias = getBias.value(0).toFloat();
+                m_humidity_bias = getBias.value(1).toFloat();
+                m_pressure_bias = getBias.value(2).toFloat();
+
+                status = true;
+                Q_EMIT biasUpdated();
+            }
+        }
+        else
+        {
+            qWarning() << "> getBias.exec(thermo) ERROR"
+                       << getBias.lastError().type() << ":" << getBias.lastError().text();
+        }
+    }
+
+    return status;
+}
+
+bool DeviceSensor::setSqlThermoBias()
+{
+    //qDebug() << "DeviceSensor::setSqlThermoBias(" << m_deviceAddress << ")";
+    bool status = false;
+
+    if (m_dbInternal || m_dbExternal)
+    {
+        QSqlQuery updateBias;
+        updateBias.prepare("REPLACE INTO thermoBias (deviceAddr, temperature_bias, humidity_bias, luminosity_bias) " \
+                           "VALUES (:deviceAddr, :temp, :humi, :pressure)");
+        updateBias.bindValue(":deviceAddr", getAddress());
+        updateBias.bindValue(":temp", m_temperature_bias);
+        updateBias.bindValue(":humi", m_humidity_bias);
+        updateBias.bindValue(":pressure", m_pressure_bias);
+
+        status = updateBias.exec();
+        if (status == false)
+        {
+            qWarning() << "> updateBias.exec(thermo) ERROR"
+                       << updateBias.lastError().type() << ":" << updateBias.lastError().text();
+        }
+    }
+
+    Q_EMIT biasUpdated();
+
+    return status;
+}
+
+/* ************************************************************************** */
+
+bool DeviceSensor::getSqlThermoLimits()
+{
+    //qDebug() << "DeviceSensor::getSqlThermoLimits(" << m_deviceAddress << ")";
+    bool status = false;
+
+    if (m_dbInternal || m_dbExternal)
+    {
+        QSqlQuery getLimits;
+        getLimits.prepare("SELECT temperature_min, temperature_max, humidity_min, humidity_max " \
+                          "FROM thermoLimits WHERE deviceAddr = :deviceAddr");
+        getLimits.bindValue(":deviceAddr", getAddress());
+
+        if (getLimits.exec())
+        {
+            while (getLimits.next())
+            {
+                m_temperature_limit_min = getLimits.value(6).toInt();
+                m_temperature_limit_max = getLimits.value(7).toInt();
+                m_humidity_limit_min = getLimits.value(8).toInt();
+                m_humidity_limit_max = getLimits.value(9).toInt();
+
+                status = true;
+                Q_EMIT limitsUpdated();
+            }
+        }
+        else
+        {
+            qWarning() << "> getLimits.exec(thermo) ERROR"
+                       << getLimits.lastError().type() << ":" << getLimits.lastError().text();
+        }
+    }
+
+    return status;
+}
+
+bool DeviceSensor::setSqlThermoLimits()
+{
+    //qDebug() << "DeviceSensor::setSqlThermoLimits(" << m_deviceAddress << ")";
+    bool status = false;
+
+    if (m_dbInternal || m_dbExternal)
+    {
+        QSqlQuery updateLimits;
+        updateLimits.prepare("REPLACE INTO thermoLimits (deviceAddr, temperature_min, temperature_max, humidity_min, humidity_max) " \
+                             "VALUES (:deviceAddr, :tempMin, :tempMax, :humiMin, :humiMax)");
+        updateLimits.bindValue(":deviceAddr", getAddress());
+        updateLimits.bindValue(":tempMin", m_temperature_limit_min);
+        updateLimits.bindValue(":tempMax", m_temperature_limit_max);
+        updateLimits.bindValue(":humiMin", m_humidity_limit_min);
+        updateLimits.bindValue(":humiMax", m_humidity_limit_max);
+
+        status = updateLimits.exec();
+        if (status == false)
+        {
+            qWarning() << "> updateLimits.exec(thermo) ERROR"
+                       << updateLimits.lastError().type() << ":" << updateLimits.lastError().text();
+        }
+    }
+
+    Q_EMIT limitsUpdated();
+
+    return status;
+}
+
+/* ************************************************************************** */
+
+bool DeviceSensor::getSqlThermoData(int minutes)
+{
+    //qDebug() << "DeviceSensor::getSqlThermoData(" << m_deviceAddress << ")";
+    bool status = false;
+
+    QSqlQuery cachedData;
+    if (m_dbInternal) // sqlite
+    {
+        cachedData.prepare("SELECT timestamp, temperature, humidity, pressure " \
+                           "FROM thermoData " \
+                           "WHERE deviceAddr = :deviceAddr AND timestamp >= datetime('now', 'localtime', '-" + QString::number(minutes) + " minutes') " \
+                           "ORDER BY timestamp DESC " \
+                           "LIMIT 1;");
+    }
+    else if (m_dbExternal) // mysql
+    {
+        cachedData.prepare("SELECT DATE_FORMAT(timestamp, '%Y-%m-%e %H:%i:%s'), temperature, humidity, pressure " \
+                           "FROM thermoData " \
+                           "WHERE deviceAddr = :deviceAddr AND timestamp >= TIMESTAMPADD(MINUTE,-" + QString::number(minutes) + ",NOW()) " \
+                           "ORDER BY timestamp DESC " \
+                           "LIMIT 1;");
+    }
+    cachedData.bindValue(":deviceAddr", getAddress());
+
+    if (cachedData.exec() == false)
+    {
+        qWarning() << "> cachedData.exec(thermo) ERROR"
+                   << cachedData.lastError().type() << ":" << cachedData.lastError().text();
+    }
+
+    while (cachedData.next())
+    {
+        m_temperature = cachedData.value(1).toFloat();
+        m_humidity = cachedData.value(2).toFloat();
+        m_pressure = cachedData.value(3).toFloat();
+
+        QString datetime = cachedData.value(0).toString();
+        m_lastUpdateDatabase = m_lastUpdate = QDateTime::fromString(datetime, "yyyy-MM-dd hh:mm:ss");
+/*
+        qDebug() << ">> timestamp" << m_lastUpdate;
+        qDebug() << "- m_temperature:" << m_temperature;
+        qDebug() << "- m_humidity:" << m_humidity;
+        qDebug() << "- m_pressure:" << m_pressure;
+*/
+        status = true;
+    }
+
+    refreshDataFinished(status, true);
+    return status;
+}
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+
 bool DeviceSensor::getSqlSensorBias()
 {
     //qDebug() << "DeviceSensor::getSqlSensorBias(" << m_deviceAddress << ")";
     bool status = false;
 
-    QSqlQuery getBias;
-    getBias.prepare("SELECT soilMoistureBias, soilConduBias, soilTempBias, soilPhBias," \
-                    " tempBias, humiBias, pressureBias, luminosityBias " \
-                    "FROM sensorBias WHERE deviceAddr = :deviceAddr");
-    getBias.bindValue(":deviceAddr", getAddress());
-    getBias.exec();
-    while (getBias.next())
+    if (m_dbInternal || m_dbExternal)
     {
-        m_bias_soilMoisture = getBias.value(0).toFloat();
-        m_bias_soilConductivity = getBias.value(1).toFloat();
-        m_bias_soilTemperature = getBias.value(2).toFloat();
-        m_bias_soilPH = getBias.value(3).toFloat();
-        m_bias_temperature = getBias.value(4).toFloat();
-        m_bias_humidity = getBias.value(5).toFloat();
-        m_bias_pressure = getBias.value(6).toFloat();
-        m_bias_luminosityLux = getBias.value(7).toFloat();
-
-        status = true;
-        Q_EMIT biasUpdated();
+        // TODO
     }
 
     return status;
@@ -516,31 +675,8 @@ bool DeviceSensor::setSqlSensorBias()
 
     if (m_dbInternal || m_dbExternal)
     {
-        QSqlQuery updateBias;
-        updateBias.prepare("REPLACE INTO sensorBias (deviceAddr, " \
-                           " soilMoistureBias, soilConduBias, soilTempBias, soilPhBias," \
-                           " tempBias, humiBias, pressureBias, luminosityBias)" \
-                           " VALUES (:deviceAddr, " \
-                                    ":soilMoistureBias, :soilConduBias, :soilTempBias, :soilPhBias, " \
-                                    ":tempBias, :humiBias, :pressureBias, :luminosityBias)");
-        updateBias.bindValue(":deviceAddr", getAddress());
-        updateBias.bindValue(":soilMoistureBias", m_bias_soilMoisture);
-        updateBias.bindValue(":soilConduBias", m_bias_soilConductivity);
-        updateBias.bindValue(":soilTempBias", m_bias_soilTemperature);
-        updateBias.bindValue(":soilPhBias", m_bias_soilPH);
-        updateBias.bindValue(":tempBias", m_bias_temperature);
-        updateBias.bindValue(":humiBias", m_bias_humidity);
-        updateBias.bindValue(":luminosityBias", m_bias_luminosityLux);
-
-        status = updateBias.exec();
-        if (status == false)
-        {
-            qWarning() << "> updateBias.exec() ERROR"
-                       << updateBias.lastError().type() << ":" << updateBias.lastError().text();
-        }
+        // TODO
     }
-
-    Q_EMIT biasUpdated();
 
     return status;
 }
@@ -552,7 +688,10 @@ bool DeviceSensor::getSqlSensorLimits()
     //qDebug() << "DeviceSensor::getSqlSensorLimits(" << m_deviceAddress << ")";
     bool status = false;
 
-    // TODO
+    if (m_dbInternal || m_dbExternal)
+    {
+        // TODO
+    }
 
     return status;
 }
@@ -567,8 +706,6 @@ bool DeviceSensor::setSqlSensorLimits()
         // TODO
     }
 
-    Q_EMIT limitsUpdated();
-
     return status;
 }
 
@@ -582,8 +719,9 @@ bool DeviceSensor::getSqlSensorData(int minutes)
     QSqlQuery cachedData;
     if (m_dbInternal) // sqlite
     {
-        cachedData.prepare("SELECT timestamp, temperature, humidity, pressure, luminosity, uv, sound, water, windDirection, windSpeed, " \
-                             "pm1, pm25, pm10, o2, o3, co, co2, no2, so2, voc, hcho, geiger " \
+        cachedData.prepare("SELECT timestamp," \
+                             "temperature, humidity, pressure, luminosity, uv, sound, water, windDirection, windSpeed," \
+                             "pm1, pm25, pm10, o2, o3, co, co2, no2, so2, voc, hcho, radioactivity " \
                            "FROM sensorData " \
                            "WHERE deviceAddr = :deviceAddr AND timestamp >= datetime('now', 'localtime', '-" + QString::number(minutes) + " minutes')" \
                            "ORDER BY timestamp DESC " \
@@ -591,8 +729,9 @@ bool DeviceSensor::getSqlSensorData(int minutes)
     }
     else if (m_dbExternal) // mysql
     {
-        cachedData.prepare("SELECT DATE_FORMAT(timestamp, '%Y-%m-%e %H:%i:%s'), temperature, humidity, pressure, luminosity, uv, sound, water, windDirection, windSpeed, " \
-                             "pm1, pm25, pm10, o2, o3, co, co2, no2, so2, voc, hcho, geiger " \
+        cachedData.prepare("SELECT DATE_FORMAT(timestamp, '%Y-%m-%e %H:%i:%s')," \
+                             "temperature, humidity, pressure, luminosity, uv, sound, water, windDirection, windSpeed," \
+                             "pm1, pm25, pm10, o2, o3, co, co2, no2, so2, voc, hcho, radioactivity " \
                            "FROM sensorData " \
                            "WHERE deviceAddr = :deviceAddr AND timestamp >= TIMESTAMPADD(MINUTE,-" + QString::number(minutes) + ",NOW()) " \
                            "ORDER BY timestamp DESC " \
@@ -602,7 +741,7 @@ bool DeviceSensor::getSqlSensorData(int minutes)
 
     if (cachedData.exec() == false)
     {
-        qWarning() << "> cachedDataSensor.exec() ERROR"
+        qWarning() << "> cachedData.exec(sensor) ERROR"
                    << cachedData.lastError().type() << ":" << cachedData.lastError().text();
     }
 
@@ -630,7 +769,7 @@ bool DeviceSensor::getSqlSensorData(int minutes)
         m_so2 = cachedData.value(18).toFloat();
         m_voc = cachedData.value(19).toFloat();
         m_hcho = cachedData.value(20).toFloat();
-        m_rh = m_rm = m_rs = cachedData.value(21).toFloat();
+        m_radioactivity = m_rh = m_rm = m_rs = cachedData.value(21).toFloat();
 
         QString datetime = cachedData.value(0).toString();
         m_lastUpdateDatabase = m_lastUpdate = QDateTime::fromString(datetime, "yyyy-MM-dd hh:mm:ss");
@@ -656,7 +795,7 @@ bool DeviceSensor::getSqlSensorData(int minutes)
         qDebug() << "- m_so2:" << m_so2;
         qDebug() << "- m_voc:" << m_voc;
         qDebug() << "- m_hcho:" << m_hcho;
-        qDebug() << "- m_rm:" << m_rm;
+        qDebug() << "- m_radioactivity:" << m_radioactivity;
 */
         status = true;
     }
@@ -950,9 +1089,8 @@ bool DeviceSensor::needsUpdateDb() const
 float DeviceSensor::getTemp() const
 {
     SettingsManager *s = SettingsManager::getInstance();
-    if (s->getTempUnit() == "F")
-        return getTempF();
 
+    if (s->getTempUnit() == "F") return getTempF();
     return getTempC();
 }
 
@@ -1036,14 +1174,8 @@ float DeviceSensor::getDewPoint() const
                                - ((15.9 + 0.117 * m_temperature) * pow((1 - (0.01 * m_humidity)), 14)));
 
     SettingsManager *s = SettingsManager::getInstance();
-    if (s->getTempUnit() == "F")
-    {
-        return ((dew - 32) / 1.8f);
-    }
-    else
-    {
-        return dew;
-    }
+    if (s->getTempUnit() == "F") return ((dew - 32) / 1.8f);
+    return dew;
 }
 
 QString DeviceSensor::getDewPointString() const
@@ -1094,799 +1226,6 @@ float DeviceSensor::getLastMove_days() const
     if (days < 0.f) days = 0.f;
 
     return days;
-}
-
-/* ************************************************************************** */
-/* ************************************************************************** */
-
-void DeviceSensor::updateChartData_history_day()
-{
-    int maxHours = 24;
-
-    qDeleteAll(m_chartData_history_day);
-    m_chartData_history_day.clear();
-    ChartDataHistory *previousdata = nullptr;
-
-    if (m_dbInternal || m_dbExternal)
-    {
-        QSqlQuery graphData;
-        if (m_dbInternal) // sqlite
-        {
-            graphData.prepare("SELECT strftime('%Y-%m-%d %H:%M', ts), " \
-                              " avg(soilMoisture), avg(soilConductivity), avg(soilTemperature), " \
-                              " avg(temperature), avg(humidity), avg(luminosity) " \
-                              "FROM plantData " \
-                              "WHERE deviceAddr = :deviceAddr AND ts >= datetime('now','-1 day') " \
-                              "GROUP BY strftime('%d-%H', ts) " \
-                              "ORDER BY ts DESC " \
-                              "LIMIT 24;");
-        }
-        else if (m_dbExternal) // mysql
-        {
-            graphData.prepare("SELECT DATE_FORMAT(ts, '%Y-%m-%d %H:%M'), " \
-                              " avg(soilMoisture), avg(soilConductivity), avg(soilTemperature), " \
-                              " avg(temperature), avg(humidity), avg(luminosity) " \
-                              "FROM plantData " \
-                              "WHERE deviceAddr = :deviceAddr AND ts >= DATE_SUB(NOW(), INTERVAL -1 DAY) " \
-                              "GROUP BY DATE_FORMAT(ts, '%d-%H') " \
-                              "ORDER BY ts DESC " \
-                              "LIMIT 24;");
-        }
-        graphData.bindValue(":deviceAddr", getAddress());
-
-        if (graphData.exec() == false)
-        {
-            qWarning() << "> graphData.exec() ERROR"
-                       << graphData.lastError().type() << ":" << graphData.lastError().text();
-            return;
-        }
-
-        while (graphData.next())
-        {
-            if (m_chartData_history_day.size() < maxHours)
-            {
-                // missing hours(s)?
-                if (previousdata)
-                {
-                    QDateTime timefromsql = graphData.value(0).toDateTime();
-                    int diff = timefromsql.secsTo(previousdata->getDateTime()) / 3600;
-                    for (int i = diff; i > 1; i--)
-                    {
-                        if (m_chartData_history_day.size() < (maxHours-1))
-                        {
-                            QDateTime fakedate(timefromsql.addSecs((i-1) * 3600));
-                            m_chartData_history_day.push_front(new ChartDataHistory(fakedate, -99, -99, -99, -99, -99, -99, this));
-                        }
-                    }
-                }
-
-                // data
-                ChartDataHistory *d = new ChartDataHistory(graphData.value(0).toDateTime(),
-                                                           graphData.value(1).toFloat(), graphData.value(2).toFloat(), graphData.value(3).toFloat(),
-                                                           graphData.value(4).toFloat(), graphData.value(5).toFloat(), graphData.value(6).toFloat(),
-                                                           this);
-                m_chartData_history_day.push_front(d);
-                previousdata = d;
-            }
-        }
-
-        // missing hour(s)?
-        {
-            // after
-            QDateTime today = QDateTime::currentDateTime();
-            int missing = maxHours;
-            if (previousdata) missing = (static_cast<ChartDataHistory *>(m_chartData_history_day.last())->getDateTime().secsTo(today)) / 3600;
-            for (int i = missing - 1; i >= 0; i--)
-            {
-                QDateTime fakedate(today.addSecs((-i)*3600));
-                m_chartData_history_day.push_back(new ChartDataHistory(fakedate, -99, -99, -99, -99, -99, -99, this));
-            }
-
-            // before
-            today = QDateTime::currentDateTime();
-            for (int i = m_chartData_history_day.size(); i < maxHours; i++)
-            {
-                QDateTime fakedate(today.addSecs((-i)*3600));
-                m_chartData_history_day.push_front(new ChartDataHistory(fakedate, -99, -99, -99, -99, -99, -99, this));
-            }
-        }
-
-        // first vs last
-        if (m_chartData_history_day.size() > 1)
-        {
-            while (!m_chartData_history_day.isEmpty() &&
-                   static_cast<ChartDataHistory *>(m_chartData_history_day.first())->getHour() ==
-                   static_cast<ChartDataHistory *>(m_chartData_history_day.last())->getHour())
-            {
-                m_chartData_history_day.pop_front();
-            }
-        }
-
-        Q_EMIT chartDataHistoryDaysUpdated();
-    }
-}
-
-void DeviceSensor::updateChartData_history_day(const QDateTime &d)
-{
-    qDeleteAll(m_chartData_history_day);
-    m_chartData_history_day.clear();
-    ChartDataHistory *previousdata = nullptr;
-
-    if (m_dbInternal || m_dbExternal)
-    {
-        QSqlQuery graphData;
-        if (m_dbInternal) // sqlite
-        {
-            graphData.prepare("SELECT strftime('%Y-%m-%d %H:%M', ts), " \
-                              " avg(soilMoisture), avg(soilConductivity), avg(soilTemperature), " \
-                              " avg(temperature), avg(humidity), avg(luminosity) " \
-                              "FROM plantData " \
-                              "WHERE deviceAddr = :deviceAddr " \
-                                "AND ts BETWEEN '" + d.toString("yyyy-MM-dd 00:00:00") + "' AND '" + d.toString("yyyy-MM-dd 23:59:59") + "' " \
-                              "GROUP BY strftime('%d-%H', ts) " \
-                              "ORDER BY ts DESC;");
-        }
-        else if (m_dbExternal) // mysql
-        {
-            // TODO
-        }
-        graphData.bindValue(":deviceAddr", getAddress());
-
-        if (graphData.exec() == false)
-        {
-            qWarning() << "> graphData.exec() ERROR"
-                       << graphData.lastError().type() << ":" << graphData.lastError().text();
-            return;
-        }
-
-        while (graphData.next())
-        {
-            if (m_chartData_history_day.size() < 24)
-            {
-                // missing hours(s)?
-                if (previousdata)
-                {
-                    QDateTime timefromsql = graphData.value(0).toDateTime();
-                    int diff = timefromsql.secsTo(previousdata->getDateTime()) / 3600;
-                    for (int i = diff; i > 1; i--)
-                    {
-                        if (m_chartData_history_day.size() < 23)
-                        {
-                            QDateTime fakedate(timefromsql.addSecs((i-1) * 3600));
-                            m_chartData_history_day.push_front(new ChartDataHistory(fakedate, -99, -99, -99, -99, -99, -99, this));
-                        }
-                    }
-                }
-
-                // data
-                ChartDataHistory *d = new ChartDataHistory(graphData.value(0).toDateTime(),
-                                                           graphData.value(1).toFloat(), graphData.value(2).toFloat(), graphData.value(3).toFloat(),
-                                                           graphData.value(4).toFloat(), graphData.value(5).toFloat(), graphData.value(6).toFloat(),
-                                                           this);
-                m_chartData_history_day.push_front(d);
-                previousdata = d;
-            }
-        }
-
-        // missing hour(s)?
-        if (previousdata)
-        {
-            QDateTime first = static_cast<ChartDataHistory *>(m_chartData_history_day.first())->getDateTime();
-            QDateTime last = static_cast<ChartDataHistory *>(m_chartData_history_day.last())->getDateTime();
-
-            for (int i = first.time().hour(), h = 1; i > 0; i--, h++)
-            {
-                QDateTime fakedate(first.addSecs((-h)*3600));
-                m_chartData_history_day.push_front(new ChartDataHistory(fakedate, -99, -99, -99, -99, -99, -99, this));
-            }
-            for (int i = last.time().hour(), h = 1; i < 23; i++, h++)
-            {
-                QDateTime fakedate(last.addSecs((h)*3600));
-                m_chartData_history_day.push_back(new ChartDataHistory(fakedate, -99, -99, -99, -99, -99, -99, this));
-            }
-        }
-        else
-        {
-            for (int i = 0; i < 24; i++)
-            {
-                QDateTime fakedate(d.date(), QTime(i, 0, 0));
-                m_chartData_history_day.push_back(new ChartDataHistory(fakedate, -99, -99, -99, -99, -99, -99, this));
-            }
-        }
-
-        Q_EMIT chartDataHistoryDaysUpdated();
-    }
-}
-
-/* ************************************************************************** */
-
-void DeviceSensor::updateChartData_history_month(int maxDays)
-{
-    if (maxDays <= 0) return;
-    int maxMonths = 1;
-
-    qDeleteAll(m_chartData_history_month);
-    m_chartData_history_month.clear();
-    ChartDataHistory *previousdata = nullptr;
-
-    if (m_dbInternal || m_dbExternal)
-    {
-        QSqlQuery graphData;
-        if (m_dbInternal) // sqlite
-        {
-            graphData.prepare("SELECT strftime('%Y-%m-%d', ts), " \
-                              " avg(soilMoisture), avg(soilConductivity), avg(soilTemperature), " \
-                              " avg(temperature), avg(humidity), avg(luminosity), " \
-                              " max(temperature), max(luminosity) " \
-                              "FROM plantData " \
-                              "WHERE deviceAddr = :deviceAddr AND ts >= datetime('now','-" + QString::number(maxMonths) + " month') " \
-                              "GROUP BY strftime('%Y-%m-%d', ts) " \
-                              "ORDER BY ts DESC "
-                              "LIMIT :maxDays;");
-        }
-        else if (m_dbExternal) // mysql
-        {
-            graphData.prepare("SELECT DATE_FORMAT(ts, '%Y-%m-%d'), " \
-                              " avg(soilMoisture), avg(soilConductivity), avg(soilTemperature), " \
-                              " avg(temperature), avg(humidity), avg(luminosity), " \
-                              " max(temperature), max(luminosity) " \
-                              "FROM plantData " \
-                              "WHERE deviceAddr = :deviceAddr AND ts >= DATE_SUB(NOW(), INTERVAL -" + QString::number(maxMonths) + " MONTH) " \
-                              "GROUP BY DATE_FORMAT(ts, '%Y-%m-%d') " \
-                              "ORDER BY ts DESC "
-                              "LIMIT :maxDays;");
-        }
-        graphData.bindValue(":deviceAddr", getAddress());
-        graphData.bindValue(":maxDays", maxDays);
-
-        if (graphData.exec() == false)
-        {
-            qWarning() << "> graphData.exec() ERROR"
-                       << graphData.lastError().type() << ":" << graphData.lastError().text();
-            return;
-        }
-
-        bool minmaxChanged = false;
-
-        while (graphData.next())
-        {
-            if (m_chartData_history_month.size() < maxDays)
-            {
-                // missing day(s)?
-                if (previousdata)
-                {
-                    QDateTime datefromsql = graphData.value(0).toDateTime();
-                    int diff = datefromsql.daysTo(previousdata->getDateTime());
-                    for (int i = diff; i > 1; i--)
-                    {
-                        if (m_chartData_history_month.size() < (maxDays-1))
-                        {
-                            QDateTime fakedate(datefromsql.addDays(i-1));
-                            m_chartData_history_month.push_front(new ChartDataHistory(fakedate, -99, -99, -99, -99, -99, -99, this));
-                        }
-                    }
-                }
-
-                // min/max
-                if (graphData.value(1).toInt() < m_soilMoistureMin) { m_soilMoistureMin = graphData.value(1).toInt(); minmaxChanged = true; }
-                if (graphData.value(2).toInt() < m_soilConduMin) { m_soilConduMin = graphData.value(2).toInt(); minmaxChanged = true; }
-                if (graphData.value(3).toFloat() < m_soilTempMin) { m_soilTempMin = graphData.value(3).toFloat(); minmaxChanged = true; }
-                if (graphData.value(4).toFloat() < m_tempMin) { m_tempMin = graphData.value(4).toFloat(); minmaxChanged = true; }
-                if (graphData.value(5).toInt() < m_humiMin) { m_humiMin = graphData.value(5).toInt(); minmaxChanged = true; }
-                if (graphData.value(6).toInt() < m_luxMin) { m_luxMin = graphData.value(6).toInt(); minmaxChanged = true; }
-
-                if (graphData.value(1).toInt() > m_soilMoistureMax) { m_soilMoistureMax = graphData.value(1).toInt(); minmaxChanged = true; }
-                if (graphData.value(2).toInt() > m_soilConduMax) { m_soilConduMax = graphData.value(2).toInt(); minmaxChanged = true; }
-                if (graphData.value(3).toFloat() > m_soilTempMax) { m_soilTempMax = graphData.value(3).toFloat(); minmaxChanged = true; }
-                if (graphData.value(4).toFloat() > m_tempMax) { m_tempMax = graphData.value(4).toFloat(); minmaxChanged = true; }
-                if (graphData.value(5).toInt() > m_humiMax) { m_humiMax = graphData.value(5).toInt(); minmaxChanged = true; }
-                if (graphData.value(6).toInt() > m_luxMax) { m_luxMax = graphData.value(6).toInt(); minmaxChanged = true; }
-
-                // data
-                ChartDataHistory *d = new ChartDataHistory(graphData.value(0).toDateTime(),
-                                                           graphData.value(1).toFloat(), graphData.value(2).toFloat(), graphData.value(3).toFloat(),
-                                                           graphData.value(4).toFloat(), graphData.value(5).toFloat(), graphData.value(6).toFloat(),
-                                                           graphData.value(7).toFloat(), graphData.value(8).toFloat(),
-                                                           this);
-                m_chartData_history_month.push_front(d);
-                previousdata = d;
-            }
-        }
-
-        if (minmaxChanged) { Q_EMIT minmaxUpdated(); }
-
-        // missing day(s)?
-        {
-            // after
-            QDateTime today = QDateTime::currentDateTime();
-            int missing = maxDays;
-            if (previousdata) missing = static_cast<ChartDataHistory *>(m_chartData_history_month.last())->getDateTime().daysTo(today);
-            for (int i = missing - 1; i >= 0; i--)
-            {
-                QDateTime fakedate(today.addDays(-i));
-                m_chartData_history_month.push_back(new ChartDataHistory(fakedate, -99, -99, -99, -99, -99, -99, this));
-            }
-
-            // before
-            today = QDateTime::currentDateTime();
-            for (int i = m_chartData_history_month.size(); i < maxDays; i++)
-            {
-                QDateTime fakedate(today.addDays(-i));
-                m_chartData_history_month.push_front(new ChartDataHistory(fakedate, -99, -99, -99, -99, -99, -99, this));
-            }
-        }
-
-        // first vs last (for months less than 31 days long)
-        if (m_chartData_history_month.size() > 1)
-        {
-            while (!m_chartData_history_month.isEmpty() &&
-                   static_cast<ChartDataHistory *>(m_chartData_history_month.first())->getDay() ==
-                   static_cast<ChartDataHistory *>(m_chartData_history_month.last())->getDay())
-            {
-                m_chartData_history_month.pop_front();
-            }
-        }
-
-        // weekly graph
-        {
-            //qDeleteAll(m_chartData_history_week); // we only stores refs
-            m_chartData_history_week.clear();
-
-            int sz = m_chartData_history_month.size() - 1;
-            for (int j = sz; j > 0; j--)
-            {
-                m_chartData_history_week.push_front(m_chartData_history_month.at(j));
-                if (m_chartData_history_week.size() >= 7) break;
-            }
-
-            Q_EMIT chartDataHistoryWeeksUpdated();
-        }
-
-        Q_EMIT chartDataHistoryMonthsUpdated();
-    }
-}
-
-void DeviceSensor::updateChartData_history_month(const QDateTime &f, const QDateTime &l)
-{
-    if (!f.isValid() || !l.isValid()) return;
-    int maxDays = 7;
-
-    //qDebug() << "updateChartData_history_month > " << f << " - " << l;
-
-    //qDeleteAll(m_chartData_history_week);
-    m_chartData_history_week.clear();
-    ChartDataHistory *previousdata = nullptr;
-
-    if (m_dbInternal || m_dbExternal)
-    {
-        QSqlQuery graphData;
-        if (m_dbInternal) // sqlite
-        {
-            graphData.prepare("SELECT strftime('%Y-%m-%d', ts), " \
-                              " avg(soilMoisture), avg(soilConductivity), avg(soilTemperature), " \
-                              " avg(temperature), avg(humidity), avg(luminosity) " \
-                              "FROM plantData " \
-                              "WHERE deviceAddr = :deviceAddr " \
-                                "AND ts BETWEEN '" + f.toString("yyyy-MM-dd 00:00:00") + "' AND '" + l.toString("yyyy-MM-dd 23:59:59") + "' " \
-                              "GROUP BY strftime('%Y-%m-%d', ts) " \
-                              "ORDER BY ts DESC;");
-        }
-        else if (m_dbExternal) // mysql
-        {
-            // TODO
-        }
-        graphData.bindValue(":deviceAddr", getAddress());
-
-        if (graphData.exec() == false)
-        {
-            qWarning() << "> graphData.exec() ERROR"
-                       << graphData.lastError().type() << ":" << graphData.lastError().text();
-            return;
-        }
-
-        while (graphData.next())
-        {
-            // missing day(s)?
-            if (previousdata)
-            {
-                QDateTime datefromsql = graphData.value(0).toDateTime();
-                int diff = datefromsql.daysTo(previousdata->getDateTime());
-                for (int i = diff; i > 1; i--)
-                {
-                    if (m_chartData_history_week.size() < (maxDays-1))
-                    {
-                        QDateTime fakedate(datefromsql.addDays(i-1));
-                        m_chartData_history_week.push_front(new ChartDataHistory(fakedate, -99, -99, -99, -99, -99, -99, this));
-                    }
-                }
-            }
-
-            // data
-            ChartDataHistory *d = new ChartDataHistory(graphData.value(0).toDateTime(),
-                                                       graphData.value(1).toFloat(), graphData.value(2).toFloat(), graphData.value(3).toFloat(),
-                                                       graphData.value(4).toFloat(), graphData.value(5).toFloat(), graphData.value(6).toFloat(),
-                                                       this);
-            m_chartData_history_week.push_front(d);
-            previousdata = d;
-        }
-
-        // missing day(s)?
-        if (previousdata)
-        {
-            QDateTime first = static_cast<ChartDataHistory *>(m_chartData_history_week.first())->getDateTime();
-            QDateTime last = static_cast<ChartDataHistory *>(m_chartData_history_week.last())->getDateTime();
-
-            for (int i = first.daysTo(f), d = -1; i < 0; i++, d--)
-            {
-                QDateTime fakedate(first.addDays(d));
-                m_chartData_history_week.push_front(new ChartDataHistory(fakedate, -99, -99, -99, -99, -99, -99, this));
-            }
-            for (int i = 0; i < last.daysTo(l); i++)
-            {
-                QDateTime fakedate(last.addDays(i+1));
-                m_chartData_history_week.push_back(new ChartDataHistory(fakedate, -99, -99, -99, -99, -99, -99, this));
-            }
-        }
-        else
-        {
-            for (int i = 0; i < maxDays; i++)
-            {
-                QDateTime fakedate(f.addDays(i));
-                m_chartData_history_week.push_back(new ChartDataHistory(fakedate, -99, -99, -99, -99, -99, -99, this));
-            }
-        }
-
-        Q_EMIT chartDataHistoryWeeksUpdated();
-    }
-}
-
-/* ************************************************************************** */
-/* ************************************************************************** */
-
-void DeviceSensor::updateChartData_environmentalVoc(int maxDays)
-{
-    if (maxDays <= 0) return;
-    int maxMonths = 2;
-
-    qDeleteAll(m_chartData_env);
-    m_chartData_env.clear();
-    ChartDataVoc *previousdata = nullptr;
-
-    if (m_dbInternal || m_dbExternal)
-    {
-        QSqlQuery graphData;
-        if (m_dbInternal) // sqlite
-        {
-            graphData.prepare("SELECT strftime('%Y-%m-%d', timestamp), " \
-                              " min(voc), avg(voc), max(voc), " \
-                              " min(hcho), avg(hcho), max(hcho), " \
-                              " min(co2), avg(co2), max(co2) " \
-                              "FROM sensorData " \
-                              "WHERE deviceAddr = :deviceAddr AND timestamp >= datetime('now','-" + QString::number(maxMonths) + " month') " \
-                              "GROUP BY strftime('%Y-%m-%d', timestamp) " \
-                              "ORDER BY timestamp DESC "
-                              "LIMIT :maxDays;");
-        }
-        else if (m_dbExternal) // mysql
-        {
-            graphData.prepare("SELECT DATE_FORMAT(timestamp, '%Y-%m-%d'), " \
-                              " min(voc), avg(voc), max(voc), " \
-                              " min(hcho), avg(hcho), max(hcho), " \
-                              " min(co2), avg(co2), max(co2) " \
-                              "FROM sensorData " \
-                              "WHERE deviceAddr = :deviceAddr AND timestamp >= DATE_SUB(NOW(), INTERVAL -" + QString::number(maxMonths) + " MONTH) " \
-                              "GROUP BY DATE_FORMAT(timestamp, '%Y-%m-%d') " \
-                              "ORDER BY timestamp DESC "
-                              "LIMIT :maxDays;");
-        }
-        graphData.bindValue(":deviceAddr", getAddress());
-        graphData.bindValue(":maxDays", maxDays);
-
-        if (graphData.exec() == false)
-        {
-            qWarning() << "> graphData.exec() ERROR"
-                       << graphData.lastError().type() << ":" << graphData.lastError().text();
-            return;
-        }
-
-        while (graphData.next())
-        {
-            if (m_chartData_env.size() < maxDays)
-            {
-                // missing day(s)?
-                if (previousdata)
-                {
-                    QDateTime datefromsql = graphData.value(0).toDateTime();
-                    int diff = datefromsql.daysTo(previousdata->getDateTime());
-                    for (int i = diff; i > 1; i--)
-                    {
-                        if (m_chartData_env.size() < (maxDays-1))
-                        {
-                            QDateTime fakedate(datefromsql.addDays(i-1));
-                            m_chartData_env.push_front(new ChartDataVoc(fakedate, -99, -99, -99, -99, -99, -99, -99, -99, -99, this));
-                        }
-                    }
-                }
-
-                // data
-                ChartDataVoc *d = new ChartDataVoc(graphData.value(0).toDateTime(),
-                                                   graphData.value(1).toFloat(), graphData.value(2).toFloat(), graphData.value(3).toFloat(),
-                                                   graphData.value(4).toFloat(), graphData.value(5).toFloat(), graphData.value(6).toFloat(),
-                                                   graphData.value(7).toFloat(), graphData.value(8).toFloat(), graphData.value(9).toFloat(),
-                                                   this);
-                m_chartData_env.push_front(d);
-                previousdata = d;
-            }
-        }
-
-        // missing day(s)?
-        {
-            // after
-            QDateTime today = QDateTime::currentDateTime();
-            int missing = maxDays;
-            if (previousdata) missing = static_cast<ChartDataVoc *>(m_chartData_env.last())->getDateTime().daysTo(today);
-            for (int i = missing - 1; i >= 0; i--)
-            {
-                QDateTime fakedate(today.addDays(-i));
-                m_chartData_env.push_back(new ChartDataVoc(fakedate, -99, -99, -99, -99, -99, -99, -99, -99, -99, this));
-            }
-
-            // before
-            today = QDateTime::currentDateTime();
-            for (int i = m_chartData_env.size(); i < maxDays; i++)
-            {
-                QDateTime fakedate(today.addDays(-i));
-                m_chartData_env.push_front(new ChartDataVoc(fakedate, -99, -99, -99, -99, -99, -99, -99, -99, -99, this));
-            }
-        }
-/*
-        // first vs last (for months less than 31 days long)
-        if (m_chartData_env.size() > 1)
-        {
-            while (!m_chartData_env.isEmpty() &&
-                   static_cast<ChartDataVoc *>(m_chartData_env.first())->getDay() ==
-                   static_cast<ChartDataVoc *>(m_chartData_env.last())->getDay())
-            {
-                m_chartData_env.pop_front();
-            }
-        }
-*/
-        Q_EMIT chartDataEnvUpdated();
-    }
-}
-
-/* ************************************************************************** */
-/* ************************************************************************** */
-
-void DeviceSensor::updateChartData_thermometerMinMax(int maxDays)
-{
-    if (maxDays <= 0) return;
-    int maxMonths = 2;
-
-    qDeleteAll(m_chartData_minmax);
-    m_chartData_minmax.clear();
-    m_tempMin = 999.f;
-    m_tempMax = -99.f;
-    ChartDataMinMax *previousdata = nullptr;
-
-    if (m_dbInternal || m_dbExternal)
-    {
-        QSqlQuery graphData;
-        if (m_dbInternal) // sqlite
-        {
-            graphData.prepare("SELECT strftime('%Y-%m-%d', ts), " \
-                              " min(temperature), avg(temperature), max(temperature), " \
-                              " min(humidity), max(humidity) " \
-                              "FROM plantData " \
-                              "WHERE deviceAddr = :deviceAddr AND ts >= datetime('now','-" + QString::number(maxMonths) + " month') " \
-                              "GROUP BY strftime('%Y-%m-%d', ts) " \
-                              "ORDER BY ts DESC "
-                              "LIMIT :maxDays;");
-        }
-        else if (m_dbExternal) // mysql
-        {
-            graphData.prepare("SELECT DATE_FORMAT(ts, '%Y-%m-%d'), " \
-                              " min(temperature), avg(temperature), max(temperature), " \
-                              " min(humidity), max(humidity) " \
-                              "FROM plantData " \
-                              "WHERE deviceAddr = :deviceAddr AND ts >= DATE_SUB(NOW(), INTERVAL -" + QString::number(maxMonths) + " MONTH) " \
-                              "GROUP BY DATE_FORMAT(ts, '%Y-%m-%d') " \
-                              "ORDER BY ts DESC "
-                              "LIMIT :maxDays;");
-        }
-        graphData.bindValue(":deviceAddr", getAddress());
-        graphData.bindValue(":maxDays", maxDays);
-
-        if (graphData.exec() == false)
-        {
-            qWarning() << "> graphData.exec() ERROR"
-                       << graphData.lastError().type() << ":" << graphData.lastError().text();
-            return;
-        }
-
-        bool minmaxChanged = false;
-
-        while (graphData.next())
-        {
-            if (m_chartData_minmax.size() < maxDays)
-            {
-                // missing day(s)?
-                if (previousdata)
-                {
-                    QDateTime datefromsql = graphData.value(0).toDateTime();
-                    int diff = datefromsql.daysTo(previousdata->getDateTime());
-                    for (int i = diff; i > 1; i--)
-                    {
-                        if (m_chartData_minmax.size() < (maxDays-1))
-                        {
-                            QDateTime fakedate(datefromsql.addDays(i-1));
-                            m_chartData_minmax.push_front(new ChartDataMinMax(fakedate, -99, -99, -99, -99, -99, this));
-                        }
-                    }
-                }
-
-                // min/max
-                if (graphData.value(1).toFloat() < m_tempMin) { m_tempMin = graphData.value(1).toFloat(); minmaxChanged = true; }
-                if (graphData.value(3).toFloat() > m_tempMax) { m_tempMax = graphData.value(3).toFloat(); minmaxChanged = true; }
-                if (graphData.value(4).toInt() < m_soilMoistureMin) { m_soilMoistureMin = graphData.value(4).toInt(); minmaxChanged = true; }
-                if (graphData.value(5).toInt() > m_soilMoistureMax) { m_soilMoistureMax = graphData.value(5).toInt(); minmaxChanged = true; }
-
-                // data
-                ChartDataMinMax *d = new ChartDataMinMax(graphData.value(0).toDateTime(),
-                                                         graphData.value(1).toFloat(), graphData.value(2).toFloat(), graphData.value(3).toFloat(),
-                                                         graphData.value(4).toInt(), graphData.value(5).toInt(), this);
-                m_chartData_minmax.push_front(d);
-                previousdata = d;
-            }
-        }
-
-        if (minmaxChanged) { Q_EMIT minmaxUpdated(); }
-
-        // missing day(s)?
-        {
-            // after
-            QDateTime today = QDateTime::currentDateTime();
-            int missing = maxDays;
-            if (previousdata) missing = static_cast<ChartDataMinMax *>(m_chartData_minmax.last())->getDateTime().daysTo(today);
-            for (int i = missing - 1; i >= 0; i--)
-            {
-                QDateTime fakedate(today.addDays(-i));
-                m_chartData_minmax.push_back(new ChartDataMinMax(fakedate, -99, -99, -99, -99, -99, this));
-            }
-
-            // before
-            today = QDateTime::currentDateTime();
-            for (int i = m_chartData_minmax.size(); i < maxDays; i++)
-            {
-                QDateTime fakedate(today.addDays(-i));
-                m_chartData_minmax.push_front(new ChartDataMinMax(fakedate, -99, -99, -99, -99, -99, this));
-            }
-        }
-/*
-        // first vs last (for months less than 31 days long)
-        if (m_chartData_minmax.size() > 1)
-        {
-            while (!m_chartData_minmax.isEmpty() &&
-                   static_cast<ChartDataMinMax *>(m_chartData_minmax.first())->getDay() ==
-                   static_cast<ChartDataMinMax *>(m_chartData_minmax.last())->getDay())
-            {
-                m_chartData_minmax.pop_front();
-            }
-        }
-*/
-        Q_EMIT chartDataMinMaxUpdated();
-    }
-    else
-    {
-        // No database, use fake values
-        m_soilMoistureMin = 0;
-        m_soilMoistureMax = 50;
-        m_soilConduMin = 0;
-        m_soilConduMax = 2000;
-        m_soilTempMin = 0.f;
-        m_soilTempMax = 36.f;
-        m_soilPhMin = 0.f;
-        m_soilPhMax = 15.f;
-        m_tempMin = 0.f;
-        m_tempMax = 36.f;
-        m_humiMin = 0;
-        m_humiMax = 100;
-        m_luxMin = 0;
-        m_luxMax = 10000;
-        m_mmolMin = 0;
-        m_mmolMax = 10000;
-
-        Q_EMIT minmaxUpdated();
-    }
-}
-
-/* ************************************************************************** */
-/* ************************************************************************** */
-
-void DeviceSensor::getChartData_plantAIO(int maxDays, QDateTimeAxis *axis,
-                                         QLineSeries *hygro, QLineSeries *condu,
-                                         QLineSeries *temp, QLineSeries *lumi)
-{
-    if (!axis || !hygro || !condu || !temp || !lumi) return;
-
-    if (m_dbInternal || m_dbExternal)
-    {
-        QString data = "soilMoisture";
-        if (!hasSoilMoistureSensor()) data = "humidity";
-
-        QString time = "datetime('now', 'localtime', '-" + QString::number(maxDays) + " days')";
-        if (m_dbExternal) time = "DATE_SUB(NOW(), INTERVAL " + QString::number(maxDays) + " DAY)";
-
-        QSqlQuery graphData;
-        graphData.prepare("SELECT ts_full, " + data + ", soilConductivity, temperature, luminosity " \
-                          "FROM plantData " \
-                          "WHERE deviceAddr = :deviceAddr AND ts_full >= " + time + ";");
-        graphData.bindValue(":deviceAddr", getAddress());
-
-        if (graphData.exec() == false)
-        {
-            qWarning() << "> graphData.exec() ERROR"
-                       << graphData.lastError().type() << ":" << graphData.lastError().text();
-            return;
-        }
-
-        axis->setFormat("dd MMM");
-        axis->setMax(QDateTime::currentDateTime());
-        bool minSet = false;
-        bool minmaxChanged = false;
-
-        while (graphData.next())
-        {
-            QDateTime date = QDateTime::fromString(graphData.value(0).toString(), "yyyy-MM-dd hh:mm:ss");
-            if (!minSet)
-            {
-                axis->setMin(date);
-                minSet = true;
-            }
-            qint64 timecode = date.toMSecsSinceEpoch();
-
-            // data
-            hygro->append(timecode, graphData.value(1).toReal());
-            condu->append(timecode, graphData.value(2).toReal());
-            temp->append(timecode, graphData.value(3).toReal());
-            lumi->append(timecode, graphData.value(4).toReal());
-
-            // min/max
-            if (graphData.value(1).toInt() < m_soilMoistureMin) { m_soilMoistureMin = graphData.value(1).toInt(); minmaxChanged = true; }
-            if (graphData.value(2).toInt() < m_soilConduMin) { m_soilConduMin = graphData.value(2).toInt(); minmaxChanged = true; }
-            if (graphData.value(3).toFloat() < m_tempMin) { m_tempMin = graphData.value(3).toFloat(); minmaxChanged = true; }
-            if (graphData.value(4).toInt() < m_luxMin) { m_luxMin = graphData.value(4).toInt(); minmaxChanged = true; }
-
-            if (graphData.value(1).toInt() > m_soilMoistureMax) { m_soilMoistureMax = graphData.value(1).toInt(); minmaxChanged = true; }
-            if (graphData.value(2).toInt() > m_soilConduMax) { m_soilConduMax = graphData.value(2).toInt(); minmaxChanged = true; }
-            if (graphData.value(3).toFloat() > m_tempMax) { m_tempMax = graphData.value(3).toFloat(); minmaxChanged = true; }
-            if (graphData.value(4).toInt() > m_luxMax) { m_luxMax = graphData.value(4).toInt(); minmaxChanged = true; }
-        }
-
-        if (minmaxChanged) { Q_EMIT minmaxUpdated(); }
-    }
-    else
-    {
-        // No database, use fake values
-        m_soilMoistureMin = 0;
-        m_soilMoistureMax = 50;
-        m_soilConduMin = 0;
-        m_soilConduMax = 2000;
-        m_soilTempMin = 0.f;
-        m_soilTempMax = 36.f;
-        m_soilPhMin = 0.f;
-        m_soilPhMax = 15.f;
-        m_tempMin = 0.f;
-        m_tempMax = 36.f;
-        m_humiMin = 0;
-        m_humiMax = 100;
-        m_luxMin = 0;
-        m_luxMax = 10000;
-        m_mmolMin = 0;
-        m_mmolMax = 10000;
-
-        Q_EMIT minmaxUpdated();
-    }
 }
 
 /* ************************************************************************** */

@@ -87,6 +87,8 @@ DeviceManager::DeviceManager(bool daemon)
     enableBluetooth(true); // Enables adapter // ONLY if off and permission given
     checkBluetooth();
 
+    connect(this, &DeviceManager::bluetoothChanged, this, &DeviceManager::bluetoothStatusChanged);
+
     // Database
     DatabaseManager *db = DatabaseManager::getInstance();
     if (db)
@@ -249,7 +251,7 @@ bool DeviceManager::checkBluetooth()
     {
         m_btA = true;
 
-        if (m_bluetoothAdapter->hostMode() > 0)
+        if (m_bluetoothAdapter->hostMode() > QBluetoothLocalDevice::HostMode::HostPoweredOff)
         {
             m_btE = true;
         }
@@ -317,13 +319,10 @@ void DeviceManager::enableBluetooth(bool enforceUserPermissionCheck)
         m_bluetoothAdapter = new QBluetoothLocalDevice();
         if (m_bluetoothAdapter)
         {
-            // Keep us informed of availability changes
+            // Keep us informed of Bluetooth adapter state change
             // On some platform, this can only inform us about disconnection, not reconnection
             connect(m_bluetoothAdapter, &QBluetoothLocalDevice::hostModeStateChanged,
-                    this, &DeviceManager::bluetoothModeChanged);
-
-            connect(this, &DeviceManager::bluetoothChanged,
-                    this, &DeviceManager::bluetoothStatusChanged);
+                    this, &DeviceManager::bluetoothHostModeStateChanged);
         }
     }
 
@@ -331,13 +330,13 @@ void DeviceManager::enableBluetooth(bool enforceUserPermissionCheck)
     {
         m_btA = true;
 
-        if (m_bluetoothAdapter->hostMode() > 0)
+        if (m_bluetoothAdapter->hostMode() > QBluetoothLocalDevice::HostMode::HostPoweredOff)
         {
             m_btE = true; // was already activated
 
 #if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
             // Already powered on? Power on again anyway. It helps on android...
-            m_bluetoothAdapter->powerOn();
+            //m_bluetoothAdapter->powerOn();
 #endif
         }
         else // Try to activate the adapter
@@ -401,23 +400,17 @@ bool DeviceManager::checkBluetoothPermissions()
 
 /* ************************************************************************** */
 
-void DeviceManager::bluetoothModeChanged(QBluetoothLocalDevice::HostMode state)
+void DeviceManager::bluetoothHostModeStateChanged(QBluetoothLocalDevice::HostMode state)
 {
-    qDebug() << "DeviceManager::bluetoothModeChanged() host mode now:" << state;
+    qDebug() << "DeviceManager::bluetoothHostModeStateChanged() host mode now:" << state;
 
     if (state > QBluetoothLocalDevice::HostPoweredOff)
     {
         m_btE = true;
-
-        // Bluetooth enabled, refresh devices
-        refreshDevices_check();
     }
     else
     {
         m_btE = false;
-
-        // Bluetooth disabled, force disconnection
-        refreshDevices_stop();
     }
 
     Q_EMIT bluetoothChanged();
@@ -429,7 +422,12 @@ void DeviceManager::bluetoothStatusChanged()
 
     if (m_btA && m_btE)
     {
-        refreshDevices_check();
+        refreshDevices_listen();
+    }
+    else
+    {
+        // Bluetooth disabled, force disconnection
+        refreshDevices_stop();
     }
 }
 
@@ -482,7 +480,7 @@ void DeviceManager::checkBluetoothIos()
         disconnect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::finished,
                    this, &DeviceManager::deviceDiscoveryFinished);
         connect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::finished,
-                this, &DeviceManager::bluetoothModeChangedIos, Qt::UniqueConnection);
+                this, &DeviceManager::bluetoothHostModeStateChangedIos, Qt::UniqueConnection);
 
         m_discoveryAgent->setLowEnergyDiscoveryTimeout(8); // 8ms
         m_discoveryAgent->start(QBluetoothDeviceDiscoveryAgent::LowEnergyMethod);
@@ -561,9 +559,6 @@ void DeviceManager::deviceDiscoveryFinished()
         m_listening = false;
         Q_EMIT listeningChanged();
     }
-
-    // Now refresh devices data
-    //refreshDevices_check();
 }
 
 void DeviceManager::deviceDiscoveryStopped()
@@ -582,18 +577,14 @@ void DeviceManager::deviceDiscoveryStopped()
     }
 }
 
-void DeviceManager::bluetoothModeChangedIos()
+void DeviceManager::bluetoothHostModeStateChangedIos()
 {
-    //qDebug() << "DeviceManager::bluetoothModeChangedIos()";
+    //qDebug() << "DeviceManager::bluetoothHostModeStateChangedIos()";
 
     if (!m_btE)
     {
         m_btE = true;
         Q_EMIT bluetoothChanged();
-
-        // Now refresh devices data
-        //refreshDevices_check();
-        refreshDevices_listen();
     }
 }
 
@@ -729,7 +720,7 @@ void DeviceManager::listenDevices_start()
             if (hasBluetoothPermissions())
             {
 #if defined(Q_OS_ANDROID) && defined(QT_CONNECTIVITY_PATCHED)
-                // Build and apply Android BLE scan filter
+                // Build and apply Android BLE scan filter, otherwise we can't scan while the screen is off
                 // Needs a patched QtConnectivity (from https://github.com/emericg/qtconnectivity/tree/blescanfiltering_v1)
                 if (m_daemonMode)
                 {
@@ -791,23 +782,26 @@ void DeviceManager::refreshDevices_background()
 {
     //qDebug() << "DeviceManager::refreshDevices_background()";
 /*
-    QSqlQuery readLastSync;
-    readLastSync.prepare("SELECT lastSync FROM lastSync");
-    readLastSync.exec();
-    if (readLastSync.first())
+    QSqlQuery readLastRun;
+    readLastRun.prepare("SELECT lastRun FROM lastRun");
+    readLastRun.exec();
+    if (readLastRun.first())
     {
-        QDateTime lastSync = readLastSync.value(0).toDateTime();
-        if (lastSync.isValid())
+        QDateTime lastRun = readLastRun.value(0).toDateTime();
+        if (lastRun.isValid())
         {
-            int mins = static_cast<int>(std::floor(lastSync.secsTo(QDateTime::currentDateTime()) / 60.0));
+            int mins = static_cast<int>(std::floor(lastRun.secsTo(QDateTime::currentDateTime()) / 60.0));
             if (mins < 60) return;
         }
     }
 */
-    // Background refresh (using advertising data) (if background location permission)
+
+    // Background refresh (using scan detection)
+    // If background location permission and patched QtConnection
     listenDevices_start();
+
 /*
-    // Background refresh (using connection data)
+    // Background refresh (using blind connections)
     m_devices_updating_queue.clear();
     m_devices_updating.clear();
 
@@ -820,7 +814,6 @@ void DeviceManager::refreshDevices_background()
         {
             if (!dd->isEnabled()) continue;
             if (!dd->hasBluetoothConnection()) continue;
-            if (dd->getName() == "ThermoBeacon") continue;
 
             // old or no data: go for refresh
             if (dd->needsUpdateRt())
@@ -891,7 +884,6 @@ void DeviceManager::refreshDevices_check()
             {
                 if (!dd->isEnabled()) continue;
                 if (!dd->hasBluetoothConnection()) continue;
-                if (dd->getName() == "ThermoBeacon") continue;
 
                 // old or no data: go for refresh
                 if (dd->needsUpdateRt())
@@ -987,18 +979,18 @@ void DeviceManager::refreshDevices_continue()
             m_updating = false;
             Q_EMIT updatingChanged();
 
-            QSqlQuery updateLastSync;
-            updateLastSync.prepare("UPDATE lastSync SET lastSync=:lastSync");
-            updateLastSync.bindValue(":lastSync", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+            QSqlQuery updateLastRun;
+            updateLastRun.prepare("UPDATE lastRun SET lastRun = :run");
+            updateLastRun.bindValue(":run", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
 
-            if (updateLastSync.exec() == false)
+            if (updateLastRun.exec() == false)
             {
-                qWarning() << "> updateLastSync.exec() ERROR" <<
-                              updateLastSync.lastError().type() << ":" << updateLastSync.lastError().text();
+                qWarning() << "> updateLastRun.exec() ERROR"
+                           << updateLastRun.lastError().type() << ":" << updateLastRun.lastError().text();
             }
-            if (updateLastSync.numRowsAffected() == 0)
+            if (updateLastRun.numRowsAffected() == 0)
             {
-                // addLastSync?
+                // addLastRun?
             }
         }
     }
@@ -1101,11 +1093,12 @@ void DeviceManager::syncDevices_check()
 
             if (dd)
             {
-                if (!(dd->getName() == "Flower care" || dd->getName() == "ThermoBeacon")) continue;
+                // We need history support
+                if (!dd->hasHistory()) continue;
 
+                // Old or no data: go for a sync
                 if (dd->getLastHistorySync_int() < 0 || dd->getLastHistorySync_int() > 6*60*60)
                 {
-                    // old or no data: go for sync
                     m_devices_syncing_queue.push_back(dd);
                     dd->refreshQueued();
                 }
@@ -1140,11 +1133,12 @@ void DeviceManager::syncDevices_start()
             Device *dd = qobject_cast<Device*>(d);
             if (dd)
             {
-                if (!(dd->getName() == "Flower care" || dd->getName() == "ThermoBeacon")) continue;
+                // We need history support
+                if (!dd->hasHistory()) continue;
 
+                // Old or no data: go for a sync
                 if (dd->getLastHistorySync_int() < 0 || dd->getLastHistorySync_int() > 6*60*60)
                 {
-                    // old or no data: go for sync
                     m_devices_syncing_queue.push_back(dd);
                     dd->refreshQueued();
                 }
@@ -1307,7 +1301,7 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
     {
         if (info.rssi() >= 0) return; // we probably just hit the device cache
 
-        if (m_devices_blacklist.contains(info.address().toString()))return; // device is blacklisted
+        if (m_devices_blacklist.contains(info.address().toString())) return; // device is blacklisted
 
         SettingsManager *sm = SettingsManager::getInstance();
         if (sm && sm->getBluetoothLimitScanningRange() && info.rssi() < -70) return; // device is too far away

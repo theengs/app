@@ -36,7 +36,7 @@
 /* ************************************************************************** */
 
 DeviceFlowerCare::DeviceFlowerCare(const QString &deviceAddr, const QString &deviceName, QObject *parent):
-    DeviceSensor(deviceAddr, deviceName, parent)
+    DevicePlantSensor(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR;
     m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
@@ -52,7 +52,7 @@ DeviceFlowerCare::DeviceFlowerCare(const QString &deviceAddr, const QString &dev
 }
 
 DeviceFlowerCare::DeviceFlowerCare(const QBluetoothDeviceInfo &d, QObject *parent):
-    DeviceSensor(d, parent)
+    DevicePlantSensor(d, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR;
     m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
@@ -620,7 +620,7 @@ void DeviceFlowerCare::bleReadDone(const QLowEnergyCharacteristic &c, const QByt
 
 /* ************************************************************************** */
 
-void DeviceFlowerCare::parseAdvertisementData(const QByteArray &value)
+void DeviceFlowerCare::parseAdvertisementData(const QByteArray &value, const uint16_t identifier)
 {
     //qDebug() << "DeviceFlowerCare::parseAdvertisementData(" << m_deviceAddress << ")" << value.size();
     //qDebug() << "DATA: 0x" << value.toHex();

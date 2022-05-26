@@ -161,12 +161,13 @@ protected:
 
     // Device data
     QString m_deviceAddress;
+    QString m_deviceAddressMAC;     //!< Used only on macOS and iOS, mostly to interact with other platforms
     QString m_deviceModel;
     QString m_deviceName;
     QString m_deviceFirmware = "UNKN";
     int m_deviceBattery = -1;
 
-    // Db
+    // Db availability shortcuts
     bool m_dbInternal = false;
     bool m_dbExternal = false;
 
@@ -183,6 +184,7 @@ protected:
     int m_ble_action = 0;           //!< See DeviceActions enum
     QDateTime m_lastUpdate;
     QDateTime m_lastUpdateDatabase;
+    QDateTime m_lastHistorySeen;
     QDateTime m_lastHistorySync;
     QDateTime m_lastError;
     bool m_firmware_uptodate = false;
@@ -258,13 +260,12 @@ public:
     bool isThermometer() const { return (m_deviceType == DeviceUtils::DEVICE_THERMOMETER); }
     bool isEnvironmentalSensor() const { return (m_deviceType == DeviceUtils::DEVICE_ENVIRONMENTAL); }
 
-    bool isDeviceTheengs() const { return (m_deviceType >= DeviceUtils::DEVICE_THEENGS); }
+    virtual bool hasRealTime() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_REALTIME); }
     bool isBeacon() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_BEACON); }
     bool isProbe() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_PROBE); }
     bool isScale() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_SCALE); }
     bool isMotionSensor() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_MOTIONSENSOR); }
 
-    bool hasRealTime() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_REALTIME); }
     virtual bool hasHistory() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_HISTORY); }
     bool hasBatteryLevel() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_BATTERY); }
     bool hasClock() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_CLOCK); }
@@ -361,7 +362,7 @@ public:
     Q_INVOKABLE void actionShutdown();
 
     // BLE advertisement
-    virtual void parseAdvertisementData(const QByteArray &value);
+    virtual void parseAdvertisementData(const QByteArray &value, const uint16_t identifier);
 
 public slots:
     void deviceConnect();               //!< Initiate a BLE connection with a device

@@ -20,7 +20,7 @@
 #define DEVICE_WP6003_H
 /* ************************************************************************** */
 
-#include "device_sensor.h"
+#include "device_environmental.h"
 
 #include <QObject>
 #include <QList>
@@ -33,7 +33,7 @@
 /*!
  * VSON technology "Air Box WP6003"
  */
-class DeviceWP6003: public DeviceSensor
+class DeviceWP6003: public DeviceEnvironmental
 {
     Q_OBJECT
 

@@ -20,7 +20,7 @@
 #define DEVICE_THERMOBEACON_H
 /* ************************************************************************** */
 
-#include "device_sensor.h"
+#include "device_thermometer.h"
 
 #include <QObject>
 #include <QString>
@@ -37,14 +37,14 @@
  * LCD Hygrometer (2ACD3-WS08) / (KEU-WA59D)
  * Keychain Hygrometer (2ACD3-WS07) / (2ACD3-WS02)
  */
-class DeviceThermoBeacon: public DeviceSensor
+class DeviceThermoBeacon: public DeviceThermometer
 {
 public:
     DeviceThermoBeacon(const QString &deviceAddr, const QString &deviceName, QObject *parent = nullptr);
     DeviceThermoBeacon(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
     ~DeviceThermoBeacon();
 
-    void parseAdvertisementData(const QByteArray &value);
+    void parseAdvertisementData(const QByteArray &value, const uint16_t identifier);
 
 private:
     // QLowEnergyController related

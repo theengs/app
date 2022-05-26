@@ -20,7 +20,7 @@
 #define DEVICE_HYGROTEMP_CGD1_H
 /* ************************************************************************** */
 
-#include "device_sensor.h"
+#include "device_thermometer.h"
 
 #include <QObject>
 #include <QList>
@@ -34,7 +34,7 @@
  * Qingping (formerly ClearGrass) "Bluetooth Alarm Clock"
  * CGD1 device / squared body / LCD
  */
-class DeviceHygrotempCGD1: public DeviceSensor
+class DeviceHygrotempCGD1: public DeviceThermometer
 {
     Q_OBJECT
 
@@ -43,7 +43,7 @@ public:
     DeviceHygrotempCGD1(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
     ~DeviceHygrotempCGD1();
 
-    void parseAdvertisementData(const QByteArray &value);
+    void parseAdvertisementData(const QByteArray &value, const uint16_t identifier);
 
 private:
     // QLowEnergyController related

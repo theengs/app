@@ -47,7 +47,11 @@ Item {
         tempData.clear()
         lumiData.clear()
 
-        currentDevice.getChartData_plantAIO(days, axisTime, hygroData, conduData, tempData, lumiData)
+        if (currentDevice.isPlantSensor) {
+            currentDevice.getChartData_plantAIO(days, axisTime, hygroData, conduData, tempData, lumiData);
+        } else if (currentDevice.isThermometer) {
+            currentDevice.getChartData_thermometerAIO(days, axisTime, tempData, hygroData);
+        }
 
         //// AXIS
         axisHygro.min = 0

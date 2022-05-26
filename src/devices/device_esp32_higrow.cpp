@@ -34,7 +34,7 @@
 /* ************************************************************************** */
 
 DeviceEsp32HiGrow::DeviceEsp32HiGrow(const QString &deviceAddr, const QString &deviceName, QObject *parent):
-    DeviceSensor(deviceAddr, deviceName, parent)
+    DevicePlantSensor(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR;
     m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_CONNECTION;
@@ -48,7 +48,7 @@ DeviceEsp32HiGrow::DeviceEsp32HiGrow(const QString &deviceAddr, const QString &d
 }
 
 DeviceEsp32HiGrow::DeviceEsp32HiGrow(const QBluetoothDeviceInfo &d, QObject *parent):
-    DeviceSensor(d, parent)
+    DevicePlantSensor(d, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR;
     m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_CONNECTION;
@@ -63,8 +63,6 @@ DeviceEsp32HiGrow::DeviceEsp32HiGrow(const QBluetoothDeviceInfo &d, QObject *par
 
 DeviceEsp32HiGrow::~DeviceEsp32HiGrow()
 {
-    if (m_bleController) m_bleController->disconnectFromDevice();
-
     delete serviceInfos;
     delete serviceBattery;
     delete serviceData;

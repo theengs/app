@@ -34,7 +34,7 @@
 /* ************************************************************************** */
 
 DeviceHygrotempCGG1::DeviceHygrotempCGG1(const QString &deviceAddr, const QString &deviceName, QObject *parent):
-    DeviceSensor(deviceAddr, deviceName, parent)
+    DeviceThermometer(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
     if (deviceName == "ClearGrass Temp & RH") m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
@@ -45,7 +45,7 @@ DeviceHygrotempCGG1::DeviceHygrotempCGG1(const QString &deviceAddr, const QStrin
 }
 
 DeviceHygrotempCGG1::DeviceHygrotempCGG1(const QBluetoothDeviceInfo &d, QObject *parent):
-    DeviceSensor(d, parent)
+    DeviceThermometer(d, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
     if (d.name() == "ClearGrass Temp & RH") m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
@@ -309,7 +309,7 @@ void DeviceHygrotempCGG1::confirmedDescriptorWrite(const QLowEnergyDescriptor &d
 
 /* ************************************************************************** */
 
-void DeviceHygrotempCGG1::parseAdvertisementData(const QByteArray &value)
+void DeviceHygrotempCGG1::parseAdvertisementData(const QByteArray &value, const uint16_t identifier)
 {
     //qDebug() << "DeviceHygrotempCGG1::parseAdvertisementData(" << m_deviceAddress << ")" << value.size();
     //qDebug() << "DATA: 0x" << value.toHex();

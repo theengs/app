@@ -16,7 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "device_filter.h"
+#include "DeviceFilter.h"
+#include "device.h"
+#include "device_sensor.h"
 
 #include <cstdlib>
 #include <cmath>

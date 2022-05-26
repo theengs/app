@@ -20,7 +20,7 @@
 #define DEVICE_HYGROTEMP_CGDK2_H
 /* ************************************************************************** */
 
-#include "device_sensor.h"
+#include "device_thermometer.h"
 
 #include <QObject>
 #include <QList>
@@ -34,7 +34,7 @@
  * Qingping "Temp RH Lite"
  * CGDK2 device / round body / LCD screen
  */
-class DeviceHygrotempCGDK2: public DeviceSensor
+class DeviceHygrotempCGDK2: public DeviceThermometer
 {
     Q_OBJECT
 
@@ -43,7 +43,7 @@ public:
     DeviceHygrotempCGDK2(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
     ~DeviceHygrotempCGDK2();
 
-    void parseAdvertisementData(const QByteArray &value);
+    void parseAdvertisementData(const QByteArray &value, const uint16_t identifier);
 
 private:
     // QLowEnergyController related

@@ -39,7 +39,7 @@
 /* ************************************************************************** */
 
 DeviceThermoBeacon::DeviceThermoBeacon(const QString &deviceAddr, const QString &deviceName, QObject *parent):
-    DeviceSensor(deviceAddr, deviceName, parent)
+    DeviceThermometer(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
     m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
@@ -56,7 +56,7 @@ DeviceThermoBeacon::DeviceThermoBeacon(const QString &deviceAddr, const QString 
 }
 
 DeviceThermoBeacon::DeviceThermoBeacon(const QBluetoothDeviceInfo &d, QObject *parent):
-    DeviceSensor(d, parent)
+    DeviceThermometer(d, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
     m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
@@ -417,7 +417,7 @@ void DeviceThermoBeacon::bleReadNotify(const QLowEnergyCharacteristic &c, const 
 
 /* ************************************************************************** */
 
-void DeviceThermoBeacon::parseAdvertisementData(const QByteArray &value)
+void DeviceThermoBeacon::parseAdvertisementData(const QByteArray &value, const uint16_t identifier)
 {
     //qDebug() << "DeviceThermoBeacon::parseAdvertisementData(" << m_deviceAddress << ")" << value.size();
     //qDebug() << "DATA: 0x" << value.toHex();

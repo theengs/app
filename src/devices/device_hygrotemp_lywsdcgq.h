@@ -20,7 +20,7 @@
 #define DEVICE_HYGROTEMP_LYWSDCGQ_H
 /* ************************************************************************** */
 
-#include "device_sensor.h"
+#include "device_thermometer.h"
 
 #include <QObject>
 #include <QList>
@@ -35,7 +35,7 @@
  * Xiaomi "Bluetooth Temperature and Humidity sensor with LCD"
  * LYWSDCGQ device / round body / LCD
  */
-class DeviceHygrotempLYWSDCGQ: public DeviceSensor
+class DeviceHygrotempLYWSDCGQ: public DeviceThermometer
 {
     Q_OBJECT
 
@@ -44,7 +44,7 @@ public:
     DeviceHygrotempLYWSDCGQ(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
     ~DeviceHygrotempLYWSDCGQ();
 
-    void parseAdvertisementData(const QByteArray &value);
+    void parseAdvertisementData(const QByteArray &value, const uint16_t identifier);
 
 private:
     // QLowEnergyController related

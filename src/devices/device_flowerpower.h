@@ -20,7 +20,7 @@
 #define DEVICE_FLOWERPOWER_H
 /* ************************************************************************** */
 
-#include "device_sensor.h"
+#include "device_plantsensor.h"
 
 #include <QObject>
 #include <QList>
@@ -36,7 +36,7 @@
  * Protocol infos:
  * - https://developer.parrot.com/docs/FlowerPower/FlowerPower-BLE.pdf
  */
-class DeviceFlowerPower: public DeviceSensor
+class DeviceFlowerPower: public DevicePlantSensor
 {
     Q_OBJECT
 

@@ -20,7 +20,7 @@
 #define DEVICE_HYGROTEMP_CGP1W_H
 /* ************************************************************************** */
 
-#include "device_sensor.h"
+#include "device_thermometer.h"
 
 #include <QObject>
 #include <QList>
@@ -34,7 +34,7 @@
  * Qingping (formerly ClearGrass) "Temp & RH Barometer Pro S" / "Temp & RH Monitor Pro S"
  * CGP1W device / squared body / LCD
  */
-class DeviceHygrotempCGP1W: public DeviceSensor
+class DeviceHygrotempCGP1W: public DeviceThermometer
 {
     Q_OBJECT
 
@@ -43,7 +43,7 @@ public:
     DeviceHygrotempCGP1W(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
     ~DeviceHygrotempCGP1W();
 
-    void parseAdvertisementData(const QByteArray &value);
+    void parseAdvertisementData(const QByteArray &value, const uint16_t identifier);
 
 private:
     // QLowEnergyController related

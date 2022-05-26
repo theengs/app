@@ -38,7 +38,7 @@
 /* ************************************************************************** */
 
 DeviceHygrotempClock::DeviceHygrotempClock(const QString &deviceAddr, const QString &deviceName, QObject *parent):
-    DeviceSensor(deviceAddr, deviceName, parent)
+    DeviceThermometer(deviceAddr, deviceName, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
     m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
@@ -49,7 +49,7 @@ DeviceHygrotempClock::DeviceHygrotempClock(const QString &deviceAddr, const QStr
 }
 
 DeviceHygrotempClock::DeviceHygrotempClock(const QBluetoothDeviceInfo &d, QObject *parent):
-    DeviceSensor(d, parent)
+    DeviceThermometer(d, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
     m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
@@ -368,7 +368,7 @@ void DeviceHygrotempClock::confirmedDescriptorWrite(const QLowEnergyDescriptor &
 
 /* ************************************************************************** */
 
-void DeviceHygrotempClock::parseAdvertisementData(const QByteArray &value)
+void DeviceHygrotempClock::parseAdvertisementData(const QByteArray &value, const uint16_t identifier)
 {
     //qDebug() << "DeviceHygrotempClock::parseAdvertisementData(" << m_deviceAddress << ")" << value.size();
     //qDebug() << "DATA: 0x" << value.toHex();

@@ -20,7 +20,7 @@
 #define DEVICE_HYGROTEMP_SQUARE_H
 /* ************************************************************************** */
 
-#include "device_sensor.h"
+#include "device_thermometer.h"
 
 #include <QObject>
 #include <QList>
@@ -40,7 +40,7 @@
  * Miaomiaoce "?"
  * XMWSDJO4MMC device / rectangular body / E-Ink
  */
-class DeviceHygrotempSquare: public DeviceSensor
+class DeviceHygrotempSquare: public DeviceThermometer
 {
     Q_OBJECT
 

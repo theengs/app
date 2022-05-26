@@ -20,7 +20,7 @@
 #define DEVICE_FLOWERCARE_H
 /* ************************************************************************** */
 
-#include "device_sensor.h"
+#include "device_plantsensor.h"
 
 #include <cstdint>
 
@@ -36,7 +36,7 @@
  * Xiaomi "Flower Care" or VegTrug "Grow Care Home" (HHCCJCY01, HHCCJCY10)
  * Xiaomi "Flower Care Max" (HHCCJCY09) or VegTrug "Grow Care Garden" (GCLS002)
  */
-class DeviceFlowerCare: public DeviceSensor
+class DeviceFlowerCare: public DevicePlantSensor
 {
     Q_OBJECT
 
@@ -45,7 +45,7 @@ public:
     DeviceFlowerCare(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
     ~DeviceFlowerCare();
 
-    void parseAdvertisementData(const QByteArray &value);
+    void parseAdvertisementData(const QByteArray &value, const uint16_t identifier);
 
     Q_INVOKABLE virtual bool hasHistory() const;
 

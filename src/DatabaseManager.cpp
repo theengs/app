@@ -30,8 +30,6 @@
 #include <QSqlQuery>
 #include <QSqlError>
 
-#define CURRENT_DB_VERSION 2
-
 /* ************************************************************************** */
 
 DatabaseManager *DatabaseManager::instance = nullptr;
@@ -324,7 +322,7 @@ void DatabaseManager::createDatabase()
         {
             QSqlQuery writeDbVersion;
             writeDbVersion.prepare("INSERT INTO version (dbVersion) VALUES (:dbVersion)");
-            writeDbVersion.bindValue(":dbVersion", CURRENT_DB_VERSION);
+            writeDbVersion.bindValue(":dbVersion", m_dbCurrentVersion);
             writeDbVersion.exec();
         }
         else
@@ -360,7 +358,8 @@ void DatabaseManager::createDatabase()
 
         QSqlQuery createDevices;
         createDevices.prepare("CREATE TABLE devices (" \
-                              "deviceAddr CHAR(38) PRIMARY KEY," \
+                              "deviceAddr VARCHAR(38) PRIMARY KEY," \
+                              "deviceAddrMAC VARCHAR(17)," \
                               "deviceName VARCHAR(255)," \
                               "deviceModel VARCHAR(255)," \
                               "deviceFirmware VARCHAR(255)," \
@@ -368,7 +367,7 @@ void DatabaseManager::createDatabase()
                               "associatedName VARCHAR(255)," \
                               "locationName VARCHAR(255)," \
                               "lastSeen DATETIME," \
-                              "lastRun DATETIME," \
+                              "lastSync DATETIME," \
                               "isEnabled BOOLEAN DEFAULT TRUE," \
                               "isOutside BOOLEAN DEFAULT FALSE," \
                               "manualOrderIndex INT," \
@@ -388,8 +387,8 @@ void DatabaseManager::createDatabase()
 
         QSqlQuery createDevicesBlacklist;
         createDevicesBlacklist.prepare("CREATE TABLE devicesBlacklist (" \
-                              "deviceAddr CHAR(38)" \
-                              ");");
+                                       "deviceAddr VARCHAR(38)" \
+                                       ");");
 
         if (createDevicesBlacklist.exec() == false)
         {
@@ -404,8 +403,7 @@ void DatabaseManager::createDatabase()
 
         QSqlQuery createPlantData;
         createPlantData.prepare("CREATE TABLE plantData (" \
-                                "deviceID INT," \
-                                "deviceAddr CHAR(38)," \
+                                "deviceAddr VARCHAR(38)," \
                                 "ts DATETIME," \
                                 "ts_full DATETIME," \
                                   "soilMoisture INT," \
@@ -416,8 +414,8 @@ void DatabaseManager::createDatabase()
                                   "humidity FLOAT," \
                                   "luminosity INT," \
                                   "watertank FLOAT," \
-                                " PRIMARY KEY(deviceAddr, ts), " \
-                                " FOREIGN KEY(deviceAddr) REFERENCES devices(deviceAddr) ON DELETE CASCADE ON UPDATE NO ACTION " \
+                                "PRIMARY KEY(deviceAddr, ts)," \
+                                "FOREIGN KEY(deviceAddr) REFERENCES devices(deviceAddr) ON DELETE CASCADE ON UPDATE NO ACTION" \
                                 ");");
 
         if (createPlantData.exec() == false)
@@ -427,13 +425,33 @@ void DatabaseManager::createDatabase()
         }
     }
 
+    if (!tableExists("thermoData"))
+    {
+        qDebug() << "+ Adding 'thermoData' table to local database";
+
+        QSqlQuery createThermoData;
+        createThermoData.prepare("CREATE TABLE thermoData (" \
+                                 "deviceAddr VARCHAR(38)," \
+                                 "ts DATETIME," \
+                                   "temperature FLOAT," \
+                                   "humidity FLOAT," \
+                                   "pressure FLOAT," \
+                                 "FOREIGN KEY(deviceAddr) REFERENCES devices(deviceAddr) ON DELETE CASCADE ON UPDATE NO ACTION" \
+                                 ");");
+
+        if (createThermoData.exec() == false)
+        {
+            qWarning() << "> createThermoData.exec() ERROR"
+                       << createThermoData.lastError().type() << ":" << createThermoData.lastError().text();
+        }
+    }
+
     if (!tableExists("sensorData"))
     {
         qDebug() << "+ Adding 'sensorData' table to local database";
         QSqlQuery createSensorData;
         createSensorData.prepare("CREATE TABLE sensorData (" \
-                                 "deviceID INT," \
-                                 "deviceAddr CHAR(38)," \
+                                 "deviceAddr VARCHAR(38)," \
                                    "timestamp DATETIME," \
                                    "temperature FLOAT," \
                                    "humidity FLOAT," \
@@ -455,12 +473,15 @@ void DatabaseManager::createDatabase()
                                    "so2 FLOAT," \
                                    "voc FLOAT," \
                                    "hcho FLOAT," \
-                                   "geiger FLOAT," \
-                                 " FOREIGN KEY(deviceAddr) REFERENCES devices(deviceAddr) ON DELETE CASCADE ON UPDATE NO ACTION " \
+                                   "radioactivity FLOAT," \
+                                 "FOREIGN KEY(deviceAddr) REFERENCES devices(deviceAddr) ON DELETE CASCADE ON UPDATE NO ACTION" \
                                  ");");
 
         if (createSensorData.exec() == false)
-            qWarning() << "> createSensorData.exec() ERROR" << createSensorData.lastError().type() << ":" << createSensorData.lastError().text();
+        {
+            qWarning() << "> createSensorData.exec() ERROR"
+                       << createSensorData.lastError().type() << ":" << createSensorData.lastError().text();
+        }
     }
 
     if (!tableExists("sensorTheengs"))
@@ -470,37 +491,37 @@ void DatabaseManager::createDatabase()
         createSensorTheengs.prepare("CREATE TABLE sensorTheengs (" \
                                     "deviceID INT," \
                                     "deviceAddr CHAR(38)," \
-                                     "timestamp DATETIME," \
-                                     "temperature1 FLOAT," \
-                                     "temperature2 FLOAT," \
-                                     "temperature3 FLOAT," \
-                                     "temperature4 FLOAT," \
-                                     "temperature5 FLOAT," \
-                                     "temperature6 FLOAT," \
-                                     "pressure1 INT," \
-                                     "pressure2 INT," \
-                                     "pressure3 INT," \
-                                     "pressure4 INT," \
-                                     "battery1 INT," \
-                                     "battery2 INT," \
-                                     "battery3 INT," \
-                                     "battery4 INT," \
-                                     "alarm1 BOOLEAN," \
-                                     "alarm2 BOOLEAN," \
-                                     "alarm3 BOOLEAN," \
-                                     "alarm4 BOOLEAN," \
-                                     "weight FLOAT," \
-                                     "weightUnit VARCHAR(32)," \
-                                     "weightMode VARCHAR(32)," \
-                                     "impedance INT," \
-                                     "acclX FLOAT," \
-                                     "acclY FLOAT," \
-                                     "acclZ FLOAT," \
-                                     "gyroX FLOAT," \
-                                     "gyroY FLOAT," \
-                                     "gyroZ FLOAT," \
-                                     "steps INT," \
-                                    " FOREIGN KEY(deviceAddr) REFERENCES devices(deviceAddr) ON DELETE CASCADE ON UPDATE NO ACTION " \
+                                      "timestamp DATETIME," \
+                                      "temperature1 FLOAT," \
+                                      "temperature2 FLOAT," \
+                                      "temperature3 FLOAT," \
+                                      "temperature4 FLOAT," \
+                                      "temperature5 FLOAT," \
+                                      "temperature6 FLOAT," \
+                                      "pressure1 INT," \
+                                      "pressure2 INT," \
+                                      "pressure3 INT," \
+                                      "pressure4 INT," \
+                                      "battery1 INT," \
+                                      "battery2 INT," \
+                                      "battery3 INT," \
+                                      "battery4 INT," \
+                                      "alarm1 BOOLEAN," \
+                                      "alarm2 BOOLEAN," \
+                                      "alarm3 BOOLEAN," \
+                                      "alarm4 BOOLEAN," \
+                                      "weight FLOAT," \
+                                      "weightUnit VARCHAR(32)," \
+                                      "weightMode VARCHAR(32)," \
+                                      "impedance INT," \
+                                      "acclX FLOAT," \
+                                      "acclY FLOAT," \
+                                      "acclZ FLOAT," \
+                                      "gyroX FLOAT," \
+                                      "gyroY FLOAT," \
+                                      "gyroZ FLOAT," \
+                                      "steps INT," \
+                                    "FOREIGN KEY(deviceAddr) REFERENCES devices(deviceAddr) ON DELETE CASCADE ON UPDATE NO ACTION" \
                                     ");");
 
         if (createSensorTheengs.exec() == false)
@@ -527,23 +548,21 @@ void DatabaseManager::migrateDatabase()
         //qDebug() << "dbVersion is #" << dbVersion;
     }
 
-    if (dbVersion > 0 && dbVersion != CURRENT_DB_VERSION)
+    if (dbVersion > 0 && dbVersion != m_dbCurrentVersion)
     {
-        bool migration_status = false;
-
-        if (dbVersion == 1) migration_status = migrate_v1v2();
-
-        // Then update version
-        if (migration_status)
+        if (dbVersion == 1)
         {
-            QSqlQuery updateDbVersion;
-            updateDbVersion.prepare("UPDATE version SET dbVersion=:dbVersion");
-            updateDbVersion.bindValue(":dbVersion", CURRENT_DB_VERSION);
-
-            if (updateDbVersion.exec() == false)
+            if (migrate_v1v2())
             {
-                qWarning() << "> updateDbVersion.exec() ERROR"
-                           << updateDbVersion.lastError().type() << ":" << updateDbVersion.lastError().text();
+                QSqlQuery updateDbVersion("UPDATE version SET dbVersion=2");
+            }
+        }
+
+        if (dbVersion == 2)
+        {
+            if (migrate_v2v3())
+            {
+                QSqlQuery updateDbVersion("UPDATE version SET dbVersion=3");
             }
         }
     }

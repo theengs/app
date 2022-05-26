@@ -20,7 +20,7 @@
 #define DEVICE_HYGROTEMP_CLOCK_H
 /* ************************************************************************** */
 
-#include "device_sensor.h"
+#include "device_thermometer.h"
 
 #include <QObject>
 #include <QList>
@@ -37,7 +37,7 @@
  * Miaomiaoce "Smart Hygrometer Alarm Clock"
  * MHO-C303 device / rectangular body / E-Ink
  */
-class DeviceHygrotempClock: public DeviceSensor
+class DeviceHygrotempClock: public DeviceThermometer
 {
     Q_OBJECT
 
@@ -46,7 +46,7 @@ public:
     DeviceHygrotempClock(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
     ~DeviceHygrotempClock();
 
-    void parseAdvertisementData(const QByteArray &value);
+    void parseAdvertisementData(const QByteArray &value, const uint16_t identifier);
 
 private:
     // QLowEnergyController related

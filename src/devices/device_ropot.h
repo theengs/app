@@ -20,7 +20,7 @@
 #define DEVICE_ROPOT_H
 /* ************************************************************************** */
 
-#include "device_sensor.h"
+#include "device_plantsensor.h"
 
 #include <cstdint>
 
@@ -35,7 +35,7 @@
 /*!
  * Xiaomi "RoPot" or VegTrug "Grow Care Pot" (HHCCPOT002)
  */
-class DeviceRopot: public DeviceSensor
+class DeviceRopot: public DevicePlantSensor
 {
     Q_OBJECT
 
@@ -44,7 +44,7 @@ public:
     DeviceRopot(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
     ~DeviceRopot();
 
-    void parseAdvertisementData(const QByteArray &value);
+    void parseAdvertisementData(const QByteArray &value, const uint16_t identifier);
 
     Q_INVOKABLE virtual bool hasHistory() const;
 
