@@ -23,7 +23,6 @@
 #include <cmath>
 
 #include <QBluetoothUuid>
-#include <QBluetoothServiceInfo>
 #include <QLowEnergyService>
 
 #include <QSqlQuery>
@@ -311,9 +310,9 @@ bool DeviceEsp32AirQualityMonitor::addDatabaseRecord(const int64_t timestamp,
 
             QSqlQuery addData;
             addData.prepare("REPLACE INTO sensorData (deviceAddr, timestamp, temperature, humidity, pressure, voc, co2)"
-                            " VALUES (:deviceAddr, :ts, :temp, :humi, :pres, :voc, :co2)");
+                            " VALUES (:deviceAddr, :timestamp, :temp, :humi, :pres, :voc, :co2)");
             addData.bindValue(":deviceAddr", getAddress());
-            addData.bindValue(":ts", m_lastUpdate.toString("yyyy-MM-dd hh:mm:ss"));
+            addData.bindValue(":timestamp", m_lastUpdate.toString("yyyy-MM-dd hh:mm:ss"));
             addData.bindValue(":temp", m_temperature);
             addData.bindValue(":humi", m_humidity);
             addData.bindValue(":pres", m_pressure);

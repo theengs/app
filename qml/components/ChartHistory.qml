@@ -12,7 +12,7 @@ Item {
     property string suffix: ""
     property int floatprecision: 0
     property string color: Theme.colorBlue
-    property bool animated: false
+    property bool animated: true
 
     property real valueMin: limitMin - (25 * ((limitMax-limitMin) / 50))
     property real valueMax: limitMax + (25 * ((limitMax-limitMin) / 50))
@@ -40,45 +40,46 @@ Item {
 
     ////////////////////////////////////////////////////////////////////////////
 
-    Text { // title
+    Row {
         id: titleArea
         anchors.top: chartHistory.top
         anchors.topMargin: singleColumn ? 8 : 16
         anchors.left: chartArea.left
-        anchors.leftMargin: singleColumn ? 8 : 0
+        anchors.leftMargin: singleColumn ? 1 : 2
+        spacing: 12
 
-        text: title
-        color: Theme.colorIcon
-        font.bold: true
-        font.pixelSize: Theme.fontSizeContentSmall
-        font.capitalization: Font.AllUppercase
-        verticalAlignment: Text.AlignBottom
-    }
+        Text {
+            id: textTitle
 
-    Text {
-        id: dataArea
-        anchors.top: chartHistory.top
-        anchors.topMargin: singleColumn ? 8 : 16
-        anchors.left: titleArea.right
-        anchors.leftMargin: 16
+            text: title
+            color: Theme.colorText
+            font.bold: true
+            font.pixelSize: singleColumn ? Theme.fontSizeContentSmall - 1 : Theme.fontSizeContentSmall
+            font.capitalization: Font.AllUppercase
+            verticalAlignment: Text.AlignBottom
+        }
 
-        text: ""
-        color: Theme.colorIcon
-        font.bold: false
-        font.pixelSize: Theme.fontSizeContentSmall
-        verticalAlignment: Text.AlignBottom
+        Text {
+            id: textLegend
 
-        Connections {
-            target: graphGrid
-            function onBarSelectionIndexChanged() {
-                var txt = ""
-                if (graphGrid.barSelectionIndex >= 0) {
-                    if (graphRepeater.itemAt(graphGrid.barSelectionIndex).value > -99) {
-                        txt = graphRepeater.itemAt(graphGrid.barSelectionIndex).value.toFixed(floatprecision)
-                        txt += suffix.replace("<br>", "")
+            text: ""
+            color: Theme.colorIcon
+            font.bold: false
+            font.pixelSize: singleColumn ? Theme.fontSizeContentSmall - 1 : Theme.fontSizeContentSmall
+            verticalAlignment: Text.AlignBottom
+
+            Connections {
+                target: graphGrid
+                function onBarSelectionIndexChanged() {
+                    var txt = ""
+                    if (graphGrid.barSelectionIndex >= 0) {
+                        if (graphRepeater.itemAt(graphGrid.barSelectionIndex).value > -99) {
+                            txt = graphRepeater.itemAt(graphGrid.barSelectionIndex).value.toFixed(floatprecision)
+                            txt += suffix.replace("<br>", "")
+                        }
                     }
+                    textLegend.text = txt
                 }
-                dataArea.text = txt
             }
         }
     }
@@ -87,13 +88,13 @@ Item {
 
     Item { // chart area
         id: chartArea
-        width: parent.width - (singleColumn ? 8 : 32)
+        width: parent.width - (singleColumn ? 8 : 24)
 
         anchors.top: titleArea.bottom
         anchors.bottom: parent.bottom
         anchors.bottomMargin: isPhone ? 12 : 24
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.horizontalCenterOffset: singleColumn ? 0 : 12
+        anchors.right: parent.right
+        anchors.rightMargin: 4
 
         ////////////////
 
@@ -106,7 +107,7 @@ Item {
 
             ShapePath {
                 strokeColor: Theme.colorSubText
-                strokeWidth: isPhone ? 1 : 2
+                strokeWidth: singleColumn ? 1 : 2
                 strokeStyle: ShapePath.DashLine
                 dashPattern: [ 1, 4 ]
                 startX: 0
@@ -115,12 +116,14 @@ Item {
             }
             Text {
                 anchors.right: parent.left
-                anchors.rightMargin: 4
+                anchors.rightMargin: singleColumn ? -contentWidth : 0
                 anchors.verticalCenter: parent.verticalCenter
+                anchors.verticalCenterOffset: singleColumn ? +6 : 0
 
                 text: qsTr("max")
                 color: Theme.colorSubText
-                font.pixelSize: 10
+                font.pixelSize: 11
+                rotation: singleColumn ? 0 : -90
             }
         }
         Shape {
@@ -132,7 +135,7 @@ Item {
 
             ShapePath {
                 strokeColor: Theme.colorSubText
-                strokeWidth: isPhone ? 1 : 2
+                strokeWidth: singleColumn ? 1 : 2
                 strokeStyle: ShapePath.DashLine
                 dashPattern: [ 1, 4 ]
                 startX: 0
@@ -141,12 +144,14 @@ Item {
             }
             Text {
                 anchors.right: parent.left
-                anchors.rightMargin: 4
+                anchors.rightMargin: singleColumn ? -contentWidth : 0
                 anchors.verticalCenter: parent.verticalCenter
+                anchors.verticalCenterOffset: singleColumn ? -6 : 0
 
                 text: qsTr("min")
                 color: Theme.colorSubText
-                font.pixelSize: 10
+                font.pixelSize: 11
+                rotation: singleColumn ? 0 : -90
             }
         }
 
@@ -161,7 +166,7 @@ Item {
 
             property real barWidth: ((width - ((barCount-1) * spacing)) / (barCount))
             property int barHeight: height
-            property int barRadius: isPhone ? 0 : 4
+            property int barRadius: singleColumn ? 2 : 4
             property int barSpacing: {
                 if (ddd === ChartHistory.Span.Daily) return 1
                 if (ddd === ChartHistory.Span.Weekly) return 4
@@ -238,9 +243,9 @@ Item {
                                 return (graphGrid.barSelectionDays === modelData.day) ? "#fcea32" : Theme.colorForeground
                             }
                         }
-                        Behavior on color { ColorAnimation { duration: animated ? 233 : 0 } }
+                        Behavior on color { ColorAnimation { duration: animated ? 133 : 0 } }
 
-                        border.width: (graphRow.barSpacing/2)
+                        border.width: (graphRow.barSpacing / 2)
                         border.color: Theme.colorBackground
                     }
 
@@ -254,7 +259,7 @@ Item {
                         width: parent.width
                         height: UtilsNumber.normalize(value2, valueMin, valueMax) * parent.height
 
-                        border.width: (graphRow.barSpacing/2)
+                        border.width: (graphRow.barSpacing / 2)
                         border.color: Theme.colorBackground
 
                         clip: false
@@ -282,7 +287,8 @@ Item {
 
                         Loader {
                             id: legendLoader
-                            anchors.top: parent.top
+                            anchors.top: (ddd === ChartHistory.Span.Weekly) ? undefined : parent.top
+                            anchors.bottom: (ddd === ChartHistory.Span.Weekly) ? parent.bottom : undefined
                             anchors.horizontalCenter: parent.horizontalCenter
 
                             asynchronous: true
@@ -387,8 +393,10 @@ Item {
         id: legendHorizontal
 
         Text {
-            anchors.top: parent.top
-            anchors.topMargin: 8
+            //anchors.top: parent.top // at the top
+            //anchors.topMargin: 8
+            anchors.bottom: parent.bottom // at the bottom
+            anchors.bottomMargin: isPhone ? 4 : 8
             anchors.horizontalCenter: parent.horizontalCenter
 
             property real value: _value
@@ -404,7 +412,7 @@ Item {
             }
             color: "white"
             font.bold: true
-            font.pixelSize: isPhone ? 13 : 14
+            font.pixelSize: 12
             horizontalAlignment: Text.AlignHCenter
         }
     }
@@ -416,7 +424,7 @@ Item {
 
         Text {
             anchors.top: parent.top
-            anchors.topMargin: (contentWidth/2)
+            anchors.topMargin: (contentWidth / 2)
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.horizontalCenterOffset: 0
 
@@ -447,21 +455,9 @@ Item {
             width: 20
             height: 20
 
-            property real value: _value
-
             color: "white"
             opacity: 0.66
             source: "qrc:/assets/icons_material/baseline-warning-24px.svg"
-/*
-            source: {
-                if (value < -40) return "qrc:/assets/icons_material/baseline-bluetooth_disabled-24px.svg"
-                else "qrc:/assets/icons_material/baseline-warning-24px.svg"
-            }
-            color: {
-                if (value < -40) return Theme.colorSubText
-                else return "white"
-            }
-*/
         }
     }
 }

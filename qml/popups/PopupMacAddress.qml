@@ -31,13 +31,8 @@ Popup {
     signal confirmed()
 
     onAboutToShow: {
+        textInputMacAddr.text = selectedDevice.deviceAddrMAC
         textInputMacAddr.focus = false
-
-        if (selectedDevice.getSetting("mac")) {
-            textInputMacAddr.text = selectedDevice.getSetting("mac")
-        } else {
-            textInputMacAddr.text = ""
-        }
     }
     onAboutToHide: {
         textInputMacAddr.focus = false
@@ -114,7 +109,6 @@ Popup {
                     inputMethodHints: Qt.ImhNoPredictiveText
 
                     placeholderText: "AA:BB:CC:DD:EE:FF"
-                    text: textInputMacAddr.text
                 }
 /*
                 Rectangle {
@@ -141,7 +135,6 @@ Popup {
                         validator: RegularExpressionValidator { regularExpression: /[0-9A-F]+/ }
 
                         onEditingFinished: {
-                            //if (text) currentDevice.setSetting("mac", text)
                             focus = false
                         }
                     }
@@ -178,7 +171,7 @@ Popup {
 
                     onClicked: {
                         if (selectedDevice) {
-                             selectedDevice.setSetting("mac", textInputMacAddr.text)
+                             selectedDevice.deviceAddrMAC = textInputMacAddr.text
                         }
                         textInputMacAddr.focus = false
                         popupMacAddress.confirmed()

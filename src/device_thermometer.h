@@ -36,7 +36,7 @@ class DeviceThermometer: public DeviceSensor
 {
     Q_OBJECT
 
-private:
+protected:
     bool areValuesValid_thermometer(const float t) const;
     bool addDatabaseRecord_thermometer(const int64_t timestamp, const float t);
 

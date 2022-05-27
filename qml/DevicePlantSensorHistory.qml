@@ -280,7 +280,7 @@ Item {
             height: graphHeight
             property int duo: 1
 
-            title: qsTr("Moisture")
+            title: qsTr("Soil moisture")
             ddd: graphGrid.mode
             uuu: ChartHistory.Data.SoilMoisture
             color: Theme.colorBlue
@@ -289,8 +289,8 @@ Item {
 
             valueMax: currentDevice.hygroMax*1.2
             valueMin: currentDevice.hygroMin*0.8
-            limitMin: currentDevice.soilMoisture_limitMin
-            limitMax: currentDevice.soilMoisture_limitMax
+            //limitMin: currentDevice.soilMoisture_limitMin
+            //limitMax: currentDevice.soilMoisture_limitMax
         }
 
         ////////
@@ -301,7 +301,7 @@ Item {
             height: graphHeight
             property int duo: 1
 
-            title: qsTr("Fertility")
+            title: qsTr("Soil conductivity")
             ddd: graphGrid.mode
             uuu: ChartHistory.Data.SoilConductivity
             color: Theme.colorRed
@@ -310,8 +310,8 @@ Item {
 
             valueMax: currentDevice.conduMax*1.2
             valueMin: currentDevice.conduMin*0.8
-            limitMin: currentDevice.soilConductivity_limitMin
-            limitMax: currentDevice.soilConductivity_limitMax
+            //limitMin: currentDevice.soilConductivity_limitMin
+            //limitMax: currentDevice.soilConductivity_limitMax
         }
 
         ////////
@@ -331,8 +331,8 @@ Item {
 
             valueMax: currentDevice.tempMax*1.2
             valueMin: currentDevice.tempMin*0.8
-            limitMin: currentDevice.temperature_limitMin
-            limitMax: currentDevice.temperature_limitMax
+            //limitMin: currentDevice.temperature_limitMin
+            //limitMax: currentDevice.temperature_limitMax
         }
 
         ////////
@@ -352,8 +352,8 @@ Item {
 
             valueMax: currentDevice.luxMax*1.2
             valueMin: currentDevice.luxMin*0.8
-            limitMin: currentDevice.luminosityLux_limitMin
-            limitMax: currentDevice.luminosityLux_limitMax
+            //limitMin: currentDevice.luminosityLux_limitMin
+            //limitMax: currentDevice.luminosityLux_limitMax
         }
 
         ////////

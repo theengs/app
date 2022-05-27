@@ -99,7 +99,7 @@ void DeviceTheengsBeacons::parseTheengsAdvertisement(const QString &json)
     QJsonObject obj = doc.object();
 
     if (obj.contains("batt")) setBattery(obj["batt"].toInt());
-    if (obj.contains("mac")) setSetting("mac", obj["mac"].toString());
+    if (obj.contains("mac")) setAddressMAC(obj["mac"].toString());
 
     {
         m_lastUpdate = QDateTime::currentDateTime();

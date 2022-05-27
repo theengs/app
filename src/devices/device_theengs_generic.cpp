@@ -109,7 +109,7 @@ void DeviceTheengsGeneric::parseTheengsAdvertisement(const QString &json)
     QJsonObject obj = doc.object();
 
     if (obj.contains("batt")) setBattery(obj["batt"].toInt());
-    if (obj.contains("mac")) setSetting("mac", obj["mac"].toString());
+    if (obj.contains("mac")) setAddressMAC(obj["mac"].toString());
 
     if (obj.contains("moi")) {
         if (m_soilMoisture != obj["moi"].toDouble()) {
@@ -224,11 +224,11 @@ bool DeviceTheengsGeneric::addDatabaseRecord_plants(const int64_t timestamp,
             QDateTime tmcd = QDateTime::fromSecsSinceEpoch(timestamp);
 
             QSqlQuery addData;
-            addData.prepare("REPLACE INTO plantData (deviceAddr, ts, ts_full, soilMoisture, soilConductivity, temperature, luminosity)"
-                            " VALUES (:deviceAddr, :ts, :ts_full, :hygro, :condu, :temp, :lumi)");
+            addData.prepare("REPLACE INTO plantData (deviceAddr, timestamp_rounded, timestamp, soilMoisture, soilConductivity, temperature, luminosity)"
+                            " VALUES (:deviceAddr, :timestamp_rounded, :timestamp, :hygro, :condu, :temp, :lumi)");
             addData.bindValue(":deviceAddr", getAddress());
-            addData.bindValue(":ts", tmcd.toString("yyyy-MM-dd hh:00:00"));
-            addData.bindValue(":ts_full", tmcd.toString("yyyy-MM-dd hh:mm:ss"));
+            addData.bindValue(":timestamp_rounded", tmcd.toString("yyyy-MM-dd hh:00:00"));
+            addData.bindValue(":timestamp", tmcd.toString("yyyy-MM-dd hh:mm:ss"));
             addData.bindValue(":hygro", soilMoisture);
             addData.bindValue(":condu", soilConductivity);
             addData.bindValue(":temp", temperature);
@@ -281,11 +281,11 @@ bool DeviceTheengsGeneric::addDatabaseRecord_thermometer(const int64_t timestamp
             QDateTime tmcd_rounded = QDateTime::fromSecsSinceEpoch(timestamp + (1800 - timestamp % 1800) - 1800);
 
             QSqlQuery addData;
-            addData.prepare("REPLACE INTO plantData (deviceAddr, ts, ts_full, temperature)"
-                            " VALUES (:deviceAddr, :ts, :ts_full, :temp)");
+            addData.prepare("REPLACE INTO thermoData (deviceAddr, timestamp_rounded, timestamp, temperature)"
+                            " VALUES (:deviceAddr, :timestamp_rounded, :timestamp, :temp)");
             addData.bindValue(":deviceAddr", getAddress());
-            addData.bindValue(":ts", tmcd_rounded.toString("yyyy-MM-dd hh:mm:00"));
-            addData.bindValue(":ts_full", tmcd.toString("yyyy-MM-dd hh:mm:ss"));
+            addData.bindValue(":timestamp_rounded", tmcd_rounded.toString("yyyy-MM-dd hh:mm:00"));
+            addData.bindValue(":timestamp", tmcd.toString("yyyy-MM-dd hh:mm:ss"));
             addData.bindValue(":temp", t);
             status = addData.exec();
 
@@ -335,11 +335,11 @@ bool DeviceTheengsGeneric::addDatabaseRecord_hygrometer(const int64_t timestamp,
             QDateTime tmcd_rounded = QDateTime::fromSecsSinceEpoch(timestamp + (1800 - timestamp % 1800) - 1800);
 
             QSqlQuery addData;
-            addData.prepare("REPLACE INTO plantData (deviceAddr, ts, ts_full, temperature, humidity)"
-                            " VALUES (:deviceAddr, :ts, :ts_full, :temp, :hygro)");
+            addData.prepare("REPLACE INTO thermoData (deviceAddr, timestamp_rounded, timestamp, temperature, humidity)"
+                            " VALUES (:deviceAddr, :timestamp_rounded, :timestamp, :temp, :hygro)");
             addData.bindValue(":deviceAddr", getAddress());
-            addData.bindValue(":ts", tmcd_rounded.toString("yyyy-MM-dd hh:mm:00"));
-            addData.bindValue(":ts_full", tmcd.toString("yyyy-MM-dd hh:mm:ss"));
+            addData.bindValue(":timestamp_rounded", tmcd_rounded.toString("yyyy-MM-dd hh:mm:00"));
+            addData.bindValue(":timestamp", tmcd.toString("yyyy-MM-dd hh:mm:ss"));
             addData.bindValue(":temp", t);
             addData.bindValue(":hygro", h);
             status = addData.exec();

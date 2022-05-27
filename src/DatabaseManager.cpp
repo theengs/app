@@ -118,27 +118,21 @@ bool DatabaseManager::openDatabase_sqlite()
 
                         // Sanitize database ///////////////////////////////////
 
-                        if (QDate::currentDate().year() >= 2021)
+                        int maxDays = SettingsManager::getInstance()->getDataRetentionDays();
+                        if (maxDays < 30) maxDays = 30;
+
+                        // Delete everything xx days old
+                        QSqlQuery sanitizePastData1("DELETE FROM plantData WHERE timestamp < DATE('now', '-" + QString::number(maxDays) + " days')");
+                        QSqlQuery sanitizePastData2("DELETE FROM thermoData WHERE timestamp < DATE('now', '-" + QString::number(maxDays) + " days')");
+                        QSqlQuery sanitizePastData3("DELETE FROM sensorData WHERE timestamp < DATE('now', '-" + QString::number(maxDays) + " days')");
+
+                        // Basic check to see if the device clock is correctly set
+                        if (QDate::currentDate().year() >= 2022)
                         {
-                            // DATETIME: YYY-MM-JJ HH:MM:SS
-
-                            // Delete everything 90+ days old
-                            QSqlQuery sanitizePlantDataPast;
-                            sanitizePlantDataPast.prepare("DELETE FROM plantData WHERE ts < DATE('now', '-90 days')");
-                            if (sanitizePlantDataPast.exec() == false)
-                            {
-                                qWarning() << "> sanitizeDataPast.exec() ERROR"
-                                           << sanitizePlantDataPast.lastError().type() << ":" << sanitizePlantDataPast.lastError().text();
-                            }
-
                             // Delete everything that's in the future
-                            QSqlQuery sanitizePlantDataFuture;
-                            sanitizePlantDataFuture.prepare("DELETE FROM plantData WHERE ts > DATE('now', '+1 days')");
-                            if (sanitizePlantDataFuture.exec() == false)
-                            {
-                                qWarning() << "> sanitizeDataFuture.exec() ERROR"
-                                           << sanitizePlantDataFuture.lastError().type() << ":" << sanitizePlantDataFuture.lastError().text();
-                            }
+                            QSqlQuery sanitizeFuruteData1("DELETE FROM plantData WHERE timestamp > DATE('now', '+1 days')");
+                            QSqlQuery sanitizeFuruteData2("DELETE FROM thermoData WHERE timestamp > DATE('now', '+1 days')");
+                            QSqlQuery sanitizeFuruteData3("DELETE FROM sensorData WHERE timestamp > DATE('now', '+1 days')");
                         }
                     }
                     else
@@ -387,7 +381,7 @@ void DatabaseManager::createDatabase()
 
         QSqlQuery createDevicesBlacklist;
         createDevicesBlacklist.prepare("CREATE TABLE devicesBlacklist (" \
-                                       "deviceAddr VARCHAR(38)" \
+                                       "deviceAddr VARCHAR(38) PRIMARY KEY" \
                                        ");");
 
         if (createDevicesBlacklist.exec() == false)
@@ -404,8 +398,8 @@ void DatabaseManager::createDatabase()
         QSqlQuery createPlantData;
         createPlantData.prepare("CREATE TABLE plantData (" \
                                 "deviceAddr VARCHAR(38)," \
-                                "ts DATETIME," \
-                                "ts_full DATETIME," \
+                                "timestamp_rounded DATETIME," \
+                                "timestamp DATETIME," \
                                   "soilMoisture INT," \
                                   "soilConductivity INT," \
                                   "soilTemperature FLOAT," \
@@ -414,8 +408,8 @@ void DatabaseManager::createDatabase()
                                   "humidity FLOAT," \
                                   "luminosity INT," \
                                   "watertank FLOAT," \
-                                "PRIMARY KEY(deviceAddr, ts)," \
-                                "FOREIGN KEY(deviceAddr) REFERENCES devices(deviceAddr) ON DELETE CASCADE ON UPDATE NO ACTION" \
+                                "PRIMARY KEY(deviceAddr, timestamp_rounded)," \
+                                "FOREIGN KEY(deviceAddr) REFERENCES devices(deviceAddr) ON DELETE NO ACTION ON UPDATE NO ACTION" \
                                 ");");
 
         if (createPlantData.exec() == false)
@@ -432,11 +426,13 @@ void DatabaseManager::createDatabase()
         QSqlQuery createThermoData;
         createThermoData.prepare("CREATE TABLE thermoData (" \
                                  "deviceAddr VARCHAR(38)," \
-                                 "ts DATETIME," \
+                                 "timestamp_rounded DATETIME," \
+                                 "timestamp DATETIME," \
                                    "temperature FLOAT," \
                                    "humidity FLOAT," \
                                    "pressure FLOAT," \
-                                 "FOREIGN KEY(deviceAddr) REFERENCES devices(deviceAddr) ON DELETE CASCADE ON UPDATE NO ACTION" \
+                                 "PRIMARY KEY(deviceAddr, timestamp_rounded)," \
+                                 "FOREIGN KEY(deviceAddr) REFERENCES devices(deviceAddr) ON DELETE NO ACTION ON UPDATE NO ACTION" \
                                  ");");
 
         if (createThermoData.exec() == false)
@@ -452,7 +448,8 @@ void DatabaseManager::createDatabase()
         QSqlQuery createSensorData;
         createSensorData.prepare("CREATE TABLE sensorData (" \
                                  "deviceAddr VARCHAR(38)," \
-                                   "timestamp DATETIME," \
+                                 "timestamp_rounded DATETIME," \
+                                 "timestamp DATETIME," \
                                    "temperature FLOAT," \
                                    "humidity FLOAT," \
                                    "pressure FLOAT," \
@@ -474,7 +471,8 @@ void DatabaseManager::createDatabase()
                                    "voc FLOAT," \
                                    "hcho FLOAT," \
                                    "radioactivity FLOAT," \
-                                 "FOREIGN KEY(deviceAddr) REFERENCES devices(deviceAddr) ON DELETE CASCADE ON UPDATE NO ACTION" \
+                                 "PRIMARY KEY(deviceAddr, timestamp_rounded)," \
+                                 "FOREIGN KEY(deviceAddr) REFERENCES devices(deviceAddr) ON DELETE NO ACTION ON UPDATE NO ACTION" \
                                  ");");
 
         if (createSensorData.exec() == false)
@@ -489,9 +487,9 @@ void DatabaseManager::createDatabase()
         qDebug() << "+ Adding 'sensorTheengs' table to local database";
         QSqlQuery createSensorTheengs;
         createSensorTheengs.prepare("CREATE TABLE sensorTheengs (" \
-                                    "deviceID INT," \
                                     "deviceAddr CHAR(38)," \
-                                      "timestamp DATETIME," \
+                                    "timestamp_rounded DATETIME," \
+                                    "timestamp DATETIME," \
                                       "temperature1 FLOAT," \
                                       "temperature2 FLOAT," \
                                       "temperature3 FLOAT," \
@@ -521,7 +519,8 @@ void DatabaseManager::createDatabase()
                                       "gyroY FLOAT," \
                                       "gyroZ FLOAT," \
                                       "steps INT," \
-                                    "FOREIGN KEY(deviceAddr) REFERENCES devices(deviceAddr) ON DELETE CASCADE ON UPDATE NO ACTION" \
+                                    "PRIMARY KEY(deviceAddr, timestamp_rounded)," \
+                                    "FOREIGN KEY(deviceAddr) REFERENCES devices(deviceAddr) ON DELETE NO ACTION ON UPDATE NO ACTION" \
                                     ");");
 
         if (createSensorTheengs.exec() == false)
@@ -547,6 +546,7 @@ void DatabaseManager::migrateDatabase()
         dbVersion = readVersion.value(0).toInt();
         //qDebug() << "dbVersion is #" << dbVersion;
     }
+    readVersion.finish();
 
     if (dbVersion > 0 && dbVersion != m_dbCurrentVersion)
     {
