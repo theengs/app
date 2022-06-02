@@ -376,10 +376,10 @@ Item {
         visible: isDesktop
 
         ButtonWireframe {
-            text: "devices"
+            text: qsTr("devices")
             fullColor: true
             primaryColor: Theme.colorSecondary
-            onClicked: screenDeviceBrowser.open()
+            onClicked: screenDeviceBrowser.loadScreen()
         }
     }
 }

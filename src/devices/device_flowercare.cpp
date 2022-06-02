@@ -253,11 +253,11 @@ void DeviceFlowerCare::serviceDetailsDiscovered_data(QLowEnergyService::ServiceS
             else
             {
                 // Make sure the LED is OFF
-                if (chl.value().size() == 2 && (chl.value().at(0) != 0 || chl.value().at(1) != 0))
-                {
-                    serviceData->writeCharacteristic(chl, QByteArray::fromHex("0000"), QLowEnergyService::WriteWithoutResponse);
-                    qWarning() << "FlowerCare LED was ON!";
-                }
+                //if (chl.value().size() == 2 && (chl.value().at(0) != 0 || chl.value().at(1) != 0))
+                //{
+                //    serviceData->writeCharacteristic(chl, QByteArray::fromHex("0000"), QLowEnergyService::WriteWithoutResponse);
+                //    qWarning() << "FlowerCare LED was ON!";
+                //}
             }
         }
     }
@@ -759,11 +759,11 @@ void DeviceFlowerCare::parseAdvertisementData(const QByteArray &value, const uin
             {
                 m_lastUpdate = QDateTime::currentDateTime();
 
-                if (needsUpdateDb())
+                if (needsUpdateDb_mini())
                 {
-                    addDatabaseRecord(m_lastUpdate.toSecsSinceEpoch(),
-                                      m_soilMoisture, m_soilConductivity, -99.f, -99.f,
-                                      m_temperature, -99.f, m_luminosityLux);
+                    //addDatabaseRecord(m_lastUpdate.toSecsSinceEpoch(),
+                    //                  m_soilMoisture, m_soilConductivity, -99.f, -99.f,
+                    //                  m_temperature, -99.f, m_luminosityLux);
                 }
 
                 refreshDataFinished(true);
@@ -777,8 +777,8 @@ void DeviceFlowerCare::parseAdvertisementData(const QByteArray &value, const uin
                 if (humi > -99) qDebug() << "- humidity:" << humi;
                 if (lumi > -99) qDebug() << "- luminosity:" << lumi;
                 if (form > -99) qDebug() << "- formaldehyde:" << form;
-                if (moist > -99) qDebug() << "- soil moisture:" << moist;
-                if (fert > -99) qDebug() << "- soil fertility:" << fert;
+                if (moist > -99)qDebug() << "- soil moisture:" << moist;
+                if (fert > -99) qDebug() << "- soil conductivity:" << fert;
             }
 */
         }

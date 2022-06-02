@@ -588,6 +588,53 @@ void DeviceManager::bluetoothHostModeStateChangedIos()
     }
 }
 
+void DeviceManager::setLastRun()
+{
+    QSqlQuery setLastRun;
+    setLastRun.prepare("UPDATE lastRun SET lastRun = :run");
+    setLastRun.bindValue(":run", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+
+    if (setLastRun.exec())
+    {
+        if (setLastRun.numRowsAffected() == 0)
+        {
+            // addLastRun?
+        }
+    }
+    else
+    {
+        qWarning() << "> setLastRun.exec() ERROR"
+                   << setLastRun.lastError().type() << ":" << setLastRun.lastError().text();
+    }
+}
+
+int DeviceManager::getLastRun()
+{
+    int mins = -1;
+
+    QSqlQuery getLastRun;
+    getLastRun.prepare("SELECT lastRun FROM lastRun");
+
+    if (getLastRun.exec())
+    {
+        if (getLastRun.first())
+        {
+            QDateTime lastRun = getLastRun.value(0).toDateTime();
+            if (lastRun.isValid())
+            {
+                mins = static_cast<int>(std::floor(lastRun.secsTo(QDateTime::currentDateTime()) / 60.0));
+            }
+        }
+    }
+    else
+    {
+        qWarning() << "> getLastRun.exec() ERROR"
+                   << getLastRun.lastError().type() << ":" << getLastRun.lastError().text();
+    }
+
+    return mins;
+}
+
 /* ************************************************************************** */
 /* ************************************************************************** */
 
@@ -741,6 +788,9 @@ void DeviceManager::listenDevices_start()
                     m_listening = true;
                     Q_EMIT listeningChanged();
                     //qDebug() << "Listening for BLE advertisement devices...";
+
+                    // Update lastRun
+                    setLastRun();
                 }
             }
             else
@@ -816,7 +866,7 @@ void DeviceManager::refreshDevices_background()
             if (!dd->hasBluetoothConnection()) continue;
 
             // old or no data: go for refresh
-            if (dd->needsUpdateRt())
+            if (dd->needsUpdateDb())
             {
                 if (!m_devices_updating_queue.contains(dd) && !m_devices_updating.contains(dd))
                 {
@@ -835,7 +885,7 @@ void DeviceManager::refreshDevices_listen()
     //qDebug() << "DeviceManager::refreshDevices_listen()";
 
     // Already updating?
-    if (isScanning() || isUpdating())
+    if (isListening() || isUpdating() || isScanning())
     {
         // Here we can:             // > do nothing, and queue another refresh
         //refreshDevices_stop();    // > (or) cancel current refresh
@@ -886,7 +936,7 @@ void DeviceManager::refreshDevices_check()
                 if (!dd->hasBluetoothConnection()) continue;
 
                 // old or no data: go for refresh
-                if (dd->needsUpdateRt())
+                if (dd->needsUpdateDb())
                 {
                     if (!m_devices_updating_queue.contains(dd) && !m_devices_updating.contains(dd))
                     {
@@ -978,20 +1028,6 @@ void DeviceManager::refreshDevices_continue()
         {
             m_updating = false;
             Q_EMIT updatingChanged();
-
-            QSqlQuery updateLastRun;
-            updateLastRun.prepare("UPDATE lastRun SET lastRun = :run");
-            updateLastRun.bindValue(":run", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
-
-            if (updateLastRun.exec() == false)
-            {
-                qWarning() << "> updateLastRun.exec() ERROR"
-                           << updateLastRun.lastError().type() << ":" << updateLastRun.lastError().text();
-            }
-            if (updateLastRun.numRowsAffected() == 0)
-            {
-                // addLastRun?
-            }
         }
     }
 }

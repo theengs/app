@@ -40,8 +40,8 @@ DevicePlantSensor::DevicePlantSensor(const QString &deviceAddr, const QString &d
         // Load initial data into the GUI (if they are no more than 12h old)
         getSqlPlantData(12*60);
 
-        // Load journal entries
-        loadJournalEntries();
+        // Load plant & journal entries
+        //loadPlant(); // not for Theengs
     }
 
     // Device infos
@@ -63,8 +63,8 @@ DevicePlantSensor::DevicePlantSensor(const QBluetoothDeviceInfo &d, QObject *par
         // Load initial data into the GUI (if they are no more than 12h old)
         getSqlPlantData(12*60);
 
-        // Load journal entries
-        loadJournalEntries();
+        // Load plant & journal entries
+        //loadPlant(); // not for Theengs
     }
 
     // Device infos
@@ -124,17 +124,17 @@ bool DevicePlantSensor::addDatabaseRecord(const int64_t timestamp,
             // SQL date format YYYY-MM-DD HH:MM:SS
 
             // We only save one record every x minutes
-            int round_seconds = 1800; // 30 mins
-            QDateTime tmcd_rounded = QDateTime::fromSecsSinceEpoch(timestamp + (round_seconds - timestamp % round_seconds) - round_seconds);
+            int round_seconds = 3600; // 60 mins
             QDateTime tmcd = QDateTime::fromSecsSinceEpoch(timestamp);
+            QDateTime tmcd_rounded = QDateTime::fromSecsSinceEpoch(timestamp + (round_seconds - timestamp % round_seconds) - round_seconds);
 
             QSqlQuery addData;
             addData.prepare("REPLACE INTO plantData (deviceAddr, timestamp_rounded, timestamp,"
                               "soilMoisture, soilConductivity, soilTemperature,"
                               "temperature, humidity, luminosity, watertank) "
-                            "VALUES (:deviceAddr, :timestamp_rounded, :timestamp, :sm, :sc, :st, :temp, :humi, :lumi, :tank)");
+                            "VALUES (:deviceAddr, :timestamp_rounded, :timestamp, :sm, :sc, :st, :temp, :humi, :lumi, :tank);");
             addData.bindValue(":deviceAddr", getAddress());
-            addData.bindValue(":timestamp_rounded", tmcd_rounded.toString("yyyy-MM-dd hh:mm:00"));
+            addData.bindValue(":timestamp_rounded", tmcd_rounded.toString("yyyy-MM-dd hh:00:00"));
             addData.bindValue(":timestamp", tmcd.toString("yyyy-MM-dd hh:mm:ss"));
             addData.bindValue(":sm", sm);
             addData.bindValue(":sc", sc);
@@ -168,6 +168,16 @@ bool DevicePlantSensor::addDatabaseRecord(const int64_t timestamp,
 /* ************************************************************************** */
 /* ************************************************************************** */
 
+bool DevicePlantSensor::loadPlant()
+{
+    //qDebug() << "DevicePlantSensor::loadPlant()";
+    bool status = false;
+
+    // not for Theengs
+
+    return status;
+}
+
 bool DevicePlantSensor::loadJournalEntries()
 {
     //qDebug() << "DevicePlantSensor::loadJournalEntries()";
@@ -199,6 +209,21 @@ bool DevicePlantSensor::removeJournalEntry(const int id)
 }
 
 /* ************************************************************************** */
+
+void DevicePlantSensor::setPlantName(const QString &plant)
+{
+    //qDebug() << "DevicePlantSensor::setPlantName()" << plant;
+
+    // not for Theengs
+}
+
+void DevicePlantSensor::resetPlant()
+{
+    //qDebug() << "DevicePlantSensor::resetPlant()" << plant;
+
+    // not for Theengs
+}
+
 /* ************************************************************************** */
 
 void DevicePlantSensor::getChartData_plantAIO(int maxDays, QDateTimeAxis *axis,
@@ -206,6 +231,11 @@ void DevicePlantSensor::getChartData_plantAIO(int maxDays, QDateTimeAxis *axis,
                                               QLineSeries *temp, QLineSeries *lumi)
 {
     if (!axis || !hygro || !condu || !temp || !lumi) return;
+
+    hygro->clear();
+    condu->clear();
+    temp->clear();
+    lumi->clear();
 
     if (m_dbInternal || m_dbExternal)
     {
@@ -244,7 +274,7 @@ void DevicePlantSensor::getChartData_plantAIO(int maxDays, QDateTimeAxis *axis,
             hygro->append(timecode, graphData.value(1).toReal());
             condu->append(timecode, graphData.value(2).toReal());
             temp->append(timecode, graphData.value(3).toReal());
-            lumi->append(timecode, graphData.value(4).toReal());
+            if (hasLuminositySensor()) lumi->append(timecode, graphData.value(4).toReal());
 
             // min/max
             if (graphData.value(1).toInt() < m_soilMoistureMin) { m_soilMoistureMin = graphData.value(1).toInt(); minmaxChanged = true; }
@@ -500,8 +530,8 @@ void DevicePlantSensor::updateChartData_history_month(int maxDays)
         QString strftime_short = "strftime('%d-%H', timestamp)"; // sqlite
         if (m_dbExternal) strftime_short = "DATE_FORMAT(timestamp, '%d-%H')"; // mysql
 
-        QString datatime_months = "datetime('now','-" + QString::number(maxMonths) + " month')"; // sqlite
-        if (m_dbExternal) datatime_months = "DATE_SUB(NOW(), INTERVAL -" + QString::number(maxMonths) + " MONTH)"; // mysql
+        QString datetime_months = "datetime('now','-" + QString::number(maxMonths) + " month')"; // sqlite
+        if (m_dbExternal) datetime_months = "DATE_SUB(NOW(), INTERVAL -" + QString::number(maxMonths) + " MONTH)"; // mysql
 
         QSqlQuery graphData;
         graphData.prepare("SELECT " + strftime_mid + "," \
@@ -509,7 +539,7 @@ void DevicePlantSensor::updateChartData_history_month(int maxDays)
                             "avg(temperature), avg(humidity), avg(luminosity)," \
                             "max(temperature), max(luminosity) " \
                           "FROM plantData " \
-                          "WHERE deviceAddr = :deviceAddr AND timestamp >= " + datatime_months + " " \
+                          "WHERE deviceAddr = :deviceAddr AND timestamp >= " + datetime_months + " " \
                           "GROUP BY " + strftime_mid + " " \
                           "ORDER BY timestamp DESC "
                           "LIMIT :maxDays;");

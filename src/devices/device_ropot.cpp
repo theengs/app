@@ -553,7 +553,7 @@ void DeviceRopot::bleReadDone(const QLowEnergyCharacteristic &c, const QByteArra
             }
             else
             {
-                bool status = addDatabaseRecord(QDateTime::currentDateTime().toSecsSinceEpoch(),
+                bool status = addDatabaseRecord(m_lastUpdate.toSecsSinceEpoch(),
                                                 m_soilMoisture, m_soilConductivity, -99.f, -99.f,
                                                 m_temperature, -99.f, -99.f);
 
@@ -716,11 +716,11 @@ void DeviceRopot::parseAdvertisementData(const QByteArray &value, const uint16_t
             {
                 m_lastUpdate = QDateTime::currentDateTime();
 
-                if (needsUpdateDb())
+                if (needsUpdateDb_mini())
                 {
-                    addDatabaseRecord(m_lastUpdate.toSecsSinceEpoch(),
-                                      m_soilMoisture, m_soilConductivity, -99.f, -99.f,
-                                      m_temperature, -99.f, -99.f);
+                    //addDatabaseRecord(m_lastUpdate.toSecsSinceEpoch(),
+                    //                  m_soilMoisture, m_soilConductivity, -99.f, -99.f,
+                    //                  m_temperature, -99.f, -99.f);
                 }
 
                 refreshDataFinished(true);
@@ -734,8 +734,8 @@ void DeviceRopot::parseAdvertisementData(const QByteArray &value, const uint16_t
                 if (humi > -99) qDebug() << "- humidity:" << humi;
                 if (lumi > -99) qDebug() << "- luminosity:" << lumi;
                 if (form > -99) qDebug() << "- formaldehyde:" << form;
-                if (moist > -99) qDebug() << "- soil moisture:" << moist;
-                if (fert > -99) qDebug() << "- soil fertility:" << fert;
+                if (moist > -99)qDebug() << "- soil moisture:" << moist;
+                if (fert > -99) qDebug() << "- soil conductivity:" << fert;
             }
 */
         }

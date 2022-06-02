@@ -111,7 +111,10 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
         }
 
+        ////////////
+
         Row { // right area
+            id: menu
             anchors.top: parent.top
             anchors.right: parent.right
             anchors.rightMargin: 4
@@ -124,7 +127,7 @@ Rectangle {
                 width: parent.height
                 height: width
                 anchors.verticalCenter: parent.verticalCenter
-                visible: (appContent.state === "DeviceList")
+                visible: (appContent.state === "DeviceList" || appContent.state === "DeviceBrowser")
 
                 IconSvg {
                     id: workingIndicator
@@ -156,7 +159,7 @@ Rectangle {
                         onStarted: workingIndicator.opacity = 1
                         onStopped: workingIndicator.opacity = 0
                     }
-                    SequentialAnimation on opacity { // rescanAnimation (fade)
+                    SequentialAnimation on opacity { // scanAnimation (fade)
                         loops: Animation.Infinite
                         running: (deviceManager.scanning || deviceManager.listening || deviceManager.syncing)
                         onStopped: workingIndicator.opacity = 0
@@ -165,6 +168,8 @@ Rectangle {
                     }
                 }
             }
+
+            ////////////
 
             MouseArea { // right button
                 width: headerHeight

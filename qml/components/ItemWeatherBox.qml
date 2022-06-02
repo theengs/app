@@ -4,15 +4,15 @@ import ThemeEngine 1.0
 
 Rectangle {
     id: itemWeatherBox
-    width: (duo) ? size*2 : size
-    height: column.height + column.anchors.topMargin*2
-    radius: 10
+    width: (duo) ? sz*2 : sz
+    height: columnContent.height + (isDesktop ? 24 : 22)
+    radius: 4
 
     property string title: ""
     property string legend: ""
     property string icon: ""
 
-    property int size: 96
+    property int sz: 96
     property bool duo: false
 
     property real value
@@ -35,57 +35,73 @@ Rectangle {
 
     ////////
 
+    IconSvg {
+        anchors.right: parent.right
+        anchors.rightMargin: isDesktop ? 6 : 4
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: isDesktop ? 6 : 4
+        width: isDesktop ? 48 : 32
+        height: isDesktop ? 48 : 32
+
+        source: icon
+        color: Theme.colorIcon
+        opacity: 0.1
+    }
+
     Column {
-        id: column
-        anchors.top: parent.top
-        anchors.topMargin: isDesktop ? 12 : 10
+        id: columnContent
         anchors.left: parent.left
         anchors.leftMargin: isDesktop ? 12 : 10
         anchors.right: parent.right
-        anchors.rightMargin: 6
-        spacing: 6
-
-        IconSvg {
-            width: isDesktop ? 32 : 24
-            height: isDesktop ? 32 : 24
-            source: icon
-            color: Theme.colorIcon
-        }
+        anchors.rightMargin: isDesktop ? 6 : 4
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenterOffset: 2
+        spacing: isDesktop ? 4 : 0
 
         Text {
             width: parent.width
             text: itemWeatherBox.title
             wrapMode: Text.WordWrap
-            color: Theme.colorText
-            font.bold: false
-            font.pixelSize: isDesktop ? Theme.fontSizeContent : Theme.fontSizeContentSmall
+            color: Theme.colorSubText
+            font.bold: true
+            font.pixelSize: isDesktop ? Theme.fontSizeContentVerySmall+1 : Theme.fontSizeContentVerySmall
+            font.capitalization: Font.AllUppercase
         }
 
         Row {
-            spacing: 2
+            anchors.left: parent.left
+            anchors.leftMargin: 0
+            spacing: 4
 
             Text {
+                anchors.verticalCenter: parent.verticalCenter
+
                 text: (itemWeatherBox.value > -99) ? itemWeatherBox.value.toFixed(itemWeatherBox.precision) : "?"
                 color: Theme.colorText
                 font.bold: false
                 font.pixelSize: {
                     if (itemWeatherBox.value >= 10000)
-                        return 20
+                        return isDesktop ? 20 : 18
                     else if (itemWeatherBox.value >= 1000)
-                        return 22
+                        return isDesktop ? 22 : 20
                     else if (itemWeatherBox.precision > 1)
-                        return 24
+                        return isDesktop ? 24 : 22
                     else
-                        return 26
+                        return isDesktop ? 26 : 24
                 }
-            }
 
-            Text {
-                text: itemWeatherBox.legend
-                textFormat: Text.PlainText
-                color: Theme.colorSubText
-                font.bold: false
-                font.pixelSize: Theme.fontSizeContent
+                Text {
+                    anchors.top: parent.top
+                    anchors.topMargin: 2
+                    anchors.left: parent.right
+                    anchors.rightMargin: 2
+
+                    text: itemWeatherBox.legend
+                    textFormat: Text.PlainText
+                    color: Theme.colorSubText
+                    font.bold: false
+                    font.pixelSize: isDesktop ? Theme.fontSizeContent : Theme.fontSizeContentSmall
+                }
             }
         }
     }

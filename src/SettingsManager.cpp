@@ -130,7 +130,10 @@ bool SettingsManager::readSettings()
             m_updateIntervalPlant = settings.value("settings/updateIntervalPlant").toInt();
 
         if (settings.contains("settings/updateIntervalThermo"))
-            m_updateIntervalThermo = settings.value("settings/updateIntervalThermo").toInt();
+            m_updateIntervalThermometer = settings.value("settings/updateIntervalThermo").toInt();
+
+        if (settings.contains("settings/updateIntervalEnv"))
+            m_updateIntervalEnvironmental = settings.value("settings/updateIntervalEnv").toInt();
 
         if (settings.contains("settings/appUnits"))
             m_appUnits = settings.value("settings/appUnits").toInt();
@@ -233,7 +236,8 @@ bool SettingsManager::writeSettings()
         settings.setValue("settings/notifsEnabled", m_notificationsEnabled);
         settings.setValue("settings/updateIntervalBackground", m_updateIntervalBackground);
         settings.setValue("settings/updateIntervalPlant", m_updateIntervalPlant);
-        settings.setValue("settings/updateIntervalThermo", m_updateIntervalThermo);
+        settings.setValue("settings/updateIntervalThermo", m_updateIntervalThermometer);
+        //settings.setValue("settings/updateIntervalEnv", m_updateIntervalEnvironmental);
         settings.setValue("settings/graphHistory", m_graphHistogram);
         settings.setValue("settings/graphThermometer", m_graphThermometer);
         settings.setValue("settings/graphShowDots", m_graphShowDots);
@@ -296,12 +300,14 @@ void SettingsManager::resetSettings()
     Q_EMIT systrayChanged();
     m_notificationsEnabled = true;
     Q_EMIT notifsChanged();
-    m_updateIntervalBackground = BACKGROUND_UPDATE_INTERVAL;
+    m_updateIntervalBackground = s_intervalBackgroundUpdate;
     Q_EMIT updateIntervalBackgroundChanged();
-    m_updateIntervalPlant = PLANT_UPDATE_INTERVAL;
+    m_updateIntervalPlant = s_intervalPlantUpdate;
     Q_EMIT updateIntervalPlantChanged();
-    m_updateIntervalThermo = THERMO_UPDATE_INTERVAL;
+    m_updateIntervalThermometer = s_intervalThermometerUpdate;
     Q_EMIT updateIntervalThermoChanged();
+    m_updateIntervalEnvironmental = s_intervalEnvironmentalUpdate;
+    Q_EMIT updateIntervalEnvChanged();
 
     m_bluetoothControl = false;
     Q_EMIT bluetoothControlChanged();
@@ -503,11 +509,21 @@ void SettingsManager::setUpdateIntervalPlant(const unsigned value)
 
 void SettingsManager::setUpdateIntervalThermo(const unsigned value)
 {
-    if (m_updateIntervalThermo!= value)
+    if (m_updateIntervalThermometer!= value)
     {
-        m_updateIntervalThermo = value;
+        m_updateIntervalThermometer = value;
         writeSettings();
         Q_EMIT updateIntervalThermoChanged();
+    }
+}
+
+void SettingsManager::setUpdateIntervalEnv(const unsigned value)
+{
+    if (m_updateIntervalEnvironmental!= value)
+    {
+        m_updateIntervalEnvironmental = value;
+        writeSettings();
+        Q_EMIT updateIntervalEnvChanged();
     }
 }
 

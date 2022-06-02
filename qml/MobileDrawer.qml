@@ -140,7 +140,7 @@ Drawer {
                         source: "qrc:/assets/icons_material/duotone-memory-24px.svg"
                         color: Theme.colorText
                     }
-                    Label {
+                    Text {
                         anchors.left: parent.left
                         anchors.leftMargin: screenPaddingLeft + 56
                         anchors.verticalCenter: parent.verticalCenter
@@ -179,7 +179,7 @@ Drawer {
                         source: "qrc:/assets/icons_material/baseline-tap_and_play_black-24px.svg"
                         color: Theme.colorText
                     }
-                    Label {
+                    Text {
                         anchors.left: parent.left
                         anchors.leftMargin: screenPaddingLeft + 56
                         anchors.verticalCenter: parent.verticalCenter
@@ -216,7 +216,7 @@ Drawer {
                         source: "qrc:/assets/icons_material/outline-settings-24px.svg"
                         color: Theme.colorText
                     }
-                    Label {
+                    Text {
                         anchors.left: parent.left
                         anchors.leftMargin: screenPaddingLeft + 56
                         anchors.verticalCenter: parent.verticalCenter
@@ -233,7 +233,8 @@ Drawer {
                     height: 48
                     anchors.right: parent.right
                     anchors.left: parent.left
-                    color: (appContent.state === "About") ? Theme.colorForeground : Theme.colorBackground
+                    color: (appContent.state === "About" || appContent.state === "Permissions")
+                           ? Theme.colorForeground : Theme.colorBackground
 
                     MouseArea {
                         anchors.fill: parent
@@ -253,7 +254,7 @@ Drawer {
                         source: "qrc:/assets/icons_material/outline-info-24px.svg"
                         color: Theme.colorText
                     }
-                    Label {
+                    Text {
                         anchors.left: parent.left
                         anchors.leftMargin: screenPaddingLeft + 56
                         anchors.verticalCenter: parent.verticalCenter
@@ -327,7 +328,7 @@ Drawer {
                         source: "qrc:/assets/icons_material/baseline-sort-24px.svg"
                         color: Theme.colorText
                     }
-                    Label {
+                    Text {
                         id: textOrderBy
                         anchors.left: parent.left
                         anchors.leftMargin: screenPaddingLeft + 56
@@ -378,15 +379,16 @@ Drawer {
                 ////////
 
                 Item {
-                    id: rectangleRefresh
+                    id: buttonRefresh
                     height: 48
                     anchors.left: parent.left
                     anchors.right: parent.right
 
-                    enabled: (deviceManager.bluetooth && !deviceManager.scanning)
+                    enabled: (deviceManager.bluetooth && deviceManager.bluetoothPermissions) && !deviceManager.scanning
 
                     MouseArea {
                         anchors.fill: parent
+
                         onClicked: {
                             if (!deviceManager.scanning) {
                                 if (deviceManager.updating) {
@@ -397,10 +399,21 @@ Drawer {
                                 appDrawer.close()
                             }
                         }
+
+                        Rectangle {
+                            anchors.fill: parent
+                            anchors.margins: 4
+                            anchors.leftMargin: 8
+                            anchors.rightMargin: 8
+
+                            radius: Theme.componentRadius
+                            color: Theme.colorForeground
+                            opacity: parent.containsPress
+                            Behavior on opacity { OpacityAnimator { duration: 133 } }
+                        }
                     }
 
                     IconSvg {
-                        id: buttonRefresh
                         width: 24
                         height: 24
                         anchors.left: parent.left
@@ -408,7 +421,7 @@ Drawer {
                         anchors.verticalCenter: parent.verticalCenter
 
                         source: "qrc:/assets/icons_material/baseline-autorenew-24px.svg"
-                        color: rectangleRefresh.enabled ? Theme.colorText : Theme.colorSubText
+                        color: buttonRefresh.enabled ? Theme.colorText : Theme.colorSubText
 
                         NumberAnimation on rotation {
                             id: refreshAnimation
@@ -418,10 +431,9 @@ Drawer {
                             loops: Animation.Infinite
                             running: deviceManager.updating
                             alwaysRunToEnd: true
-                            easing.type: Easing.Linear
                         }
                     }
-                    Label {
+                    Text {
                         anchors.left: parent.left
                         anchors.leftMargin: screenPaddingLeft + 56
                         anchors.verticalCenter: parent.verticalCenter
@@ -429,36 +441,45 @@ Drawer {
                         text: qsTr("Refresh sensors data")
                         font.pixelSize: 13
                         font.bold: true
-                        color: rectangleRefresh.enabled ? Theme.colorText : Theme.colorSubText
+                        color: buttonRefresh.enabled ? Theme.colorText : Theme.colorSubText
                     }
                 }
 
                 ////////
 
                 Item {
-                    id: rectangleRescan
+                    id: buttonScan
                     height: 48
                     anchors.left: parent.left
                     anchors.right: parent.right
 
-                    enabled: deviceManager.bluetooth && !deviceManager.updating && !deviceManager.syncing
+                    enabled: (deviceManager.bluetooth && deviceManager.bluetoothPermissions)
 
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            if (!deviceManager.updating) {
-                                if (deviceManager.scanning) {
-                                    deviceManager.scanDevices_stop()
-                                } else {
-                                    deviceManager.scanDevices_start()
-                                }
-                                appDrawer.close()
+                            if (deviceManager.scanning) {
+                                deviceManager.scanDevices_stop()
+                            } else {
+                                deviceManager.scanDevices_start()
                             }
+                            appDrawer.close()
+                        }
+
+                        Rectangle {
+                            anchors.fill: parent
+                            anchors.margins: 4
+                            anchors.leftMargin: 8
+                            anchors.rightMargin: 8
+
+                            radius: Theme.componentRadius
+                            color: Theme.colorForeground
+                            opacity: parent.containsPress
+                            Behavior on opacity { OpacityAnimator { duration: 133 } }
                         }
                     }
 
                     IconSvg {
-                        id: buttonRescan
                         width: 24
                         height: 24
                         anchors.left: parent.left
@@ -466,19 +487,18 @@ Drawer {
                         anchors.verticalCenter: parent.verticalCenter
 
                         source: "qrc:/assets/icons_material/baseline-search-24px.svg"
-                        color: rectangleRescan.enabled ? Theme.colorText : Theme.colorSubText
+                        color: buttonScan.enabled ? Theme.colorText : Theme.colorSubText
 
-                        SequentialAnimation on opacity {
-                            id: rescanAnimation
+                        SequentialAnimation on opacity { // scanAnimation (fade)
                             loops: Animation.Infinite
                             running: deviceManager.scanning
-                            onStopped: buttonRescan.opacity = 1
+                            alwaysRunToEnd: true
 
                             PropertyAnimation { to: 0.33; duration: 750; }
                             PropertyAnimation { to: 1; duration: 750; }
                         }
                     }
-                    Label {
+                    Text {
                         anchors.left: parent.left
                         anchors.leftMargin: screenPaddingLeft + 56
                         anchors.verticalCenter: parent.verticalCenter
@@ -486,7 +506,7 @@ Drawer {
                         text: qsTr("Search for new sensors")
                         font.pixelSize: 13
                         font.bold: true
-                        color: rectangleRescan.enabled ? Theme.colorText : Theme.colorSubText
+                        color: buttonScan.enabled ? Theme.colorText : Theme.colorSubText
                     }
                 }
 
@@ -511,7 +531,7 @@ Drawer {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        screenDeviceBrowser.open()
+                        screenDeviceBrowser.loadScreen()
                         appDrawer.close()
                     }
                 }

@@ -44,20 +44,18 @@ function trimNumber(n, p) {
  * example: mapNumber(5, 0, 10, 100, 200) => 150
  */
 function mapNumber(n, a1, a2, b1, b2) {
-    if (n < a1) n = a1;
-    if (n > a2) n = a2;
+    if (n < a1) n = a1
+    if (n > a2) n = a2
 
-    return (b1 + ((n-a1) * (b2-b1)) / (a2-a1));
+    return (b1 + ((n-a1) * (b2-b1)) / (a2-a1))
 }
 
 /*!
  * Normalize n between min and max
  */
 function normalize(n, min, max) {
-    if (n < min) return 0;
-    if (n > max) return 1;
-
-    return Math.min(((n - min) / (max - min)), 1);
+    if (n <= 0) return 0
+    return Math.min(((n - min) / (max - min)), 1)
 }
 
 /*!

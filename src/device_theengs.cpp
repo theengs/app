@@ -291,12 +291,12 @@ bool DeviceTheengs::hasData() const
 
 bool DeviceTheengs::needsUpdateRt() const
 {
-    return !isDataFresh();
+    return !isDataFresh_rt();
 }
 
 bool DeviceTheengs::needsUpdateDb() const
 {
-    return (getLastUpdateDbInt() < 0 || getLastUpdateDbInt() > 10);
+    return !isDataFresh_db();
 }
 
 /* ************************************************************************** */

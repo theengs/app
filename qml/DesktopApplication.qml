@@ -14,14 +14,14 @@ ApplicationWindow {
     property bool isMobile: false
     property bool isPhone: false
     property bool isTablet: false
-    property bool isHdpi: (utilsScreen.screenDpi > 128)
+    property bool isHdpi: (utilsScreen.screenDpi > 128 || utilsScreen.screenPar > 1.0)
 
     property var selectedDevice: null
 
     // Desktop stuff ///////////////////////////////////////////////////////////
 
-    minimumWidth: 480
-    minimumHeight: 560
+    minimumWidth: isHdpi ? 400 : 480
+    minimumHeight: isHdpi ? 480 : 560
 
     width: {
         if (settingsManager.initialSize.width > 0)
@@ -148,13 +148,11 @@ ApplicationWindow {
                 }
             }
         }
-        function onRescanButtonClicked() {
-            if (!deviceManager.updating) {
-                if (deviceManager.scanning) {
-                    deviceManager.scanDevices_stop()
-                } else {
-                    deviceManager.scanDevices_start()
-                }
+        function onScanButtonClicked() {
+            if (deviceManager.scanning) {
+                deviceManager.scanDevices_stop()
+            } else {
+                deviceManager.scanDevices_start()
             }
         }
 
@@ -166,6 +164,7 @@ ApplicationWindow {
 
     Connections {
         target: systrayManager
+        function onDevicesClicked() { appContent.state = "DeviceList" }
         function onSettingsClicked() { appContent.state = "Settings" }
     }
 
@@ -218,74 +217,52 @@ ApplicationWindow {
 
     function backAction() {
         if (appContent.state === "DeviceList") {
-            // do nothing
+            if (screenDeviceList.selectionList.length !== 0) {
+                screenDeviceList.exitSelectionMode()
+            }
         } else if (appContent.state === "DevicePlantSensor") {
-            if (screenDevicePlantSensor.isHistoryMode()) {
-                screenDevicePlantSensor.resetHistoryMode()
-            } else {
-                appContent.previousStates.pop()
-                appContent.state = "DeviceList"
-            }
+            screenDevicePlantSensor.backAction()
         } else if (appContent.state === "DeviceThermometer") {
-            if (screenDeviceThermometer.isHistoryMode()) {
-                screenDeviceThermometer.resetHistoryMode()
-            } else {
-                appContent.previousStates.pop()
-                appContent.state = "DeviceList"
-            }
+            screenDeviceThermometer.backAction()
         } else if (appContent.state === "DeviceEnvironmental") {
-            appContent.previousStates.pop()
-            appContent.state = "DeviceList"
+            screenDeviceEnvironmental.backAction()
         } else if (appContent.state === "DeviceProbe") {
-            if (screenDeviceProbe.isHistoryMode()) {
-                screenDeviceProbe.resetHistoryMode()
-            } else {
-                appContent.previousStates.pop()
-                appContent.state = "DeviceList"
-            }
+            screenDeviceProbe.backAction()
         } else if (appContent.state === "DeviceScale") {
-            if (screenDeviceScale.isHistoryMode()) {
-                screenDeviceScale.resetHistoryMode()
-            } else {
-                appContent.previousStates.pop()
-                appContent.state = "DeviceList"
-            }
+            screenDeviceScale.backAction()
+        } else if (appContent.state === "DeviceMotionSensor") {
+            screenDeviceMotionSensor.backAction()
         } else if (appContent.state === "DeviceBrowser") {
             screenDeviceBrowser.backAction()
-            appContent.previousStates.pop()
-            appContent.state = "DeviceList"
-        } else {
-            appContent.previousStates.pop()
-            if (appContent.previousStates.length)
+        } else if (appContent.state === "SettingsMqtt") {
+            screenSettingsMqtt.backAction()
+        } else { // default
+            if (appContent.previousStates.length) {
+                appContent.previousStates.pop()
                 appContent.state = appContent.previousStates[appContent.previousStates.length-1]
-            else
+            } else {
                 appContent.state = "DeviceList"
+            }
         }
     }
     function forwardAction() {
         if (appContent.state === "DeviceList") {
-            if (selectedDevice) {
-                if (selectedDevice.deviceType === DeviceUtils.DEVICE_PLANTSENSOR)
-                    appContent.state = "DevicePlantSensor"
-                else if (selectedDevice.deviceType === DeviceUtils.DEVICE_THERMOMETER)
-                    appContent.state = "DeviceThermometer"
-                else if (selectedDevice.deviceType === DeviceUtils.DEVICE_ENVIRONMENTAL) {
-                    appContent.state = "DeviceEnvironmental"
-                }
-            }
-        }
-    }
-    function deselectAction() {
-        if (appContent.state === "DeviceList") {
-            screenDeviceList.exitSelectionMode()
-        } else if (appContent.state === "DevicePlantSensor" && screenDevicePlantSensor.isHistoryMode()) {
-            screenDevicePlantSensor.resetHistoryMode()
-        } else if (appContent.state === "DeviceThermometer" && screenDeviceThermometer.isHistoryMode()) {
-            screenDeviceThermometer.resetHistoryMode()
-        } else if (appContent.state === "DeviceProbe" && screenDeviceProbe.isHistoryMode()) {
-            screenDeviceProbe.resetHistoryMode()
-        } else if (appContent.state === "DeviceScale" && screenDeviceScale.isHistoryMode()) {
-            screenDeviceScale.resetHistoryMode()
+            appContent.previousStates.pop()
+
+            if (appContent.previousStates[appContent.previousStates.length-1] === "DevicePlantSensor")
+                appContent.state = "DevicePlantSensor"
+            else if (appContent.previousStates[appContent.previousStates.length-1] === "DeviceThermometer")
+                appContent.state = "DeviceThermometer"
+            else if (appContent.previousStates[appContent.previousStates.length-1] === "DeviceEnvironmental")
+                appContent.state = "DeviceEnvironmental"
+            else if (appContent.previousStates[appContent.previousStates.length-1] === "DeviceProbe")
+                appContent.state = "DeviceProbe"
+            else if (appContent.previousStates[appContent.previousStates.length-1] === "DeviceScale")
+                appContent.state = "DeviceScale"
+            else if (appContent.previousStates[appContent.previousStates.length-1] === "DeviceMotionSensor")
+                appContent.state = "DeviceMotionSensor"
+            else if (appContent.previousStates[appContent.previousStates.length-1] === "DeviceBrowser")
+                appContent.state = "DeviceBrowser"
         }
     }
 
@@ -317,10 +294,6 @@ ApplicationWindow {
     Shortcut {
         sequence: "Ctrl+F5"
         onActivated: deviceManager.refreshDevices_start()
-    }
-    Shortcut {
-        sequences: [StandardKey.Deselect, StandardKey.Cancel]
-        onActivated: deselectAction()
     }
     Shortcut {
         sequence: StandardKey.Preferences

@@ -10,14 +10,15 @@ Item {
 
     ////////////////////////////////////////////////////////////////////////////
 
-    function open() {
+    function loadScreen() {
         deviceManager.scanNearby_start()
         appContent.state = "DeviceBrowser"
     }
 
     function backAction() {
-        deviceManager.scanNearby_stop()
-        deviceManager.listenDevices_start()
+        if (loaderDeviceBrowser.sourceComponent) {
+            loaderDeviceBrowser.item.backAction()
+        }
     }
 
     Loader {
@@ -34,9 +35,26 @@ Item {
     Component {
         id: componentDeviceBrowser_mobile
 
-        Item {
-            id: itemDeviceBrowser
+        Item { // itemDeviceBrowser mobile
             anchors.fill: parent
+
+            ////////
+
+            function backAction() {
+                if (areDeviceClicked()) {
+                    //
+                } else {
+                    deviceManager.scanNearby_stop()
+                    deviceManager.listenDevices_start()
+                    appContent.state = "DeviceList"
+                }
+            }
+
+            function areDeviceClicked() {
+                return false
+            }
+
+            ////////
 
             PopupBlacklistDevice {
                 id: confirmBlacklistDevice
@@ -95,7 +113,7 @@ Item {
                     anchors.top: parent.top
                     anchors.topMargin: 8
                     anchors.left: parent.left
-                    anchors.leftMargin: 8 + 44
+                    anchors.leftMargin: 52
                     anchors.right: parent.right
                     anchors.rightMargin: 8
 
@@ -114,9 +132,26 @@ Item {
     Component {
         id: componentDeviceBrowser_desktop
 
-        Item {
-            id: itemDeviceBrowser
+        Item { // itemDeviceBrowser desktop
             anchors.fill: parent
+
+            ////////
+
+            function backAction() {
+                if (areDeviceClicked()) {
+                    //
+                } else {
+                    deviceManager.scanNearby_stop()
+                    deviceManager.listenDevices_start()
+                    appContent.state = "DeviceList"
+                }
+            }
+
+            function areDeviceClicked() {
+                return false
+            }
+
+            ////////
 
             PopupBlacklistDevice {
                 id: confirmBlacklistDevice
@@ -174,7 +209,7 @@ Item {
                     anchors.top: parent.top
                     anchors.topMargin: 8
                     anchors.left: parent.left
-                    anchors.leftMargin: 8 + 44
+                    anchors.leftMargin: 52
                     anchors.right: parent.right
                     anchors.rightMargin: 8
 
@@ -250,8 +285,8 @@ Item {
                         alwaysRunToEnd: true
                         loops: Animation.Infinite
                         running: (appContent.state === "DeviceBrowser" && deviceManager.listening)
-                        NumberAnimation { target: ra; property: "width"; from: 0; to: radar.height*2; duration: 2500; }
-                        NumberAnimation { target: ra; property: "opacity"; from: 0.8; to: 0.2; duration: 2500; }
+                        NumberAnimation { target: ra; property: "width"; from: 0; to: radar.width*3; duration: 2500; }
+                        NumberAnimation { target: ra; property: "opacity"; from: 0.85; to: 0; duration: 2500; }
                     }
                 }
 
@@ -303,7 +338,7 @@ Item {
                         opacity: (boxDevice.deviceRssi < 0) ? 1 : 0.66
 
                         border.width: boxDevice.selected ? 6 : 2
-                        border.color: boxDevice.selected ? Theme.colorPrimary : Qt.darker(color, 1.2)
+                        border.color: boxDevice.selected ? Theme.colorSecondary : Qt.darker(color, 1.2)
 
                         color: {
                             if (boxDevice.deviceRssi < 0) {

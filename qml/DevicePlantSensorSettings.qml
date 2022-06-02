@@ -8,13 +8,12 @@ import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
 Item {
     id: devicePlantSensorSettings
 
+    ////////////////////////////////////////////////////////////////////////////
+
     function updateHeader() {
         if (typeof currentDevice === "undefined" || !currentDevice) return
         //console.log("devicePlantSensorSettings // updateHeader() >> " + currentDevice)
     }
-
-    property bool insideMode: (currentDevice && currentDevice.deviceIsInside)
-    property bool outsideMode: (currentDevice && currentDevice.deviceIsOutside)
 
     ////////////////////////////////////////////////////////////////////////////
 
@@ -70,15 +69,7 @@ Item {
                     color: Theme.colorSubText
                     fillMode: Image.PreserveAspectFit
 
-                    source: {
-                        if (currentDevice.deviceName === "Flower care") return "qrc:/devices/flowercare.svg"
-                        if (currentDevice.deviceName === "Grow care garden") return "qrc:/devices/flowercaremax.svg"
-                        if (currentDevice.deviceName === "Flower power") return "qrc:/devices/flowerpower.svg"
-                        if (currentDevice.deviceName === "Parrot pot") return "qrc:/devices/parrotpot.svg"
-                        if (currentDevice.deviceName === "ropot") return "qrc:/devices/ropot.svg"
-                        if (currentDevice.deviceName === "HiGrow") return "qrc:/devices/higrow.svg"
-                        return ""
-                    }
+                    source: UtilsDeviceSensors.getDeviceImage(currentDevice.deviceName)
                 }
 
                 Column {
@@ -95,6 +86,7 @@ Item {
                     Column {
                         Text {
                             text: qsTr("Device")
+                            textFormat: Text.PlainText
                             color: Theme.colorSubText
                             font.bold: true
                             font.pixelSize: Theme.fontSizeContentVerySmall
@@ -102,6 +94,7 @@ Item {
                         }
                         Text {
                             text: currentDevice.deviceName
+                            textFormat: Text.PlainText
                             font.pixelSize: Theme.fontSizeContentBig
                             font.capitalization: Font.Capitalize
                             color: Theme.colorHighContrast
@@ -111,6 +104,7 @@ Item {
                     Column {
                         Text {
                             text: qsTr("Address")
+                            textFormat: Text.PlainText
                             color: Theme.colorSubText
                             font.bold: true
                             font.pixelSize: Theme.fontSizeContentVerySmall
@@ -120,6 +114,27 @@ Item {
                             text: (Qt.platform.os === "osx" || Qt.platform.os === "ios") ?
                                       currentDevice.deviceAddress :
                                       "[" + currentDevice.deviceAddress + "]"
+                            textFormat: Text.PlainText
+                            color: Theme.colorHighContrast
+                            font.pixelSize: Theme.fontSizeContentBig
+                            font.capitalization: Font.AllUppercase
+                        }
+                    }
+
+                    Column {
+                        visible: currentDevice.deviceAddressMAC.length && (Qt.platform.os === "osx" || Qt.platform.os === "ios")
+
+                        Text {
+                            text: qsTr("MAC Address")
+                            textFormat: Text.PlainText
+                            color: Theme.colorSubText
+                            font.bold: true
+                            font.pixelSize: Theme.fontSizeContentVerySmall
+                            font.capitalization: Font.AllUppercase
+                        }
+                        Text {
+                            text: "[" + currentDevice.deviceAddressMAC + "]"
+                            textFormat: Text.PlainText
                             color: Theme.colorHighContrast
                             font.pixelSize: Theme.fontSizeContentBig
                             font.capitalization: Font.AllUppercase
@@ -134,6 +149,7 @@ Item {
 
                             Text {
                                 text: qsTr("Firmware")
+                                textFormat: Text.PlainText
                                 color: Theme.colorSubText
                                 font.bold: true
                                 font.pixelSize: Theme.fontSizeContentVerySmall
@@ -141,6 +157,7 @@ Item {
                             }
                             Text {
                                 text: currentDevice.deviceFirmware
+                                textFormat: Text.PlainText
                                 font.pixelSize: Theme.fontSizeContentBig
                                 color: Theme.colorHighContrast
 
@@ -163,6 +180,7 @@ Item {
 
                             Text {
                                 text: qsTr("Battery")
+                                textFormat: Text.PlainText
                                 color: Theme.colorSubText
                                 font.bold: true
                                 font.pixelSize: Theme.fontSizeContentVerySmall
@@ -170,6 +188,7 @@ Item {
                             }
                             Text {
                                 text: currentDevice.deviceBattery + "%"
+                                textFormat: Text.PlainText
                                 font.pixelSize: Theme.fontSizeContentBig
                                 color: Theme.colorHighContrast
 
@@ -193,6 +212,7 @@ Item {
 
                         Text {
                             text: qsTr("Uptime")
+                            textFormat: Text.PlainText
                             color: Theme.colorSubText
                             font.bold: true
                             font.pixelSize: Theme.fontSizeContentVerySmall
@@ -211,6 +231,7 @@ Item {
 
                         Text {
                             text: qsTr("Last time moved")
+                            textFormat: Text.PlainText
                             color: Theme.colorSubText
                             font.bold: true
                             font.pixelSize: Theme.fontSizeContentVerySmall
@@ -219,6 +240,7 @@ Item {
                         Text {
                             id: lastmove
                             text: currentDevice.lastMove.toLocaleString(Locale.ShortFormat)
+                            textFormat: Text.PlainText
                             font.pixelSize: Theme.fontSizeContentBig
                             color: Theme.colorHighContrast
                         }
@@ -229,6 +251,7 @@ Item {
 
                         Text {
                             text: qsTr("Last update")
+                            textFormat: Text.PlainText
                             color: Theme.colorSubText
                             font.bold: true
                             font.pixelSize: Theme.fontSizeContentVerySmall
@@ -237,6 +260,7 @@ Item {
                         Text {
                             id: lastupdate
                             text: currentDevice.lastUpdate.toLocaleString(Locale.ShortFormat)
+                            textFormat: Text.PlainText
                             font.pixelSize: Theme.fontSizeContentBig
                             color: Theme.colorHighContrast
                         }
@@ -247,6 +271,7 @@ Item {
 
                         Text {
                             text: qsTr("Last history sync")
+                            textFormat: Text.PlainText
                             color: Theme.colorSubText
                             font.bold: true
                             font.pixelSize: Theme.fontSizeContentVerySmall
@@ -255,6 +280,7 @@ Item {
                         Text {
                             id: lastsync
                             text: currentDevice.lastHistorySync.toLocaleString(Locale.ShortFormat)
+                            textFormat: Text.PlainText
                             font.pixelSize: Theme.fontSizeContentBig
                             color: Theme.colorHighContrast
                         }
@@ -287,6 +313,7 @@ Item {
                     Column {
                         Text {
                             text: qsTr("Manufacturer")
+                            textFormat: Text.PlainText
                             color: Theme.colorSubText
                             font.bold: true
                             font.pixelSize: Theme.fontSizeContentVerySmall
@@ -294,6 +321,7 @@ Item {
                         }
                         Text {
                             text: currentDevice.deviceInfos.deviceManufacturer
+                            textFormat: Text.PlainText
                             font.pixelSize: Theme.fontSizeContentBig
                             color: Theme.colorHighContrast
                         }
@@ -302,6 +330,7 @@ Item {
                     Column {
                         Text {
                             text: qsTr("Product ID")
+                            textFormat: Text.PlainText
                             color: Theme.colorSubText
                             font.bold: true
                             font.pixelSize: Theme.fontSizeContentVerySmall
@@ -309,6 +338,7 @@ Item {
                         }
                         Text {
                             text: currentDevice.deviceInfos.deviceId
+                            textFormat: Text.PlainText
                             font.pixelSize: Theme.fontSizeContentBig
                             color: Theme.colorHighContrast
                         }
@@ -320,6 +350,7 @@ Item {
                         Column {
                             Text {
                                 text: qsTr("Year")
+                                textFormat: Text.PlainText
                                 color: Theme.colorSubText
                                 font.bold: true
                                 font.pixelSize: Theme.fontSizeContentVerySmall
@@ -327,6 +358,7 @@ Item {
                             }
                             Text {
                                 text: currentDevice.deviceInfos.deviceYear
+                                textFormat: Text.PlainText
                                 font.pixelSize: Theme.fontSizeContentBig
                                 color: Theme.colorHighContrast
                             }
@@ -335,6 +367,7 @@ Item {
                         Column {
                             Text {
                                 text: qsTr("IP Rating")
+                                textFormat: Text.PlainText
                                 color: Theme.colorSubText
                                 font.bold: true
                                 font.pixelSize: Theme.fontSizeContentVerySmall
@@ -342,6 +375,7 @@ Item {
                             }
                             Text {
                                 text: currentDevice.deviceInfos.deviceIPrating
+                                textFormat: Text.PlainText
                                 font.pixelSize: Theme.fontSizeContentBig
                                 color: Theme.colorHighContrast
                             }
@@ -356,6 +390,7 @@ Item {
 
                             Text {
                                 text: qsTr("Battery")
+                                textFormat: Text.PlainText
                                 color: Theme.colorSubText
                                 font.bold: true
                                 font.pixelSize: Theme.fontSizeContentVerySmall
@@ -363,6 +398,7 @@ Item {
                             }
                             Text {
                                 id: dbatt
+                                textFormat: Text.PlainText
                                 text: currentDevice.deviceInfos.deviceBattery
                                 font.pixelSize: Theme.fontSizeContentBig
                                 color: Theme.colorHighContrast
@@ -374,6 +410,7 @@ Item {
 
                             Text {
                                 text: qsTr("Screen")
+                                textFormat: Text.PlainText
                                 color: Theme.colorSubText
                                 font.bold: true
                                 font.pixelSize: Theme.fontSizeContentVerySmall
@@ -382,6 +419,7 @@ Item {
                             Text {
                                 id: dscreen
                                 text: currentDevice.deviceInfos.deviceScreen
+                                textFormat: Text.PlainText
                                 font.pixelSize: Theme.fontSizeContentBig
                                 color: Theme.colorHighContrast
                             }
@@ -415,6 +453,7 @@ Item {
                     Text {
                         visible: repeaterSensors.count
                         text: qsTr("Sensors")
+                        textFormat: Text.PlainText
                         color: Theme.colorSubText
                         font.bold: true
                         font.pixelSize: Theme.fontSizeContentVerySmall
@@ -440,11 +479,13 @@ Item {
                                 anchors.verticalCenter: parent.verticalCenter
                                 Text {
                                     text: UtilsDeviceSensors.getDeviceSensorName(modelData.sensorId)
+                                    textFormat: Text.PlainText
                                     font.pixelSize: Theme.fontSizeContent
                                     color: Theme.colorText
                                 }
                                 Text {
                                     text: modelData.sensorString
+                                    textFormat: Text.PlainText
                                     font.pixelSize: Theme.fontSizeContentSmall
                                     color: Theme.colorSubText
                                 }
@@ -458,6 +499,7 @@ Item {
                         visible: repeaterCapabilities.count
 
                         text: qsTr("Capabilities")
+                        textFormat: Text.PlainText
                         color: Theme.colorSubText
                         font.bold: true
                         font.pixelSize: Theme.fontSizeContentVerySmall
@@ -483,11 +525,13 @@ Item {
                                 anchors.verticalCenter: parent.verticalCenter
                                 Text {
                                     text: UtilsDeviceSensors.getDeviceCapabilityName(modelData.capabilityId)
+                                    textFormat: Text.PlainText
                                     font.pixelSize: Theme.fontSizeContent
                                     color: Theme.colorText
                                 }
                                 Text {
                                     text: modelData.capabilityString
+                                    textFormat: Text.PlainText
                                     font.pixelSize: Theme.fontSizeContentSmall
                                     color: Theme.colorSubText
                                 }
@@ -521,6 +565,7 @@ Item {
 
                     Text {
                         text: qsTr("Settings")
+                        textFormat: Text.PlainText
                         color: Theme.colorSubText
                         font.bold: true
                         font.pixelSize: Theme.fontSizeContentVerySmall
@@ -545,10 +590,10 @@ Item {
                             anchors.bottom: parent.bottom
 
                             color: Theme.colorBackground
-                            border.width: (insideMode) ? 2 : 0
+                            border.width: (currentDevice && currentDevice.deviceIsInside) ? 2 : 0
                             border.color: Theme.colorSeparator
 
-                            opacity: insideMode ? 1 : 0.5
+                            opacity: (currentDevice && currentDevice.deviceIsInside) ? 1 : 0.5
                             Behavior on opacity { OpacityAnimator { duration: 133 } }
 
                             MouseArea {
@@ -569,6 +614,7 @@ Item {
                                 Text {
                                     anchors.horizontalCenter: parent.horizontalCenter
                                     text: qsTr("inside")
+                                    textFormat: Text.PlainText
                                     color: Theme.colorText
                                     font.pixelSize: Theme.fontSizeContentSmall
                                 }
@@ -583,10 +629,10 @@ Item {
                             anchors.bottom: parent.bottom
 
                             color: Theme.colorBackground
-                            border.width: (outsideMode) ? 2 : 0
+                            border.width: (currentDevice && currentDevice.deviceIsOutside) ? 2 : 0
                             border.color: Theme.colorSeparator
 
-                            opacity: outsideMode ? 1 : 0.5
+                            opacity: (currentDevice && currentDevice.deviceIsOutside) ? 1 : 0.5
                             Behavior on opacity { OpacityAnimator { duration: 133 } }
 
                             MouseArea {
@@ -607,6 +653,7 @@ Item {
                                 Text {
                                     anchors.horizontalCenter: parent.horizontalCenter
                                     text: qsTr("outside")
+                                    textFormat: Text.PlainText
                                     color: Theme.colorText
                                     font.pixelSize: Theme.fontSizeContentSmall
                                 }
@@ -625,6 +672,7 @@ Item {
 
                         Text {
                             text: qsTr("MAC Address")
+                            textFormat: Text.PlainText
                             font.bold: true
                             font.pixelSize: Theme.fontSizeContentVerySmall
                             font.capitalization: Font.AllUppercase
@@ -636,6 +684,7 @@ Item {
                             anchors.right: parent.right
 
                             text: "The MAC address of the sensor must be set in order for some features (like history synchronization) to work."
+                            textFormat: Text.PlainText
                             color: Theme.colorSubText
                             wrapMode: Text.WordWrap
                         }
@@ -645,6 +694,7 @@ Item {
                             anchors.right: parent.right
 
                             text: "Sorry for the inconvenience."
+                            textFormat: Text.PlainText
                             color: Theme.colorSubText
                             wrapMode: Text.WordWrap
                         }
@@ -714,7 +764,6 @@ Item {
                                     source: "qrc:/assets/icons_material/duotone-edit-24px.svg"
                                     color: Theme.colorSubText
 
-                                    //visible: (isMobile || !textInputMacAddr.text || textInputMacAddr.focus || textInputArea.containsMouse)
                                     opacity: (isMobile || !textInputMacAddr.text || textInputMacAddr.focus || textInputMacAddrArea.containsMouse) ? 0.9 : 0
                                     Behavior on opacity { OpacityAnimator { duration: 133 } }
                                 }

@@ -192,6 +192,24 @@ Item {
             ////////
 
             Item {
+                height: 16
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                Rectangle {
+                    height: 1
+                    color: Theme.colorSeparator
+                    anchors.left: parent.left
+                    anchors.leftMargin: -(screenPaddingLeft + 16)
+                    anchors.right: parent.right
+                    anchors.rightMargin: -(screenPaddingRight + 16)
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+            }
+
+            ////////
+
+            Item {
                 id: releasenotes
                 height: 32
                 anchors.left: parent.left
@@ -261,6 +279,8 @@ Item {
                 }
             }
 
+            ////////
+
             Item {
                 id: permissions
                 height: 32
@@ -329,6 +349,8 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                 }
             }
+
+            ////////
 
             Item {
                 id: dependencies

@@ -842,7 +842,7 @@ void DeviceSensor::checkDataAvailability()
         QString tableName;
         bool status = false;
 
-        if (isPlantSensor() || isThermometer())
+        if (isPlantSensor())
         {
             // If we have immediate data (<12h old)
             if (m_soilMoisture > 0 || m_soilConductivity > 0 || m_soilTemperature > 0 ||
@@ -850,6 +850,14 @@ void DeviceSensor::checkDataAvailability()
                 status = true;
 
             tableName = "plantData";
+        }
+        else if (isThermometer())
+        {
+            // If we have immediate data (<12h old)
+            if (m_temperature > -20.f || m_humidity > 0 || m_pressure > 0)
+                status = true;
+
+            tableName = "thermoData";
         }
         else if (isEnvironmentalSensor())
         {
@@ -897,7 +905,7 @@ bool DeviceSensor::hasDataNamed(const QString &dataName) const
 
     QString tableName;
 
-    if (isPlantSensor() || isThermometer())
+    if (isPlantSensor())
     {
         // If we have immediate data (<12h old)
         if (dataName == "soilMoisture" && m_soilMoisture > 0)
@@ -918,6 +926,18 @@ bool DeviceSensor::hasDataNamed(const QString &dataName) const
             return true;
 
         tableName = "plantData";
+    }
+    else if (isThermometer())
+    {
+        // If we have immediate data (<12h old)
+        if (dataName == "temperature" && m_temperature > -20.f)
+            return true;
+        else if (dataName == "humidity" && m_humidity > 0.f)
+            return true;
+        else if (dataName == "pressure" && m_pressure > 0)
+            return true;
+
+        tableName = "thermoData";
     }
     else if (isEnvironmentalSensor())
     {
@@ -965,6 +985,7 @@ int DeviceSensor::countDataNamed(const QString &dataName, int days) const
     if (m_dbInternal || m_dbExternal)
     {
         QString tableName = "plantData";
+        if (isThermometer()) tableName = "thermoData";
         if (isEnvironmentalSensor()) tableName = "sensorData";
 
         QSqlQuery dataCount;
@@ -1010,7 +1031,7 @@ bool DeviceSensor::hasData() const
 {
     QString tableName;
 
-    if (isPlantSensor() || isThermometer())
+    if (isPlantSensor())
     {
         // If we have immediate data (<12h old)
         if (m_soilMoisture > 0 || m_soilConductivity > 0 || m_soilTemperature > 0 ||
@@ -1018,6 +1039,14 @@ bool DeviceSensor::hasData() const
             return true;
 
         tableName = "plantData";
+    }
+    else if (isThermometer())
+    {
+        // If we have immediate data (<12h old)
+        if (m_temperature > -20.f || m_humidity > 0 || m_pressure > 0)
+            return true;
+
+        tableName = "thermoData";
     }
     else if (isEnvironmentalSensor())
     {
@@ -1056,11 +1085,26 @@ bool DeviceSensor::hasData() const
     return false;
 }
 
-bool DeviceSensor::isDataFresh() const
+bool DeviceSensor::isDataFresh_rt() const
 {
     SettingsManager *sm = SettingsManager::getInstance();
-    int maxMin = hasSoilMoistureSensor() ? sm->getUpdateIntervalPlant() : sm->getUpdateIntervalThermo();
+    int maxMin = 120;
+    if (isPlantSensor()) maxMin = sm->getUpdateIntervalPlant();
+    else if (isThermometer()) maxMin = sm->getUpdateIntervalThermo();
+    else if (isEnvironmentalSensor()) maxMin = sm->getUpdateIntervalEnv();
+
     return (getLastUpdateInt() >= 0 && getLastUpdateInt() < maxMin);
+}
+
+bool DeviceSensor::isDataFresh_db() const
+{
+    SettingsManager *sm = SettingsManager::getInstance();
+    int maxMin = 120;
+    if (isPlantSensor()) maxMin = sm->getUpdateIntervalPlant();
+    else if (isThermometer()) maxMin = sm->getUpdateIntervalThermo();
+    else if (isEnvironmentalSensor()) maxMin = sm->getUpdateIntervalEnv();
+
+    return (getLastUpdateDbInt() >= 0 && getLastUpdateDbInt() < maxMin);
 }
 
 bool DeviceSensor::isDataToday() const
@@ -1075,12 +1119,22 @@ bool DeviceSensor::isDataAvailable() const
 
 bool DeviceSensor::needsUpdateRt() const
 {
-    return !isDataFresh();
+    return !isDataFresh_rt();
 }
 
 bool DeviceSensor::needsUpdateDb() const
 {
-    return (getLastUpdateDbInt() < 0 || getLastUpdateDbInt() > 60);
+    return !isDataFresh_db();
+}
+
+bool DeviceSensor::needsUpdateDb_mini() const
+{
+    int minInterval = 60;
+    if (isPlantSensor()) minInterval = 60;
+    else if (isThermometer()) minInterval = 20;
+    else if (isEnvironmentalSensor()) minInterval = 20;
+
+    return (getLastUpdateDbInt() < 0 || getLastUpdateDbInt() > minInterval);
 }
 
 /* ************************************************************************** */

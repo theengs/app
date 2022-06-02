@@ -45,6 +45,7 @@ class SystrayManager: public QObject
     QIcon *m_sysTrayIcon = nullptr;
     QMenu *m_sysTrayMenu = nullptr;
     QAction *m_actionShow = nullptr;
+    QAction *m_actionDeviceList = nullptr;
     QAction *m_actionSettings = nullptr;
     QAction *m_actionExit = nullptr;
 
@@ -61,6 +62,7 @@ class SystrayManager: public QObject
 signals:
     void showClicked();
     void hideClicked();
+    void devicesClicked();
     void settingsClicked();
     void quitClicked();
 
@@ -77,6 +79,7 @@ public slots:
 private slots:
     void trayClicked(QSystemTrayIcon::ActivationReason r);
     void showHideButton();
+    void devicesButton();
     void settingsButton();
 
     void visibilityChanged();

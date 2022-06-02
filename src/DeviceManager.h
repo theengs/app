@@ -99,7 +99,7 @@ class DeviceManager: public QObject
 
     static const int ble_scanning_duration = 30;
     static const int ble_listening_duration = 0;
-    static const int ble_listening_duration_nearby = 60;
+    static const int ble_listening_duration_nearby = 0;
     static const int ble_listening_duration_background = 60;
 
     bool hasBluetooth() const;
@@ -110,6 +110,8 @@ class DeviceManager: public QObject
     void checkBluetoothIos();
     void startBleAgent();
 
+    void setLastRun();
+
     // THEENGS
     QTimer m_faker;
     Device *createTheengsDevice_fromDb(const QString &deviceName, const QString &deviceModel_theengs, const QString &deviceAddr);
@@ -118,6 +120,8 @@ class DeviceManager: public QObject
 public:
     DeviceManager(bool daemon = false);
     ~DeviceManager();
+
+    static int getLastRun();
 
     Q_INVOKABLE bool checkBluetooth();
     Q_INVOKABLE void enableBluetooth(bool enforceUserPermissionCheck = false);

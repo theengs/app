@@ -62,6 +62,14 @@ public:
     // theengs decoder
     void parseTheengsProps(const QString &json);
     void parseTheengsAdvertisement(const QString &json);
+
+
+    // Chart "min/max"
+    Q_INVOKABLE void updateChartData_thermometerMinMax(int maxDays);
+
+    // Chart "AIO"
+    Q_INVOKABLE void getChartData_thermometerAIO(int maxDays, QDateTimeAxis *axis,
+                                                 QLineSeries *temp, QLineSeries *hygro);
 };
 
 /* ************************************************************************** */

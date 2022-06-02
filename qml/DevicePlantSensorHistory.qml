@@ -122,17 +122,15 @@ Item {
                 graphGrid.columns = 2
             }
             if (graphGrid.width < 575) {
-                buttonPanel.anchors.topMargin = 52
                 buttonPanel.anchors.rightMargin = 0
                 buttonPanel.anchors.right = undefined
                 buttonPanel.anchors.horizontalCenter = subHeader.horizontalCenter
-                subHeader.height = 96
+                subHeader.height = 52
             } else {
-                buttonPanel.anchors.topMargin = 8
-                buttonPanel.anchors.rightMargin = 8
+                buttonPanel.anchors.rightMargin = 12
                 buttonPanel.anchors.horizontalCenter = undefined
                 buttonPanel.anchors.right = subHeader.right
-                subHeader.height = 48
+                subHeader.height = 52
             }
         }
 
@@ -160,39 +158,39 @@ Item {
         anchors.right: parent.right
 
         z: 5
-        height: isPhone ? 96 : 48
+        height: isPhone ? 48 : 52
         color: headerUnicolor ? Theme.colorBackground : Theme.colorForeground
 
         Text {
             id: textDeviceName
-            height: 32
-            anchors.top: parent.top
-            anchors.topMargin: 8
             anchors.left: parent.left
-            anchors.leftMargin: 12
+            anchors.leftMargin: 16
             anchors.right: parent.right
-            anchors.rightMargin: 12
+            anchors.rightMargin: 16
+            anchors.verticalCenter: parent.verticalCenter
 
-            visible: isDesktop
+            visible: (isDesktop && graphGrid.width >= 575)
 
-            text: currentDevice.deviceName + " - " + currentDevice.deviceAssociatedName
+            text: {
+                if (currentDevice.deviceAssociatedName.length)
+                    return currentDevice.deviceName + " - " + currentDevice.deviceAssociatedName
+                return currentDevice.deviceName
+            }
             color: Theme.colorText
-            font.pixelSize: 22
-            font.capitalization: Font.Capitalize
+            font.pixelSize: 24
+            //font.capitalization: Font.Capitalize
             horizontalAlignment: wideMode ? Text.AlignLeft : Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
         }
 
         Row {
             id: buttonPanel
-            anchors.top: parent.top
-            anchors.topMargin: isMobile ? 8 : 52
             anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
             spacing: 12
 
             ButtonWireframe {
                 width: 100
-                height: 32
+                height: isPhone ? 32 : 36
 
                 fullColor: (settingsManager.graphHistory === "monthly")
                 primaryColor: Theme.colorPrimary
@@ -204,7 +202,7 @@ Item {
 
             ButtonWireframe {
                 width: 100
-                height: 32
+                height: isPhone ? 32 : 36
 
                 fullColor: (settingsManager.graphHistory === "weekly")
                 primaryColor: Theme.colorPrimary
@@ -216,7 +214,7 @@ Item {
 
             ButtonWireframe {
                 width: 100
-                height: 32
+                height: isPhone ? 32 : 36
 
                 fullColor: (settingsManager.graphHistory === "daily")
                 primaryColor: Theme.colorPrimary

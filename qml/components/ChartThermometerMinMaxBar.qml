@@ -5,8 +5,8 @@ import "qrc:/js/UtilsNumber.js" as UtilsNumber
 
 Item {
     id: chartThermometerMinMaxBar
-    width: 64
-    height: parent.height
+    implicitWidth: 32
+    implicitHeight: 128
 
     property int www: 20
 
@@ -85,16 +85,19 @@ Item {
         opacity: 0.66
     }
 
-    IconSvg {
-        id: nodata
-        width: 20; height: 20;
+    Loader { // 'no data' indicator
         anchors.bottom: dayoftheweek.top
         anchors.bottomMargin: isPhone ? 12 : 16
         anchors.horizontalCenter: parent.horizontalCenter
 
+        active: (modelData.tempMean < -40)
         asynchronous: true
-        color: Theme.colorSubText
-        source: (modelData.tempMean < -40) ? "qrc:/assets/icons_material/baseline-bluetooth_disabled-24px.svg" : ""
+
+        sourceComponent: IconSvg {
+            width: 20; height: 20;
+            color: Theme.colorSubText
+            source: "qrc:/assets/icons_material/baseline-bluetooth_disabled-24px.svg"
+        }
     }
 
     Text {
@@ -151,7 +154,7 @@ Item {
                 anchors.horizontalCenterOffset: 2
 
                 color: Theme.colorSubText
-                font.pixelSize: 12
+                font.pixelSize: Theme.fontSizeContentVerySmall
             }
 
             Text {
@@ -162,7 +165,7 @@ Item {
                 anchors.horizontalCenterOffset: 2
 
                 color: Theme.colorSubText
-                font.pixelSize: 12
+                font.pixelSize: Theme.fontSizeContentVerySmall
             }
         }
 
@@ -191,7 +194,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     color: "white"
                     text: modelData.hygroMax
-                    font.pixelSize: 12
+                    font.pixelSize: Theme.fontSizeContentVerySmall
                 }
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
@@ -225,7 +228,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     color: "white"
                     text: modelData.hygroMin
-                    font.pixelSize: 12
+                    font.pixelSize: Theme.fontSizeContentVerySmall
                 }
                 Text {
                     anchors.verticalCenter: parent.verticalCenter

@@ -22,11 +22,7 @@
 #include <cmath>
 
 #include <QBluetoothUuid>
-#include <QBluetoothServiceInfo>
 #include <QLowEnergyService>
-
-#include <QSqlQuery>
-#include <QSqlError>
 
 #include <QDateTime>
 #include <QDebug>
@@ -145,7 +141,7 @@ void DeviceHygrotempCGD1::parseAdvertisementData(const QByteArray &value, const 
         {
             m_lastUpdate = QDateTime::currentDateTime();
 
-            if (needsUpdateDb())
+            if (needsUpdateDb_mini())
             {
                 addDatabaseRecord_hygrometer(m_lastUpdate.toSecsSinceEpoch(), m_temperature, m_humidity);
             }

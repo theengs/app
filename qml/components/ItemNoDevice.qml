@@ -1,5 +1,4 @@
 import QtQuick 2.15
-import QtQuick.Controls 2.15
 
 import ThemeEngine 1.0
 
@@ -24,7 +23,7 @@ Item {
             color: Theme.colorIcon
 
             SequentialAnimation on opacity {
-                id: rescanAnimation
+                id: scanAnimation
                 loops: Animation.Infinite
                 running: deviceManager.scanning
                 alwaysRunToEnd: true
@@ -101,7 +100,6 @@ Item {
             ////////
 
             Row {
-                id: row
                 anchors.horizontalCenter: parent.horizontalCenter
                 spacing: 16
 

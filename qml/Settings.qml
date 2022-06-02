@@ -612,7 +612,7 @@ Item {
                 visible: (Qt.platform.os !== "ios")
 
                 IconSvg {
-                    id: image_service
+                    id: image_androidservice
                     width: 24
                     height: 24
                     anchors.left: parent.left
@@ -624,8 +624,8 @@ Item {
                 }
 
                 Text {
-                    id: text_service
-                    anchors.left: image_service.right
+                    id: text_androidservice
+                    anchors.left: image_androidservice.right
                     anchors.leftMargin: 24
                     anchors.verticalCenter: parent.verticalCenter
 
@@ -649,6 +649,8 @@ Item {
                     text: qsTr("experimental")
                     primaryColor: Theme.colorRed
                     borderColor: Theme.colorRed
+
+                    onClicked: popupBackgroundData.open()
                 }
             }
 
@@ -693,6 +695,7 @@ Item {
                     color: Theme.colorText
                     verticalAlignment: Text.AlignVCenter
                 }
+
                 SwitchThemedMobile {
                     id: switch_worker
                     anchors.right: parent.right
@@ -707,9 +710,8 @@ Item {
                         if (isMobile) {
                             if (settingsManager.systray) {
                                 popupBackgroundData.open()
+                                utilsApp.getMobileBackgroundLocationPermission()
                             }
-
-                            utilsApp.getMobileBackgroundLocationPermission()
                         }
                     }
                 }
@@ -814,77 +816,6 @@ Item {
                 }
             }
 
-            ////////
-/*
-            Item {
-                id: element_notifications
-                height: 48
-                anchors.left: parent.left
-                anchors.leftMargin: screenPaddingLeft
-                anchors.right: parent.right
-                anchors.rightMargin: screenPaddingRight
-
-                // every platforms except iOS // also, need the systray
-                visible: (Qt.platform.os !== "ios") && settingsManager.systray
-
-                IconSvg {
-                    id: image_notifications
-                    width: 24
-                    height: 24
-                    anchors.left: parent.left
-                    anchors.leftMargin: 16
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    color: Theme.colorIcon
-                    source: "qrc:/assets/icons_material/baseline-notifications_none-24px.svg"
-                }
-
-                Text {
-                    id: text_notifications
-                    height: 40
-                    anchors.left: image_notifications.right
-                    anchors.leftMargin: 24
-                    anchors.right: switch_notifications.left
-                    anchors.rightMargin: 16
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: qsTr("Enable notifications")
-                    textFormat: Text.PlainText
-                    wrapMode: Text.WordWrap
-                    font.pixelSize: Theme.fontSizeContent
-                    color: Theme.colorText
-                    verticalAlignment: Text.AlignVCenter
-                }
-
-                SwitchThemedMobile {
-                    id: switch_notifications
-                    anchors.right: parent.right
-                    anchors.rightMargin: screenPaddingRight
-                    anchors.verticalCenter: parent.verticalCenter
-                    z: 1
-
-                    checked: settingsManager.notifications
-                    onClicked: settingsManager.notifications = checked
-                }
-            }
-            Text {
-                id: legend_notifications
-                anchors.left: parent.left
-                anchors.leftMargin: screenPaddingLeft + 64
-                anchors.right: parent.right
-                anchors.rightMargin: 12
-                topPadding: -12
-                bottomPadding: 12
-
-                visible: (element_notifications.visible)
-
-                text: qsTr("If a plant needs water, Theengs will bring it to your attention!")
-                textFormat: Text.PlainText
-                wrapMode: Text.WordWrap
-                color: Theme.colorSubText
-                font.pixelSize: Theme.fontSizeContentSmall
-            }
-*/
             ////////////////
 
             Rectangle {

@@ -8,9 +8,6 @@ import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
 Loader {
     id: deviceProbe
 
-    sourceComponent: null
-    asynchronous: false
-
     property var currentDevice: null
 
     ////////
@@ -23,28 +20,23 @@ Loader {
         currentDevice = clickedDevice
 
         // load screen
-        if (!sourceComponent) {
-            sourceComponent = componentDeviceProbe
-        }
+        deviceProbe.active = true
         deviceProbe.item.loadDevice()
     }
 
     ////////
 
-    function isHistoryMode() {
-        if (sourceComponent) return deviceProbe.item.isHistoryMode()
-        return false
-    }
-    function resetHistoryMode() {
-        if (sourceComponent) deviceProbe.item.resetHistoryMode()
+    function backAction() {
+        if (deviceProbe.status === Loader.Ready)
+            deviceProbe.item.backAction()
     }
 
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
 
-Component {
-    id: componentDeviceProbe
+    active: false
 
-    Item {
+    asynchronous: false
+    sourceComponent: Item {
         id: itemDeviceProbe
         width: 480
         height: 720
@@ -55,7 +47,7 @@ Component {
 
         property string cccc: headerUnicolor ? Theme.colorHeaderContent : "white"
 
-        ////////////////////////////////////////////////////////////////////////
+        ////////
 
         Connections {
             target: currentDevice
@@ -152,7 +144,7 @@ Component {
             textStatus.text = UtilsDeviceSensors.getDeviceStatusText(currentDevice.status)
 
             if (currentDevice.status === DeviceUtils.DEVICE_OFFLINE &&
-                (currentDevice.isDataFresh() || currentDevice.isDataToday())) {
+                (currentDevice.isDataFresh_rt() || currentDevice.isDataToday())) {
                 if (currentDevice.lastUpdateMin <= 1)
                     textStatus.text = qsTr("Synced")
                 else
@@ -163,11 +155,11 @@ Component {
         function loadGraph() {
             if (currentDevice.hasProbesTPMS) return
 
-            if (graphLoader.status != Loader.Ready) {
+            if (graphLoader.status !== Loader.Ready) {
                 graphLoader.source = "ChartProbeDataAio.qml"
             }
 
-            if (graphLoader.status == Loader.Ready) {
+            if (graphLoader.status === Loader.Ready) {
                 probeChart.loadGraph()
                 probeChart.updateGraph()
             }
@@ -175,15 +167,29 @@ Component {
         function updateGraph() {
             if (currentDevice.hasProbesTPMS) return
 
-            if (graphLoader.status == Loader.Ready) probeChart.updateGraph()
+            if (graphLoader.status === Loader.Ready) probeChart.updateGraph()
         }
 
+        ////////
+
+        function backAction() {
+            if (textInputLocation.focus) {
+                textInputLocation.focus = false
+                return
+            }
+            if (isHistoryMode()) {
+                resetHistoryMode()
+                return
+            }
+
+            appContent.state = "DeviceList"
+        }
         function isHistoryMode() {
-            if (graphLoader.status == Loader.Ready) return probeChart.isIndicator()
+            if (graphLoader.status === Loader.Ready) return probeChart.isIndicator()
             return false
         }
         function resetHistoryMode() {
-            if (graphLoader.status == Loader.Ready) probeChart.resetIndicator()
+            if (graphLoader.status === Loader.Ready) probeChart.resetIndicator()
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -1113,5 +1119,4 @@ Component {
             }
         }
     }
-}
 }

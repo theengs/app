@@ -54,50 +54,7 @@ Item {
 
     function initBoxData() {
         // Set icon
-        if (boxDevice.isPlantSensor) {
-            if (hasHygro) {
-                if (boxDevice.deviceName === "ropot" || boxDevice.deviceName === "Parrot pot")
-                    imageDevice.source = "qrc:/assets/icons_custom/pot_flower-24px.svg"
-                else
-                    imageDevice.source = "qrc:/assets/icons_material/outline-local_florist-24px.svg"
-            } else {
-                if (boxDevice.deviceName === "ropot" || boxDevice.deviceName === "Parrot pot")
-                    imageDevice.source = "qrc:/assets/icons_custom/pot_empty-24px.svg"
-                else
-                    imageDevice.source = "qrc:/assets/icons_material/outline-settings_remote-24px.svg"
-            }
-        } else if (boxDevice.isThermometer) {
-            if (boxDevice.deviceName === "MJ_HT_V1" ||
-                boxDevice.deviceName === "ClearGrass Temp & RH" ||
-                boxDevice.deviceName === "Qingping Temp & RH M" || boxDevice.deviceName === "Qingping Temp & RH H" ||
-                boxDevice.deviceName === "Qingping Temp RH Lite" ||
-                boxDevice.deviceName === "ThermoBeacon") {
-                imageDevice.source = "qrc:/assets/icons_material/baseline-trip_origin-24px.svg"
-            } else if (boxDevice.deviceName === "LYWSD02" ||
-                       boxDevice.deviceName === "MHO-C303") {
-                imageDevice.source = "qrc:/assets/icons_material/baseline-crop_16_9-24px.svg"
-            } else if (boxDevice.deviceName === "LYWSD03MMC" ||
-                       boxDevice.deviceName === "MHO-C401" ||
-                       boxDevice.deviceName === "XMWSDJO4MMC") {
-                imageDevice.source = "qrc:/assets/icons_material/baseline-crop_square-24px.svg"
-            } else {
-                imageDevice.source = "qrc:/assets/icons_material/outline-settings_remote-24px.svg"
-            }
-        } else if (boxDevice.isEnvironmentalSensor) {
-            if (boxDevice.deviceName === "GeigerCounter") {
-                imageDevice.source = "qrc:/assets/icons_custom/nuclear_icon.svg"
-            } else {
-                imageDevice.source = "qrc:/assets/icons_material/outline-settings_remote-24px.svg"
-            }
-        } else if (boxDevice.isScale) {
-            imageDevice.source = "qrc:/assets/icons_material/baseline-monitor_weight-24px.svg"
-        } else if (boxDevice.isMotionSensor) {
-            imageDevice.source = "qrc:/assets/icons_material/baseline-sensors-24px.svg"
-        } else if (boxDevice.isProbe) {
-            imageDevice.source = "qrc:/assets/icons_material/baseline-settings_input_component-24px.svg"
-        } else {
-            imageDevice.source = "qrc:/assets/icons_material/outline-settings_remote-24px.svg"
-        }
+        imageDevice.source = UtilsDeviceSensors.getDeviceIcon(boxDevice, hasHygro)
 
         // Load indicators
         if (!loaderIndicators.sourceComponent) {
@@ -144,7 +101,7 @@ Item {
         textStatus.color = UtilsDeviceSensors.getDeviceStatusColor(boxDevice.status)
 
         if (boxDevice.status === DeviceUtils.DEVICE_OFFLINE) {
-            if (boxDevice.isDataFresh()) {
+            if (boxDevice.isDataFresh_rt()) {
                 if (boxDevice.lastUpdateMin >= 0 && boxDevice.lastUpdateMin <= 1)
                     textStatus.color = Theme.colorGreen
                 else

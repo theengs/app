@@ -10,6 +10,35 @@ Item {
     height: 720
     anchors.fill: parent
 
+    function backAction() {
+        if (tf_mqtt_host.focus) {
+            tf_mqtt_host.focus = false
+            return
+        }
+        if (tf_mqtt_port.focus) {
+            tf_mqtt_port.focus = false
+            return
+        }
+        if (tf_mqtt_user.focus) {
+            tf_mqtt_user.focus = false
+            return
+        }
+        if (tf_mqtt_pwd.focus) {
+            tf_mqtt_pwd.focus = false
+            return
+        }
+        if (tf_mqtt_topicA.focus) {
+            tf_mqtt_topicA.focus = false
+            return
+        }
+        if (tf_mqtt_topicB.focus) {
+            tf_mqtt_topicB.focus = false
+            return
+        }
+
+        appContent.state = "DeviceList"
+    }
+
     ////////////////////////////////////////////////////////////////////////////
 
     Flickable {
@@ -165,6 +194,8 @@ Item {
             Text {
                 anchors.left: parent.left
                 anchors.leftMargin: 16
+                anchors.right: parent.right
+                anchors.rightMargin: 16
 
                 text: qsTr("Broker")
                 textFormat: Text.PlainText
@@ -172,6 +203,20 @@ Item {
                 color: Theme.colorSubText
                 font.pixelSize: Theme.fontSizeContentBig
                 verticalAlignment: Text.AlignBottom
+
+                ButtonWireframe {
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    height: 32
+
+                    text: qsTr("Save")
+                    fullColor: true
+
+                    onClicked: {
+                        focus = true
+                        if (settingsManager.mqtt) mqttManager.reconnect_forced()
+                    }
+                }
             }
 
             ////////
@@ -199,8 +244,10 @@ Item {
                     text: settingsManager.mqttHost
 
                     onEditingFinished: {
-                        settingsManager.mqttHost = text
-                        mqttManager.reconnect_forced()
+                        if (settingsManager.mqttHost !== text) {
+                            settingsManager.mqttHost = text
+                            mqttManager.reconnect_forced()
+                        }
                     }
 
                     IconSvg {
@@ -225,8 +272,10 @@ Item {
                     validator: IntValidator { bottom: 1; top: 65535; }
 
                     onEditingFinished: {
-                        settingsManager.mqttPort = parseInt(text, 10)
-                        mqttManager.reconnect_forced()
+                        if (settingsManager.mqttPort !== parseInt(text, 10)) {
+                            settingsManager.mqttPort = parseInt(text, 10)
+                            mqttManager.reconnect_forced()
+                        }
                     }
 
                     IconSvg {
@@ -250,8 +299,10 @@ Item {
                     text: settingsManager.mqttUser
 
                     onEditingFinished: {
-                        settingsManager.mqttUser = text
-                        mqttManager.reconnect_forced()
+                        if (settingsManager.mqttUser !== text) {
+                            settingsManager.mqttUser = text
+                            mqttManager.reconnect_forced()
+                        }
                     }
 
                     IconSvg {
@@ -276,8 +327,10 @@ Item {
                     echoMode: TextInput.PasswordEchoOnEdit
 
                     onEditingFinished: {
-                        settingsManager.mqttPassword = text
-                        mqttManager.reconnect_forced()
+                        if (settingsManager.mqttPassword !== text) {
+                            settingsManager.mqttPassword = text
+                            mqttManager.reconnect_forced()
+                        }
                     }
 
                     IconSvg {
@@ -330,8 +383,10 @@ Item {
                     text: settingsManager.mqttTopicA
 
                     onEditingFinished: {
-                        settingsManager.mqttTopicA = text
-                        mqttManager.reconnect_forced()
+                        if (settingsManager.mqttTopicA !== text) {
+                            settingsManager.mqttTopicA = text
+                            mqttManager.reconnect_forced()
+                        }
                     }
 
                     IconSvg {
@@ -355,8 +410,10 @@ Item {
                     text: settingsManager.mqttTopicB
 
                     onEditingFinished: {
-                        settingsManager.mqttTopicB = text
-                        mqttManager.reconnect_forced()
+                        if (settingsManager.mqttTopicB !== text) {
+                            settingsManager.mqttTopicB = text
+                            mqttManager.reconnect_forced()
+                        }
                     }
 
                     IconSvg {
@@ -369,31 +426,6 @@ Item {
                         source: "qrc:/assets/icons_material/duotone-format_size-24px.svg"
                     }
                 }
-            }
-
-            ////////
-
-            Column {
-                anchors.right: parent.right
-                anchors.rightMargin: 16
-                spacing: 16
-
-                ButtonWireframe {
-                    text: qsTr("Save")
-                    fullColor: true
-
-                    onClicked: {
-                        focus = true
-                        if (settingsManager.mqtt) mqttManager.reconnect_forced()
-                    }
-                }
-/*
-                ButtonWireframe {
-                    text: mqttManager.status ? qsTr("Connected") : qsTr("Disconnected")
-                    primaryColor: mqttManager.status ? Theme.colorGreen : Theme.colorOrange
-                    fullColor: true
-                }
-*/
             }
 
             ////////

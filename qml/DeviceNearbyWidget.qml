@@ -1,6 +1,7 @@
 import QtQuick 2.15
 
 import ThemeEngine 1.0
+import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
 
 Rectangle {
     id: deviceNearbyWidget
@@ -11,12 +12,13 @@ Rectangle {
     color: (device.selected) ? Theme.colorForeground : Theme.colorBackground
 
     property var device: pointer
-    property bool blacklisted: deviceManager.isBleDeviceBlacklisted(device.deviceAddress)
+    property bool deviceSupported: UtilsDeviceSensors.isDeviceSupported(device.deviceName)
+    property bool deviceBlacklisted: deviceManager.isBleDeviceBlacklisted(device.deviceAddress)
 
     Connections {
         target: deviceManager
         function onDevicesBlacklistUpdated() {
-            deviceNearbyWidget.blacklisted = deviceManager.isBleDeviceBlacklisted(device.deviceAddress)
+            deviceNearbyWidget.deviceBlacklisted = deviceManager.isBleDeviceBlacklisted(device.deviceAddress)
         }
     }
 
@@ -36,11 +38,12 @@ Rectangle {
 
         Text {
             id: deviceTitle
-            text: device.deviceName
+            text: (device.deviceName.length ? device.deviceName : "No name")
             textFormat: Text.PlainText
             font.pixelSize: Theme.fontSizeContent
-            color: Theme.colorText
+            color: (device.deviceName.length ? Theme.colorText : Theme.colorSubText)
         }
+
         Text {
             text: device.deviceAddress
             textFormat: Text.PlainText

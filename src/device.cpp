@@ -425,6 +425,7 @@ void Device::refreshDataFinished(bool status, bool cached)
     if (status == true)
     {
         // Only update data on success
+        Q_EMIT dataUpdated();
 
         // Reset update timer
         setUpdateTimer();
@@ -432,8 +433,6 @@ void Device::refreshDataFinished(bool status, bool cached)
         // Reset last error
         m_lastError = QDateTime();
         Q_EMIT statusUpdated();
-
-        Q_EMIT dataUpdated();
 
         if (m_ble_action == DeviceUtils::ACTION_UPDATE)
         {
@@ -453,7 +452,7 @@ void Device::refreshDataFinished(bool status, bool cached)
             Q_EMIT statusUpdated();
 
             // Set error timer value
-            setUpdateTimer(ERROR_UPDATE_INTERVAL);
+            setUpdateTimer(SettingsManager::s_intervalErrorUpdate);
         }
     }
 
@@ -539,9 +538,11 @@ void Device::setUpdateTimer(int updateIntervalMin)
     if (updateIntervalMin < 5 || updateIntervalMin > 120)
     {
         if (getDeviceType() == DeviceUtils::DEVICE_PLANTSENSOR)
-            updateIntervalMin = PLANT_UPDATE_INTERVAL;
+            updateIntervalMin = SettingsManager::s_intervalPlantUpdate;
+        else if (getDeviceType() == DeviceUtils::DEVICE_THERMOMETER)
+            updateIntervalMin = SettingsManager::s_intervalThermometerUpdate;
         else
-            updateIntervalMin = THERMO_UPDATE_INTERVAL;
+            updateIntervalMin = SettingsManager::s_intervalEnvironmentalUpdate;
     }
 
     // Is our timer already set to this particular interval?
@@ -718,6 +719,11 @@ bool Device::needsUpdateDb() const
     return false;
 }
 
+bool Device::needsUpdateDb_mini() const
+{
+    return false;
+}
+
 bool Device::needsSync() const
 {
     return false;
@@ -866,7 +872,7 @@ void Device::setAssociatedName(const QString &name)
 
 bool Device::hasAddressMAC() const
 {
-#if defined(Q_OS_UNIX) || defined(Q_OS_WINDOWS)
+#if !defined(Q_OS_MACOS) && !defined(Q_OS_IOS)
     return true;
 #endif
 
@@ -878,7 +884,7 @@ bool Device::hasAddressMAC() const
 
 QString Device::getAddressMAC() const
 {
-#if defined(Q_OS_UNIX) || defined(Q_OS_WINDOWS)
+#if !defined(Q_OS_MACOS) && !defined(Q_OS_IOS)
     return m_deviceAddress;
 #endif
 

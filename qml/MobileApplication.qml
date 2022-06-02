@@ -320,6 +320,11 @@ ApplicationWindow {
 
         focus: true
         Keys.onBackPressed: {
+            if (appHeader.rightMenuIsOpen()) {
+                appHeader.rightMenuClose()
+                return
+            }
+
             if (appContent.state === "DeviceList") {
                 if (screenDeviceList.selectionList.length !== 0) {
                     screenDeviceList.exitSelectionMode()
@@ -330,51 +335,23 @@ ApplicationWindow {
                         exitTimer.start()
                 }
             } else if (appContent.state === "DevicePlantSensor") {
-                if (appHeader.rightMenuIsOpen()) {
-                    appHeader.rightMenuClose()
-                } else if (screenDevicePlantSensor.isHistoryMode()) {
-                    screenDevicePlantSensor.resetHistoryMode()
-                } else {
-                    appContent.state = "DeviceList"
-                }
+                screenDevicePlantSensor.backAction()
             } else if (appContent.state === "DeviceThermometer") {
-                if (appHeader.rightMenuIsOpen()) {
-                    appHeader.rightMenuClose()
-                } else if (screenDeviceThermometer.isHistoryMode()) {
-                    screenDeviceThermometer.resetHistoryMode()
-                } else {
-                    appContent.state = "DeviceList"
-                }
+                screenDeviceThermometer.backAction()
             } else if (appContent.state === "DeviceEnvironmental") {
-                if (appHeader.rightMenuIsOpen()) {
-                    appHeader.rightMenuClose()
-                } else {
-                    appContent.state = "DeviceList"
-                }
+                screenDeviceEnvironmental.backAction()
             } else if (appContent.state === "DeviceProbe") {
-                if (appHeader.rightMenuIsOpen()) {
-                    appHeader.rightMenuClose()
-                } else if (screenDeviceProbe.isHistoryMode()) {
-                    screenDeviceProbe.resetHistoryMode()
-                } else {
-                    appContent.state = "DeviceList"
-                }
+                screenDeviceProbe.backAction()
             } else if (appContent.state === "DeviceScale") {
-                if (appHeader.rightMenuIsOpen()) {
-                    appHeader.rightMenuClose()
-                } else if (screenDeviceScale.isHistoryMode()) {
-                    screenDeviceScale.resetHistoryMode()
-                } else {
-                    appContent.state = "DeviceList"
-                }
+                screenDeviceScale.backAction()
+            } else if (appContent.state === "DeviceMotionSensor") {
+                screenDeviceMotionSensor.backAction()
+            } else if (appContent.state === "DeviceBrowser") {
+                screenDeviceBrowser.backAction()
+            } else if (appContent.state === "SettingsMqtt") {
+                screenSettingsMqtt.backAction()
             } else if (appContent.state === "Permissions") {
                 appContent.state = screenPermissions.entryPoint
-            } else if (appContent.state === "PlantBrowser") {
-                if (screenPlantBrowser.isPlantClicked()) {
-                    screenPlantBrowser.backAction()
-                } else {
-                    appContent.state = "DeviceList"
-                }
             } else {
                 appContent.state = "DeviceList"
             }
@@ -671,7 +648,7 @@ ApplicationWindow {
 
         color: Theme.colorComponentBackground
         border.color: Theme.colorSeparator
-        border.width: 1
+        border.width: Theme.componentBorderWidth
 
         opacity: 0
         Behavior on opacity { OpacityAnimator { duration: 233 } }

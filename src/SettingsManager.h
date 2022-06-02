@@ -20,11 +20,6 @@
 #define SETTINGS_MANAGER_H
 /* ************************************************************************** */
 
-#define BACKGROUND_UPDATE_INTERVAL    5 // minutes
-#define PLANT_UPDATE_INTERVAL       180 // minutes
-#define THERMO_UPDATE_INTERVAL       60 // minutes
-#define ERROR_UPDATE_INTERVAL        60 // minutes
-
 #include <QObject>
 #include <QString>
 #include <QSize>
@@ -59,6 +54,7 @@ class SettingsManager: public QObject
     Q_PROPERTY(uint updateIntervalBackground READ getUpdateIntervalBackground WRITE setUpdateIntervalBackground NOTIFY updateIntervalBackgroundChanged)
     Q_PROPERTY(uint updateIntervalPlant READ getUpdateIntervalPlant WRITE setUpdateIntervalPlant NOTIFY updateIntervalPlantChanged)
     Q_PROPERTY(uint updateIntervalThermo READ getUpdateIntervalThermo WRITE setUpdateIntervalThermo NOTIFY updateIntervalThermoChanged)
+    Q_PROPERTY(uint updateIntervalEnv READ getUpdateIntervalEnv WRITE setUpdateIntervalEnv NOTIFY updateIntervalEnvChanged)
     Q_PROPERTY(QString orderBy READ getOrderBy WRITE setOrderBy NOTIFY orderByChanged)
     Q_PROPERTY(QString tempUnit READ getTempUnit NOTIFY appUnitsChanged) // READ ONLY
     Q_PROPERTY(QString graphHistory READ getGraphHistogram WRITE setGraphHistogram NOTIFY graphHistogramChanged)
@@ -105,9 +101,11 @@ class SettingsManager: public QObject
     bool m_bluetoothLimitScanningRange = false;
     unsigned m_bluetoothSimUpdates = 3;
 
-    unsigned m_updateIntervalBackground = BACKGROUND_UPDATE_INTERVAL;
-    unsigned m_updateIntervalPlant = PLANT_UPDATE_INTERVAL;
-    unsigned m_updateIntervalThermo = THERMO_UPDATE_INTERVAL;
+    unsigned m_updateIntervalBackground = s_intervalBackgroundUpdate;
+    unsigned m_updateIntervalPlant = s_intervalPlantUpdate;
+    unsigned m_updateIntervalThermometer = s_intervalThermometerUpdate;
+    unsigned m_updateIntervalEnvironmental = s_intervalEnvironmentalUpdate;
+
     QString m_graphHistogram = "weekly";
     QString m_graphThermometer = "minmax";
     bool m_graphShowDots = true;
@@ -158,6 +156,7 @@ Q_SIGNALS:
     void updateIntervalBackgroundChanged();
     void updateIntervalPlantChanged();
     void updateIntervalThermoChanged();
+    void updateIntervalEnvChanged();
     void graphHistogramChanged();
     void graphThermometerChanged();
     void graphShowDotsChanged();
@@ -167,6 +166,13 @@ Q_SIGNALS:
     void orderByChanged();
     void mysqlChanged();
     void mqttChanged();
+
+public:
+    static const unsigned s_intervalBackgroundUpdate = 5;
+    static const unsigned s_intervalPlantUpdate = 240;
+    static const unsigned s_intervalThermometerUpdate = 120;
+    static const unsigned s_intervalEnvironmentalUpdate = 60;
+    static const unsigned s_intervalErrorUpdate = 30;
 
 public:
     static SettingsManager *getInstance();
@@ -216,8 +222,11 @@ public:
     unsigned getUpdateIntervalPlant() const { return m_updateIntervalPlant; }
     void setUpdateIntervalPlant(const unsigned value);
 
-    unsigned getUpdateIntervalThermo() const { return m_updateIntervalThermo; }
+    unsigned getUpdateIntervalThermo() const { return m_updateIntervalThermometer; }
     void setUpdateIntervalThermo(const unsigned value);
+
+    unsigned getUpdateIntervalEnv() const { return m_updateIntervalEnvironmental; }
+    void setUpdateIntervalEnv(const unsigned value);
 
     QString getTempUnit() const {
         if (m_appUnits == 0) return "C";

@@ -9,7 +9,7 @@ Rectangle {
     z: 10
     color: Theme.colorHeader
 
-    property int headerHeight: 64
+    property int headerHeight: isHdpi ? 60 : 64
 
     ////////////////////////////////////////////////////////////////////////////
 
@@ -33,7 +33,7 @@ Rectangle {
 
     signal refreshButtonClicked()
     signal syncButtonClicked()
-    signal rescanButtonClicked()
+    signal scanButtonClicked()
     signal plantsButtonClicked()
     signal settingsButtonClicked()
     signal settingsMqttButtonClicked()
@@ -71,7 +71,6 @@ Rectangle {
             menus.visible = true
 
             if (appContent.state === "DeviceList") {
-                //buttonBack.source = "qrc:/assets/icons_material/duotone-memory-24px.svg"
                 buttonBack.source = "qrc:/assets/logos/logo-greyscale.svg"
             } else {
                 buttonBack.source = "qrc:/assets/menus/menu_back.svg"
@@ -152,7 +151,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
 
-        spacing: 12
+        spacing: isHdpi ? 4 : 12
         visible: true
 
         // DEVICE ACTIONS //////////
@@ -504,8 +503,8 @@ Rectangle {
             height: compact ? 36 : 34
             anchors.verticalCenter: parent.verticalCenter
 
-            visible: (deviceManager.bluetooth && appContent.state === "DeviceList")
-            enabled: !deviceManager.updating && !deviceManager.syncing
+            visible: (deviceManager.bluetooth && menuMain.visible)
+            enabled: (!deviceManager.syncing)
 
             text: qsTr("Search for new sensors")
             tooltipText: text
@@ -514,7 +513,7 @@ Rectangle {
             textColor: Theme.colorHeaderContent
             backgroundColor: Theme.colorHeaderHighlight
 
-            onClicked: rescanButtonClicked()
+            onClicked: scanButtonClicked()
 
             animation: "fade"
             animationRunning: deviceManager.scanning
@@ -525,7 +524,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
 
             visible: (deviceManager.bluetooth && appContent.state === "DeviceList")
-            enabled: !deviceManager.scanning
+            enabled: (!deviceManager.syncing)
 
             text: qsTr("Refresh sensors data")
             tooltipText: text

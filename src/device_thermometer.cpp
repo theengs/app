@@ -196,9 +196,9 @@ bool DeviceThermometer::addDatabaseRecord_weatherstation(const int64_t timestamp
             // SQL date format YYYY-MM-DD HH:MM:SS
 
             // We only save one record every x minutes
-            int round_seconds = 1800; // 30 mins
-            QDateTime tmcd_rounded = QDateTime::fromSecsSinceEpoch(timestamp + (round_seconds - timestamp % round_seconds) - round_seconds);
+            int round_seconds = 1200; // 20 mins
             QDateTime tmcd = QDateTime::fromSecsSinceEpoch(timestamp);
+            QDateTime tmcd_rounded = QDateTime::fromSecsSinceEpoch(timestamp + (round_seconds - timestamp % round_seconds) - round_seconds);
 
             QSqlQuery addData;
             addData.prepare("REPLACE INTO thermoData (deviceAddr, timestamp_rounded, timestamp, temperature, humidity, pressure) "
@@ -237,6 +237,9 @@ void DeviceThermometer::getChartData_thermometerAIO(int maxDays, QDateTimeAxis *
                                                     QLineSeries *temp, QLineSeries *humi)
 {
     if (!axis || !temp || !humi) return;
+
+    temp->clear();
+    humi->clear();
 
     if (m_dbInternal || m_dbExternal)
     {
@@ -321,8 +324,8 @@ void DeviceThermometer::updateChartData_thermometerMinMax(int maxDays)
 
         QSqlQuery graphData;
         graphData.prepare("SELECT " + strftime_d + ", min(temperature), avg(temperature), max(temperature), min(humidity), max(humidity) " \
-                          "FROM plantData " \
-                          "WHERE thermoData = :deviceAddr AND timestamp >= " + datetime_months + " " \
+                          "FROM thermoData " \
+                          "WHERE deviceAddr = :deviceAddr AND timestamp >= " + datetime_months + " " \
                           "GROUP BY " + strftime_d + " " \
                           "ORDER BY " + strftime_d + " DESC;");
         graphData.bindValue(":deviceAddr", getAddress());

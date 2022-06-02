@@ -23,7 +23,8 @@ Item {
         if (!currentDevice.hasSoilMoistureSensor) return
         //console.log("DevicePlantSensorData // loadData() >> " + currentDevice)
 
-        indicatorsLoader.source = "" // force graph reload
+        chartAioLoader.opacity = 0
+        chartAioLoader.source = "" // force graph reload
 
         loadIndicators()
         loadGraph()
@@ -33,7 +34,7 @@ Item {
     }
 
     function loadGraph() {
-        if (chartAioLoader.status != Loader.Ready) {
+        if (chartAioLoader.status !== Loader.Ready) {
             chartAioLoader.source = "ChartPlantDataAio.qml"
         } else {
             dataChart.loadGraph()
@@ -42,7 +43,7 @@ Item {
     }
 
     function loadIndicators() {
-        if (indicatorsLoader.status != Loader.Ready) {
+        if (indicatorsLoader.status !== Loader.Ready) {
             if (settingsManager.bigIndicator)
                 indicatorsLoader.source = "IndicatorsSolid.qml"
             else
@@ -58,7 +59,7 @@ Item {
         else
             indicatorsLoader.source = "IndicatorsCompact.qml"
 
-        if (indicatorsLoader.status == Loader.Ready) {
+        if (indicatorsLoader.status === Loader.Ready) {
             dataIndicators.updateLegendSize()
             dataIndicators.updateData()
         }
@@ -90,7 +91,7 @@ Item {
         textStatus.font.bold = false
 
         if (currentDevice.status === DeviceUtils.DEVICE_OFFLINE) {
-            if (currentDevice.isDataFresh() || currentDevice.isDataToday()) {
+            if (currentDevice.isDataFresh_rt() || currentDevice.isDataToday()) {
                 if (currentDevice.lastUpdateMin <= 1)
                     textStatus.text = qsTr("Synced")
                 else
@@ -108,19 +109,36 @@ Item {
     }
 
     function updateLegendSizes() {
-        if (indicatorsLoader.status == Loader.Ready) dataIndicators.updateLegendSize()
+        if (indicatorsLoader.status === Loader.Ready) dataIndicators.updateLegendSize()
     }
 
     function updateGraph() {
-        if (chartAioLoader.status == Loader.Ready) dataChart.updateGraph()
+        if (chartAioLoader.status === Loader.Ready) dataChart.updateGraph()
+    }
+
+    function backAction() {
+        if (textInputPlant.focus) {
+            textInputPlant.focus = false
+            return
+        }
+        if (textInputLocation.focus) {
+            textInputLocation.focus = false
+            return
+        }
+        if (isHistoryMode()) {
+            resetHistoryMode()
+            return
+        }
+
+        appContent.state = "DeviceList"
     }
 
     function isHistoryMode() {
-        if (chartAioLoader.status == Loader.Ready) return dataChart.isIndicator()
+        if (chartAioLoader.status === Loader.Ready) return dataChart.isIndicator()
         return false
     }
     function resetHistoryMode() {
-        if (chartAioLoader.status == Loader.Ready) dataChart.resetIndicator()
+        if (chartAioLoader.status === Loader.Ready) dataChart.resetIndicator()
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -409,14 +427,28 @@ Item {
             height: (contentGrid_lvl1.columns === 1) ? (contentGrid_lvl1.height - contentGrid_lvl1.spacing - contentGrid_lvl2.height) : contentGrid_lvl1.height
             clip: true
 
+            ItemNoData {
+                id: noDataIndicator
+                visible: (currentDevice.countDataNamed("temperature", 14) <= 1)
+            }
+            ItemLoadData {
+                id: loadingIndicator
+                visible: !isDesktop && !noDataIndicator.visible
+            }
+
             Loader {
                 id: chartAioLoader
                 anchors.fill: parent
+
+                opacity: 0
+                Behavior on opacity { OpacityAnimator { duration: 133 } }
+                //visible: (chartAioLoader.status === Loader.Ready)
 
                 asynchronous: true
                 onLoaded: {
                     dataChart.loadGraph()
                     dataChart.updateGraph()
+                    chartAioLoader.opacity = 1
                 }
             }
         }
