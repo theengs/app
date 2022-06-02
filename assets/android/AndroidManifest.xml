@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.theengs.app" android:installLocation="auto"
-          android:versionCode="001602" android:versionName="0.16">
+          android:versionCode="009002" android:versionName="0.90">
 
     <supports-screens android:anyDensity="true" android:largeScreens="true" android:normalScreens="true" android:smallScreens="true"/>
 
