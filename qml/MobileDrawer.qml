@@ -155,6 +155,45 @@ Drawer {
                 ////////
 
                 Rectangle {
+                    id: rectangleDeviceBrowser
+                    height: 48
+                    anchors.right: parent.right
+                    anchors.left: parent.left
+                    color: (appContent.state === "DeviceBrowser") ? Theme.colorForeground : Theme.colorBackground
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            screenDeviceBrowser.loadScreen()
+                            appDrawer.close()
+                        }
+                    }
+
+                    IconSvg {
+                        width: 24
+                        height: 24
+                        anchors.left: parent.left
+                        anchors.leftMargin: screenPaddingLeft + 16
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        source: "qrc:/assets/icons_material/baseline-radar-24px.svg"
+                        color: Theme.colorText
+                    }
+                    Label {
+                        anchors.left: parent.left
+                        anchors.leftMargin: screenPaddingLeft + 56
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        text: qsTr("Device browser")
+                        font.pixelSize: 13
+                        font.bold: true
+                        color: Theme.colorText
+                    }
+                }
+
+                ////////
+
+                Rectangle {
                     id: rectangleMqtt
                     height: 48
                     anchors.left: parent.left
@@ -515,48 +554,5 @@ Drawer {
         }
 
         ////////////////////////////////////////////////////////////////////////
-
-        Column {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-
-            Rectangle {
-                id: rectangleDeviceBrowser
-                height: 48
-                anchors.right: parent.right
-                anchors.left: parent.left
-                color: (appContent.state === "DeviceBrowser") ? Theme.colorForeground : Theme.colorBackground
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        screenDeviceBrowser.loadScreen()
-                        appDrawer.close()
-                    }
-                }
-
-                IconSvg {
-                    width: 24
-                    height: 24
-                    anchors.left: parent.left
-                    anchors.leftMargin: screenPaddingLeft + 16
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    source: "qrc:/assets/icons_material/baseline-radar-24px.svg"
-                    color: Theme.colorText
-                }
-                Label {
-                    anchors.left: parent.left
-                    anchors.leftMargin: screenPaddingLeft + 56
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: qsTr("Device browser")
-                    font.pixelSize: 13
-                    font.bold: true
-                    color: Theme.colorText
-                }
-            }
-        }
     }
 }

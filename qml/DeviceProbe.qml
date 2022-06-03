@@ -38,8 +38,8 @@ Loader {
     asynchronous: false
     sourceComponent: Item {
         id: itemDeviceProbe
-        width: 480
-        height: 720
+        implicitWidth: 480
+        implicitHeight: 720
 
         focus: parent.focus
 
@@ -200,11 +200,18 @@ Loader {
             Rectangle {
                 id: probeBox
 
-                property int dimboxw: (deviceProbe.width * 0.4)
-                property int dimboxh: (deviceProbe.height * (columnTPMS.visible ? 0.5 : 0.333))
+                property int dimboxw: Math.min(deviceProbe.width * 0.4, isPhone ? 320 : 600)
+                property int dimboxh: Math.max(deviceProbe.height * (columnTPMS.visible ? 0.5 : 0.333), isPhone ? 200 : 256)
 
-                width: singleColumn ? parent.width : dimboxw
-                height: singleColumn ? dimboxh : parent.height
+                width: {
+                    if (isTablet && screenOrientation == Qt.PortraitOrientation) return parent.width
+                    return singleColumn ? parent.width : dimboxw
+                }
+                height: {
+                    if (isTablet && screenOrientation == Qt.PortraitOrientation) return dimboxh
+                    return singleColumn ? dimboxh : parent.height
+                }
+
                 color: Theme.colorHeader
                 z: 5
 
@@ -1100,8 +1107,14 @@ Loader {
             ////////////////
 
             Item {
-                width: singleColumn ? parent.width : (parent.width - probeBox.width)
-                height: singleColumn ? (parent.height - probeBox.height) : parent.height
+                width: {
+                    if (isTablet && screenOrientation == Qt.PortraitOrientation) return parent.width
+                    return singleColumn ? parent.width : (parent.width - probeBox.width)
+                }
+                height: {
+                    if (isTablet && screenOrientation == Qt.PortraitOrientation) return (parent.height - probeBox.height)
+                    return singleColumn ? (parent.height - probeBox.height) : parent.height
+                }
 
                 Loader {
                     id: graphLoader

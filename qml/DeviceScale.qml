@@ -38,8 +38,8 @@ Loader {
     asynchronous: false
     sourceComponent: Item {
         id: itemDeviceScale
-        width: 480
-        height: 720
+        implicitWidth: 480
+        implicitHeight: 720
 
         focus: parent.focus
 
@@ -199,11 +199,18 @@ Loader {
             Rectangle {
                 id: scaleBox
 
-                property int dimboxw: Math.min(deviceScale.width * 0.4, isPhone ? 320 : 600)
+                property int dimboxw: Math.min(deviceScale.width * 0.4, isPhone ? 300 : 600)
                 property int dimboxh: Math.max(deviceScale.height * 0.333, isPhone ? 180 : 256)
 
-                width: singleColumn ? parent.width : dimboxw
-                height: singleColumn ? dimboxh : parent.height
+                width: {
+                    if (isTablet && screenOrientation == Qt.PortraitOrientation) return parent.width
+                    return singleColumn ? parent.width : dimboxw
+                }
+                height: {
+                    if (isTablet && screenOrientation == Qt.PortraitOrientation) return dimboxh
+                    return singleColumn ? dimboxh : parent.height
+                }
+
                 color: Theme.colorHeader
                 z: 5
 
@@ -482,8 +489,14 @@ Loader {
             ////////////////
 
             Item {
-                width: singleColumn ? parent.width : (parent.width - scaleBox.width)
-                height: singleColumn ? (parent.height - scaleBox.height) : parent.height
+                width: {
+                    if (isTablet && screenOrientation == Qt.PortraitOrientation) return parent.width
+                    return singleColumn ? parent.width : (parent.width - scaleBox.width)
+                }
+                height: {
+                    if (isTablet && screenOrientation == Qt.PortraitOrientation) return (parent.height - scaleBox.height)
+                    return singleColumn ? (parent.height - scaleBox.height) : parent.height
+                }
 
                 Loader {
                     id: graphLoader

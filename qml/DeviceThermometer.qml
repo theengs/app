@@ -38,8 +38,8 @@ Loader {
     asynchronous: false
     sourceComponent: Item {
         id: itemDeviceThermometer
-        width: 480
-        height: 720
+        implicitWidth: 480
+        implicitHeight: 720
 
         focus: parent.focus
 
@@ -245,11 +245,18 @@ Loader {
             Rectangle {
                 id: tempBox
 
-                property int dimboxw: Math.min(deviceThermometer.width * 0.4, isPhone ? 320 : 600)
+                property int dimboxw: Math.min(deviceThermometer.width * 0.4, isPhone ? 300 : 600)
                 property int dimboxh: Math.max(deviceThermometer.height * 0.333, isPhone ? 180 : 256)
 
-                width: singleColumn ? parent.width : dimboxw
-                height: singleColumn ? dimboxh : parent.height
+                width: {
+                    if (isTablet && screenOrientation == Qt.PortraitOrientation) return parent.width
+                    return singleColumn ? parent.width : dimboxw
+                }
+                height: {
+                    if (isTablet && screenOrientation == Qt.PortraitOrientation) return dimboxh
+                    return singleColumn ? dimboxh : parent.height
+                }
+
                 color: Theme.colorHeader
                 z: 5
 
@@ -440,8 +447,14 @@ Loader {
             ////////////////
 
             Item {
-                width: singleColumn ? parent.width : (parent.width - tempBox.width)
-                height: singleColumn ? (parent.height - tempBox.height) : parent.height
+                width: {
+                    if (isTablet && screenOrientation == Qt.PortraitOrientation) return parent.width
+                    return singleColumn ? parent.width : (parent.width - tempBox.width)
+                }
+                height: {
+                    if (isTablet && screenOrientation == Qt.PortraitOrientation) return (parent.height - tempBox.height)
+                    return singleColumn ? (parent.height - tempBox.height) : parent.height
+                }
 
                 ItemBannerSync {
                     id: bannersync

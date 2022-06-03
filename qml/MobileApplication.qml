@@ -364,7 +364,7 @@ ApplicationWindow {
         }
         DevicePlantSensor {
             anchors.fill: parent
-            anchors.bottomMargin: mobileMenu.height
+            anchors.bottomMargin: mobileMenu.hhv
             id: screenDevicePlantSensor
         }
         DeviceThermometer {
