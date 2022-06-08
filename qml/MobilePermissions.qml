@@ -354,7 +354,7 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 12
 
-                text: qsTr("Background location is needed if you want to get infos from sensors in the background.")
+                text: qsTr("Similarly, background location permission is needed if you want to automatically get data from the sensors, while the application is not explicitly opened.")
                 textFormat: Text.StyledText
                 wrapMode: Text.WordWrap
                 color: Theme.colorSubText
@@ -490,8 +490,8 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 12
 
-                text: qsTr("If it has no effect, you may have previously refused a permission and clicked on \"don't ask again\".<br>" +
-                            "You can go to the Android \"application info\" panel to change a permission manually.")
+                text: qsTr("If it has no effect, you may have previously refused a permission and clicked on \"don't ask again\".") + "<br>" +
+                      qsTr("You can go to the Android \"application info\" panel to change a permission manually.")
                 textFormat: Text.StyledText
                 wrapMode: Text.WordWrap
                 color: Theme.colorSubText
@@ -510,7 +510,7 @@ Item {
                 source: "qrc:/assets/icons_material/duotone-tune-24px.svg"
                 sourceSize: 20
 
-                onClicked: utilsApp.openAndroidAppInfo("com.emeric.watchflower")
+                onClicked: utilsApp.openAndroidAppInfo("com.theengs.app")
             }
 
             ////////

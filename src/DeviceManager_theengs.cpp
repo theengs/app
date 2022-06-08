@@ -610,6 +610,7 @@ void DeviceManager::fakeTheengsData()
     }
 
     //qDebug() << "DeviceManager::fakeTheengsData(" << info.name() << ")";
+    info.setCoreConfigurations(QBluetoothDeviceInfo::LowEnergyCoreConfiguration);
     updateBleDevice(info, QBluetoothDeviceInfo::Field::None);
 }
 

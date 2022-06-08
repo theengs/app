@@ -12,6 +12,17 @@ Item {
 
     ////////////////////////////////////////////////////////////////////////////
 
+    PopupBackgroundData {
+        id: popupBackgroundData
+
+        onConfirmed: {
+            utilsApp.getMobileBackgroundLocationPermission()
+            settingsManager.systray = true
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+
     Flickable {
         anchors.fill: parent
 
@@ -193,7 +204,7 @@ Item {
                 }
             }
 
-            ////////
+            ////////////////
 
             Item {
                 id: element_appThemeAuto
@@ -271,112 +282,6 @@ Item {
                 visible: isDesktop
             }
 
-            ////////
-/*
-            Rectangle {
-                height: 1
-                anchors.left: parent.left
-                anchors.right: parent.right
-                color: Theme.colorSeparator
-            }
-
-            ////////
-
-            Item {
-                id: element_language
-                height: 48
-                anchors.left: parent.left
-                anchors.leftMargin: screenPaddingLeft
-                anchors.right: parent.right
-                anchors.rightMargin: screenPaddingRight
-
-                IconSvg {
-                    id: image_language
-                    width: 24
-                    height: 24
-                    anchors.left: parent.left
-                    anchors.leftMargin: 16
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    color: Theme.colorIcon
-                    source: "qrc:/assets/icons_material/duotone-translate-24px.svg"
-                }
-
-                Text {
-                    id: text_language
-                    height: 40
-                    anchors.left: image_language.right
-                    anchors.leftMargin: 24
-                    anchors.right: combobox_language.left
-                    anchors.rightMargin: 16
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: qsTr("Language")
-                    textFormat: Text.PlainText
-                    font.pixelSize: Theme.fontSizeContent
-                    color: Theme.colorText
-                    wrapMode: Text.WordWrap
-                    verticalAlignment: Text.AlignVCenter
-                }
-
-                ComboBoxThemed {
-                    id: combobox_language
-                    width: wideMode ? 256 : 160
-                    height: 36
-                    anchors.right: parent.right
-                    anchors.rightMargin: 12
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    z: 1
-                    enabled: false
-                    wheelEnabled: false
-
-                    model: ListModel {
-                        id: cbAppLanguage
-                        ListElement {
-                            text: qsTr("auto", "short for automatic");
-                        }
-                        ListElement { text: "Chinese (traditional)"; }
-                        ListElement { text: "Chinese (simplified)"; }
-                        ListElement { text: "Dansk"; }
-                        ListElement { text: "Deutsch"; }
-                        ListElement { text: "English"; }
-                        ListElement { text: "Español"; }
-                        ListElement { text: "Français"; }
-                        ListElement { text: "Frysk"; }
-                        ListElement { text: "Nederlands"; }
-                        ListElement { text: "Norsk (Bokmål)"; }
-                        ListElement { text: "Norsk (Nynorsk)"; }
-                        ListElement { text: "Pусский"; }
-                    }
-
-                    Component.onCompleted: {
-                        for (var i = 0; i < cbAppLanguage.count; i++) {
-                            if (cbAppLanguage.get(i).text === settingsManager.appLanguage)
-                                currentIndex = i
-                        }
-                    }
-                    property bool cbinit: false
-                    onCurrentIndexChanged: {
-                        if (cbinit) {
-                            utilsLanguage.loadLanguage(cbAppLanguage.get(currentIndex).text)
-                            settingsManager.appLanguage = cbAppLanguage.get(currentIndex).text
-                        } else {
-                            cbinit = true
-                        }
-                    }
-                }
-            }
-
-            ////////
-
-            Rectangle {
-                height: 1
-                anchors.left: parent.left
-                anchors.right: parent.right
-                color: Theme.colorSeparator
-            }
-*/
             ////////////////
 
             Rectangle {
@@ -385,7 +290,7 @@ Item {
                 anchors.right: parent.right
                 color: Theme.colorForeground
 
-                visible: (element_bluetoothControl.visible) // || element_bluetoothSimUpdate.visible)
+                visible: (element_bluetoothControl.visible)
 
                 IconSvg {
                     id: image_ble
@@ -485,121 +390,7 @@ Item {
                 color: Theme.colorSubText
                 font.pixelSize: Theme.fontSizeContentSmall
             }
-/*
-            Rectangle {
-                height: 1
-                anchors.left: parent.left
-                anchors.right: parent.right
-                color: Theme.colorSeparator
 
-                // Android only
-                visible: (Qt.platform.os === "android")
-            }
-
-            ////////
-
-            Item {
-                id: element_bluetoothSimUpdate
-                height: 48
-                anchors.left: parent.left
-                anchors.leftMargin: screenPaddingLeft
-                anchors.right: parent.right
-                anchors.rightMargin: screenPaddingRight
-
-                IconSvg {
-                    id: image_bluetoothSimUpdate
-                    width: 24
-                    height: 24
-                    anchors.left: parent.left
-                    anchors.leftMargin: 16
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    color: Theme.colorIcon
-                    source: "qrc:/assets/icons_material/duotone-settings_bluetooth-24px.svg"
-                }
-
-                Text {
-                    id: text_bluetoothSimUpdate
-                    height: 40
-                    anchors.left: image_bluetoothSimUpdate.right
-                    anchors.leftMargin: 24
-                    anchors.right: isDesktop ? undefined : spinBox_bluetoothSimUpdate.left
-                    anchors.rightMargin: 16
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: qsTr("Simultaneous updates")
-                    textFormat: Text.PlainText
-                    wrapMode: Text.WordWrap
-                    color: Theme.colorText
-                    font.pixelSize: Theme.fontSizeContent
-                    verticalAlignment: Text.AlignVCenter
-                }
-
-                SliderValueSolid {
-                    id: slider_bluetoothSimUpdate
-                    anchors.left: text_bluetoothSimUpdate.right
-                    anchors.leftMargin: 16
-                    anchors.right: parent.right
-                    anchors.rightMargin: 12
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    visible: isDesktop
-                    z: 1
-
-                    from: 1
-                    to: 6
-                    stepSize: 1
-                    wheelEnabled: false
-
-                    value: settingsManager.bluetoothSimUpdates
-                    onMoved: settingsManager.bluetoothSimUpdates = value
-                }
-                SpinBoxThemed {
-                    id: spinBox_bluetoothSimUpdate
-                    width: 128
-                    height: 36
-                    anchors.right: parent.right
-                    anchors.rightMargin: 12
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    visible: isMobile
-                    z: 1
-
-                    from: 1
-                    to: 6
-                    stepSize: 1
-                    editable: false
-
-                    value: settingsManager.bluetoothSimUpdates
-                    onValueModified: settingsManager.bluetoothSimUpdates = value
-                }
-            }
-            Text {
-                id: legend_bluetoothSimUpdate
-                anchors.left: parent.left
-                anchors.leftMargin: screenPaddingLeft + 64
-                anchors.right: parent.right
-                anchors.rightMargin: 12
-                topPadding: -12
-                bottomPadding: 12
-
-                visible: element_bluetoothSimUpdate.visible
-
-                text: qsTr("How many sensors should be updated at once. A lower number improves Bluetooth synchronization reliability, at the expense of speed.")
-                textFormat: Text.PlainText
-                wrapMode: Text.WordWrap
-                color: Theme.colorSubText
-                font.pixelSize: Theme.fontSizeContentSmall
-            }
-
-            Rectangle {
-                height: 1
-                anchors.left: parent.left
-                anchors.right: parent.right
-                color: Theme.colorSeparator
-                visible: (Qt.platform.os !== "ios")
-            }
-*/            
             ////////////////
 
             Rectangle {
@@ -705,13 +496,14 @@ Item {
 
                     checked: settingsManager.systray
                     onClicked: {
-                        settingsManager.systray = checked
-
                         if (isMobile) {
-                            if (settingsManager.systray) {
+                            if (checked) {
                                 popupBackgroundData.open()
-                                utilsApp.getMobileBackgroundLocationPermission()
+                            } else {
+                                settingsManager.systray = checked
                             }
+                        } else {
+                            settingsManager.systray = checked
                         }
                     }
                 }

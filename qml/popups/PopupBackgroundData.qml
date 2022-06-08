@@ -6,7 +6,7 @@ import ThemeEngine 1.0
 Popup {
     id: popupBackgroundData
     x: (appWindow.width / 2) - (width / 2)
-    y: singleColumn ? (appWindow.height - height) : ((appWindow.height / 2) - (height / 2) /*- (appHeader.height)*/)
+    y: singleColumn ? (appWindow.height - height - appHeader.height) : ((appWindow.height / 2) - (height / 2))
 
     width: singleColumn ? parent.width : 640
     height: columnContent.height + padding*2
@@ -59,8 +59,8 @@ Popup {
                 Text {
                     width: parent.width
 
-                    text: qsTr("Android will prevent this application from running in the background.<br>
-                                Some settings needs to be switched <b>manually</b> from the <b>application info panel</b>:")
+                    text: qsTr("Android will do its best to prevent this application from running in the background.") + "<br>" +
+                          qsTr("Some settings needs to be switched <b>manually</b> from the <b>application info panel</b>:")
                     textFormat: Text.StyledText
                     font.pixelSize: Theme.fontSizeContent
                     color: Theme.colorSubText
@@ -114,7 +114,9 @@ Popup {
                     source: "qrc:/assets/icons_material/duotone-tune-24px.svg"
                     sourceSize: 20
 
-                    onClicked: utilsApp.openAndroidAppInfo("com.emeric.watchflower")
+                    onClicked: {
+                        utilsApp.openAndroidAppInfo("com.theengs.app")
+                    }
                 }
 
                 ButtonWireframeIconCentered {
