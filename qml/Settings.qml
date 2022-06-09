@@ -12,12 +12,12 @@ Item {
 
     ////////////////////////////////////////////////////////////////////////////
 
-    PopupBackgroundData {
-        id: popupBackgroundData
+    PopupBackgroundUpdates {
+        id: popupBackgroundUpdates
 
-        onConfirmed: {
-            utilsApp.getMobileBackgroundLocationPermission()
-            settingsManager.systray = true
+        onClosed: {
+            settingsManager.systray = utilsApp.checkMobileBackgroundLocationPermission()
+            switch_worker.checked = settingsManager.systray
         }
     }
 
@@ -381,7 +381,7 @@ Item {
                 anchors.rightMargin: 12
 
                 topPadding: -12
-                bottomPadding: 0
+                bottomPadding: 12
                 visible: element_bluetoothControl.visible
 
                 text: qsTr("Theengs can activate your device's Bluetooth in order to operate.")
@@ -441,7 +441,7 @@ Item {
                     primaryColor: Theme.colorRed
                     borderColor: Theme.colorRed
 
-                    onClicked: popupBackgroundData.open()
+                    onClicked: popupBackgroundUpdates.open()
                 }
             }
 
@@ -498,9 +498,10 @@ Item {
                     onClicked: {
                         if (isMobile) {
                             if (checked) {
-                                popupBackgroundData.open()
+                                checked = false
+                                popupBackgroundUpdates.open()
                             } else {
-                                settingsManager.systray = checked
+                                settingsManager.systray = false
                             }
                         } else {
                             settingsManager.systray = checked
