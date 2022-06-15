@@ -104,11 +104,11 @@ parser = argparse.ArgumentParser(prog='contribs.py',
 
 parser.add_argument('-c', '--clean', help="clean everything and exit (downloaded files and all temporary directories)", action='store_true')
 parser.add_argument('-r', '--rebuild', help="rebuild the contribs even if already built", action='store_true')
+parser.add_argument('--mobile', help="enable mobile builds", action='store_true')
 parser.add_argument('--android-ndk', dest='androidndk', help="specify a custom path to the android-ndk (if ANDROID_NDK_HOME environment variable doesn't exists)")
-parser.add_argument('--qt-directory', dest='qtdirectory', help="specify a custom path to the qt install root dir (if QT_DIRECTORY environment variable doesn't exists)")
+parser.add_argument('--qt-directory', dest='qtdirectory', help="specify a custom path to the Qt install root dir (if QT_DIRECTORY environment variable doesn't exists)")
 parser.add_argument('--qt-version', dest='qtversion', help="specify a Qt version to use")
 parser.add_argument('--msvc', dest='msvcversion', help="specify a version for Visual Studio (2015/2017/2019)")
-parser.add_argument('--mobile', help="enable mobile builds", action='store_true')
 
 if len(sys.argv) > 1:
     result = parser.parse_args()
@@ -116,6 +116,8 @@ if len(sys.argv) > 1:
         clean = result.clean
     if result.rebuild:
         rebuild = result.rebuild
+    if result.mobile:
+        mobile = result.mobile
     if result.androidndk:
         ANDROID_NDK_HOME = result.androidndk
     if result.qtdirectory:
@@ -131,8 +133,6 @@ if len(sys.argv) > 1:
             MSVC_GEN_VER = "Visual Studio 16 2019"
         elif result.msvcversion == 2022:
             MSVC_GEN_VER = "Visual Studio 17 2022"
-    if result.mobile:
-        mobile = result.mobile
 
 ## CLEAN #######################################################################
 

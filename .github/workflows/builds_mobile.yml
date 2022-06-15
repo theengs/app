@@ -83,7 +83,7 @@ jobs:
       - name: Build dependencies (from contribs script)
         run: |
              cd contribs
-             python3 contribs.py --mobile --qt-directory ${{env.Qt6_DIR}}/../../
+             python3 contribs.py --mobile --qt-directory ${{env.Qt6_DIR}}/../..
              cd ..
 
       # Build application
@@ -131,7 +131,6 @@ jobs:
       - name: Setup env
         run: |
              brew install cmake ninja automake autoconf libtool pkg-config
-             ln -s /Users/runner/work/${{env.APPLICATION}}/Qt/6.3.1/macos /Users/runner/work/${{env.APPLICATION}}/Qt/6.3.1/clang_64
              export PATH=$Qt6_DIR/bin:$PATH
              qmake --version
 
@@ -139,7 +138,7 @@ jobs:
       - name: Build dependencies (from contribs script)
         run: |
              cd contribs
-             python3 contribs.py --mobile --qt-directory ${{env.Qt6_DIR}}/../../
+             python3 contribs.py --mobile --qt-directory ${{env.Qt6_DIR}}/../..
              cd ..
 
       # Build application
