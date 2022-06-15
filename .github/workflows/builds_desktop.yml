@@ -50,7 +50,7 @@ jobs:
       - name: Build dependencies (from contribs script)
         run: |
              cd contribs
-             python3 contribs.py --qt-directory ${{env.Qt6_DIR}}/../../
+             python3 contribs.py --qt-directory ${{env.Qt6_DIR}}/../.. --targets=linux
              cd ..
 
       # Build application
@@ -101,7 +101,7 @@ jobs:
         run: |
              brew install ninja automake autoconf libtool pkg-config
              cd contribs
-             python3 contribs.py --qt-directory ${{env.Qt6_DIR}}/../../
+             python3 contribs.py --qt-directory ${{env.Qt6_DIR}}/../.. --targets=macos
              cd ..
 
       # Build application
@@ -160,7 +160,7 @@ jobs:
       - name: Build dependencies (from contribs script)
         run: |
              cd contribs
-             python3 contribs.py --qt-directory ${{env.Qt6_DIR}}/../../
+             python3 contribs.py --qt-directory ${{env.Qt6_DIR}}/../.. --targets=msvc2019
              cd ..
 
       # Build application

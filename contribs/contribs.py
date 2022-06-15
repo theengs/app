@@ -182,9 +182,9 @@ if len(targetlist):
     if "ios_simulator" in targetlist : TARGETS.append(["iOS", "simulator", "iOS"])
     if "ios_armv7" in targetlist : TARGETS.append(["iOS", "armv7", "iOS"])
     if "ios_armv8" in targetlist : TARGETS.append(["iOS", "armv77", "iOS"])
-    if "mscv2017" in targetlist : TARGETS.append(["windows", "x86_64", "msvc2017_64"])
-    if "mscv2019" in targetlist : TARGETS.append(["windows", "x86_64", "msvc2019_64"])
-    if "mscv2022" in targetlist : TARGETS.append(["windows", "x86_64", "msvc2022_64"])
+    if "msvc2017" in targetlist : TARGETS.append(["windows", "x86_64", "msvc2017_64"])
+    if "msvc2019" in targetlist : TARGETS.append(["windows", "x86_64", "msvc2019_64"])
+    if "msvc2022" in targetlist : TARGETS.append(["windows", "x86_64", "msvc2022_64"])
 
 # auto-selection
 if len(TARGETS) == 0:
