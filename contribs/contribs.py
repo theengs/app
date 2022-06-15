@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import re
 import os
 import sys
 import platform
@@ -37,16 +38,17 @@ if sys.version_info < (3, 0):
 ## HOST ########################################################################
 
 # Supported platforms / architectures:
+
 # Natives:
 # - Linux
 # - Darwin (macOS)
 # - Windows
 # Cross compilation (from Linux):
 # - Windows (mingw32-w64)
-# Cross compilation (from macOS):
-# - iOS (simulator, armv7, armv8)
 # Cross compilation (from Linux or macOS):
 # - Android (armv7, armv8, x86, x86_64)
+# Cross compilation (from macOS):
+# - iOS (simulator, armv7, armv8)
 
 OS_HOST = platform.system()
 ARCH_HOST = platform.machine()
@@ -79,15 +81,13 @@ deploy_dir = contribs_dir + "/deploy/"
 
 clean = False
 rebuild = False
-ANDROID_NDK_HOME = os.getenv('ANDROID_NDK_HOME', '')
-QT_DIRECTORY = os.getenv('QT_DIRECTORY', '')
+targetlist = []
 QT_VERSION = "6.3.1"
-mobile = False
+QT_DIRECTORY = os.getenv('QT_DIRECTORY', '')
+ANDROID_NDK_HOME = os.getenv('ANDROID_NDK_HOME', '')
 
 # MSVC_GEN_VER
-if "14.0" in os.getenv('VisualStudioVersion', ''):
-    MSVC_GEN_VER = "Visual Studio 14 2015"
-elif "15.0" in os.getenv('VisualStudioVersion', ''):
+if "15.0" in os.getenv('VisualStudioVersion', ''):
     MSVC_GEN_VER = "Visual Studio 15 2017"
 elif "16.0" in os.getenv('VisualStudioVersion', ''):
     MSVC_GEN_VER = "Visual Studio 16 2019"
@@ -104,11 +104,10 @@ parser = argparse.ArgumentParser(prog='contribs.py',
 
 parser.add_argument('-c', '--clean', help="clean everything and exit (downloaded files and all temporary directories)", action='store_true')
 parser.add_argument('-r', '--rebuild', help="rebuild the contribs even if already built", action='store_true')
-parser.add_argument('--mobile', help="enable mobile builds", action='store_true')
-parser.add_argument('--android-ndk', dest='androidndk', help="specify a custom path to the android-ndk (if ANDROID_NDK_HOME environment variable doesn't exists)")
-parser.add_argument('--qt-directory', dest='qtdirectory', help="specify a custom path to the Qt install root dir (if QT_DIRECTORY environment variable doesn't exists)")
+parser.add_argument('--targets', dest='targets', help="specify build target(s)")
 parser.add_argument('--qt-version', dest='qtversion', help="specify a Qt version to use")
-parser.add_argument('--msvc', dest='msvcversion', help="specify a version for Visual Studio (2015/2017/2019)")
+parser.add_argument('--qt-directory', dest='qtdirectory', help="specify a custom path to the Qt install root dir (if QT_DIRECTORY environment variable isn't set)")
+parser.add_argument('--android-ndk', dest='androidndk', help="specify a custom path to the android-ndk (if ANDROID_NDK_HOME environment variable isn't set)")
 
 if len(sys.argv) > 1:
     result = parser.parse_args()
@@ -116,23 +115,14 @@ if len(sys.argv) > 1:
         clean = result.clean
     if result.rebuild:
         rebuild = result.rebuild
-    if result.mobile:
-        mobile = result.mobile
-    if result.androidndk:
-        ANDROID_NDK_HOME = result.androidndk
-    if result.qtdirectory:
-        QT_DIRECTORY = result.qtdirectory
+    if result.targets:
+        targetlist = result.targets.split(',')
     if result.qtversion:
         QT_VERSION = result.qtversion
-    if result.msvcversion:
-        if result.msvcversion == 2015:
-            MSVC_GEN_VER = "Visual Studio 14 2015"
-        elif result.msvcversion == 2017:
-            MSVC_GEN_VER = "Visual Studio 15 2017"
-        elif result.msvcversion == 2019:
-            MSVC_GEN_VER = "Visual Studio 16 2019"
-        elif result.msvcversion == 2022:
-            MSVC_GEN_VER = "Visual Studio 17 2022"
+    if result.qtdirectory:
+        QT_DIRECTORY = result.qtdirectory
+    if result.androidndk:
+        ANDROID_NDK_HOME = result.androidndk
 
 ## CLEAN #######################################################################
 
@@ -179,31 +169,48 @@ def copytree_wildcard(src, dst, symlinks=False, ignore=None):
 
 TARGETS = [] # 1: OS_TARGET # 2: ARCH_TARGET # 3: QT_TARGET
 
-if OS_HOST == "Linux":
-    TARGETS.append(["linux", "x86_64", "gcc_64"])
-    #TARGETS.append(["windows", "x86_64"]) # Windows cross compilation
+# script arguments
+if len(targetlist):
+    print("TARGETS from script arguments")
 
-if OS_HOST == "Darwin":
-    TARGETS.append(["macOS", "x86_64", "macOS"])
-    #TARGETS.append(["macOS", "arm64", "macOS"])
-    if mobile:
+    if "linux" in targetlist : TARGETS.append(["linux", "x86_64", "gcc_64"])
+    if "macos" in targetlist : TARGETS.append(["macOS", "x86_64", "macOS"])
+    if "android_armv8" in targetlist : TARGETS.append(["android", "armv8", "android_arm64_v8a"])
+    if "android_armv7" in targetlist : TARGETS.append(["android", "armv7", "android_armv7"])
+    if "android_x86_64" in targetlist : TARGETS.append(["android", "x86_64", "android_x86_64"])
+    if "android_x86" in targetlist : TARGETS.append(["android", "x86", "android_x86"])
+    if "ios_simulator" in targetlist : TARGETS.append(["iOS", "simulator", "iOS"])
+    if "ios_armv7" in targetlist : TARGETS.append(["iOS", "armv7", "iOS"])
+    if "ios_armv8" in targetlist : TARGETS.append(["iOS", "armv77", "iOS"])
+    if "mscv2017" in targetlist : TARGETS.append(["windows", "x86_64", "msvc2017_64"])
+    if "mscv2019" in targetlist : TARGETS.append(["windows", "x86_64", "msvc2019_64"])
+    if "mscv2022" in targetlist : TARGETS.append(["windows", "x86_64", "msvc2022_64"])
+
+# auto-selection
+if len(TARGETS) == 0:
+    print("TARGETS auto-selection")
+
+    if OS_HOST == "Linux":
+        TARGETS.append(["linux", "x86_64", "gcc_64"])
+        #TARGETS.append(["windows", "x86_64", ""]) # Windows cross compilation
+
+    if OS_HOST == "Darwin":
+        TARGETS.append(["macOS", "x86_64", "macOS"])
+        #TARGETS.append(["macOS", "arm64", "macOS"])
         TARGETS.append(["iOS", "simulator", "iOS"]) # iOS cross compilation
-        TARGETS.append(["iOS", "armv8", "iOS"])
         TARGETS.append(["iOS", "armv7", "iOS"])
+        TARGETS.append(["iOS", "armv8", "iOS"])
 
-if OS_HOST == "Windows":
-    if "14.0" in os.getenv('VisualStudioVersion', ''):
-        TARGETS.append(["windows", "x86_64", "msvc2015_64"])
-    elif "15.0" in os.getenv('VisualStudioVersion', ''):
-        TARGETS.append(["windows", "x86_64", "msvc2017_64"])
-    elif "16.0" in os.getenv('VisualStudioVersion', ''):
-        TARGETS.append(["windows", "x86_64", "msvc2019_64"])
-    elif "17.0" in os.getenv('VisualStudioVersion', ''):
-        TARGETS.append(["windows", "x86_64", "msvc2019_64"])
-    else:
-        TARGETS.append(["windows", "x86_64", "msvc2019_64"])
+    if OS_HOST == "Windows":
+        if "15.0" in os.getenv('VisualStudioVersion', ''):
+            TARGETS.append(["windows", "x86_64", "msvc2017_64"])
+        elif "16.0" in os.getenv('VisualStudioVersion', ''):
+            TARGETS.append(["windows", "x86_64", "msvc2019_64"])
+        elif "17.0" in os.getenv('VisualStudioVersion', ''):
+            TARGETS.append(["windows", "x86_64", "msvc2022_64"])
+        else:
+            TARGETS.append(["windows", "x86_64", "msvc2019_64"]) # default?
 
-if mobile:
     if ANDROID_NDK_HOME: # Android cross compilation
         TARGETS.append(["android", "armv8", "android_arm64_v8a"])
         TARGETS.append(["android", "armv7", "android_armv7"])
@@ -248,7 +255,6 @@ for TARGET in TARGETS:
         if not os.path.isdir("env/" + DIR_qtconnectivity):
             zipQtConnectivity = zipfile.ZipFile(src_dir + FILE_qtconnectivity)
             zipQtConnectivity.extractall("env/")
-        break
 
 ## Android OpenSSL (version: git)
 for TARGET in TARGETS:
@@ -262,16 +268,16 @@ for TARGET in TARGETS:
         if not os.path.isdir("env/" + DIR_androidopenssl):
             zipSSL = zipfile.ZipFile(src_dir + FILE_androidopenssl)
             zipSSL.extractall("env/")
-        break
 
 ## linuxdeploy (version: git)
-if OS_HOST == "Linux":
-    FILE_linuxdeploy = "linuxdeploy-x86_64.AppImage"
-    if not os.path.exists(deploy_dir + FILE_linuxdeploy):
-        print("> Downloading " + FILE_linuxdeploy + "...")
-        urllib.request.urlretrieve("https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/" + FILE_linuxdeploy, deploy_dir + FILE_linuxdeploy)
-        urllib.request.urlretrieve("https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage", deploy_dir + "linuxdeploy-plugin-appimage-x86_64.AppImage")
-        urllib.request.urlretrieve("https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage", deploy_dir + "linuxdeploy-plugin-qt-x86_64.AppImage")
+for TARGET in TARGETS:
+    if TARGET[0] == "linux":
+        FILE_linuxdeploy = "linuxdeploy-x86_64.AppImage"
+        if not os.path.exists(deploy_dir + FILE_linuxdeploy):
+            print("> Downloading " + FILE_linuxdeploy + "...")
+            urllib.request.urlretrieve("https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/" + FILE_linuxdeploy, deploy_dir + FILE_linuxdeploy)
+            urllib.request.urlretrieve("https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage", deploy_dir + "linuxdeploy-plugin-appimage-x86_64.AppImage")
+            urllib.request.urlretrieve("https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage", deploy_dir + "linuxdeploy-plugin-qt-x86_64.AppImage")
 
 ## BUILD SOFTWARES #############################################################
 
@@ -398,7 +404,7 @@ for TARGET in TARGETS:
         #subprocess.check_call([VCVARS_cmd, "x86_amd64"], cwd="C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/")
     else:
         QT_CONF_MODULE_cmd = qt6_dir + "qt-configure-module"
-        if mobile:
+        if OS_TARGET == "android" or OS_TARGET == "iOS":
             # GitHub CI + aqt hack
             if (OS_HOST == "Linux"): os.environ["QT_HOST_PATH"] = str(QT_DIRECTORY + "/" + QT_VERSION + "/gcc_64/")
             if (OS_HOST == "Darwin"): os.environ["QT_HOST_PATH"] = str(QT_DIRECTORY + "/" + QT_VERSION + "/macOS/")

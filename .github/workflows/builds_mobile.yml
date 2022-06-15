@@ -79,7 +79,7 @@ jobs:
       - name: Build dependencies (from contribs script)
         run: |
              cd contribs
-             python3 contribs.py --mobile --qt-directory ${{env.Qt6_DIR}}/../..
+             python3 contribs.py --qt-directory ${{env.Qt6_DIR}}/../.. --targets=android_armv8
              cd ..
 
       # Build application
@@ -130,7 +130,7 @@ jobs:
       - name: Build dependencies (from contribs script)
         run: |
              cd contribs
-             python3 contribs.py --mobile --qt-directory ${{env.Qt6_DIR}}/../..
+             python3 contribs.py --qt-directory ${{env.Qt6_DIR}}/../.. --targets=ios_armv8
              cd ..
 
       # Build application
