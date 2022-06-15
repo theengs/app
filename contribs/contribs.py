@@ -22,10 +22,10 @@ if sys.version_info < (3, 0):
 # These software dependencies are needed for this script to run!
 
 ## linux:
-# python3 cmake ninja libtool
+# cmake ninja libtool python3
 
 ## macOS:
-# brew install python cmake automake ninja
+# brew install cmake automake ninja python
 # brew install libtool pkg-config
 # xcode (10+)
 
