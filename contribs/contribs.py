@@ -399,8 +399,9 @@ for TARGET in TARGETS:
     else:
         QT_CONF_MODULE_cmd = qt6_dir + "qt-configure-module"
         if mobile:
-            if (OS_HOST == "Linux"): os.environ["QT_HOST_PATH"] = QT_DIRECTORY + "/" + QT_VERSION + "/gcc_64/bin/"
-            if (OS_HOST == "Darwin"): os.environ["QT_HOST_PATH"] = + QT_DIRECTORY + "/" + QT_VERSION + "/macOS/bin/"
+            # GitHub CI + aqt hack
+            if (OS_HOST == "Linux"): os.environ["QT_HOST_PATH"] = str(QT_DIRECTORY + "/" + QT_VERSION + "/gcc_64/")
+            if (OS_HOST == "Darwin"): os.environ["QT_HOST_PATH"] = str(QT_DIRECTORY + "/" + QT_VERSION + "/macOS/")
 
     ## QtMqtt
     try: os.makedirs(build_dir + DIR_qtmqtt + "/build")
