@@ -210,7 +210,7 @@ if mobile:
         TARGETS.append(["android", "x86_64", "android_x86_64"])
         TARGETS.append(["android", "x86", "android_x86"])
 
-## SOFTWARES ###################################################################
+## DOWNLOAD SOFTWARES ##########################################################
 
 ## Theengs decoder (version: git)
 FILE_theengsdecoder = "theengsdecoder-development.zip"
@@ -273,11 +273,7 @@ if OS_HOST == "Linux":
         urllib.request.urlretrieve("https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage", deploy_dir + "linuxdeploy-plugin-appimage-x86_64.AppImage")
         urllib.request.urlretrieve("https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage", deploy_dir + "linuxdeploy-plugin-qt-x86_64.AppImage")
 
-
-################################################################################
-## EXECUTE #####################################################################
-################################################################################
-
+## BUILD SOFTWARES #############################################################
 
 for TARGET in TARGETS:
 

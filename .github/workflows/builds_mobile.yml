@@ -53,6 +53,7 @@ jobs:
           aqtversion: '==2.1.0'
           version: '6.3.1'
           modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
+          tools: tools_ninja
           cached: 'false'
 
       # Install Qt (Android)
@@ -65,12 +66,20 @@ jobs:
           target: 'android'
           arch: 'android_arm64_v8a'
           modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
+          tools: tools_ninja
           cached: 'false'
+
+      # Setup env
+      - name: Setup env
+        run: |
+             sudo apt-get install ninja-build libtool automake m4 gettext -y
+             export PATH=$Qt6_DIR/bin:$PATH
+             qmake --version
+             ninja --version
 
       # Build dependencies (from contribs script)
       - name: Build dependencies (from contribs script)
         run: |
-             sudo apt-get install ninja-build libtool automake m4 gettext -y
              cd contribs
              python3 contribs.py --mobile --qt-directory ${{env.Qt6_DIR}}/../../
              cd ..
@@ -78,8 +87,6 @@ jobs:
       # Build application
       - name: Build application
         run: |
-             export PATH=$Qt6_DIR/bin:$PATH
-             qmake --version
              qmake ${{env.QMAKE_PROJECT}} CONFIG+=release DEFINES+=QT_CONNECTIVITY_PATCHED
              make -j$(nproc)
 
@@ -101,6 +108,7 @@ jobs:
           aqtversion: '==2.1.0'
           version: '6.3.1'
           modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
+          tools: tools_ninja
           cached: 'false'
 
       # Install Qt (iOS)
@@ -112,12 +120,20 @@ jobs:
           host: 'mac'
           target: 'ios'
           modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
+          tools: tools_ninja
           cached: 'false'
+
+      # Setup env
+      - name: Build dependencies (from contribs script)
+        run: |
+             brew install ninja automake autoconf libtool pkg-config
+             ln -s /Users/runner/work/${{env.APPLICATION}}/Qt/6.3.1/macos /Users/runner/work/${{env.APPLICATION}}/Qt/6.3.1/clang_64
+             export PATH=$Qt6_DIR/bin:$PATH
+             qmake --version
 
       # Build dependencies (from contribs script)
       - name: Build dependencies (from contribs script)
         run: |
-             brew install ninja automake autoconf libtool pkg-config
              cd contribs
              python3 contribs.py --mobile --qt-directory ${{env.Qt6_DIR}}/../../
              cd ..
@@ -125,8 +141,5 @@ jobs:
       # Build application
       - name: Build application
         run: |
-             export PATH=$Qt6_DIR/bin:$PATH
-             ln -s /Users/runner/work/${{env.APPLICATION}}/Qt/6.3.0/macos /Users/runner/work/${{env.APPLICATION}}/Qt/6.3.0/clang_64
-             qmake --version
              qmake ${{env.QMAKE_PROJECT}} CONFIG+=release
              make -j$(nproc)
