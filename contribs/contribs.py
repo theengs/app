@@ -398,6 +398,9 @@ for TARGET in TARGETS:
         #subprocess.check_call([VCVARS_cmd, "x86_amd64"], cwd="C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/")
     else:
         QT_CONF_MODULE_cmd = qt6_dir + "qt-configure-module"
+        if mobile:
+            if (OS_HOST == "Linux"): os.environ["QT_HOST_PATH"] = QT_DIRECTORY + "/" + QT_VERSION + "/gcc_64/bin/"
+            if (OS_HOST == "Darwin"): os.environ["QT_HOST_PATH"] = + QT_DIRECTORY + "/" + QT_VERSION + "/macOS/bin/"
 
     ## QtMqtt
     try: os.makedirs(build_dir + DIR_qtmqtt + "/build")

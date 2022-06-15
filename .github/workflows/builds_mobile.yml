@@ -67,10 +67,6 @@ jobs:
           modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
           cached: 'false'
 
-      # Install Ninja
-      - name: Install Ninja
-        uses: ashutoshvarma/setup-ninja@master
-
       # Setup env
       - name: Setup env
         run: |
@@ -122,10 +118,6 @@ jobs:
           target: 'ios'
           modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
           cached: 'false'
-
-      # Install Ninja
-      - name: Install Ninja
-        uses: ashutoshvarma/setup-ninja@master
 
       # Setup env
       - name: Setup env
