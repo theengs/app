@@ -305,17 +305,17 @@ bool DeviceTheengs::isValid() const
 {
     if (m_deviceModel.isEmpty())
     {
-        qDebug() << "DeviceTheengs::isValid()" << "m_deviceModel.isEmpty()";
+        qWarning() << "DeviceTheengs::isValid(false)" << "m_deviceModel.isEmpty()";
         return false;
     }
     if (m_deviceType == 0)
     {
-        qDebug() << "DeviceTheengs::isValid()" << "m_deviceType == 0";
+        qWarning() << "DeviceTheengs::isValid(false)" << "m_deviceType == 0";
         return false;
     }
     if (m_deviceSensors == 0 && m_deviceSensorsTheengs == 0)
     {
-        qDebug() << "DeviceTheengs::isValid()" << "m_deviceSensors == 0 && m_deviceSensorsTheengs == 0";
+        qWarning() << "DeviceTheengs::isValid(false)" << "m_deviceSensors == 0 && m_deviceSensorsTheengs == 0";
         return false;
     }
 

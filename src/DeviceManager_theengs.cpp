@@ -17,9 +17,7 @@
 */
 
 #include "DeviceManager.h"
-#include "MqttManager.h"
 
-#include "utils/utils_app.h"
 #include "utils/utils_bits.h"
 
 #include <decoder.h> // Theengs decoder
@@ -128,7 +126,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
             device_modelid_theengs = QString::fromStdString(doc["model_id"]);
             device_props = QString::fromUtf8(dec.getTheengProperties(device_modelid_theengs.toLocal8Bit()));
 
-            qDebug() << "addDevice() FOUND [mfd] :" << device_modelid_theengs << device_props;
+            qDebug() << "addDevice() FOUND [mfd] :" << device_model_theengs << device_modelid_theengs << device_props;
             break;
         }
     }
@@ -153,7 +151,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
             device_modelid_theengs = QString::fromStdString(doc["model_id"]);
             device_props = QString::fromUtf8(dec.getTheengProperties(device_modelid_theengs.toLocal8Bit()));
 
-            qDebug() << "addDevice() FOUND [svd] :" << device_modelid_theengs << device_props;
+            qDebug() << "addDevice() FOUND [svd] :" << device_model_theengs << device_modelid_theengs << device_props;
             break;
         }
     }

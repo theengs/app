@@ -246,12 +246,12 @@ if not os.path.exists(src_dir + FILE_qtmqtt):
 ## Android QtConnectivity (version: custom)
 for TARGET in TARGETS:
     if TARGET[0] == "android":
-        FILE_qtconnectivity = "qtconnectivity-blescanfiltering_v1_631.zip"
-        DIR_qtconnectivity = "qtconnectivity-blescanfiltering_v1_631"
+        FILE_qtconnectivity = "qtconnectivity-blescanfiltering_v1_" + QT_VERSION.replace('.','') + ".zip"
+        DIR_qtconnectivity = "qtconnectivity-blescanfiltering_v1_" + QT_VERSION.replace('.','')
 
         if not os.path.exists(src_dir + FILE_qtconnectivity):
             print("> Downloading " + FILE_qtconnectivity + "...")
-            urllib.request.urlretrieve("https://github.com/emericg/qtconnectivity/archive/refs/heads/blescanfiltering_v1_631.zip", src_dir + FILE_qtconnectivity)
+            urllib.request.urlretrieve("https://github.com/emericg/qtconnectivity/archive/refs/heads/blescanfiltering_v1_" + QT_VERSION.replace('.','') + ".zip", src_dir + FILE_qtconnectivity)
         if not os.path.isdir("env/" + DIR_qtconnectivity):
             zipQtConnectivity = zipfile.ZipFile(src_dir + FILE_qtconnectivity)
             zipQtConnectivity.extractall("env/")

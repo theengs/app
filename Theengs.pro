@@ -27,9 +27,9 @@ include(src/thirdparty/SingleApplication/singleapplication.pri)
 DEFINES += QAPPLICATION_CLASS=QApplication
 
 # Theengs submodule
-INCLUDEPATH     += $${PWD}/src/thirdparty/TheengsDecoder/src/arduino_json/src/
+SOURCES         += $${PWD}/src/thirdparty/TheengsDecoder/src/decoder.cpp
 INCLUDEPATH     += $${PWD}/src/thirdparty/TheengsDecoder/src/
-SOURCES += $${PWD}/src/thirdparty/TheengsDecoder/src/decoder.cpp
+INCLUDEPATH     += $${PWD}/src/thirdparty/TheengsDecoder/src/arduino_json/src/
 
 # Project files ################################################################
 

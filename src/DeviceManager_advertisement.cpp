@@ -19,7 +19,6 @@
 #include "DeviceManager.h"
 #include "MqttManager.h"
 
-#include "utils/utils_app.h"
 #include "utils/utils_bits.h"
 
 #include <decoder.h> // Theengs decoder
