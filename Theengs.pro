@@ -267,8 +267,7 @@ macx {
     QMAKE_BUNDLE = app
 
     # OS
-    QMAKE_ASSET_CATALOGS_APP_ICON = "AppIcon"
-    QMAKE_ASSET_CATALOGS = $${PWD}/assets/macos/Images.xcassets
+    ICON = $${PWD}/assets/macos/theengs.icns
 
     # OS infos
     QMAKE_INFO_PLIST = $${PWD}/assets/macos/Info.plist
