@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName("Theengs");
     app.setOrganizationDomain("Theengs");
 
-#if !defined(Q_OS_ANDROID) && !defined(Q_OS_IOS)
+#if !defined(Q_OS_ANDROID) && !defined(Q_OS_IOS) && !defined(Q_OS_MACOS)
     // Application icon
     QIcon appIcon(":/assets/logos/logo.png");
     app.setWindowIcon(appIcon);
