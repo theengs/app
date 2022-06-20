@@ -148,6 +148,8 @@ ApplicationWindow {
         id: appDrawer
         width: (appWindow.screenOrientation === Qt.PortraitOrientation || appWindow.width < 480) ? 0.8 * appWindow.width : 0.5 * appWindow.width
         height: appWindow.height
+
+        interactive: (appContent.state !== "Tutorial")
     }
 
     // Events handling /////////////////////////////////////////////////////////
@@ -355,58 +357,60 @@ ApplicationWindow {
         }
 
         DeviceList {
+            id: screenDeviceList
             anchors.fill: parent
             anchors.bottomMargin: mobileMenu.hhv
-            id: screenDeviceList
         }
         DevicePlantSensor {
+            id: screenDevicePlantSensor
             anchors.fill: parent
             anchors.bottomMargin: mobileMenu.hhv
-            id: screenDevicePlantSensor
         }
         DeviceThermometer {
-            anchors.fill: parent
             id: screenDeviceThermometer
+            anchors.fill: parent
         }
         DeviceEnvironmental {
-            anchors.fill: parent
             id: screenDeviceEnvironmental
+            anchors.fill: parent
         }
         DeviceProbe {
-            anchors.fill: parent
             id: screenDeviceProbe
+            anchors.fill: parent
         }
         DeviceScale {
-            anchors.fill: parent
             id: screenDeviceScale
+            anchors.fill: parent
         }
         DeviceMotionSensor {
-            anchors.fill: parent
             id: screenDeviceMotionSensor
+            anchors.fill: parent
         }
         SettingsMqtt {
+            id: screenSettingsMqtt
             anchors.fill: parent
             anchors.bottomMargin: mobileMenu.hhv
-            id: screenSettingsMqtt
         }
         Settings {
+            id: screenSettings
             anchors.fill: parent
             anchors.bottomMargin: mobileMenu.hhv
-            id: screenSettings
         }
         MobilePermissions {
-            anchors.fill: parent
             id: screenPermissions
-        }
-        About {
             anchors.fill: parent
             anchors.bottomMargin: mobileMenu.hhv
+        }
+        About {
             id: screenAbout
+            anchors.fill: parent
+            anchors.bottomMargin: mobileMenu.hhv
         }
 
         DeviceBrowser {
-            anchors.fill: parent
             id: screenDeviceBrowser
+            anchors.fill: parent
+            anchors.bottomMargin: mobileMenu.hhv
         }
 
         // Initial state
@@ -421,11 +425,6 @@ ApplicationWindow {
                 appHeader.leftMenuMode = "close"
             else
                 appHeader.leftMenuMode = "back"
-
-            if (state === "Tutorial")
-                appDrawer.interactive = false
-            else
-                appDrawer.interactive = true
         }
 
         states: [

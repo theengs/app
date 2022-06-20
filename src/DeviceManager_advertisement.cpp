@@ -75,7 +75,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
 
                 dd->parseAdvertisementData(info.manufacturerData(id), id);
 
-                DynamicJsonDocument doc(1024);
+                DynamicJsonDocument doc(2048);
                 doc["id"] = mac_str;
                 doc["name"] = info.name().toStdString();
                 doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + info.manufacturerData(id).toHex().toStdString();
@@ -124,7 +124,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
 
                 dd->parseAdvertisementData(info.serviceData(id), id.toUInt16());
 
-                DynamicJsonDocument doc(1024);
+                DynamicJsonDocument doc(2048);
                 doc["id"] = mac_str;
                 doc["name"] = info.name().toStdString();
                 doc["servicedata"] = info.serviceData(id).toHex().toStdString();
@@ -216,7 +216,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
             //         << "manufacturer data" << Qt::dec << info.manufacturerData(id).count() << Qt::hex
             //         << "bytes:" << info.manufacturerData(id).toHex();
 
-            DynamicJsonDocument doc(1024);
+            DynamicJsonDocument doc(2048);
             doc["id"] = mac_str;
             doc["name"] = info.name().toStdString();
             doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + info.manufacturerData(id).toHex().toStdString();
@@ -254,7 +254,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
             //         << "service data" << Qt::dec << info.serviceData(id).count() << Qt::hex
             //         << "bytes:" << info.serviceData(id).toHex();
 
-            DynamicJsonDocument doc(1024);
+            DynamicJsonDocument doc(2048);
             doc["id"] = mac_str;
             doc["name"] = info.name().toStdString();
             doc["servicedata"] = info.serviceData(id).toHex().toStdString();

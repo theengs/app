@@ -147,7 +147,7 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 12
 
-                text: qsTr("Connects to a remote MQTT broker. Setup is at your own charge.")
+                text: qsTr("Connects to a remote MQTT broker.")
                 textFormat: Text.PlainText
                 wrapMode: Text.WordWrap
                 color: Theme.colorSubText

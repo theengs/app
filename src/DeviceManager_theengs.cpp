@@ -112,7 +112,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
     {
         if (device_modelid_theengs.isEmpty() == false) break;
 
-        DynamicJsonDocument doc(1024);
+        DynamicJsonDocument doc(2048);
         doc["id"] = deviceInfo.address().toString().toStdString();
         doc["name"] = deviceInfo.name().toStdString();
         doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + deviceInfo.manufacturerData(id).toHex().toStdString();
@@ -136,7 +136,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
     {
         if (device_modelid_theengs.isEmpty() == false) break;
 
-        DynamicJsonDocument doc(1024);
+        DynamicJsonDocument doc(2048);
         doc["id"] = deviceInfo.address().toString().toStdString();
         doc["name"] = deviceInfo.name().toStdString();
         doc["servicedata"] = deviceInfo.serviceData(id).toHex().toStdString();
