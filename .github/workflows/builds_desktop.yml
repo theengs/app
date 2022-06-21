@@ -42,15 +42,14 @@ jobs:
       # Install dependencies (from package manager)
       - name: Install dependencies (from package manager)
         run: |
-             sudo apt-get install libgl1-mesa-dev -y;
-             sudo apt-get install cmake ninja-build libtool automake m4 -y;
-             sudo apt-get install appstream -y;
+             sudo apt-get install libgl1-mesa-dev libxkbcommon-x11-dev libx11-xcb-dev libzstd-dev -y;
+             sudo apt-get install cmake ninja-build pkgconf libtool appstream -y;
 
       # Build dependencies (from contribs script)
       - name: Build dependencies (from contribs script)
         run: |
-             cd contribs
-             python3 contribs.py --qt-directory ${{env.Qt6_DIR}}/../.. --targets=linux
+             cd contribs/
+             python3 contribs_builder.py --qt-directory ${{env.Qt6_DIR}}/../.. --targets=linux
              cd ..
 
       # Build application
@@ -100,8 +99,8 @@ jobs:
       - name: Build dependencies (from contribs script)
         run: |
              brew install ninja automake autoconf libtool pkg-config
-             cd contribs
-             python3 contribs.py --qt-directory ${{env.Qt6_DIR}}/../.. --targets=macos
+             cd contribs/
+             python3 contribs_builder.py --qt-directory ${{env.Qt6_DIR}}/../.. --targets=macos
              cd ..
 
       # Build application
@@ -159,8 +158,8 @@ jobs:
       # Build dependencies (from contribs script)
       - name: Build dependencies (from contribs script)
         run: |
-             cd contribs
-             python3 contribs.py --qt-directory ${{env.Qt6_DIR}}/../.. --targets=msvc2019
+             cd contribs/
+             python3 contribs_builder.py --qt-directory ${{env.Qt6_DIR}}/../.. --targets=msvc2019
              cd ..
 
       # Build application
