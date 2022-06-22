@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Theengs
-Comment=Efficient, portable and lightweight library for Internet of Things payload decoding
-Exec=theengs
-Icon=theengs
-Categories=Utility;DataVisualization;Qt;

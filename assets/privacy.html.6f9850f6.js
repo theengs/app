@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-3f49e284","path":"/install/privacy.html","title":"","lang":"en-US","frontmatter":{},"excerpt":"","headers":[],"git":{"updatedTime":1655937136000,"contributors":[{"name":"Florian","email":"1technophile@users.noreply.github.com","commits":1}]},"filePathRelative":"install/privacy.md"}');export{e as data};

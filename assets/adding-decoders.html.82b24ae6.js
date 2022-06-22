@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-257a74e8","path":"/participate/adding-decoders.html","title":"Adding decoders","lang":"en-US","frontmatter":{},"excerpt":"","headers":[],"git":{"updatedTime":1655937136000,"contributors":[{"name":"Florian","email":"1technophile@users.noreply.github.com","commits":1}]},"filePathRelative":"participate/adding-decoders.md"}');export{e as data};
