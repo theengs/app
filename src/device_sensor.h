@@ -21,6 +21,7 @@
 /* ************************************************************************** */
 
 #include "device.h"
+#include "device_infos.h"
 
 #include <QObject>
 #include <QString>

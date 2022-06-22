@@ -44,7 +44,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
     // We don't use QBluetoothDeviceInfo::Fields, it's unreliable
     Q_UNUSED(updatedFields)
 
-    if (info.name().isEmpty()) return; // skip beacons
+    //if (info.name().isEmpty()) return; // skip beacons
     if (info.name().replace('-', ':') == info.address().toString()) return; // skip beacons
 
     for (auto d: qAsConst(m_devices_model->m_devices)) // KNOWN DEVICES ////////

@@ -21,7 +21,6 @@
 /* ************************************************************************** */
 
 #include "device_utils.h"
-#include "device_infos.h"
 
 #include <QObject>
 #include <QList>
@@ -240,6 +239,8 @@ public:
     Device(const QString &deviceAddr, const QString &deviceName, QObject *parent = nullptr);
     Device(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
     virtual ~Device();
+
+    void setName(const QString &name);
 
     // Device infos
     QString getModel() const { return m_deviceModel; }
