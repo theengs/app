@@ -1,3 +1,5 @@
+# Privacy
+
 This privacy policy governs your use of the software application Theengs.
 This privacy policy was last updated on June 22, 2022. This privacy policy may change from time to time, for any reason. If you have any questions or concerns about this privacy policy, feel free to contact me at any time (support@theengs.io).
 
