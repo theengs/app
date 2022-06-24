@@ -268,7 +268,7 @@ Item {
                 bottomPadding: isMobile ? 12 : 0
                 visible: element_appThemeAuto.visible
 
-                text: qsTr("Dark mode will switch on automatically between 9 PM and 9 AM.")
+                text: (settingsManager.tempUnit === "C") ? qsTr("Dark mode will automatically be active between 21:00 and 9:00.") : qsTr("Dark mode will automatically be active between 9 PM and 9 AM.")
                 textFormat: Text.PlainText
                 wrapMode: Text.WordWrap
                 color: Theme.colorSubText
