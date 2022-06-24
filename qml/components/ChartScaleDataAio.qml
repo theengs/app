@@ -397,7 +397,7 @@ Item {
         // print data
         if (wei > 0) {
             dataIndicator.visible = true
-            dataIndicator.text = wei.toFixed(1) + (settingsManager.tempUnit === "F" ? "lbs" : "kg")
+            dataIndicator.text = wei.toFixed(1) + (settingsManager.tempUnit === "F" ? "lb" : "kg")
             if (currentDevice.hasImpedance && imp > 0) {
                 dataIndicator.text += " / " + imp.toFixed(0) + "Ω"
             }

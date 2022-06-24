@@ -299,7 +299,7 @@ Loader {
                                     anchors.bottom: parent.bottom
                                     anchors.bottomMargin: 2
 
-                                    text: (settingsManager.tempUnit === 'C') ? "kg" : "lbs"
+                                    text: (settingsManager.tempUnit === 'C') ? "kg" : "lb"
                                     opacity: 0.66
                                     font.pixelSize: isPhone ? 20 : 22
                                     font.bold: false
