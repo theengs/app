@@ -597,7 +597,7 @@ Item {
 
                     enabled: (settingsManager.systray && element_worker.visible)
 
-                    legend: " " + qsTr("m.", "short for minutes")
+                    legend: " " + qsTr("min", "short for minutes")
                     from: 5
                     to: 360
                     stepSize: 5
