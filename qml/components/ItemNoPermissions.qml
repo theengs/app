@@ -59,6 +59,7 @@ Item {
                     wrapMode: Text.WordWrap
                     horizontalAlignment: Text.AlignHCenter
                 }
+/*
                 Text {
                     anchors.left: parent.left
                     anchors.right: parent.right
@@ -71,6 +72,7 @@ Item {
                     wrapMode: Text.WordWrap
                     horizontalAlignment: Text.AlignHCenter
                 }
+*/
                 Text {
                     anchors.left: parent.left
                     anchors.right: parent.right
