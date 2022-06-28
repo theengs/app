@@ -69,6 +69,13 @@ bool MqttManager::connect()
         m_mqttclient->setUsername(sm->getMqttUser());
         m_mqttclient->setPassword(sm->getMqttPassword());
 
+        // TODO // handle SSL certificats
+        //QSslCertificate cert = QSslCertificate(todo);
+        //QSslConfiguration conf;
+        //conf.setCaCertificates({cert});
+        //conf.setPrivateKey(todo);
+        //QSslConfiguration::setDefaultConfiguration(conf);
+
         m_mqttclient->connectToHost();
         //m_mqttclient->connectToHostEncrypted();
     }

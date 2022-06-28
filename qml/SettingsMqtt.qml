@@ -203,7 +203,7 @@ Item {
                 color: Theme.colorSubText
                 font.pixelSize: Theme.fontSizeContentBig
                 verticalAlignment: Text.AlignBottom
-
+/*
                 ButtonWireframe {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -217,6 +217,7 @@ Item {
                         if (settingsManager.mqtt) mqttManager.reconnect_forced()
                     }
                 }
+*/
             }
 
             ////////
