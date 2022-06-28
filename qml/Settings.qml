@@ -588,7 +588,7 @@ Item {
 
                 SpinBoxThemed {
                     id: spinBox_update_background
-                    width: 128
+                    width: 140
                     height: 36
                     anchors.right: parent.right
                     anchors.rightMargin: 12

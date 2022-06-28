@@ -201,9 +201,7 @@ Item {
 
     ItemNoData {
         id: noDataIndicator
-        anchors.fill: parent
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.centerIn: parent
     }
 
     ////////////////
