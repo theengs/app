@@ -289,7 +289,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
 
     if (m_scanning) // Dynamic scanning ////////////////////////////////////////
     {
-        //qDebug() << "addBleDevice() FROM DYNAMIC SCANNING";
+        //qDebug() << "addBleDevice(" << info.name() << ") FROM DYNAMIC SCANNING";
         addBleDevice(info);
     }
 }

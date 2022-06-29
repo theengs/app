@@ -126,6 +126,8 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
             device_modelid_theengs = QString::fromStdString(doc["model_id"]);
             device_props = QString::fromUtf8(dec.getTheengProperties(device_modelid_theengs.toLocal8Bit()));
 
+            if (device_model_theengs == "IBEACON" && device_modelid_theengs == "IBEACON") continue;
+
             qDebug() << "addDevice() FOUND [mfd] :" << device_model_theengs << device_modelid_theengs << device_props;
             break;
         }
@@ -150,6 +152,8 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
             device_model_theengs = QString::fromStdString(doc["model"]);
             device_modelid_theengs = QString::fromStdString(doc["model_id"]);
             device_props = QString::fromUtf8(dec.getTheengProperties(device_modelid_theengs.toLocal8Bit()));
+
+            if (device_model_theengs == "IBEACON" && device_modelid_theengs == "IBEACON") continue;
 
             qDebug() << "addDevice() FOUND [svd] :" << device_model_theengs << device_modelid_theengs << device_props;
             break;
