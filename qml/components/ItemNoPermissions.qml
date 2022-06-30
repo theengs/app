@@ -3,6 +3,7 @@ import QtQuick 2.15
 import ThemeEngine 1.0
 
 Item {
+    id: itemNoPermission
     anchors.fill: parent
 
     Column {
