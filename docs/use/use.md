@@ -3,7 +3,7 @@
 ## Android
 
 The Android operating system requires applications to ask for device location permission in order to scan for nearby Bluetooth Low Energy sensors. Android 10+ will ask for _ACCESS_FINE_LOCATION_, while Android 6+ will only ask for _ACCESS_COARSE_LOCATION_.  
-The location permission is only needed while scanning for new sensors, not for updating data. You can learn more on Android developper [website](https://developer.android.com/guide/topics/connectivity/bluetooth/permissions#declare-android11-or-lower).
+The location permission is only needed while scanning for new sensors, not for updating data. You can learn more on Android developer [website](https://developer.android.com/guide/topics/connectivity/bluetooth/permissions#declare-android11-or-lower).
 
 Some devices also require the GPS to be turned on while scanning for new sensors. This requirement is not documented and there is not much that can be done about it.  
 
