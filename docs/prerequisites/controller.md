@@ -4,7 +4,7 @@ The broker will act as an intermediary between Theengs App and your [controller]
 
 All the events or commands could pass by the broker.
 
-There is many choice of brokers, here is some of the most populars:
+There are many choices of brokers, here are some of the most popular:
 * [Mosquitto](https://mosquitto.org/) (Open source)
 * [Moquette](https://moquette-io.github.io/moquette/) (Open source)
 * [HiveMQ](https://www.hivemq.com/hivemq/features/)
@@ -12,9 +12,9 @@ There is many choice of brokers, here is some of the most populars:
 
 This [wikipedia list](https://en.wikipedia.org/wiki/Comparison_of_MQTT_implementations) gives you more details about the different choices you have.
 This [github list](https://github.com/mqtt/mqtt.github.io/wiki/libraries) seems to be the most exhaustive ones.
-Here is also some [idea of criterias](https://www.hivemq.com/blog/top-10-mqtt-broker-criteria/) from HiveMQ.
+Here is also some [ideas of criteria](https://www.hivemq.com/blog/top-10-mqtt-broker-criteria/) from HiveMQ.
 
-Once your broker installed it can be interesting to see the traffic passing to it and to publish data, so as to do that there is several tools available:
+Once your broker is installed it can be interesting to see the traffic passing to it and to publish data, so as to do that there are several tools available:
 * [MQTT Explorer](http://mqtt-explorer.com/)
 * [HIVE MQ Web client](https://github.com/hivemq/hivemq-mqtt-web-client)
 * [MQTT FX](https://mqttfx.jensd.de/)
@@ -26,7 +26,7 @@ The following controllers (and many other software) are compatible with MQTT:
 
 ![controllers](../img/TheengsGateway_controllers.png)
 
-TheengsApp is independant from these projets, you have the liberty of choice among all the compatibles software.
+TheengsApp is independent from these projects, you have the liberty of choice among all the compatibles software.
 
 * [OpenHAB2](https://www.openhab.org)
 * [Home Assistant](https://www.home-assistant.io)
