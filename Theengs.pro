@@ -24,8 +24,11 @@ include(src/thirdparty/MobileUI/MobileUI.pri)
 include(src/thirdparty/MobileSharing/MobileSharing.pri)
 
 # SingleApplication for desktop OS
-include(src/thirdparty/SingleApplication/singleapplication.pri)
+include(src/thirdparty/SingleApplication/SingleApplication.pri)
 DEFINES += QAPPLICATION_CLASS=QApplication
+
+# Various utils
+include(src/thirdparty/AppUtils/AppUtils.pri)
 
 # Theengs submodule
 SOURCES         += $${PWD}/src/thirdparty/TheengsDecoder/src/decoder.cpp
@@ -76,11 +79,6 @@ SOURCES  += src/main.cpp \
             src/devices/device_theengs_motionsensors.cpp \
             src/devices/device_theengs_probes.cpp \
             src/devices/device_theengs_scales.cpp \
-            src/utils/utils_app.cpp \
-            src/utils/utils_bits.cpp \
-            src/utils/utils_language.cpp \
-            src/utils/utils_maths.cpp \
-            src/utils/utils_screen.cpp \
             src/thirdparty/RC4/rc4.cpp
 
 HEADERS  += src/SettingsManager.h \
@@ -123,15 +121,9 @@ HEADERS  += src/SettingsManager.h \
             src/devices/device_theengs_motionsensors.h \
             src/devices/device_theengs_probes.h \
             src/devices/device_theengs_scales.h \
-            src/utils/utils_app.h \
-            src/utils/utils_bits.h \
-            src/utils/utils_language.h \
-            src/utils/utils_maths.h \
-            src/utils/utils_screen.h \
-            src/utils/utils_versionchecker.h \
             src/thirdparty/RC4/rc4.h
 
-INCLUDEPATH += src/
+INCLUDEPATH += src/ src/thirdparty/
 
 RESOURCES   += qml/qml.qrc \
                assets/assets.qrc \
@@ -207,11 +199,6 @@ DESTDIR     = bin/
 linux:!android {
     TARGET = $$lower($${TARGET})
 
-    # Linux utils
-    SOURCES += src/utils/utils_os_linux.cpp
-    HEADERS += src/utils/utils_os_linux.h
-    QT += dbus
-
     # Automatic application packaging # Needs linuxdeployqt installed
     #system(linuxdeployqt $${OUT_PWD}/$${DESTDIR}/ -qmldir=qml/)
 
@@ -240,10 +227,6 @@ linux:!android {
 }
 
 win32 {
-    # Windows utils
-    SOURCES += src/utils/utils_os_windows.cpp
-    HEADERS += src/utils/utils_os_windows.h
-
     # OS icon
     RC_ICONS = $${PWD}/assets/windows/$$lower($${TARGET}).ico
 
@@ -270,15 +253,6 @@ macx {
     # OS infos
     QMAKE_INFO_PLIST = $${PWD}/assets/macos/Info.plist
 
-    # macOS utils
-    SOURCES += src/utils/utils_os_macos.mm
-    HEADERS += src/utils/utils_os_macos.h
-    LIBS    += -framework IOKit
-    # macOS dock click handler
-    SOURCES += src/utils/utils_os_macosdock.mm
-    HEADERS += src/utils/utils_os_macosdock.h
-    LIBS    += -framework AppKit
-
     # OS entitlement (sandbox and stuff)
     ENTITLEMENTS.name = CODE_SIGN_ENTITLEMENTS
     ENTITLEMENTS.value = $${PWD}/assets/macos/$$lower($${TARGET}).entitlements
@@ -298,11 +272,6 @@ android {
     # Bundle name
     QMAKE_TARGET_BUNDLE_PREFIX = com.theengs
     QMAKE_BUNDLE = app
-
-    # android utils
-    QT += core-private
-    SOURCES += src/utils/utils_os_android_qt6.cpp
-    HEADERS += src/utils/utils_os_android.h
 
     ANDROID_PACKAGE_SOURCE_DIR = $${PWD}/assets/android
 
@@ -331,11 +300,6 @@ ios {
     #message("QMAKE_IOS_DEPLOYMENT_TARGET: $$QMAKE_IOS_DEPLOYMENT_TARGET")
 
     CONFIG += no_autoqmake
-
-    # iOS utils
-    SOURCES += src/utils/utils_os_ios.mm
-    HEADERS += src/utils/utils_os_ios.h
-    LIBS    += -framework UIKit
 
     # Bundle name
     QMAKE_TARGET_BUNDLE_PREFIX = com.theengs

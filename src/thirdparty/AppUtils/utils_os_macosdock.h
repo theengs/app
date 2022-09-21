@@ -14,17 +14,47 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
+ * \date      2019
  * \author    Emeric Grange <emeric.grange@gmail.com>
- * \date      2022
  */
 
-#include "utils_bits.h"
+#ifndef UTILS_MACOS_DOCK_H
+#define UTILS_MACOS_DOCK_H
 
+#include <QtGlobal>
+
+#if defined(Q_OS_MACOS)
 /* ************************************************************************** */
 
-uint16_t endian_flip_16(uint16_t src)
+#include <QObject>
+
+QT_FORWARD_DECLARE_CLASS(QQuickWindow)
+
+/*!
+ * \brief macOS dock click handler
+ *
+ * Use with "LIBS += -framework AppKit"
+ */
+class MacOSDockHandler : public QObject
 {
-    return ( ((src & 0x00FF) << 8) | ((src & 0xFF00) >> 8) );
-}
+    Q_OBJECT
+
+    QQuickWindow *m_saved_view = nullptr;
+
+    MacOSDockHandler();
+    ~MacOSDockHandler();
+
+signals:
+    void dockIconClicked();
+
+public:
+    static MacOSDockHandler *getInstance();
+
+    void setupDock(QQuickWindow *view);
+
+    Q_INVOKABLE static void toggleDockIconVisibility(bool show);
+};
 
 /* ************************************************************************** */
+#endif // Q_OS_MACOS
+#endif // UTILS_MACOS_DOCK_H

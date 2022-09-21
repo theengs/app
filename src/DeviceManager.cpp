@@ -44,7 +44,7 @@
 #include "devices/device_theengs_scales.h"
 #include "devices/device_theengs_motionsensors.h"
 
-#include "utils/utils_app.h"
+#include "utils_app.h"
 
 #include <QList>
 #include <QDateTime>

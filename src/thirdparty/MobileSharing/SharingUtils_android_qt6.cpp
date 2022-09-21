@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2017 Ekkehard Gentz (ekke)
- * Copyright (c) 2022 Emeric Grange
+ * Copyright (c) 2020 Emeric Grange
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -63,7 +63,7 @@ bool AndroidShareUtils::checkMimeTypeView(const QString &mimeType)
 {
     QJniObject jsMime = QJniObject::fromString(mimeType);
     jboolean verified = QJniObject::callStaticMethod<jboolean>(
-                            "com/theengs/utils/QShareUtils",
+                            "com/emeric/utils/QShareUtils",
                             "checkMimeTypeView",
                             "(Ljava/lang/String;)Z",
                             jsMime.object<jstring>());
@@ -76,7 +76,7 @@ bool AndroidShareUtils::checkMimeTypeEdit(const QString &mimeType)
 {
     QJniObject jsMime = QJniObject::fromString(mimeType);
     jboolean verified = QJniObject::callStaticMethod<jboolean>(
-                            "com/theengs/utils/QShareUtils",
+                            "com/emeric/utils/QShareUtils",
                             "checkMimeTypeEdit",
                             "(Ljava/lang/String;)Z",
                             jsMime.object<jstring>());
@@ -90,7 +90,7 @@ void AndroidShareUtils::share(const QString &text, const QUrl &url)
     QJniObject jsText = QJniObject::fromString(text);
     QJniObject jsUrl = QJniObject::fromString(url.toString());
     jboolean ok = QJniObject::callStaticMethod<jboolean>(
-                      "com/theengs/utils/QShareUtils",
+                      "com/emeric/utils/QShareUtils",
                       "share",
                       "(Ljava/lang/String;Ljava/lang/String;)Z",
                       jsText.object<jstring>(), jsUrl.object<jstring>());
@@ -122,7 +122,7 @@ void AndroidShareUtils::sendFile(const QString &filePath, const QString &title,
         QJniObject jsTitle = QJniObject::fromString(title);
         QJniObject jsMimeType = QJniObject::fromString(mimeType);
         jboolean ok = QJniObject::callStaticMethod<jboolean>(
-                                            "com/theengs/utils/QShareUtils",
+                                            "com/emeric/utils/QShareUtils",
                                             "sendFile",
                                             "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)Z",
                                             jsPath.object<jstring>(), jsTitle.object<jstring>(), jsMimeType.object<jstring>(), requestId);
@@ -262,7 +262,7 @@ void AndroidShareUtils::viewFile(const QString &filePath, const QString &title,
         QJniObject jsPath = QJniObject::fromString(filePath);
         QJniObject jsTitle = QJniObject::fromString(title);
         QJniObject jsMimeType = QJniObject::fromString(mimeType);
-        jboolean ok = QJniObject::callStaticMethod<jboolean>("com/theengs/utils/QShareUtils",
+        jboolean ok = QJniObject::callStaticMethod<jboolean>("com/emeric/utils/QShareUtils",
                           "viewFile",
                           "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)Z",
                           jsPath.object<jstring>(), jsTitle.object<jstring>(), jsMimeType.object<jstring>(), requestId);
@@ -391,7 +391,7 @@ void AndroidShareUtils::editFile(const QString &filePath, const QString &title,
         QJniObject jsTitle = QJniObject::fromString(title);
         QJniObject jsMimeType = QJniObject::fromString(mimeType);
 
-        jboolean ok = QJniObject::callStaticMethod<jboolean>("com/theengs/utils/QShareUtils",
+        jboolean ok = QJniObject::callStaticMethod<jboolean>("com/emeric/utils/QShareUtils",
                                                              "editFile",
                                                              "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)Z",
                                                              jsPath.object<jstring>(), jsTitle.object<jstring>(), jsMimeType.object<jstring>(), requestId);
@@ -681,7 +681,7 @@ extern "C" {
 #endif
 
 JNIEXPORT void JNICALL
-  Java_com_theengs_app_QShareActivity_setFileUrlReceived(JNIEnv *env,
+  Java_com_emeric_watchflower_QShareActivity_setFileUrlReceived(JNIEnv *env,
                                                              jobject obj,
                                                              jstring url)
 {
@@ -693,7 +693,7 @@ JNIEXPORT void JNICALL
 }
 
 JNIEXPORT void JNICALL
-  Java_com_theengs_app_QShareActivity_setFileReceivedAndSaved(JNIEnv *env,
+  Java_com_emeric_watchflower_QShareActivity_setFileReceivedAndSaved(JNIEnv *env,
                                                                   jobject obj,
                                                                   jstring url)
 {
@@ -705,7 +705,7 @@ JNIEXPORT void JNICALL
 }
 
 JNIEXPORT bool JNICALL
-  Java_com_theengs_app_QShareActivity_checkFileExits(JNIEnv *env,
+  Java_com_emeric_watchflower_QShareActivity_checkFileExits(JNIEnv *env,
                                                          jobject obj,
                                                          jstring url)
 {
@@ -717,7 +717,7 @@ JNIEXPORT bool JNICALL
 }
 
 JNIEXPORT void JNICALL
-  Java_com_theengs_app_QShareActivity_fireActivityResult(JNIEnv *env,
+  Java_com_emeric_watchflower_QShareActivity_fireActivityResult(JNIEnv *env,
                                                              jobject obj,
                                                              jint requestCode,
                                                              jint resultCode)

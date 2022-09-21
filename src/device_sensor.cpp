@@ -17,11 +17,11 @@
 */
 
 #include "device_sensor.h"
+#include "utils_versionchecker.h"
 #include "SettingsManager.h"
 #include "DatabaseManager.h"
 #include "DeviceManager.h"
 #include "NotificationManager.h"
-#include "utils/utils_versionchecker.h"
 
 #include <QSqlQuery>
 #include <QSqlError>
@@ -140,7 +140,7 @@ bool DeviceSensor::getSqlDeviceInfos()
 
     if ((m_deviceName == "Flower care" || m_deviceName == "Flower mate") && (m_deviceFirmware.size() == 5))
     {
-        if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_FLOWERCARE))
+        if (VersionChecker(m_deviceFirmware) >= VersionChecker(LATEST_KNOWN_FIRMWARE_FLOWERCARE))
         {
             m_firmware_uptodate = true;
             Q_EMIT sensorUpdated();
@@ -148,7 +148,7 @@ bool DeviceSensor::getSqlDeviceInfos()
     }
     else if ((m_deviceName.startsWith("Flower power")) && (m_deviceFirmware.size() == 5))
     {
-        if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_FLOWERPOWER))
+        if (VersionChecker(m_deviceFirmware) >= VersionChecker(LATEST_KNOWN_FIRMWARE_FLOWERPOWER))
         {
             m_firmware_uptodate = true;
             Q_EMIT sensorUpdated();
@@ -156,7 +156,7 @@ bool DeviceSensor::getSqlDeviceInfos()
     }
     else if ((m_deviceName == "ropot") && (m_deviceFirmware.size() == 5))
     {
-        if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_ROPOT))
+        if (VersionChecker(m_deviceFirmware) >= VersionChecker(LATEST_KNOWN_FIRMWARE_ROPOT))
         {
             m_firmware_uptodate = true;
             Q_EMIT sensorUpdated();
@@ -164,7 +164,7 @@ bool DeviceSensor::getSqlDeviceInfos()
     }
     else if ((m_deviceName.startsWith("Parrot pot")) && (m_deviceFirmware.size() == 6))
     {
-        if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_PARROTPOT))
+        if (VersionChecker(m_deviceFirmware) >= VersionChecker(LATEST_KNOWN_FIRMWARE_PARROTPOT))
         {
             m_firmware_uptodate = true;
             Q_EMIT sensorUpdated();
@@ -172,7 +172,7 @@ bool DeviceSensor::getSqlDeviceInfos()
     }
     else if ((m_deviceName == "MJ_HT_V1") && (m_deviceFirmware.size() == 8))
     {
-        if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_HYGROTEMP_LYWSDCGQ))
+        if (VersionChecker(m_deviceFirmware) >= VersionChecker(LATEST_KNOWN_FIRMWARE_HYGROTEMP_LYWSDCGQ))
         {
             m_firmware_uptodate = true;
             Q_EMIT sensorUpdated();
@@ -180,7 +180,7 @@ bool DeviceSensor::getSqlDeviceInfos()
     }
     else if ((m_deviceName == "ClearGrass Temp & RH") && (m_deviceFirmware.size() == 10))
     {
-        if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_HYGROTEMP_EINK))
+        if (VersionChecker(m_deviceFirmware) >= VersionChecker(LATEST_KNOWN_FIRMWARE_HYGROTEMP_EINK))
         {
             m_firmware_uptodate = true;
             Q_EMIT sensorUpdated();
@@ -188,7 +188,7 @@ bool DeviceSensor::getSqlDeviceInfos()
     }
     else if ((m_deviceName.startsWith("Qingping Temp & RH")) && (m_deviceFirmware.size() == 10))
     {
-        if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_HYGROTEMP_EINK))
+        if (VersionChecker(m_deviceFirmware) >= VersionChecker(LATEST_KNOWN_FIRMWARE_HYGROTEMP_EINK))
         {
             m_firmware_uptodate = true;
             Q_EMIT sensorUpdated();
@@ -196,7 +196,7 @@ bool DeviceSensor::getSqlDeviceInfos()
     }
     else if ((m_deviceName == "LYWSD02") && (m_deviceFirmware.size() == 10))
     {
-        if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_HYGROTEMP_CLOCK))
+        if (VersionChecker(m_deviceFirmware) >= VersionChecker(LATEST_KNOWN_FIRMWARE_HYGROTEMP_CLOCK))
         {
             m_firmware_uptodate = true;
             Q_EMIT sensorUpdated();
@@ -204,7 +204,7 @@ bool DeviceSensor::getSqlDeviceInfos()
     }
     else if ((m_deviceName == "LYWSD03MMC") && (m_deviceFirmware.size() == 10))
     {
-        if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_HYGROTEMP_LYWSD03MMC))
+        if (VersionChecker(m_deviceFirmware) >= VersionChecker(LATEST_KNOWN_FIRMWARE_HYGROTEMP_LYWSD03MMC))
         {
             m_firmware_uptodate = true;
             Q_EMIT sensorUpdated();
@@ -212,7 +212,7 @@ bool DeviceSensor::getSqlDeviceInfos()
     }
     else if ((m_deviceName == "XMWSDJO4MMC") && (m_deviceFirmware.size() == 10))
     {
-        if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_HYGROTEMP_XMWSDJO4MMC))
+        if (VersionChecker(m_deviceFirmware) >= VersionChecker(LATEST_KNOWN_FIRMWARE_HYGROTEMP_XMWSDJO4MMC))
         {
             m_firmware_uptodate = true;
             Q_EMIT sensorUpdated();
@@ -220,7 +220,7 @@ bool DeviceSensor::getSqlDeviceInfos()
     }
     else if ((m_deviceName == "MHO-C401") && (m_deviceFirmware.size() == 10))
     {
-        if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_HYGROTEMP_MHOC401))
+        if (VersionChecker(m_deviceFirmware) >= VersionChecker(LATEST_KNOWN_FIRMWARE_HYGROTEMP_MHOC401))
         {
             m_firmware_uptodate = true;
             Q_EMIT sensorUpdated();

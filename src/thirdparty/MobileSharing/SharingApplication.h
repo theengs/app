@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2017 Ekkehard Gentz (ekke)
- * Copyright (c) 2022 Emeric Grange
+ * Copyright (c) 2020 Emeric Grange
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,14 +25,14 @@
 #define SHARINGAPPLICATION_H
 /* ************************************************************************** */
 
-#include <SharingUtils.h>
+#include <QGuiApplication>
 
-#include <QApplication>
-#include <QQmlContext>
+class QQmlContext;
+class ShareUtils;
 
 /* ************************************************************************** */
 
-class SharingApplication : public QApplication
+class SharingApplication : public QGuiApplication
 {
     Q_OBJECT
 

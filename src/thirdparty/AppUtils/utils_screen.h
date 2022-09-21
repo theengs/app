@@ -24,7 +24,10 @@
 
 #include <QObject>
 #include <QVariantMap>
-#include <QQuickWindow>
+
+class QGuiApplication;
+class QScreen;
+class QQuickWindow;
 
 /* ************************************************************************** */
 
@@ -35,15 +38,39 @@ class UtilsScreen: public QObject
 {
     Q_OBJECT
 
+    Q_PROPERTY(int screenWidth READ getScreenWidth NOTIFY screenChanged)
+    Q_PROPERTY(int screenHeight READ getScreenHeight NOTIFY screenChanged)
+    Q_PROPERTY(int screenDepth READ getScreenDepth NOTIFY screenChanged)
+    Q_PROPERTY(double screenRefreshRate READ getScreenRefreshRate NOTIFY screenChanged)
     Q_PROPERTY(int screenDpi READ getScreenDpi NOTIFY screenChanged)
     Q_PROPERTY(double screenPar READ getScreenPar NOTIFY screenChanged)
     Q_PROPERTY(double screenSize READ getScreenSize_inch NOTIFY screenChanged)
 
+    int m_screenWidth = -1;
+    int m_screenHeight = -1;
+    int m_screenDepth = -1;
+    double m_screenRefreshRate = -1.0;
+
     int m_screenDpi = -1;
     double m_screenPar = -1.0;
-    double m_screenSize = -1.0;
+    double m_screenSizeInch = -1.0;
 
     uint32_t m_screensaverId = 0;
+
+    int getScreenWidth() { return m_screenWidth; }
+    int getScreenHeight() { return m_screenHeight; }
+    int getScreenDepth() { return m_screenDepth; }
+    double getScreenRefreshRate() { return m_screenRefreshRate; }
+
+    int getScreenDpi() { return m_screenDpi; }
+    double getScreenPar() { return m_screenPar; }
+    double getScreenSize_inch() { return m_screenSizeInch; }
+
+    // Actual screen
+    QGuiApplication *m_app = nullptr;
+    QScreen *m_scr = nullptr;
+
+    void setAppWindow(QGuiApplication *app);
 
     // Singleton
     static UtilsScreen *instance;
@@ -53,16 +80,15 @@ class UtilsScreen: public QObject
 Q_SIGNALS:
     void screenChanged();
 
+public slots:
+    //void primaryScreenChanged(QScreen *scr);
+    void getScreenInfos(QScreen *scr);
+
 public:
     static UtilsScreen *getInstance();
 
-    Q_INVOKABLE void getScreenInfos();
-
-    Q_INVOKABLE double getScreenSize_inch();
-
-    Q_INVOKABLE int getScreenDpi();
-
-    Q_INVOKABLE double getScreenPar();
+    //Q_INVOKABLE void getScreenInfos(QScreen *scr);
+    Q_INVOKABLE void printScreenInfos();
 
     Q_INVOKABLE QVariantMap getSafeAreaMargins(QQuickWindow *window);
 

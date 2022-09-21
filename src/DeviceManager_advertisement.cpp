@@ -17,9 +17,10 @@
 */
 
 #include "DeviceManager.h"
+#include "SettingsManager.h"
 #include "MqttManager.h"
 
-#include "utils/utils_bits.h"
+#include "utils_bits.h"
 
 #include <decoder.h> // Theengs decoder
 #include "device_theengs.h"

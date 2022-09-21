@@ -1,15 +1,14 @@
-QT += core
-
-MOBILESHARING_VERSION = 0.3
+QT += core gui qml
 
 SOURCES += $${PWD}/SharingUtils.cpp \
            $${PWD}/SharingApplication.cpp
+
 HEADERS += $${PWD}/SharingUtils.h \
            $${PWD}/SharingApplication.h
-INCLUDEPATH += $${PWD}
+
+#INCLUDEPATH += $${PWD}
 
 android {
-
     versionAtLeast(QT_VERSION, 6.0) {
         QT += core-private
         SOURCES += $${PWD}/SharingUtils_android_qt6.cpp
@@ -29,17 +28,19 @@ android {
 
     # These files are from the parent project:
     #ANDROID_PACKAGE_SOURCE_DIR = $${PWD}/android
-    #OTHER_FILES += $${PWD}/src/com/theengs/app/QShareActivity.java \
-    #               $${PWD}/src/com/theengs/utils/QShareUtils.java \
-    #               $${PWD}/src/com/theengs/utils/QSharePathResolver.java
+    #OTHER_FILES += $${PWD}/src/com/emeric/watchflower/QShareActivity.java \
+    #               $${PWD}/src/com/emeric/utils/QShareUtils.java \
+    #               $${PWD}/src/com/emeric/utils/QSharePathResolver.java
 
     # Rename these to match your project:
-    #com/theengs/utils
-    #com.theengs.app
-    #com_theengs_app
+    #com/emeric/utils
+    #com.emeric.watchflower
+    #com_emeric_watchflower
 }
 
 ios {
+    LIBS += -framework UIKit
+
     OBJECTIVE_SOURCES += $${PWD}/SharingUtils_ios.mm \
                          $${PWD}/docviewcontroller_ios.mm
 

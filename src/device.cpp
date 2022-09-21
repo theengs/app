@@ -19,8 +19,8 @@
 #include "device.h"
 #include "SettingsManager.h"
 #include "DeviceManager.h"
-#include "utils/utils_screen.h"
-#include "utils/utils_versionchecker.h"
+#include "utils_screen.h"
+#include "utils_versionchecker.h"
 
 #include <cstdlib>
 #include <cmath>

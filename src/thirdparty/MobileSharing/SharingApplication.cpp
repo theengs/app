@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2017 Ekkehard Gentz (ekke)
- * Copyright (c) 2022 Emeric Grange
+ * Copyright (c) 2020 Emeric Grange
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,9 +22,12 @@
  */
 
 #include "SharingApplication.h"
+#include "SharingUtils.h"
 
+#include <QGuiApplication>
+#include <QQmlContext>
 #include <QtQml>
-#include <QApplication>
+
 #include <QDir>
 #include <QFile>
 #include <QFileOpenEvent>
@@ -33,7 +36,7 @@
 
 /* ************************************************************************** */
 
-SharingApplication::SharingApplication(int &argc, char **argv) : QApplication(argc, argv)
+SharingApplication::SharingApplication(int &argc, char **argv) : QGuiApplication(argc, argv)
 {
     mShareUtils = new ShareUtils(this);
 
@@ -69,7 +72,7 @@ bool SharingApplication::event(QEvent *e)
         }
     }
 
-    return QApplication::event(e);
+    return QGuiApplication::event(e);
 }
 
 void SharingApplication::onApplicationStateChanged(Qt::ApplicationState appState)

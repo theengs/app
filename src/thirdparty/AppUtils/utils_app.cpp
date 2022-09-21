@@ -30,6 +30,8 @@
 
 #include <QDir>
 #include <QSize>
+#include <QColor>
+
 #include <QCoreApplication>
 #include <QStandardPaths>
 #include <QDesktopServices>
@@ -66,6 +68,11 @@ UtilsApp::~UtilsApp()
 /* ************************************************************************** */
 /* ************************************************************************** */
 
+QString UtilsApp::appName()
+{
+    return QString::fromLatin1(APP_NAME);
+}
+
 QString UtilsApp::appVersion()
 {
     return QString::fromLatin1(APP_VERSION);
@@ -83,8 +90,17 @@ QString UtilsApp::appBuildDateTime()
 
 QString UtilsApp::appBuildMode()
 {
-#if defined(QT_NO_DEBUG) || defined(NDEBUG)
+#if !defined(QT_NO_DEBUG) && !defined(NDEBUG)
+    return "DEBUG";
+#endif
+
     return "";
+}
+
+QString UtilsApp::appBuildModeFull()
+{
+#if defined(QT_NO_DEBUG) || defined(NDEBUG)
+    return "RELEASE";
 #endif
 
     return "DEBUG";
@@ -171,6 +187,24 @@ void UtilsApp::openWith(const QString &path)
 }
 
 /* ************************************************************************** */
+
+bool UtilsApp::isColorLight(const int color)
+{
+    int r = (color & 0x00FF0000) >> 16;
+    int g = (color & 0x0000FF00) >> 8;
+    int b = (color & 0x000000FF);
+
+    double darkness = 1.0 - (0.299 * r + 0.587 * g + 0.114 * b) / 255.0;
+    return (darkness < 0.2);
+}
+
+bool UtilsApp::isQColorLight(const QColor &color)
+{
+    double darkness = 1.0 - (0.299 * color.red() + 0.587 * color.green() + 0.114 * color.blue()) / 255.0;
+    return (darkness < 0.2);
+}
+
+/* ************************************************************************** */
 /* ************************************************************************** */
 
 QUrl UtilsApp::getStandardPath_url(const QString &type)
@@ -220,6 +254,8 @@ void UtilsApp::openAndroidAppInfo(const QString &packageName)
 #if defined(Q_OS_ANDROID)
     return UtilsAndroid::openApplicationInfo(packageName);
 #endif
+
+    Q_UNUSED(packageName)
 }
 
 bool UtilsApp::checkMobileLocationPermission()
@@ -244,6 +280,8 @@ bool UtilsApp::checkMobileBleLocationPermission()
 {
 #if defined(Q_OS_ANDROID)
     return UtilsAndroid::checkPermission_location_ble();
+#elif defined(Q_OS_IOS)
+    return true; // TODO // we know have Bluetooth permission on iOS too
 #else
     return true;
 #endif

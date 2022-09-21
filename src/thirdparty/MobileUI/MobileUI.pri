@@ -1,10 +1,11 @@
-QT += core
-
-MOBILEUI_VERSION = 1.0
+QT += core gui qml
 
 SOURCES += $${PWD}/MobileUI.cpp
-HEADERS += $${PWD}/MobileUI.h
-INCLUDEPATH += $${PWD}
+
+HEADERS += $${PWD}/MobileUI.h \
+           $${PWD}/MobileUI_private.h
+
+#INCLUDEPATH += $${PWD}
 
 android {
     versionAtLeast(QT_VERSION, 6.0) {

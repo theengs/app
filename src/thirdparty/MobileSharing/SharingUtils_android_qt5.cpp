@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2017 Ekkehard Gentz (ekke)
- * Copyright (c) 2022 Emeric Grange
+ * Copyright (c) 2020 Emeric Grange
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -680,7 +680,7 @@ extern "C" {
 #endif
 
 JNIEXPORT void JNICALL
-  Java_com_theengs_app_QShareActivity_setFileUrlReceived(JNIEnv *env,
+  Java_com_emeric_watchflower_QShareActivity_setFileUrlReceived(JNIEnv *env,
                                                              jobject obj,
                                                              jstring url)
 {
@@ -692,7 +692,7 @@ JNIEXPORT void JNICALL
 }
 
 JNIEXPORT void JNICALL
-  Java_com_theengs_app_QShareActivity_setFileReceivedAndSaved(JNIEnv *env,
+  Java_com_emeric_watchflower_QShareActivity_setFileReceivedAndSaved(JNIEnv *env,
                                                                   jobject obj,
                                                                   jstring url)
 {
@@ -704,7 +704,7 @@ JNIEXPORT void JNICALL
 }
 
 JNIEXPORT bool JNICALL
-  Java_com_theengs_app_QShareActivity_checkFileExits(JNIEnv *env,
+  Java_com_emeric_watchflower_QShareActivity_checkFileExits(JNIEnv *env,
                                                          jobject obj,
                                                          jstring url)
 {
@@ -716,7 +716,7 @@ JNIEXPORT bool JNICALL
 }
 
 JNIEXPORT void JNICALL
-  Java_com_theengs_app_QShareActivity_fireActivityResult(JNIEnv *env,
+  Java_com_emeric_watchflower_QShareActivity_fireActivityResult(JNIEnv *env,
                                                              jobject obj,
                                                              jint requestCode,
                                                              jint resultCode)

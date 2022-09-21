@@ -18,7 +18,7 @@
 
 #include "DeviceManager.h"
 
-#include "utils/utils_bits.h"
+#include "utils_bits.h"
 
 #include <decoder.h> // Theengs decoder
 

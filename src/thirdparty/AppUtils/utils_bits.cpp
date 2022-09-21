@@ -14,39 +14,37 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * \date      2019
  * \author    Emeric Grange <emeric.grange@gmail.com>
+ * \date      2022
  */
 
-#ifndef UTILS_MACOS_DOCK_H
-#define UTILS_MACOS_DOCK_H
+#include "utils_bits.h"
 
-#include <QtGlobal>
-
-#if defined(Q_OS_MACOS)
 /* ************************************************************************** */
 
-#include <QObject>
-
-/*!
- * \brief macOS dock click handler
- *
- * Use with "LIBS += -framework AppKit"
- */
-class MacOSDockHandler : public QObject
+uint16_t endian_flip_16(uint16_t src)
 {
-    Q_OBJECT
+    return ( ((src & 0x00FF) << 8) | ((src & 0xFF00) >> 8) );
+}
 
-    MacOSDockHandler();
-    ~MacOSDockHandler();
+uint32_t endian_flip_32(uint32_t src)
+{
+    return ( ((src & 0x000000FF) << 24)
+           | ((src & 0x0000FF00) <<  8)
+           | ((src & 0x00FF0000) >>  8)
+           | ((src & 0xFF000000) >> 24) );
+}
 
-signals:
-    void dockIconClicked();
-
-public:
-    static MacOSDockHandler *getInstance();
-};
+uint64_t endian_flip_64(uint64_t src)
+{
+    return ( ((src & 0x00000000000000FFULL) << 56)
+           | ((src & 0x000000000000FF00ULL) << 40)
+           | ((src & 0x0000000000FF0000ULL) << 24)
+           | ((src & 0x00000000FF000000ULL) <<  8)
+           | ((src & 0x000000FF00000000ULL) >>  8)
+           | ((src & 0x0000FF0000000000ULL) >> 24)
+           | ((src & 0x00FF000000000000ULL) >> 40)
+           | ((src & 0xFF00000000000000ULL) >> 56) );
+}
 
 /* ************************************************************************** */
-#endif // Q_OS_MACOS
-#endif // UTILS_MACOS_DOCK_H

@@ -22,15 +22,17 @@
 #include "DeviceManager.h"
 #include "SystrayManager.h"
 #include "NotificationManager.h"
-#include "device_utils_theengs.h"
-#include "utils/utils_app.h"
-#include "utils/utils_screen.h"
-#include "utils/utils_language.h"
-#include "utils/utils_os_macosdock.h"
 
-#include <MobileUI.h>
-#include <SharingUtils.h>
-#include <singleapplication.h>
+#include "utils_app.h"
+#include "utils_screen.h"
+#include "utils_language.h"
+#if defined(Q_OS_MACOS)
+#include "utils_os_macosdock.h"
+#endif
+
+#include <MobileUI/MobileUI.h>
+#include <MobileSharing/MobileSharing.h>
+#include <SingleApplication/SingleApplication.h>
 
 #include <QtGlobal>
 #include <QLibraryInfo>
@@ -127,8 +129,8 @@ int main(int argc, char *argv[])
     if (sm->getMQTT()) mq->connect();
 
     // Init generic utils
-    UtilsScreen *utilsScreen = UtilsScreen::getInstance();
     UtilsApp *utilsApp = UtilsApp::getInstance();
+    UtilsScreen *utilsScreen = UtilsScreen::getInstance();
     UtilsLanguage *utilsLanguage = UtilsLanguage::getInstance();
     if (!utilsScreen || !utilsApp || !utilsLanguage)
     {
@@ -160,8 +162,8 @@ int main(int argc, char *argv[])
 
     // Load the main view
 #if defined(Q_OS_ANDROID) || defined(Q_OS_IOS) || defined(FORCE_MOBILE_UI)
-    ShareUtils *mShareUtils = new ShareUtils();
-    engine_context->setContextProperty("utilsShare", mShareUtils);
+    ShareUtils *utilsShare = new ShareUtils();
+    engine_context->setContextProperty("utilsShare", utilsShare);
     engine.load(QUrl(QStringLiteral("qrc:/qml/MobileApplication.qml")));
 #else
     engine.load(QUrl(QStringLiteral("qrc:/qml/DesktopApplication.qml")));
