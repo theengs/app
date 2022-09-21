@@ -22,8 +22,9 @@ module.exports = {
     docsDir: 'docs',
     docsBranch: 'development',
     lastUpdated: 'Last Updated',
-    editLinks: true,
+    editLinks: false,
     nav: [
+      { text: 'Home', link: 'https://www.theengs.io', target:'_self', rel:''},
       { text: 'App', link: 'https://app.theengs.io', target:'_self', rel:''},
       { text: 'Gateway', link: 'https://gateway.theengs.io', target:'_self', rel:''},
       { text: 'Decoder', link: 'https://decoder.theengs.io', target:'_self', rel:''}

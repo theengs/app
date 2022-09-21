@@ -537,7 +537,7 @@ Item {
 
                 visible: isDesktop // && (settingsManager.systray && element_worker.visible)
 
-                text: qsTr("Theengs will remain active in the system tray, and will wake up at a regular interval to refresh sensor data.")
+                text: (Qt.platform.os !== "osx") ? qsTr("Theengs will remain active in the system tray, and will wake up at a regular interval to refresh sensor data.") : qsTr("Theengs will refresh sensor data at a regular interval.")
                 textFormat: Text.PlainText
                 wrapMode: Text.WordWrap
                 color: Theme.colorSubText
