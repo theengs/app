@@ -8,6 +8,7 @@ T.RangeSlider {
     id: control
     implicitWidth: 200
     implicitHeight: Theme.componentHeight
+    padding: 8
 
     first.value: 0.25
     second.value: 0.75
@@ -19,7 +20,7 @@ T.RangeSlider {
         width: control.availableWidth
         height: 4
         radius: 2
-        color: Theme.colorForeground
+        color: Theme.colorComponentBackground
 
         Rectangle {
             x: (control.first.visualPosition * parent.width)
@@ -37,7 +38,25 @@ T.RangeSlider {
         height: width
         radius: (width / 2)
         color: first.pressed ? Theme.colorSecondary : Theme.colorPrimary
-        border.color: first.pressed ? Theme.colorSecondary : Theme.colorPrimary
+        border.color: Theme.colorPrimary
+
+        MouseArea {
+            anchors.fill: parent
+            anchors.margins: -10
+            z: -1
+
+            acceptedButtons: Qt.NoButton
+            hoverEnabled: (isDesktop && control.enabled)
+            propagateComposedEvents: false
+
+            Rectangle {
+                anchors.fill: parent
+                radius: width
+                color: Theme.colorPrimary
+                opacity: parent.containsMouse ? 0.2 : 0
+                Behavior on opacity { NumberAnimation { duration: 233 } }
+            }
+        }
     }
 
     second.handle: Rectangle {
@@ -47,6 +66,24 @@ T.RangeSlider {
         height: width
         radius: (width / 2)
         color: second.pressed ? Theme.colorSecondary : Theme.colorPrimary
-        border.color: second.pressed ? Theme.colorSecondary : Theme.colorPrimary
+        border.color: Theme.colorPrimary
+
+        MouseArea {
+            anchors.fill: parent
+            anchors.margins: -10
+            z: -1
+
+            acceptedButtons: Qt.NoButton
+            hoverEnabled: (isDesktop && control.enabled)
+            propagateComposedEvents: false
+
+            Rectangle {
+                anchors.fill: parent
+                radius: width
+                color: Theme.colorPrimary
+                opacity: parent.containsMouse ? 0.2 : 0
+                Behavior on opacity { NumberAnimation { duration: 233 } }
+            }
+        }
     }
 }

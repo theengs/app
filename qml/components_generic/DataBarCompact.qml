@@ -84,7 +84,7 @@ Item {
                 }
 
                 Rectangle {
-                    id: item_data
+                    id: rect_data
                     width: {
                         var res = UtilsNumber.normalize(value, valueMin, valueMax) * rect_bg.width
 
@@ -105,7 +105,7 @@ Item {
                     radius: 3
                     color: dataBarCompact.colorForeground
 
-                    Behavior on width { NumberAnimation { duration: 333 } }
+                    Behavior on width { NumberAnimation { duration: animated ? 333 : 0 } }
                 }
 
                 Rectangle {
@@ -119,7 +119,7 @@ Item {
                     color: (limitMin < value) ? Theme.colorLowContrast : Theme.colorHighContrast
                     opacity: (limitMin < value) ? 0.66 : 0.33
 
-                    Behavior on x { NumberAnimation { duration: 333 } }
+                    Behavior on x { NumberAnimation { duration: animated ? 333 : 0 } }
                     Behavior on color { ColorAnimation { duration: animated ? 333 : 0 } }
                     Behavior on opacity { OpacityAnimator { duration: animated ? 333 : 0 } }
                 }
@@ -134,7 +134,7 @@ Item {
                     color: (limitMax < value) ? Theme.colorLowContrast : Theme.colorHighContrast
                     opacity: (limitMax < value) ? 0.66 : 0.33
 
-                    Behavior on x { NumberAnimation { duration: 333 } }
+                    Behavior on x { NumberAnimation { duration: animated ? 333 : 0 } }
                     Behavior on color { ColorAnimation { duration: animated ? 333 : 0 } }
                     Behavior on opacity { OpacityAnimator { duration: animated ? 333 : 0 } }
                 }
@@ -145,13 +145,12 @@ Item {
                 height: 15
                 y: -22
                 x: {
-                    if (item_data.width < ((width / 2) + 8)) { // left
+                    if (rect_data.width < ((textIndicator.width / 2) + 8)) { // left
                         return 4
-                    } else if ((item_bg.width - item_data.width) < (width / 2)) { // right
-                        return item_bg.width - width - 4
-                    } else { // whatever
-                        return item_data.width - (width / 2) - 4
+                    } else if ((rect_bg.width - rect_data.width) < (textIndicator.width / 2)) { // right
+                        return rect_bg.width - textIndicator.width - 4
                     }
+                    return rect_data.width - (textIndicator.width / 2) - 4
                 }
 
                 text: {
@@ -190,14 +189,14 @@ Item {
                         anchors.topMargin: -3
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.horizontalCenterOffset: {
-                            if (item_data.width < ((textIndicator.width / 2) + 8)) { // left
-                                if (item_data.width > 12) {
-                                    return (item_data.width - ((textIndicator.width / 2) + 8))
+                            if (rect_data.width < ((textIndicator.width / 2) + 8)) { // left
+                                if (rect_data.width > 12) {
+                                    return (rect_data.width - ((textIndicator.width / 2) + 8))
                                 } else {
                                     return -((textIndicator.width / 2) - 4)
                                 }
-                            } else if ((item_bg.width - item_data.width) < (textIndicator.width / 2)) { // right
-                                return -((item_bg.width - item_data.width) - (textIndicator.width / 2)) - 4
+                            } else if ((rect_bg.width - rect_data.width) < (textIndicator.width / 2)) { // right
+                                return -((rect_bg.width - rect_data.width) - (textIndicator.width / 2)) - 4
                             }
                             return 0
                         }

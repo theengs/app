@@ -1,5 +1,5 @@
 // UtilsNumber.js
-// Version 7
+// Version 9
 .pragma library
 
 /* ************************************************************************** */
@@ -47,6 +47,10 @@ function mapNumber(n, a1, a2, b1, b2) {
     if (n < a1) n = a1
     if (n > a2) n = a2
 
+    return (b1 + ((n-a1) * (b2-b1)) / (a2-a1))
+}
+
+function mapNumber_nocheck(n, a1, a2, b1, b2) {
     return (b1 + ((n-a1) * (b2-b1)) / (a2-a1))
 }
 
@@ -146,8 +150,8 @@ function weightKiloToPound(weight_kg) {
 /*!
  * Pound to Kilogramme conversion
  */
-function weightPoundToKilog(weight_lbs) {
-    return (weight_lbs / 2.20462262185);
+function weightPoundToKilog(weight_lb) {
+    return (weight_lb / 2.20462262185);
 }
 
 /* ************************************************************************** */

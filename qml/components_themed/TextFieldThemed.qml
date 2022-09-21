@@ -16,8 +16,10 @@ T.TextField {
     padding: 8
     leftPadding: padding + 4
 
-    text: ""
     color: colorText
+    opacity: control.enabled ? 1 : 0.66
+
+    text: ""
     font.pixelSize: Theme.fontSizeComponent
     verticalAlignment: TextInput.AlignVCenter
 
@@ -35,8 +37,8 @@ T.TextField {
     property string colorPlaceholderText: Theme.colorSubText
     property string colorBorder: Theme.colorComponentBorder
     property string colorBackground: Theme.colorComponentBackground
-    property string colorSelectedText: Theme.colorHighContrast
     property string colorSelection: Theme.colorPrimary
+    property string colorSelectedText: Theme.colorHighContrast
 
     PlaceholderText {
         id: placeholder

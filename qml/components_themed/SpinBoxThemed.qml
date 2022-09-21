@@ -27,6 +27,7 @@ T.SpinBox {
 
         radius: Theme.componentRadius
         color: Theme.colorComponentBackground
+        opacity: enabled ? 1 : 0.33
 
         Rectangle {
             width: control.height
@@ -68,17 +69,19 @@ T.SpinBox {
     contentItem: Item {
         Row {
             anchors.centerIn: parent
-            spacing: -2
+            spacing: 2
 
             TextInput {
                 height: control.height
                 anchors.verticalCenter: parent.verticalCenter
 
                 color: Theme.colorComponentText
-                selectionColor: Theme.colorText
+                opacity: enabled ? 1.0 : 0.33
+                selectionColor: Theme.colorPrimary
                 selectedTextColor: "white"
+                selectByMouse: control.editable
 
-                text: control.textFromValue(control.value, control.locale)
+                text: control.value
                 font: control.font
                 horizontalAlignment: Qt.AlignHCenter
                 verticalAlignment: Qt.AlignVCenter
@@ -88,8 +91,17 @@ T.SpinBox {
                 inputMethodHints: Qt.ImhFormattedNumbersOnly
 
                 onEditingFinished: {
-                    control.value = control.valueFromText(text, control.locale)
+                    var v = parseInt(text)
+                    if (text.length <= 0) v = control.from
+                    if (isNaN(v)) v = control.from
+                    if (v < control.from) v = control.from
+                    if (v > control.to) v = control.to
+
+                    control.value = v
+                    text = v
+
                     control.focus = false
+                    control.valueModified()
                 }
             }
 
@@ -99,6 +111,7 @@ T.SpinBox {
 
                 visible: control.legend
                 color: Theme.colorComponentText
+                opacity: 0.8
 
                 text: control.legend
                 textFormat: Text.PlainText
@@ -119,18 +132,19 @@ T.SpinBox {
         height: control.height
         anchors.verticalCenter: control.verticalCenter
         x: control.mirrored ? 0 : control.width - width
+        opacity: enabled ? 1.0 : 0.33
 
         Rectangle {
             anchors.centerIn: parent
             width: UtilsNumber.round2(parent.height * 0.4)
             height: 2
-            color: enabled ? Theme.colorComponentContent : Theme.colorSubText
+            color: Theme.colorComponentContent
         }
         Rectangle {
             anchors.centerIn: parent
             width: 2
             height: UtilsNumber.round2(parent.height * 0.4)
-            color: enabled ? Theme.colorComponentContent : Theme.colorSubText
+            color: Theme.colorComponentContent
         }
     }
 
@@ -144,12 +158,13 @@ T.SpinBox {
         height: control.height
         anchors.verticalCenter: control.verticalCenter
         x: control.mirrored ? control.width - width : 0
+        opacity: enabled ? 1.0 : 0.33
 
         Rectangle {
             anchors.centerIn: parent
             width: UtilsNumber.round2(parent.height * 0.4)
             height: 2
-            color: enabled ? Theme.colorComponentContent : Theme.colorSubText
+            color: Theme.colorComponentContent
         }
     }
 
