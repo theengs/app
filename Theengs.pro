@@ -1,6 +1,7 @@
 TARGET  = Theengs
 
-VERSION = 1.0
+VERSION = 1.1
+DEFINES+= APP_NAME=\\\"$$TARGET\\\"
 DEFINES+= APP_VERSION=\\\"$$VERSION\\\"
 
 CONFIG += c++17

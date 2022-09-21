@@ -3,7 +3,7 @@
 echo "> Theengs App packager (Windows x86_64)"
 
 export APP_NAME="Theengs";
-export APP_VERSION=1.0;
+export APP_VERSION=1.1;
 export GIT_VERSION=$(git rev-parse --short HEAD);
 
 ## CHECKS ######################################################################

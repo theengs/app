@@ -47,7 +47,6 @@ print("> softwares available:")
 print(str(softwares))
 
 ## DEPENDENCIES ################################################################
-
 # These software dependencies are needed for this script to run!
 
 ## linux:
@@ -251,7 +250,6 @@ for TARGET in TARGETS:
         if not os.path.exists(src_dir + FILE_androidopenssl):
             print("> Downloading " + FILE_androidopenssl + "...")
             urllib.request.urlretrieve("https://github.com/KDAB/android_openssl/archive/master.zip", src_dir + FILE_androidopenssl)
-
         if not os.path.isdir("env/" + DIR_androidopenssl):
             zipSSL = zipfile.ZipFile(src_dir + FILE_androidopenssl)
             zipSSL.extractall("env/")
