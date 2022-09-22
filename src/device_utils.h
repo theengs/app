@@ -28,27 +28,6 @@
 
 /* ************************************************************************** */
 
-#define LATEST_KNOWN_FIRMWARE_FLOWERCARE        "3.3.1"
-#define LATEST_KNOWN_FIRMWARE_FLOWERCAREMAX     "3.6.6"
-#define LATEST_KNOWN_FIRMWARE_FLOWERPOWER       "2.0.3"
-#define LATEST_KNOWN_FIRMWARE_ROPOT             "1.1.5"
-#define LATEST_KNOWN_FIRMWARE_PARROTPOT         "0.29.1"
-
-#define LATEST_KNOWN_FIRMWARE_HYGROTEMP_LYWSDCGQ        "00.00.66"
-#define LATEST_KNOWN_FIRMWARE_HYGROTEMP_EINK            "1.1.2_0007"
-#define LATEST_KNOWN_FIRMWARE_HYGROTEMP_MHOC401         "1.0.0_0010"
-#define LATEST_KNOWN_FIRMWARE_HYGROTEMP_CGDK2           "2.1.0"
-#define LATEST_KNOWN_FIRMWARE_HYGROTEMP_CLOCK           "1.1.2_0019"
-#define LATEST_KNOWN_FIRMWARE_HYGROTEMP_ALARM           "?"
-#define LATEST_KNOWN_FIRMWARE_HYGROTEMP_LYWSD03MMC      "1.0.0_0106"
-#define LATEST_KNOWN_FIRMWARE_HYGROTEMP_XMWSDJO4MMC     "2.0.1_0025"
-
-#define LATEST_KNOWN_FIRMWARE_ESP32_AIRQUALITYMONITOR   "0.4"
-#define LATEST_KNOWN_FIRMWARE_ESP32_HIGROW              "0.4"
-#define LATEST_KNOWN_FIRMWARE_ESP32_GEIGERCOUNTER       "0.4"
-
-/* ************************************************************************** */
-
 class DeviceUtils: public QObject
 {
     Q_OBJECT
@@ -62,6 +41,7 @@ public:
         qRegisterMetaType<DeviceUtils::DeviceStatus>("DeviceUtils::DeviceStatus");
         qRegisterMetaType<DeviceUtils::DeviceActions>("DeviceUtils::DeviceActions");
         qRegisterMetaType<DeviceUtils::BluetoothMode>("DeviceUtils::BluetoothMode");
+        qRegisterMetaType<DeviceUtils::BluetoothAdvertisementMode>("DeviceUtils::BluetoothAdvertisementMode");
 
         qmlRegisterType<DeviceUtils>("DeviceUtils", 1, 0, "DeviceUtils");
     }
@@ -74,6 +54,12 @@ public:
     };
     Q_ENUM(BluetoothMode)
 
+    enum BluetoothAdvertisementMode {
+        BLE_ADV_SERVICEDATA         = 0,
+        BLE_ADV_MANUFACTURERDATA    = 1
+    };
+    Q_ENUM(BluetoothAdvertisementMode)
+
     enum DeviceType {
         DEVICE_UNKNOWN              = 0,
 
@@ -81,12 +67,10 @@ public:
         DEVICE_THERMOMETER,
         DEVICE_ENVIRONMENTAL,
 
-        DEVICE_REMOTE               = 8,
+        DEVICE_LIGHT                 = 8,
         DEVICE_BEACON,
+        DEVICE_REMOTE,
         DEVICE_PGP,
-        DEVICE_LAMP,
-        DEVICE_SCALE,
-        DEVICE_MOTION,
 
         DEVICE_THEENGS = 16,
         DEVICE_THEENGS_BEACON,
@@ -161,7 +145,8 @@ public:
     Q_ENUM(DeviceStatus)
 
     enum DeviceActions {
-        ACTION_IDLE                 = 0,  //!< No action
+        ACTION_IDLE                 = 0,  //!< No action, stay connected
+
         ACTION_UPDATE,                    //!< Read sensor latest data
         ACTION_UPDATE_REALTIME,           //!< Stay connected and read sensor data
         ACTION_UPDATE_HISTORY,            //!< Sync sensor history
@@ -171,7 +156,10 @@ public:
         ACTION_WATERING,
         ACTION_CALIBRATE,
 
-        ACTION_REBOOT,
+        ACTION_SCAN = 64,                 //!< Scan for services and their characteristics
+        ACTION_SCAN_WITH_VALUES,          //!< Scan for services and their characteristics and associated values
+
+        ACTION_REBOOT = 256,
         ACTION_SHUTDOWN,
     };
     Q_ENUM(DeviceActions)

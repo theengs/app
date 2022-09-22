@@ -16,11 +16,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DEVICE_ESP32_HIGROW_H
-#define DEVICE_ESP32_HIGROW_H
+#ifndef DEVICE_FLOWERCARE_TUYA_H
+#define DEVICE_FLOWERCARE_TUYA_H
 /* ************************************************************************** */
 
 #include "device_plantsensor.h"
+
+#include <cstdint>
 
 #include <QObject>
 #include <QList>
@@ -31,36 +33,38 @@
 /* ************************************************************************** */
 
 /*!
- * ESP32 HiGrow sensor (with custom firmware).
- * - https://github.com/emericg/esp32-environmental-sensors/tree/master/HiGrow
- *
- * Protocol infos:
- * - https://github.com/emericg/esp32-environmental-sensors/blob/master/HiGrow/doc/higrow-ble-api.md
+ * Tuya "Flower Care" (HHCCJCY10)
  */
-class DeviceEsp32HiGrow: public DevicePlantSensor
+class DeviceFlowerCare_tuya: public DevicePlantSensor
 {
     Q_OBJECT
 
 public:
-    DeviceEsp32HiGrow(const QString &deviceAddr, const QString &deviceName, QObject *parent = nullptr);
-    DeviceEsp32HiGrow(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
-    ~DeviceEsp32HiGrow();
+    DeviceFlowerCare_tuya(const QString &deviceAddr, const QString &deviceName, QObject *parent = nullptr);
+    DeviceFlowerCare_tuya(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
+    ~DeviceFlowerCare_tuya();
+
+    void parseAdvertisementData(const uint16_t adv_mode, const uint16_t adv_id, const QByteArray &value);
 
 private:
     // QLowEnergyController related
     void serviceScanDone();
     void addLowEnergyService(const QBluetoothUuid &uuid);
-    void serviceDetailsDiscovered_infos(QLowEnergyService::ServiceState newState);
-    void serviceDetailsDiscovered_battery(QLowEnergyService::ServiceState newState);
     void serviceDetailsDiscovered_data(QLowEnergyService::ServiceState newState);
 
-    QLowEnergyService *serviceInfos = nullptr;
-    QLowEnergyService *serviceBattery = nullptr;
     QLowEnergyService *serviceData = nullptr;
-    QLowEnergyDescriptor m_notificationDesc;
+    QLowEnergyDescriptor m_notificationHandshake;
+    QLowEnergyDescriptor m_notificationHistory;
 
+    void bleReadDone(const QLowEnergyCharacteristic &c, const QByteArray &value);
     void bleReadNotify(const QLowEnergyCharacteristic &c, const QByteArray &value);
+    void bleWriteDone(const QLowEnergyCharacteristic &c, const QByteArray &value);
+
+    // Handshake
+    QString m_deviceMacAddress;
+    QByteArray m_key_challenge;
+    QByteArray m_key_finish;
 };
 
 /* ************************************************************************** */
-#endif // DEVICE_ESP32_HIGROW_H
+#endif // DEVICE_FLOWERCARE_TUYA_H

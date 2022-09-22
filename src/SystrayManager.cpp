@@ -19,10 +19,9 @@
 #include "SystrayManager.h"
 
 #include <QApplication>
+#include <QQuickWindow>
 #include <QSystemTrayIcon>
 #include <QMenu>
-
-#include <QQuickWindow>
 
 /* ************************************************************************** */
 
@@ -64,11 +63,11 @@ SystrayManager::~SystrayManager()
 
 /* ************************************************************************** */
 
-void SystrayManager::initSettings(QApplication *app, QQuickWindow *view)
+void SystrayManager::setupSystray(QApplication *app, QQuickWindow *view)
 {
     if (!app || !view)
     {
-        qWarning() << "SystrayManager::initSettings() no QApplication or QQuickWindow passed";
+        qWarning() << "SystrayManager::setupSystray() no QApplication or QQuickWindow passed";
         return;
     }
 
@@ -95,6 +94,8 @@ void SystrayManager::initSystray()
         m_sysTrayMenu = new QMenu();
         if (m_sysTrayMenu)
         {
+            m_actionDeviceList = new QAction(tr("Device list"));
+            m_actionSettings = new QAction(tr("Settings") + "        ");
             m_actionShow = new QAction(tr("Hide"));
             if (!m_saved_view ||
                 m_saved_view->isVisible() == false ||
@@ -103,17 +104,16 @@ void SystrayManager::initSystray()
             {
                 m_actionShow->setText(tr("Show"));
             }
+            m_actionExit = new QAction(tr("Quit"));
 
-            m_actionDeviceList = new QAction(tr("Device list"));
-            m_actionSettings = new QAction(tr("Settings"));
-            m_actionExit = new QAction(tr("Exit"));
-            m_sysTrayMenu->addAction(m_actionShow);
             m_sysTrayMenu->addAction(m_actionDeviceList);
             m_sysTrayMenu->addAction(m_actionSettings);
+            m_sysTrayMenu->addSeparator();
+            m_sysTrayMenu->addAction(m_actionShow);
             m_sysTrayMenu->addAction(m_actionExit);
 
             connect(m_actionShow, &QAction::triggered, this, &SystrayManager::showHideButton);
-            connect(m_actionDeviceList, &QAction::triggered, this, &SystrayManager::devicesButton);
+            connect(m_actionDeviceList, &QAction::triggered, this, &SystrayManager::sensorsButton);
             connect(m_actionSettings, &QAction::triggered, this, &SystrayManager::settingsButton);
             connect(m_actionExit, &QAction::triggered, m_saved_app, &QApplication::exit);
         }
@@ -258,11 +258,11 @@ void SystrayManager::showHideButton()
     }
 }
 
-void SystrayManager::devicesButton()
+void SystrayManager::sensorsButton()
 {
     m_saved_view->show();
     m_saved_view->raise();
-    Q_EMIT devicesClicked();
+    Q_EMIT sensorsClicked();
 }
 
 void SystrayManager::settingsButton()

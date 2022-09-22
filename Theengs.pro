@@ -40,6 +40,7 @@ INCLUDEPATH     += $${PWD}/src/thirdparty/TheengsDecoder/src/arduino_json/src/
 SOURCES  += src/main.cpp \
             src/SettingsManager.cpp \
             src/DatabaseManager.cpp \
+            src/MenubarManager.cpp \
             src/SystrayManager.cpp \
             src/NotificationManager.cpp \
             src/AndroidService.cpp \
@@ -56,9 +57,8 @@ SOURCES  += src/main.cpp \
             src/device_thermometer.cpp \
             src/device_environmental.cpp \
             src/devices/device_flowercare.cpp \
-            src/devices/device_flowerpower.cpp \
+            src/devices/device_flowercare_tuya.cpp \
             src/devices/device_ropot.cpp \
-            src/devices/device_parrotpot.cpp \
             src/devices/device_hygrotemp_cgd1.cpp \
             src/devices/device_hygrotemp_cgdk2.cpp \
             src/devices/device_hygrotemp_cgg1.cpp \
@@ -68,11 +68,6 @@ SOURCES  += src/main.cpp \
             src/devices/device_hygrotemp_lywsdcgq.cpp \
             src/devices/device_thermobeacon.cpp \
             src/devices/device_jqjcy01ym.cpp \
-            src/devices/device_wp6003.cpp \
-            src/devices/device_esp32_airqualitymonitor.cpp \
-            src/devices/device_esp32_geigercounter.cpp \
-            src/devices/device_esp32_higrow.cpp \
-            src/devices/device_ess_generic.cpp \
             src/device_theengs.cpp \
             src/devices/device_theengs_generic.cpp \
             src/devices/device_theengs_beacons.cpp \
@@ -83,6 +78,7 @@ SOURCES  += src/main.cpp \
 
 HEADERS  += src/SettingsManager.h \
             src/DatabaseManager.h \
+            src/MenubarManager.h \
             src/SystrayManager.h \
             src/NotificationManager.h \
             src/AndroidService.h \
@@ -90,6 +86,7 @@ HEADERS  += src/SettingsManager.h \
             src/DeviceManager.h \
             src/DeviceFilter.h \
             src/device.h \
+            src/device_firmwares.h \
             src/device_utils.h \
             src/device_utils_theengs.h \
             src/device_infos.h \
@@ -98,9 +95,8 @@ HEADERS  += src/SettingsManager.h \
             src/device_thermometer.h \
             src/device_environmental.h \
             src/devices/device_flowercare.h \
-            src/devices/device_flowerpower.h \
+            src/devices/device_flowercare_tuya.h \
             src/devices/device_ropot.h \
-            src/devices/device_parrotpot.h \
             src/devices/device_hygrotemp_cgd1.h \
             src/devices/device_hygrotemp_cgdk2.h \
             src/devices/device_hygrotemp_cgg1.h \
@@ -110,11 +106,6 @@ HEADERS  += src/SettingsManager.h \
             src/devices/device_hygrotemp_lywsdcgq.h \
             src/devices/device_thermobeacon.h \
             src/devices/device_jqjcy01ym.h \
-            src/devices/device_wp6003.h \
-            src/devices/device_esp32_airqualitymonitor.h \
-            src/devices/device_esp32_geigercounter.h \
-            src/devices/device_esp32_higrow.h \
-            src/devices/device_ess_generic.h \
             src/device_theengs.h \
             src/devices/device_theengs_generic.h \
             src/devices/device_theengs_beacons.h \

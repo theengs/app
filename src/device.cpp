@@ -17,10 +17,10 @@
 */
 
 #include "device.h"
-#include "SettingsManager.h"
 #include "DeviceManager.h"
+#include "SettingsManager.h"
+#include "DatabaseManager.h"
 #include "utils_screen.h"
-#include "utils_versionchecker.h"
 
 #include <cstdlib>
 #include <cmath>
@@ -30,9 +30,9 @@
 #include <QBluetoothServiceInfo>
 #include <QLowEnergyService>
 
+#include <QJsonDocument>
 #include <QSqlQuery>
 #include <QSqlError>
-#include <QJsonDocument>
 
 #include <QDateTime>
 #include <QTimer>
@@ -71,6 +71,14 @@ Device::Device(const QString &deviceAddr, const QString &deviceName, QObject *pa
         else if (m_deviceName.startsWith("6003#")) m_deviceName = "WP6003";
     }
 
+    // Database
+    DatabaseManager *db = DatabaseManager::getInstance();
+    if (db)
+    {
+        m_dbInternal = db->hasDatabaseInternal();
+        m_dbExternal = db->hasDatabaseExternal();
+    }
+
     // Configure timeout timer
     m_timeoutTimer.setSingleShot(true);
     connect(&m_timeoutTimer, &QTimer::timeout, this, &Device::actionTimedout);
@@ -80,7 +88,7 @@ Device::Device(const QString &deviceAddr, const QString &deviceName, QObject *pa
 
     // Configure RSSI timer
     m_rssiTimer.setSingleShot(true);
-    m_rssiTimer.setInterval(12*1000); // 12s
+    m_rssiTimer.setInterval(m_rssiTimeoutInterval*1000);
     connect(&m_rssiTimer, &QTimer::timeout, this, &Device::cleanRssi);
 }
 
@@ -108,6 +116,14 @@ Device::Device(const QBluetoothDeviceInfo &d, QObject *parent) : QObject(parent)
         else if (m_deviceName.startsWith("6003#")) m_deviceName = "WP6003";
     }
 
+    // Database
+    DatabaseManager *db = DatabaseManager::getInstance();
+    if (db)
+    {
+        m_dbInternal = db->hasDatabaseInternal();
+        m_dbExternal = db->hasDatabaseExternal();
+    }
+
     // Configure timeout timer
     m_timeoutTimer.setSingleShot(true);
     connect(&m_timeoutTimer, &QTimer::timeout, this, &Device::actionTimedout);
@@ -117,7 +133,7 @@ Device::Device(const QBluetoothDeviceInfo &d, QObject *parent) : QObject(parent)
 
     // Configure RSSI timer
     m_rssiTimer.setSingleShot(true);
-    m_rssiTimer.setInterval(12*1000); // 12s
+    m_rssiTimer.setInterval(m_rssiTimeoutInterval*1000);
     connect(&m_rssiTimer, &QTimer::timeout, this, &Device::cleanRssi);
 }
 
@@ -190,6 +206,46 @@ void Device::deviceDisconnect()
 }
 
 /* ************************************************************************** */
+/* ************************************************************************** */
+
+void Device::actionConnect()
+{
+    //qDebug() << "Device::actionConnect()" << getAddress() << getName();
+
+    if (!isBusy())
+    {
+        m_ble_action = DeviceUtils::ACTION_IDLE;
+        actionStarted();
+        deviceConnect();
+    }
+}
+
+/* ************************************************************************** */
+
+void Device::actionScan()
+{
+    //qDebug() << "Device::actionScan()" << getAddress() << getName();
+
+    if (!isBusy())
+    {
+        m_ble_action = DeviceUtils::ACTION_SCAN;
+        actionStarted();
+        deviceConnect();
+    }
+}
+
+void Device::actionScanWithValues()
+{
+    //qDebug() << "Device::actionScanWithValues()" << getAddress() << getName();
+
+    if (!isBusy())
+    {
+        m_ble_action = DeviceUtils::ACTION_SCAN_WITH_VALUES;
+        actionStarted();
+        deviceConnect();
+    }
+}
+
 /* ************************************************************************** */
 
 void Device::actionClearData()
@@ -663,8 +719,13 @@ QDateTime Device::getDeviceUptime() const
 
 float Device::getDeviceUptime_days() const
 {
-    float days = (m_device_time / 3600.f / 24.f);
-    if (days < 0.f) days = 0.f;
+    float days = 0;
+
+    if (m_device_time > 0)
+    {
+        days = (m_device_time / 3600.f / 24.f);
+        if (days < 0.f) days = 0.f;
+    }
 
     return days;
 }
@@ -993,7 +1054,6 @@ bool Device::setSetting(const QString &key, QVariant value)
             updateSettings.bindValue(":deviceAddr", getAddress());
 
             status = updateSettings.exec();
-
             if (!status)
             {
                 qWarning() << "> updateSettings.exec() ERROR"
@@ -1006,6 +1066,64 @@ bool Device::setSetting(const QString &key, QVariant value)
 }
 
 /* ************************************************************************** */
+
+void Device::setName(const QString &name)
+{
+    if (!name.isEmpty())
+    {
+        if (m_deviceName != name)
+        {
+            m_deviceName = name;
+            Q_EMIT sensorUpdated();
+        }
+    }
+}
+
+void Device::setModel(const QString &model)
+{
+    if (!model.isEmpty() && m_deviceModel != model)
+    {
+        m_deviceModel = model;
+        Q_EMIT sensorUpdated();
+
+        if (m_dbInternal || m_dbExternal)
+        {
+            QSqlQuery setModel;
+            setModel.prepare("UPDATE devices SET deviceModel = :model WHERE deviceAddr = :deviceAddr");
+            setModel.bindValue(":model", m_deviceModel);
+            setModel.bindValue(":deviceAddr", getAddress());
+
+            if (setModel.exec() == false)
+            {
+                qWarning() << "> setModel.exec() ERROR"
+                           << setModel.lastError().type() << ":" << setModel.lastError().text();
+            }
+        }
+    }
+}
+
+void Device::setModelID(const QString &modelID)
+{
+    if (!modelID.isEmpty() && m_deviceModel != modelID)
+    {
+        m_deviceModelID = modelID;
+        Q_EMIT sensorUpdated();
+
+        if (m_dbInternal || m_dbExternal)
+        {
+            QSqlQuery setModelID;
+            setModelID.prepare("UPDATE devices SET deviceModel = :model WHERE deviceAddr = :deviceAddr");
+            setModelID.bindValue(":model", m_deviceModelID);
+            setModelID.bindValue(":deviceAddr", getAddress());
+
+            if (setModelID.exec() == false)
+            {
+                qWarning() << "> setModelID.exec() ERROR"
+                           << setModelID.lastError().type() << ":" << setModelID.lastError().text();
+            }
+        }
+    }
+}
 
 void Device::setFirmware(const QString &firmware)
 {
@@ -1097,26 +1215,55 @@ void Device::setBatteryFirmware(const int battery, const QString &firmware)
 
 /* ************************************************************************** */
 
-void Device::setName(const QString &name)
+void Device::setCoreConfiguration(const int bleconf)
 {
-    if (!name.isEmpty())
+    //qDebug() << "Device::setCoreConfiguration(" << bleconf << ")";
+
+    if (bleconf > 0)
     {
-        if (m_deviceName != name)
+        if (m_bluetoothCoreConfiguration != bleconf && m_bluetoothCoreConfiguration != 3)
         {
-            m_deviceName = name;
-            Q_EMIT sensorUpdated();
+            if (m_bluetoothCoreConfiguration == 1 && bleconf == 2) m_bluetoothCoreConfiguration = 3;
+            else if (m_bluetoothCoreConfiguration == 2 && bleconf == 1) m_bluetoothCoreConfiguration = 3;
+            else m_bluetoothCoreConfiguration = bleconf;
+
+            Q_EMIT advertisementUpdated();
         }
     }
 }
 
+void Device::setDeviceClass(const int major, const int minor, const int service)
+{
+    //qDebug() << "Device::setDeviceClass() " << info.name() << info.address() << info.minorDeviceClass() << info.majorDeviceClass() << info.serviceClasses();
+
+    if (m_major != major || m_minor != minor || m_service != service)
+    {
+        m_major = major;
+        m_minor = minor;
+        m_service = service;
+
+        Q_EMIT advertisementUpdated();
+    }
+}
+
+/* ************************************************************************** */
+
 void Device::setRssi(const int rssi)
 {
+    if (m_rssiMin > rssi)
+    {
+        m_rssiMin = rssi;
+    }
+    if (m_rssiMax < rssi)
+    {
+        m_rssiMax = rssi;
+    }
+
     if (m_rssi != rssi)
     {
         m_rssi = rssi;
         Q_EMIT rssiUpdated();
     }
-
     m_rssiTimer.start();
 }
 
@@ -1148,6 +1295,11 @@ void Device::deviceConnected()
         // Stop timeout timer, we'll be long...
         m_timeoutTimer.stop();
     }
+    else if (m_ble_action == DeviceUtils::ACTION_IDLE)
+    {
+        // Stop timeout timer, we'll stay connected...
+        m_timeoutTimer.stop();
+    }
     else
     {
         // Restart for an additional 10s+?
@@ -1165,6 +1317,11 @@ void Device::deviceConnected()
     else if (m_ble_action == DeviceUtils::ACTION_UPDATE_HISTORY)
     {
         m_ble_status = DeviceUtils::DEVICE_UPDATING_HISTORY;
+    }
+    else if (m_ble_action == DeviceUtils::ACTION_SCAN ||
+             m_ble_action == DeviceUtils::ACTION_SCAN_WITH_VALUES)
+    {
+        m_ble_status = DeviceUtils::DEVICE_WORKING;
     }
     else if (m_ble_action == DeviceUtils::ACTION_LED_BLINK ||
              m_ble_action == DeviceUtils::ACTION_CLEAR_HISTORY||
@@ -1265,7 +1422,7 @@ void Device::bleReadNotify(const QLowEnergyCharacteristic &, const QByteArray &)
 
 /* ************************************************************************** */
 
-void Device::parseAdvertisementData(const QByteArray &, const uint16_t)
+void Device::parseAdvertisementData(const uint16_t, const uint16_t, const QByteArray &)
 {
     //qDebug() << "Device::parseAdvertisementData(" << m_deviceAddress << ")";
 }

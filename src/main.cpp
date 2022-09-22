@@ -22,6 +22,8 @@
 #include "DeviceManager.h"
 #include "SystrayManager.h"
 #include "NotificationManager.h"
+#include "MenubarManager.h"
+#include "device_utils_theengs.h"
 
 #include "utils_app.h"
 #include "utils_screen.h"
@@ -116,10 +118,11 @@ int main(int argc, char *argv[])
     // Init components
     SettingsManager *sm = SettingsManager::getInstance();
     SystrayManager *st = SystrayManager::getInstance();
-    NotificationManager *nm = NotificationManager::getInstance();
+    MenubarManager *mb = MenubarManager::getInstance();
     MqttManager *mq = MqttManager::getInstance();
+    NotificationManager *nm = NotificationManager::getInstance();
     DeviceManager *dm = new DeviceManager;
-    if (!sm || !st || !nm || !mq || !dm)
+    if (!sm || !st || !mb || !mq || !nm || !dm)
     {
         qWarning() << "Cannot init Theengs components!";
         return EXIT_FAILURE;
@@ -155,6 +158,7 @@ int main(int argc, char *argv[])
     engine_context->setContextProperty("deviceManager", dm);
     engine_context->setContextProperty("settingsManager", sm);
     engine_context->setContextProperty("systrayManager", st);
+    engine_context->setContextProperty("menubarManager", mb);
     engine_context->setContextProperty("mqttManager", mq);
     engine_context->setContextProperty("utilsApp", utilsApp);
     engine_context->setContextProperty("utilsLanguage", utilsLanguage);
@@ -183,14 +187,22 @@ int main(int argc, char *argv[])
 
 #if !defined(Q_OS_ANDROID) && !defined(Q_OS_IOS) // desktop section
 
-    // Set systray?
-    st->initSettings(&app, window);
+    // React to secondary instances
+    QObject::connect(&app, &SingleApplication::instanceStarted, window, &QQuickWindow::show);
+    QObject::connect(&app, &SingleApplication::instanceStarted, window, &QQuickWindow::raise);
+
+    // Systray?
+    st->setupSystray(&app, window);
     if (sm->getSysTray()) st->installSystray();
 
+    // Menu bar
+    mb->setupMenubar(window, dm);
+
 #if defined(Q_OS_MACOS)
+    // dock
     MacOSDockHandler *dockIconHandler = MacOSDockHandler::getInstance();
-    QObject::connect(dockIconHandler, &MacOSDockHandler::dockIconClicked, window, &QQuickWindow::show);
-    QObject::connect(dockIconHandler, &MacOSDockHandler::dockIconClicked, window, &QQuickWindow::raise);
+    dockIconHandler->setupDock(window);
+    engine_context->setContextProperty("utilsDock", dockIconHandler);
 #endif
 
 #endif // desktop section

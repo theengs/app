@@ -57,6 +57,7 @@ class DevicePlantSensor: public DeviceSensor
     int m_plantId = -1;
     QString m_plantName;
     QString m_plantCache;
+    int m_plantCacheVersion = -1;
     QDateTime m_plantStart;
     Plant *m_plant = nullptr;
 
@@ -100,6 +101,7 @@ public:
     // Plant
     Q_INVOKABLE void setPlantName(const QString &plant);
     Q_INVOKABLE void resetPlant();
+    Q_INVOKABLE void resetLimits();
 
     // Journal
     Q_INVOKABLE bool addJournalEntry(const int type, const QDateTime &date, const QString &comment);

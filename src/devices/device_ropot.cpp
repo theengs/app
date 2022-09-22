@@ -17,7 +17,8 @@
 */
 
 #include "device_ropot.h"
-#include "utils/utils_versionchecker.h"
+#include "device_firmwares.h"
+#include "utils_versionchecker.h"
 #include "thirdparty/RC4/rc4.h"
 
 #include <cstdint>
@@ -211,7 +212,7 @@ void DeviceRopot::serviceDetailsDiscovered_data(QLowEnergyService::ServiceState 
             bool need_modechange = true;
             if (m_deviceFirmware.size() == 5)
             {
-                if (Version(m_deviceFirmware) >= Version(LATEST_KNOWN_FIRMWARE_ROPOT))
+                if (VersionChecker(m_deviceFirmware) >= VersionChecker(LATEST_KNOWN_FIRMWARE_ROPOT))
                 {
                     m_firmware_uptodate = true;
                     Q_EMIT sensorUpdated();
@@ -479,8 +480,6 @@ void DeviceRopot::bleReadDone(const QLowEnergyCharacteristic &c, const QByteArra
             int64_t tmcd = (data[0] + (data[1] << 8) + (data[2] << 16) + (data[3] << 24));
             m_lastHistorySync.setSecsSinceEpoch(m_device_wall_time + tmcd);
 
-            float temperature = static_cast<int16_t>(data[4]  + (data[5] << 8)) / 10.f;
-            if (temperature > 100.f) temperature = 0.f; // FIXME negative temperatures aren't properly coded?
             int soil_moisture = data[11];
             int soil_conductivity = data[12] + (data[13] << 8) + (data[14] << 16) + (data[15] << 24);
 
@@ -490,7 +489,6 @@ void DeviceRopot::bleReadDone(const QLowEnergyCharacteristic &c, const QByteArra
             qDebug() << "DATA: 0x" << value.toHex();
             qDebug() << "- soil_moisture:" << soil_moisture;
             qDebug() << "- soil_conductivity:" << soil_conductivity;
-            qDebug() << "- temperature:" << temperature;
 */
             // Update progress
             m_history_entryIndex--;
@@ -576,39 +574,44 @@ void DeviceRopot::bleReadDone(const QLowEnergyCharacteristic &c, const QByteArra
 
 /* ************************************************************************** */
 
-void DeviceRopot::parseAdvertisementData(const QByteArray &value, const uint16_t identifier)
+void DeviceRopot::parseAdvertisementData(const uint16_t adv_mode,
+                                         const uint16_t adv_id,
+                                         const QByteArray &ba)
 {
-    //qDebug() << "DeviceRopot::parseAdvertisementData(" << m_deviceAddress << ")" << value.size();
-    //qDebug() << "DATA: 0x" << value.toHex();
-
+/*
+    qDebug() << "DeviceRopot::parseAdvertisementData(" << m_deviceAddress
+             << " - " << adv_mode << " - 0x" << adv_id << ")";
+    qDebug() << "DATA (" << ba.size() << "bytes)   >  0x" << ba.toHex();
+*/
     // MiBeacon protocol / 12-10 bytes messages
     // RoPot uses 16 bytes messages
 
-    if (value.size() >= 12)
+    if (ba.size() >= 12)
     {
-        const quint8 *data = reinterpret_cast<const quint8 *>(value.constData());
+        const quint8 *data = reinterpret_cast<const quint8 *>(ba.constData());
+        const int data_size = ba.size();
 
         // Save mac address (for macOS and iOS)
         if (!hasAddressMAC())
         {
             QString mac;
 
-            mac += value.mid(10,1).toHex().toUpper();
+            mac += ba.mid(10,1).toHex().toUpper();
             mac += ':';
-            mac += value.mid(9,1).toHex().toUpper();
+            mac += ba.mid(9,1).toHex().toUpper();
             mac += ':';
-            mac += value.mid(8,1).toHex().toUpper();
+            mac += ba.mid(8,1).toHex().toUpper();
             mac += ':';
-            mac += value.mid(7,1).toHex().toUpper();
+            mac += ba.mid(7,1).toHex().toUpper();
             mac += ':';
-            mac += value.mid(6,1).toHex().toUpper();
+            mac += ba.mid(6,1).toHex().toUpper();
             mac += ':';
-            mac += value.mid(5,1).toHex().toUpper();
+            mac += ba.mid(5,1).toHex().toUpper();
 
             setAddressMAC(mac);
         }
 
-        if (value.size() >= 16)
+        if (data_size >= 16)
         {
             int batt = -99;
             float temp = -99.f;
@@ -619,7 +622,7 @@ void DeviceRopot::parseAdvertisementData(const QByteArray &value, const uint16_t
             int fert = -99;
 
             // get data
-            if (data[12] == 4 && value.size() >= 17)
+            if (data[12] == 4 && data_size >= 17)
             {
                 temp = static_cast<int16_t>(data[15] + (data[16] << 8)) / 10.f;
                 if (temp != m_temperature)
@@ -631,7 +634,7 @@ void DeviceRopot::parseAdvertisementData(const QByteArray &value, const uint16_t
                     }
                 }
             }
-            else if (data[12] == 6 && value.size() >= 17)
+            else if (data[12] == 6 && data_size >= 17)
             {
                 humi = static_cast<int16_t>(data[15] + (data[16] << 8)) / 10.f;
                 if (humi != m_humidity)
@@ -643,7 +646,7 @@ void DeviceRopot::parseAdvertisementData(const QByteArray &value, const uint16_t
                     }
                 }
             }
-            else if (data[12] == 7 && value.size() >= 18)
+            else if (data[12] == 7 && data_size >= 18)
             {
                 lumi = static_cast<int32_t>(data[15] + (data[16] << 8) + (data[17] << 16));
                 if (lumi != m_luminosityLux)
@@ -655,7 +658,7 @@ void DeviceRopot::parseAdvertisementData(const QByteArray &value, const uint16_t
                     }
                 }
             }
-            else if (data[12] == 8 && value.size() >= 17)
+            else if (data[12] == 8 && data_size >= 17)
             {
                 moist = static_cast<int16_t>(data[15] + (data[16] << 8));
                 if (moist != m_soilMoisture)
@@ -667,7 +670,7 @@ void DeviceRopot::parseAdvertisementData(const QByteArray &value, const uint16_t
                     }
                 }
             }
-            else if (data[12] == 9 && value.size() >= 17)
+            else if (data[12] == 9 && data_size >= 17)
             {
                 fert = static_cast<int16_t>(data[15] + (data[16] << 8));
                 if (fert != m_soilConductivity)
@@ -679,12 +682,12 @@ void DeviceRopot::parseAdvertisementData(const QByteArray &value, const uint16_t
                     }
                 }
             }
-            else if (data[12] == 10 && value.size() >= 16)
+            else if (data[12] == 10 && data_size >= 16)
             {
                 batt = static_cast<int8_t>(data[15]);
                 setBattery(batt);
             }
-            else if (data[12] == 13 && value.size() >= 19)
+            else if (data[12] == 13 && data_size >= 19)
             {
                 temp = static_cast<int16_t>(data[15] + (data[16] << 8)) / 10.f;
                 if (temp != m_temperature)
@@ -699,7 +702,7 @@ void DeviceRopot::parseAdvertisementData(const QByteArray &value, const uint16_t
                     Q_EMIT dataUpdated();
                 }
             }
-            else if (data[12] == 16 && value.size() >= 17)
+            else if (data[12] == 16 && data_size >= 17)
             {
                 form = static_cast<int16_t>(data[15] + (data[16] << 8)) / 10.f;
                 if (form != m_hcho)
@@ -728,7 +731,7 @@ void DeviceRopot::parseAdvertisementData(const QByteArray &value, const uint16_t
 /*
             if (batt > -99 || temp > -99.f || humi > -99.f || lumi > -99 || form > -99.f || moist > -99 || fert > -99)
             {
-                qDebug() << "* MiBeacon service data:" << getName() << getAddress() << "(" << value.size() << ") bytes";
+                qDebug() << "* MiBeacon service data:" << getName() << getAddress() << "(" << data_size << ") bytes";
                 if (batt > -99) qDebug() << "- battery:" << batt;
                 if (temp > -99) qDebug() << "- temperature:" << temp;
                 if (humi > -99) qDebug() << "- humidity:" << humi;

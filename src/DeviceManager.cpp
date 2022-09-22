@@ -18,11 +18,11 @@
 
 #include "DeviceManager.h"
 #include "DatabaseManager.h"
+#include "SettingsManager.h"
 
 #include "device.h"
 #include "devices/device_flowercare.h"
-#include "devices/device_flowerpower.h"
-#include "devices/device_parrotpot.h"
+#include "devices/device_flowercare_tuya.h"
 #include "devices/device_ropot.h"
 #include "devices/device_hygrotemp_cgd1.h"
 #include "devices/device_hygrotemp_cgdk2.h"
@@ -33,11 +33,6 @@
 #include "devices/device_hygrotemp_lywsdcgq.h"
 #include "devices/device_thermobeacon.h"
 #include "devices/device_jqjcy01ym.h"
-#include "devices/device_wp6003.h"
-#include "devices/device_esp32_airqualitymonitor.h"
-#include "devices/device_esp32_higrow.h"
-#include "devices/device_esp32_geigercounter.h"
-#include "devices/device_ess_generic.h"
 #include "devices/device_theengs_generic.h"
 #include "devices/device_theengs_beacons.h"
 #include "devices/device_theengs_probes.h"
@@ -71,6 +66,7 @@ DeviceManager::DeviceManager(bool daemon)
     m_devices_model = new DeviceModel(this);
     m_devices_filter = new DeviceFilter(this);
     m_devices_filter->setSourceModel(m_devices_model);
+    m_devices_filter->setDynamicSortFilter(true);
     SettingsManager *sm = SettingsManager::getInstance();
     if (sm)
     {
@@ -123,14 +119,10 @@ DeviceManager::DeviceManager(bool daemon)
 
             if (deviceName == "Flower care" || deviceName == "Flower mate" || deviceName == "Grow care garden")
                 d = new DeviceFlowerCare(deviceAddr, deviceName, this);
+            else if (deviceName == "TY")
+                d = new DeviceFlowerCare_tuya(deviceAddr, deviceName, this);
             else if (deviceName == "ropot")
                 d = new DeviceRopot(deviceAddr, deviceName, this);
-            else if (deviceName.startsWith("Flower power"))
-                d = new DeviceFlowerPower(deviceAddr, deviceName, this);
-            else if (deviceName.startsWith("Parrot pot"))
-                d = new DeviceParrotPot(deviceAddr, deviceName, this);
-            else if (deviceName == "HiGrow")
-                d = new DeviceEsp32HiGrow(deviceAddr, deviceName, this);
 
             else if (deviceName == "ThermoBeacon")
                 d = new DeviceThermoBeacon(deviceAddr, deviceName, this);
@@ -149,14 +141,8 @@ DeviceManager::DeviceManager(bool daemon)
             else if (deviceName == "Qingping Temp RH Barometer")
                 d = new DeviceHygrotempCGP1W(deviceAddr, deviceName, this);
 
-            else if (deviceName.startsWith("WP6003"))
-                d = new DeviceWP6003(deviceAddr, deviceName, this);
             else if (deviceName == "JQJCY01YM")
                 d = new DeviceJQJCY01YM(deviceAddr, deviceName, this);
-            else if (deviceName == "AirQualityMonitor")
-                d = new DeviceEsp32AirQualityMonitor(deviceAddr, deviceName, this);
-            else if (deviceName == "GeigerCounter")
-                d = new DeviceEsp32GeigerCounter(deviceAddr, deviceName, this);
 
             // Theengs device maybe?
             if (!d) d = createTheengsDevice_fromDb(deviceName, deviceModel_theengs, deviceAddr);
@@ -231,6 +217,11 @@ bool DeviceManager::isSyncing() const
     return !m_devices_syncing.empty();
 }
 
+bool DeviceManager::isAdvertising() const
+{
+    return m_advertising;
+}
+
 /* ************************************************************************** */
 
 bool DeviceManager::checkBluetooth()
@@ -290,21 +281,7 @@ void DeviceManager::enableBluetooth(bool enforceUserPermissionCheck)
     bool btA_was = m_btA;
     bool btE_was = m_btE;
     bool btP_was = m_btP;
-/*
-    // List Bluetooth adapters
-    QList<QBluetoothHostInfo> adaptersList = QBluetoothLocalDevice::allDevices();
-    if (adaptersList.size() > 0)
-    {
-        for (QBluetoothHostInfo a: adaptersList)
-        {
-            qDebug() << "- Bluetooth adapter:" << a.name();
-        }
-    }
-    else
-    {
-        qDebug() << "> No Bluetooth adapter found...";
-    }
-*/
+
     // Invalid adapter? (ex: plugged off)
     if (m_bluetoothAdapter && !m_bluetoothAdapter->isValid())
     {
@@ -312,10 +289,10 @@ void DeviceManager::enableBluetooth(bool enforceUserPermissionCheck)
         m_bluetoothAdapter = nullptr;
     }
 
-    // We only try the "first" available Bluetooth adapter
-    // TODO // Handle multiple adapters?
+    // Select an adapter (if none currently selected)
     if (!m_bluetoothAdapter)
     {
+        // Correspond to the "first available" or "default" Bluetooth adapter
         m_bluetoothAdapter = new QBluetoothLocalDevice();
         if (m_bluetoothAdapter)
         {
@@ -418,7 +395,7 @@ void DeviceManager::bluetoothHostModeStateChanged(QBluetoothLocalDevice::HostMod
 
 void DeviceManager::bluetoothStatusChanged()
 {
-    qDebug() << "DeviceManager::bluetoothStatusChanged() bt adapter:" << m_btA << " /  bt enabled:" << m_btE;
+    //qDebug() << "DeviceManager::bluetoothStatusChanged() bt adapter:" << m_btA << " /  bt enabled:" << m_btE;
 
     if (m_btA && m_btE)
     {
@@ -444,6 +421,8 @@ void DeviceManager::startBleAgent()
         m_discoveryAgent = new QBluetoothDeviceDiscoveryAgent();
         if (m_discoveryAgent)
         {
+            //qDebug() << "Scanning method supported:" << m_discoveryAgent->supportedDiscoveryMethods();
+
             connect(m_discoveryAgent, QOverload<QBluetoothDeviceDiscoveryAgent::Error>::of(&QBluetoothDeviceDiscoveryAgent::errorOccurred),
                     this, &DeviceManager::deviceDiscoveryError, Qt::UniqueConnection);
         }
@@ -459,7 +438,7 @@ void DeviceManager::checkBluetoothIos()
     // iOS behave differently than all other platforms; there is no way to check
     // adapter status, only to start a device discovery and check for errors
 
-    qDebug() << "DeviceManager::checkBluetoothIos()";
+    //qDebug() << "DeviceManager::checkBluetoothIos()";
 
     m_btA = true;
 
@@ -801,6 +780,11 @@ void DeviceManager::listenDevices_start()
     }
 }
 
+void DeviceManager::listenDevices_stop()
+{
+    //qDebug() << "DeviceManager::listenDevices_stop()";
+}
+
 /* ************************************************************************** */
 /* ************************************************************************** */
 
@@ -831,25 +815,10 @@ void DeviceManager::updateDevice(const QString &address)
 void DeviceManager::refreshDevices_background()
 {
     //qDebug() << "DeviceManager::refreshDevices_background()";
-/*
-    QSqlQuery readLastRun;
-    readLastRun.prepare("SELECT lastRun FROM lastRun");
-    readLastRun.exec();
-    if (readLastRun.first())
-    {
-        QDateTime lastRun = readLastRun.value(0).toDateTime();
-        if (lastRun.isValid())
-        {
-            int mins = static_cast<int>(std::floor(lastRun.secsTo(QDateTime::currentDateTime()) / 60.0));
-            if (mins < 60) return;
-        }
-    }
-*/
 
     // Background refresh (using scan detection)
     // If background location permission and patched QtConnection
     listenDevices_start();
-
 /*
     // Background refresh (using blind connections)
     m_devices_updating_queue.clear();
@@ -908,7 +877,7 @@ void DeviceManager::refreshDevices_check()
     //qDebug() << "DeviceManager::refreshDevices_check()";
 
     // Already updating?
-    if (isScanning() || isUpdating())
+    if (isUpdating() || isScanning())
     {
         // Here we can:             // > do nothing, and queue another refresh
         //refreshDevices_stop();    // > (or) cancel current refresh
@@ -955,7 +924,7 @@ void DeviceManager::refreshDevices_start()
     //qDebug() << "DeviceManager::refreshDevices_start()";
 
     // Already updating?
-    if (isScanning() || isUpdating())
+    if (isUpdating() || isScanning())
     {
         // Here we can:             // > do nothing, and queue another refresh
         //refreshDevices_stop();    // > (or) cancel current refresh
@@ -1336,7 +1305,6 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
     // Various sanity checks
     {
         if (info.rssi() >= 0) return; // we probably just hit the device cache
-        //if (info.rssi() < 0) return; // we just want fake devices
 
         if (m_devices_blacklist.contains(info.address().toString())) return; // device is blacklisted
 
@@ -1359,7 +1327,9 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
     Device *d = nullptr;
 
     // Regular WatchFlower device
-    if (info.name() == "Flower care" || info.name() == "Flower mate" || info.name() == "Grow care garden" ||
+    if (info.name() == "Flower care" || info.name() == "Flower mate" ||
+        info.name() == "Grow care garden" ||
+        info.name() == "TY" ||
         info.name() == "ropot" ||
         info.name().startsWith("Flower power") ||
         info.name().startsWith("Parrot pot") ||
@@ -1380,14 +1350,10 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
         // Create the device
         if (info.name() == "Flower care" || info.name() == "Flower mate" || info.name() == "Grow care garden")
             d = new DeviceFlowerCare(info, this);
+        else if (info.name() == "TY")
+            d = new DeviceFlowerCare_tuya(info, this);
         else if (info.name() == "ropot")
             d = new DeviceRopot(info, this);
-        else if (info.name().startsWith("Flower power"))
-            d = new DeviceFlowerPower(info, this);
-        else if (info.name().startsWith("Parrot pot"))
-            d = new DeviceParrotPot(info, this);
-        else if (info.name() == "HiGrow")
-            d = new DeviceEsp32HiGrow(info, this);
 
         else if (info.name() == "ThermoBeacon")
             d = new DeviceThermoBeacon(info, this);
@@ -1406,14 +1372,8 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
         else if (info.name() == "Qingping Temp RH Barometer")
             d = new DeviceHygrotempCGP1W(info, this);
 
-        else if (info.name().startsWith("6003#"))
-            d = new DeviceWP6003(info, this);
         else if (info.name() == "JQJCY01YM")
             d = new DeviceJQJCY01YM(info, this);
-        else if (info.name() == "AirQualityMonitor")
-            d = new DeviceEsp32AirQualityMonitor(info, this);
-        else if (info.name() == "GeigerCounter")
-            d = new DeviceEsp32GeigerCounter(info, this);
     }
 
     // Theengs device maybe?
@@ -1440,7 +1400,12 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
                 addDevice.bindValue(":deviceAddr", d->getAddress());
                 addDevice.bindValue(":deviceModel", d->getModel());
                 addDevice.bindValue(":deviceName", d->getName());
-                addDevice.exec();
+
+                if (addDevice.exec() == false)
+                {
+                    qWarning() << "> addDevice.exec() ERROR"
+                               << addDevice.lastError().type() << ":" << addDevice.lastError().text();
+                }
             }
         }
 
@@ -1477,6 +1442,17 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
     }
 }
 
+void DeviceManager::disconnectDevices()
+{
+    //qDebug() << "DeviceManager::disconnectDevices()";
+
+    for (auto d: qAsConst(m_devices_model->m_devices))
+    {
+        Device *dd = qobject_cast<Device*>(d);
+        dd->deviceDisconnect();
+    }
+}
+
 void DeviceManager::removeDevice(const QString &address)
 {
     for (auto d: qAsConst(m_devices_model->m_devices))
@@ -1499,6 +1475,7 @@ void DeviceManager::removeDevice(const QString &address)
                 QSqlQuery removeDevice;
                 removeDevice.prepare("DELETE FROM devices WHERE deviceAddr = :deviceAddr");
                 removeDevice.bindValue(":deviceAddr", dd->getAddress());
+
                 if (removeDevice.exec() == false)
                 {
                     qWarning() << "> removeDevice.exec() ERROR"

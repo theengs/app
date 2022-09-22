@@ -33,7 +33,7 @@
 /* ************************************************************************** */
 
 /*!
- * Xiaomi "Flower Care" or VegTrug "Grow Care Home" (HHCCJCY01, HHCCJCY10)
+ * Xiaomi "Flower Care" or VegTrug "Grow Care Home" (HHCCJCY01)
  * Xiaomi "Flower Care Max" (HHCCJCY09) or VegTrug "Grow Care Garden" (GCLS002)
  */
 class DeviceFlowerCare: public DevicePlantSensor
@@ -45,7 +45,7 @@ public:
     DeviceFlowerCare(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
     ~DeviceFlowerCare();
 
-    void parseAdvertisementData(const QByteArray &value, const uint16_t identifier);
+    void parseAdvertisementData(const uint16_t adv_mode, const uint16_t adv_id, const QByteArray &value);
 
     Q_INVOKABLE virtual bool hasHistory() const;
 
