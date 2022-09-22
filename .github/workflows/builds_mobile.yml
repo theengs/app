@@ -3,14 +3,16 @@
 #-------------------------------------------------------------------------------
 
 name: "Mobile CI builds"
-on: workflow_dispatch
+on:
+  push:
+  pull_request:
 
 #-------------------------------------------------------------------------------
 # Define application name & version
 #-------------------------------------------------------------------------------
 
 env:
-  VERSION: "1.0"
+  VERSION: "1.1"
   APPLICATION: "Theengs"
   QMAKE_PROJECT: "Theengs.pro"
 
@@ -48,24 +50,20 @@ jobs:
 
       # Install Qt (desktop)
       - name: Install Qt (desktop)
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v3
         with:
-          aqtversion: '==2.1.0'
-          version: '6.3.1'
+          version: '6.3.2'
           modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
-          cached: 'false'
 
       # Install Qt (Android)
       - name: Install Qt (Android)
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v3
         with:
-          aqtversion: '==2.1.0'
-          version: '6.3.1'
+          version: '6.3.2'
           host: 'linux'
           target: 'android'
           arch: 'android_arm64_v8a'
           modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
-          cached: 'false'
 
       # Setup env
       - name: Setup env
@@ -101,23 +99,20 @@ jobs:
 
       # Install Qt (desktop)
       - name: Install Qt (desktop)
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v3
         with:
-          aqtversion: '==2.1.0'
-          version: '6.3.0'
+          version: '6.3.2'
           modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
           cached: 'false'
 
       # Install Qt (iOS)
       - name: Install Qt (iOS)
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v3
         with:
-          aqtversion: '==2.1.0'
-          version: '6.3.0'
+          version: '6.3.2'
           host: 'mac'
           target: 'ios'
           modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
-          cached: 'false'
 
       # Setup env
       - name: Setup env
@@ -130,7 +125,7 @@ jobs:
       - name: Build dependencies (from contribs script)
         run: |
              cd contribs/
-             python3 contribs_builder.py --qt-directory ${{env.Qt6_DIR}}/../.. --qt-version 6.3.0 --targets=ios_armv8
+             python3 contribs_builder.py --qt-directory ${{env.Qt6_DIR}}/../.. --qt-version 6.3.2 --targets=ios_armv8
              cd ..
 
       # Build application

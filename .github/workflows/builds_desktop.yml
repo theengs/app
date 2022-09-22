@@ -3,7 +3,9 @@
 #--------------------------------------------------------------------------------
 
 name: "Desktop CI builds"
-on: workflow_dispatch
+on:
+  push:
+  pull_request:
 
 #--------------------------------------------------------------------------------
 # Define application name & version
@@ -32,12 +34,11 @@ jobs:
 
       # Install Qt
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v3
         with:
-          aqtversion: '==2.1.0'
-          version: '6.3.1'
+          version: '6.3.2'
           modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
-          cached: 'false'
+
 
       # Install dependencies (from package manager)
       - name: Install dependencies (from package manager)
@@ -88,12 +89,10 @@ jobs:
 
       # Install Qt
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v3
         with:
-          aqtversion: '==2.1.0'
-          version: '6.3.1'
+          version: '6.3.2'
           modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
-          cached: 'false'
 
       # Build dependencies (from contribs script)
       - name: Build dependencies (from contribs script)
@@ -141,12 +140,10 @@ jobs:
 
       # Install Qt
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v3
         with:
-          aqtversion: '==2.1.0'
-          version: '6.3.1'
+          version: '6.3.2'
           modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
-          cached: 'false'
 
       # Install NSIS (already installed in 'windows-2022')
       #- name: Install NSIS
