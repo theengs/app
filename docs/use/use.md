@@ -2,10 +2,71 @@
 
 ## Android
 
-The Android operating system requires applications to ask for device location permission in order to scan for nearby Bluetooth Low Energy sensors. Android 10+ will ask for _ACCESS_FINE_LOCATION_, while Android 6+ will only ask for _ACCESS_COARSE_LOCATION_.  
-The location permission is only needed while scanning for new sensors, not for updating data. You can learn more on Android developer [website](https://developer.android.com/guide/topics/connectivity/bluetooth/permissions#declare-android11-or-lower).
+The Android operating system requires applications to ask for device location permission in order to scan for nearby Bluetooth Low Energy sensors.
+You would need to go into the app information (long press on the icon -> (i)) so as to configure the app permissions properly.
 
-Some devices also require the GPS to be turned on while scanning for new sensors. This requirement is not documented and there is not much that can be done about it.  
+### Android 8+
+* Click on Permissions
+* Activate "your location"
+
+![location](./../img/Theengs-app-location-permission-8.png)
+
+You can now use the application. If you want to run the application in the background follow the process below:
+* Go back
+* Click on "Battery"
+* Click on "Power saving exclusions"
+* Activate the exclusion for Theengs
+
+![location](./../img/Theengs-app-battery-excluded.png)
+
+* And finally go into the app settings and toggle "Enable background updates"
+
+![background](./../img/Theengs-app-background-updates.png)
+
+### Android 10+
+#### Running when displayed only
+* Click on Permissions
+* Click on Location permission
+* Select "Allow only while using the app", if you want the app to update sensors data only when the app is running at the front
+* Enable "Use precise location" if you have this option
+
+#### Running in the background (experimental)
+If you want the app to retrieve data in the background you will need to do the following steps:
+* Click on "Permissions"
+* Click on "Location"
+* Select "Allow all the time" if you want to update the sensors data in the background
+* Enable "Use precise location" if you have this option
+
+![location](./../img/Theengs-app-location-permission.png)
+
+* Go back
+* Click on "Nearby devices"
+* Click on "Allow"
+
+![nearby](./../img/Theengs-app-nearby-permission.png)
+
+* Go back 2 times
+* Deactivate "Remove permissions if app is unused"
+
+![unused](./../img/Theengs-app-unused-permission.png)
+
+* Click on battery
+
+![battery](./../img/Theengs-app-battery.png)
+
+* Select unrestricted
+
+![unrestricted](./../img/Theengs-app-battery-unrestricted.png)
+
+* And finally go into the app settings and toggle "Enable background updates"
+
+![background](./../img/Theengs-app-background-updates.png)
+
+Some devices also require the GPS to be turned on while scanning for new sensors.
+
+::: tip Note
+Android has drastically reduced the capabilities of apps to run in the background, as a consequence the Update interval set into the app may not be followed by the operating system.
+:::
 
 ## iOS
 
