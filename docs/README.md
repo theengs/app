@@ -3,7 +3,7 @@ It retrieves data from a wide range of [BLE sensors](prerequisites/devices); LYW
 
 The app uses the bluetooth component of your Android Phone to read the sensor data.
 
-<a href='https://play.google.com/store/apps/details?id=com.theengs.app&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' width=30%//></a>
+<a href='https://play.google.com/store/apps/details?id=com.theengs.app&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' width=50%//></a>
 
 ![Iot](./img/Theengs-app-home-reduced-1280.png)
 
@@ -19,8 +19,14 @@ For more information view the [documentation](https://app.theengs.io/)
 
 * [Qt](https://www.qt.io) ([LGPL 3](https://www.gnu.org/licenses/lgpl-3.0.txt))
 * [QtMqtt](https://www.qt.io) ([GPL 3](https://www.gnu.org/licenses/gpl-3.0.txt))
+* [Arduino Json](https://arduinojson.org/) ([MIT](https://opensource.org/licenses/MIT))
+* [Decoder](https://decoder.theengs.io/) ([GPL 3](https://www.gnu.org/licenses/gpl-3.0.txt))
 * [StatusBar](https://github.com/jpnurmi/statusbar) ([MIT](https://opensource.org/licenses/MIT))
 * [ekkesSHAREexample](https://github.com/ekke/ekkesSHAREexample) ([license](https://github.com/ekke/ekkesSHAREexample/blob/master/LICENSE))
 * [SingleApplication](https://github.com/itay-grudev/SingleApplication) ([MIT](https://opensource.org/licenses/MIT))
 * RC4 code from Christophe Devine ([GPL 2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt))
 * Graphical resources: [assets/COPYING](assets/COPYING)
+
+::: tip Note
+Theengs app read data "broadcasted" by the devices and does not connect to them, only the Mi Flora and ThermoBeacon historical data are retrieved through a connection. For the rest of the devices the data is read real time when the sensor emit it. 
+:::
