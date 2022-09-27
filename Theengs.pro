@@ -180,7 +180,6 @@ OBJECTS_DIR = build/$${QT_ARCH}/
 MOC_DIR     = build/$${QT_ARCH}/
 RCC_DIR     = build/$${QT_ARCH}/
 UI_DIR      = build/$${QT_ARCH}/
-QMLCACHE_DIR= build/$${QT_ARCH}/
 
 DESTDIR     = bin/
 

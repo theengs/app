@@ -44,7 +44,14 @@ ApplicationWindow {
         windowInstance: appWindow
         Component.onCompleted: {
             // Make sure we handle window visibility correctly
-            visibility = settingsManager.initialVisibility
+            if (startMinimized) {
+                visible = false
+                if (settingsManager.systray) {
+                    visibility = Window.Hidden
+                } else {
+                    visibility = Window.Minimized
+                }
+            }
         }
     }
 
@@ -169,6 +176,14 @@ ApplicationWindow {
     }
 
     Connections {
+        target: menubarManager
+        function onSensorsClicked() { appContent.state = "DeviceList" }
+        function onSettingsClicked() { appContent.state = "Settings" }
+        function onAboutClicked() { appContent.state = "About" }
+        function onTutorialClicked() { screenTutorial.loadScreenFrom(appContent.state) }
+    }
+
+    Connections {
         target: Qt.application
         function onStateChanged() {
             switch (Qt.application.state) {
@@ -200,13 +215,24 @@ ApplicationWindow {
 
     onVisibilityChanged: (visibility) => {
         //console.log("onVisibilityChanged(" + visibility + ")")
-        if (visibility === Window.Minimized || visibility === Window.Hidden) {
-            deviceManager.refreshDevices_stop()
+
+        if (visibility === Window.Hidden) {
+            if (settingsManager.systray && Qt.platform.os === "osx") {
+                utilsDock.toggleDockIconVisibility(false)
+            }
         }
+        if (visibility === Window.AutomaticVisibility ||
+            visibility === Window.Minimized || visibility === Window.Maximized ||
+            visibility === Window.Windowed || visibility === Window.FullScreen) {
+             if (settingsManager.systray && Qt.platform.os === "osx") {
+                 utilsDock.toggleDockIconVisibility(true)
+             }
+         }
     }
 
     onClosing: (close) => {
         //console.log("onClosing(" + close + ")")
+
         if (settingsManager.systray || Qt.platform.os === "osx") {
             close.accepted = false
             appWindow.hide()

@@ -59,10 +59,6 @@ ApplicationWindow {
             return
         }
 
-        // Statusbar text color hack (iOS)
-        mobileUI.statusbarTheme = (Theme.themeStatusbar === 0) ? 1 : 0
-        mobileUI.statusbarTheme = Theme.themeStatusbar
-
         // Margins
         var safeMargins = utilsScreen.getSafeAreaMargins(quickWindow)
         if (safeMargins["total"] === safeMargins["top"]) {
@@ -148,7 +144,6 @@ ApplicationWindow {
         id: appDrawer
         width: (appWindow.screenOrientation === Qt.PortraitOrientation || appWindow.width < 480) ? 0.8 * appWindow.width : 0.5 * appWindow.width
         height: appWindow.height
-
         interactive: (appContent.state !== "Tutorial")
     }
 

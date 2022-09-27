@@ -56,6 +56,8 @@ int main(int argc, char *argv[])
 {
     // Arguments parsing ///////////////////////////////////////////////////////
 
+    bool start_minimized = false;
+    bool refresh_only = false;
     bool background_service = false;
     for (int i = 1; i < argc; i++)
     {
@@ -63,8 +65,12 @@ int main(int argc, char *argv[])
         {
             //qDebug() << "> arg >" << argv[i];
 
+            if (QString::fromLocal8Bit(argv[i]) == "--start-minimized")
+                start_minimized = true;
             if (QString::fromLocal8Bit(argv[i]) == "--service")
                 background_service = true;
+            if (QString::fromLocal8Bit(argv[i]) == "--refresh")
+                refresh_only = true;
         }
     }
 
@@ -163,6 +169,7 @@ int main(int argc, char *argv[])
     engine_context->setContextProperty("utilsApp", utilsApp);
     engine_context->setContextProperty("utilsLanguage", utilsLanguage);
     engine_context->setContextProperty("utilsScreen", utilsScreen);
+    engine_context->setContextProperty("startMinimized", (start_minimized || sm->getMinimized()));
 
     // Load the main view
 #if defined(Q_OS_ANDROID) || defined(Q_OS_IOS) || defined(FORCE_MOBILE_UI)
