@@ -442,7 +442,7 @@ void DeviceManager::checkBluetoothIos()
 
     m_btA = true;
 
-    if (m_discoveryAgent && !m_discoveryAgent->isActive())
+    if (m_discoveryAgent)
     {
         disconnect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
                    this, &DeviceManager::addBleDevice);
@@ -487,10 +487,17 @@ void DeviceManager::deviceDiscoveryError(QBluetoothDeviceDiscoveryAgent::Error e
     else if (error == QBluetoothDeviceDiscoveryAgent::InputOutputError)
     {
         qWarning() << "deviceDiscoveryError() Writing or reading from the device resulted in an error.";
+
+        m_btA = false;
+        m_btE = false;
+        refreshDevices_stop();
+        Q_EMIT bluetoothChanged();
     }
     else if (error == QBluetoothDeviceDiscoveryAgent::InvalidBluetoothAdapterError)
     {
         qWarning() << "deviceDiscoveryError() Invalid Bluetooth adapter.";
+
+        m_btA = false;
 
         if (m_btE)
         {
@@ -511,10 +518,20 @@ void DeviceManager::deviceDiscoveryError(QBluetoothDeviceDiscoveryAgent::Error e
     else if (error == QBluetoothDeviceDiscoveryAgent::UnsupportedDiscoveryMethod)
     {
         qWarning() << "deviceDiscoveryError() Unsupported Discovery Method.";
+
+        m_btE = false;
+        m_btP = false;
+        refreshDevices_stop();
+        Q_EMIT bluetoothChanged();
     }
     else
     {
         qWarning() << "An unknown error has occurred.";
+
+        m_btA = false;
+        m_btE = false;
+        refreshDevices_stop();
+        Q_EMIT bluetoothChanged();
     }
 
     if (m_scanning)
@@ -562,6 +579,7 @@ void DeviceManager::bluetoothHostModeStateChangedIos()
 
     if (!m_btE)
     {
+        m_btA = true;
         m_btE = true;
         Q_EMIT bluetoothChanged();
     }
@@ -858,7 +876,7 @@ void DeviceManager::refreshDevices_listen()
     {
         // Here we can:             // > do nothing, and queue another refresh
         //refreshDevices_stop();    // > (or) cancel current refresh
-        return;                     // > (or) bail
+        //return;                     // > (or) bail
     }
 
     // Make sure we have Bluetooth and devices
