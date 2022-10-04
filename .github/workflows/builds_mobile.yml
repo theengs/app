@@ -15,6 +15,7 @@ env:
   VERSION: "1.1"
   APPLICATION: "Theengs"
   QMAKE_PROJECT: "Theengs.pro"
+  QT_VERSION: "6.3.2"
 
 #-------------------------------------------------------------------------------
 # Workflow jobs
@@ -52,14 +53,14 @@ jobs:
       - name: Install Qt (desktop)
         uses: jurplel/install-qt-action@v3
         with:
-          version: '6.3.2'
+          version: ${{env.QT_VERSION}}
           modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
 
       # Install Qt (Android)
       - name: Install Qt (Android)
         uses: jurplel/install-qt-action@v3
         with:
-          version: '6.3.2'
+          version: ${{env.QT_VERSION}}
           host: 'linux'
           target: 'android'
           arch: 'android_arm64_v8a'
@@ -77,7 +78,7 @@ jobs:
       - name: Build dependencies (from contribs script)
         run: |
              cd contribs/
-             python3 contribs_builder.py --qt-directory ${{env.Qt6_DIR}}/../.. --targets=android_armv8
+             python3 contribs_builder.py --qt-directory ${{env.Qt6_DIR}}/../.. --qt-version ${{env.QT_VERSION}} --targets=android_armv8
              cd ..
 
       # Build application
@@ -101,15 +102,14 @@ jobs:
       - name: Install Qt (desktop)
         uses: jurplel/install-qt-action@v3
         with:
-          version: '6.3.2'
+          version: ${{env.QT_VERSION}}
           modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
-          cached: 'false'
 
       # Install Qt (iOS)
       - name: Install Qt (iOS)
         uses: jurplel/install-qt-action@v3
         with:
-          version: '6.3.2'
+          version: ${{env.QT_VERSION}}
           host: 'mac'
           target: 'ios'
           modules: qtconnectivity qtwebsockets qtcharts qtimageformats qt5compat
@@ -125,7 +125,7 @@ jobs:
       - name: Build dependencies (from contribs script)
         run: |
              cd contribs/
-             python3 contribs_builder.py --qt-directory ${{env.Qt6_DIR}}/../.. --qt-version 6.3.2 --targets=ios_armv8
+             python3 contribs_builder.py --qt-directory ${{env.Qt6_DIR}}/../.. --qt-version ${{env.QT_VERSION}} --targets=ios_armv8
              cd ..
 
       # Build application
