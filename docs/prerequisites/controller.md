@@ -10,6 +10,10 @@ There are many choices of brokers, here are some of the most popular:
 * [HiveMQ](https://www.hivemq.com/hivemq/features/)
 * Embedded MQTT brokers (Home Assistant and OpenHAB)
 
+::: tip Note
+MQTT broker should be installed on a local network or accessed through a VPN as Theengs app only support unencrypted connexion on port 1883 for now.
+:::
+
 This [wikipedia list](https://en.wikipedia.org/wiki/Comparison_of_MQTT_implementations) gives you more details about the different choices you have.
 This [github list](https://github.com/mqtt/mqtt.github.io/wiki/libraries) seems to be the most exhaustive ones.
 Here is also some [ideas of criteria](https://www.hivemq.com/blog/top-10-mqtt-broker-criteria/) from HiveMQ.
