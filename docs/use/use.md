@@ -66,6 +66,7 @@ Some devices also require the GPS to be turned on while scanning for new sensors
 
 ::: tip Note
 Android has drastically reduced the capabilities of apps to run in the background, as a consequence the Update interval set into the app may not be followed by the operating system.
+You may also have more regular results when the device is charging.
 :::
 
 ## iOS
