@@ -56,12 +56,16 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
         if (dd && dd->getAddress() == info.deviceUuid().toString())
         {
             QString mac_qstr = dd->getSetting("mac").toString();
-            if (mac_qstr.isEmpty()) return;
+            //if (mac_qstr.isEmpty()) continue;
 #else
         if (dd && dd->getAddress() == info.address().toString())
         {
             QString mac_qstr = info.address().toString();
 #endif
+
+            dd->setName(info.name());
+            dd->setRssi(info.rssi());
+
             QString mac_qstr_clean = mac_qstr;
             mac_qstr_clean.remove(':');
             std::string mac_str = mac_qstr.toStdString();
