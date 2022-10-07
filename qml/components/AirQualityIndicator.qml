@@ -39,7 +39,7 @@ Item {
             arcBegin: 0
             arcEnd: ((indicatorAirQuality.limitMin/indicatorAirQuality.valueMax) * 270) - 2
             arcOffset: 225
-            arcColor: (Theme.currentTheme === ThemeEngine.THEME_PLANT ? Theme.colorLightGreen : Theme.colorGreen)
+            arcColor: Theme.colorGreen
             arcOpacity: 1
         }
         ProgressCircle { // arcWarning
