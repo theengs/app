@@ -126,7 +126,7 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
     if (obj["model"].toString() == "TPMS")
     {
         tmps_idx = obj["count"].toInt();
-        float pres = obj["pres"].toDouble() * 10.0;
+        float pres = obj["pres"].toDouble();
         float temp = obj["tempc"].toDouble();
         int batt = obj["batt"].toInt();
         bool alarm = obj["alarm"].toBool();

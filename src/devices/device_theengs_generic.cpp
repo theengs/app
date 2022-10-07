@@ -147,8 +147,8 @@ void DeviceTheengsGeneric::parseTheengsAdvertisement(const QString &json)
     }
 
     if (obj.contains("pres")) {
-        if (m_pressure != obj["pres"].toDouble() * 10.0) {
-            m_pressure = obj["pres"].toDouble() * 10.0;
+        if (m_pressure != obj["pres"].toDouble()) {
+            m_pressure = obj["pres"].toDouble();
             Q_EMIT dataUpdated();
         }
     }
