@@ -113,7 +113,7 @@ Item {
                         color: Theme.colorText
                     }
 
-                    SwitchThemedMobile {
+                    SwitchThemedDesktop {
                         anchors.verticalCenter: parent.verticalCenter
 
                         checked: settingsManager.mqtt
