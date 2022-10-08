@@ -151,7 +151,7 @@ bool DevicePlantSensor::addDatabaseRecord(const int64_t timestamp,
             }
             else
             {
-                qWarning() << "> addDatabaseRecord_plants(" << m_deviceName << ") ERROR"
+                qWarning() << "> addData(" << m_deviceName << ") ERROR"
                            << addData.lastError().type() << ":" << addData.lastError().text();
             }
         }

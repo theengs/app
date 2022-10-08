@@ -31,7 +31,7 @@ Popup {
     signal confirmed()
 
     onAboutToShow: {
-        textInputMacAddr.text = selectedDevice.deviceAddrMAC
+        textInputMacAddr.text = selectedDevice.deviceAddressMAC
         textInputMacAddr.focus = false
     }
     onAboutToHide: {
@@ -173,7 +173,7 @@ Popup {
 
                     onClicked: {
                         if (selectedDevice) {
-                             selectedDevice.deviceAddrMAC = textInputMacAddr.text
+                             selectedDevice.deviceAddressMAC = textInputMacAddr.text
                         }
                         textInputMacAddr.focus = false
                         popupMacAddress.confirmed()

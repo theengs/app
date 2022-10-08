@@ -80,8 +80,7 @@ DeviceFlowerCare::~DeviceFlowerCare()
 bool DeviceFlowerCare::hasHistory() const
 {
 #if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
-    if (hasSetting("mac")) return true;
-    return false;
+    return !m_deviceAddressMAC.isEmpty();
 #endif
 
     return true;
@@ -276,7 +275,7 @@ void DeviceFlowerCare::serviceDetailsDiscovered_handshake(QLowEnergyService::Ser
         {
             QString addr = m_deviceAddress;
 #if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
-            addr = getSetting("mac").toString();
+            addr = getAddressMAC();
 #endif
             QByteArray mac = QByteArray::fromHex(addr.remove(':').toLatin1());
 
