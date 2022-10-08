@@ -171,7 +171,7 @@ ApplicationWindow {
 
     Connections {
         target: systrayManager
-        function onDevicesClicked() { appContent.state = "DeviceList" }
+        function onSensorsClicked() { appContent.state = "DeviceList" }
         function onSettingsClicked() { appContent.state = "Settings" }
     }
 
@@ -180,7 +180,6 @@ ApplicationWindow {
         function onSensorsClicked() { appContent.state = "DeviceList" }
         function onSettingsClicked() { appContent.state = "Settings" }
         function onAboutClicked() { appContent.state = "About" }
-        function onTutorialClicked() { screenTutorial.loadScreenFrom(appContent.state) }
     }
 
     Connections {
