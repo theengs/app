@@ -13,7 +13,7 @@ Item {
     property var boxDevice: pointer
     property bool hasHygro: boxDevice.isPlantSensor
 
-    property bool wideAssMode: (width >= 380) || (isTablet && width >= 480)
+    property bool wideAssMode: (width >= 380) || (isPhone && width >= 360) || (isTablet && width >= 480)
     property bool bigAssMode: false
     property bool singleColumn: true
 
