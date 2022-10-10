@@ -137,7 +137,7 @@ bool MqttManager::publishConfig(QString topic, QString str)
             //m_mqttLog.push_front(l);
             //Q_EMIT logChanged();
 
-            m_mqttclient->publish(t, m);
+            m_mqttclient->publish(t, m, 0, true);
             return true;
         }
     }

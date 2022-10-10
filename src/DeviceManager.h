@@ -224,7 +224,9 @@ public:
 
     void invalidate();
 
-    // THEENGS
+    // THEENGS /////////////////////////////////////////////////////////////////
+
+public:
     static Q_INVOKABLE QString getDeviceNameTheengs(const QString &modelid);
     static Q_INVOKABLE QString getDeviceModelTheengs(const QString &modelid);
     static Q_INVOKABLE QString getDeviceBrandTheengs(const QString &modelid);
@@ -232,7 +234,7 @@ public:
     QString getDeviceModelIdTheengs_fromAdv(const QBluetoothDeviceInfo &deviceInfo);
 
 public slots:
-     void discoverTheengsDevices();
+    void discoverTheengsDevices();
 };
 
 /* ************************************************************************** */

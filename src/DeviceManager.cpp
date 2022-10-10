@@ -1441,7 +1441,8 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
 
             // Device discovery
             DeviceTheengs::createDiscoveryMQTT(deviceAddr, deviceName, deviceModel_theengs,
-                                               deviceManufacturer_theengs, device_props);
+                                               deviceManufacturer_theengs, device_props,
+                                               m_bluetoothAdapter->address().toString());
         }
 
         // Connect and handle update

@@ -76,4 +76,58 @@ public:
 };
 
 /* ************************************************************************** */
+
+//! List of classes available in Home Assistant
+const QStringList availableHASSClasses = {
+    "battery",
+    "carbon_monoxide",
+    "carbon_dioxide",
+    "pm10",
+    "pm25",
+    "humidity",
+    "illuminance",
+    "signal_strength",
+    "temperature",
+    "timestamp",
+    "pressure",
+    "power",
+    "current",
+    "energy",
+    "power_factor",
+    "voltage"
+};
+
+//! List of units available in Home Assistant
+const QStringList availableHASSUnits = {
+    "W",
+    "kW",
+    "V",
+    "kWh",
+    "A",
+    "W",
+    "°C",
+    "°F",
+    "ms",
+    "s",
+    "hPa",
+    "L",
+    "kg",
+    "lb",
+    "µS/cm",
+    "ppm",
+    "μg/m³",
+    "m³",
+    "mg/m³",
+    "m/s²",
+    "lx",
+    "Ω",
+    "%",
+    "bar",
+    "bpm",
+    "dB",
+    "dBm",
+    "B"
+};
+
+/* ************************************************************************** */
 #endif // DEVICE_UTILS_THEENGS_H

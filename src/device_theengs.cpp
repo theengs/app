@@ -378,7 +378,7 @@ void DeviceTheengs::parseTheengsAdvertisement(const QString &json)
 
 bool DeviceTheengs::createDiscoveryMQTT(const QString &deviceAddr, const QString &deviceName,
                                         const QString &deviceModel, const QString &deviceManufacturer,
-                                        const QString &devicePropsJson)
+                                        const QString &devicePropsJson, const QString &appAddr)
 {
     //qDebug() << "DeviceTheengs::createDiscoveryMQTT() deviceName" << deviceName << "  -  " << devicePropsJson;
     bool status = false;
@@ -387,6 +387,9 @@ bool DeviceTheengs::createDiscoveryMQTT(const QString &deviceAddr, const QString
     SettingsManager *sm = SettingsManager::getInstance();
     if (mqtt && mqtt->getStatus() && sm)
     {
+        QString appAddrClean = appAddr;
+        appAddrClean.remove(':');
+
         QString deviceAddrClean = deviceAddr;
         deviceAddrClean.remove(':');
 
@@ -406,13 +409,13 @@ bool DeviceTheengs::createDiscoveryMQTT(const QString &deviceAddr, const QString
         deviceObject.insert("manufacturer", QJsonValue::fromVariant(deviceManufacturer));
         deviceObject.insert("model", QJsonValue::fromVariant(deviceModel));
         deviceObject.insert("name", QJsonValue::fromVariant(deviceName));
-        //deviceObject.insert("via_device", "");
+        deviceObject.insert("via_device", QJsonValue::fromVariant(appAddrClean));
 
         QJsonObject prop = QJsonDocument::fromJson(devicePropsJson.toUtf8()).object()["properties"].toObject();
 
         for (auto it = prop.begin(), end = prop.end(); it != end; ++it)
         {
-            QString prop_key = it.key(); // TODO // is it really short for the value name?
+            QString prop_key = it.key();
             QJsonObject prop_value = it.value().toObject();
 
             QString value_name;
@@ -420,10 +423,13 @@ bool DeviceTheengs::createDiscoveryMQTT(const QString &deviceAddr, const QString
             if (prop_value.contains("name")) value_name = prop_value["name"].toString();
             if (prop_value.contains("unit")) value_unit = prop_value["unit"].toString();
 
+            if (!availableHASSClasses.contains(value_name)) continue;
+            if (!availableHASSUnits.contains(value_unit)) continue;
+
             // create discovery object
             QJsonObject discovery;
             discovery.insert("state_class", "measurement");
-            discovery.insert("state_topic", sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + deviceAddrClean);
+            discovery.insert("state_topic", "+/+/BTtoMQTT/" + deviceAddrClean);
             discovery.insert("device", deviceObject);
 
             discovery.insert("name", deviceModel + "-" + prop_key);

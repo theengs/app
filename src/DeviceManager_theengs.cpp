@@ -292,7 +292,8 @@ void DeviceManager::discoverTheengsDevices()
             QString device_props = getDevicePropsTheengs(deviceModel_theengs);
 
             DeviceTheengs::createDiscoveryMQTT(deviceAddr, deviceName, deviceModel_theengs,
-                                               deviceManufacturer_theengs, device_props);
+                                               deviceManufacturer_theengs, device_props,
+                                               m_bluetoothAdapter->address().toString());
         }
     }
 }
