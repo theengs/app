@@ -1428,3 +1428,11 @@ void Device::parseAdvertisementData(const uint16_t, const uint16_t, const QByteA
 }
 
 /* ************************************************************************** */
+
+void Device::setTheengsModelId(const QString &model, const QString &id)
+{
+    //qDebug() << "Device::setTheengsModelId() model" << model << "  -  id" << id;
+    setModelID(id);
+}
+
+/* ************************************************************************** */

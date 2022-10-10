@@ -135,7 +135,11 @@ int main(int argc, char *argv[])
     }
 
     // Start MQTT
-    if (sm->getMQTT()) mq->connect();
+    if (sm->getMQTT())
+    {
+        QObject::connect(mq, &MqttManager::connected, dm, &DeviceManager::discoverTheengsDevices);
+        mq->connect();
+    }
 
     // Init generic utils
     UtilsApp *utilsApp = UtilsApp::getInstance();

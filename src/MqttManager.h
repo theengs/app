@@ -51,6 +51,7 @@ class MqttManager: public QObject
 Q_SIGNALS:
     void statusChanged();
     void logChanged();
+    void connected();
 
 private slots:
     void handleMessage(const QMqttMessage &qmsg);
@@ -66,7 +67,8 @@ public:
     Q_INVOKABLE void reconnect_forced();
     Q_INVOKABLE void reconnect();
 
-    bool publish(QString topic, QString str);
+    bool publishConfig(QString topic, QString str);
+    bool publishData(QString topic, QString str);
     bool subscribe(QString topic);
 
     bool getStatus() const { return (m_mqttclient && m_mqttclient->state() == QMqttClient::Connected); }

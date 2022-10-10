@@ -121,7 +121,7 @@ class DeviceManager: public QObject
     Device *createTheengsDevice_fromDb(const QString &deviceName, const QString &deviceModel_theengs, const QString &deviceAddr);
     Device *createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &deviceInfo);
 
-    // THEENGS
+    // THEENGS dev
     void fakeTheengsDevices();
     void fakeTheengsData();
 
@@ -225,7 +225,14 @@ public:
     void invalidate();
 
     // THEENGS
-    Q_INVOKABLE QString getDeviceModelTheengs(const QString &modelid) const;
+    static Q_INVOKABLE QString getDeviceNameTheengs(const QString &modelid);
+    static Q_INVOKABLE QString getDeviceModelTheengs(const QString &modelid);
+    static Q_INVOKABLE QString getDeviceBrandTheengs(const QString &modelid);
+    static Q_INVOKABLE QString getDevicePropsTheengs(const QString &modelid);
+    QString getDeviceModelIdTheengs_fromAdv(const QBluetoothDeviceInfo &deviceInfo);
+
+public slots:
+     void discoverTheengsDevices();
 };
 
 /* ************************************************************************** */

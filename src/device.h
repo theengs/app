@@ -366,6 +366,9 @@ public:
                                         const uint16_t adv_id,
                                         const QByteArray &data);
 
+    // theengs decoder
+    void setTheengsModelId(const QString &model, const QString &id);
+
 public slots:
     void deviceConnect();               //!< Initiate a BLE connection with a device
     void deviceDisconnect();

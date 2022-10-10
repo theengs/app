@@ -109,7 +109,9 @@ void MqttManager::reconnect()
     if (sm && sm->getMQTT())
     {
         if (!m_mqttclient || m_mqttclient->state() != QMqttClient::Connected)
+        {
             connect();
+        }
     }
     else
     {
@@ -118,8 +120,34 @@ void MqttManager::reconnect()
 }
 
 /* ************************************************************************** */
+/* ************************************************************************** */
 
-bool MqttManager::publish(QString topic, QString str)
+bool MqttManager::publishConfig(QString topic, QString str)
+{
+    if (m_mqttclient && m_mqttclient->state() == QMqttClient::Connected)
+    {
+        if (!topic.isEmpty() && !str.isEmpty())
+        {
+            //qDebug() << "MqttManager::publishConfig(" << topic << " : " << str << ")";
+
+            QMqttTopicName t(topic);
+            QByteArray m(str.toLocal8Bit());
+
+            //QString l = "config: " + topic + " / " + str + "\n";
+            //m_mqttLog.push_front(l);
+            //Q_EMIT logChanged();
+
+            m_mqttclient->publish(t, m);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/* ************************************************************************** */
+
+bool MqttManager::publishData(QString topic, QString str)
 {
     if (m_mqttclient && m_mqttclient->state() == QMqttClient::Connected)
     {
@@ -131,7 +159,7 @@ bool MqttManager::publish(QString topic, QString str)
             topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT";
         }
 
-        //qDebug() << "MqttManager::publish(" << topic << " : " << str << ")";
+        //qDebug() << "MqttManager::publishData(" << topic << " : " << str << ")";
 
         QMqttTopicName t(topic);
         QByteArray m(str.toLocal8Bit());
@@ -141,12 +169,13 @@ bool MqttManager::publish(QString topic, QString str)
         //Q_EMIT logChanged();
 
         m_mqttclient->publish(t, m);
-
         return true;
     }
 
     return false;
 }
+
+/* ************************************************************************** */
 
 bool MqttManager::subscribe(QString topic)
 {
@@ -159,6 +188,7 @@ bool MqttManager::subscribe(QString topic)
 }
 
 /* ************************************************************************** */
+/* ************************************************************************** */
 
 void MqttManager::updateStateChange()
 {
@@ -167,9 +197,9 @@ void MqttManager::updateStateChange()
         //qDebug() << "MqttManager::updateStateChange()" << m_mqttclient->state();
         Q_EMIT statusChanged();
 
-        //if (m_mqttclient->state() == 0) m_mqttLog.push_front("status: disconnected \n");
-        //if (m_mqttclient->state() == 1) m_mqttLog.push_front("status: connecting \n");
-        //if (m_mqttclient->state() == 2) m_mqttLog.push_front("status: connected \n");
+        //if (m_mqttclient->state() == QMqttClient::Disconnected) m_mqttLog.push_front("status: disconnected \n");
+        //if (m_mqttclient->state() == QMqttClient::Connecting) m_mqttLog.push_front("status: connecting \n");
+        //if (m_mqttclient->state() == QMqttClient::Connected) m_mqttLog.push_front("status: connected \n");
         //Q_EMIT logChanged();
     }
 }
@@ -180,6 +210,8 @@ void MqttManager::brokerConnected()
 
     if (m_mqttclient)
     {
+        Q_EMIT connected();
+
         SettingsManager *sm = SettingsManager::getInstance();
         if (!sm || (sm && (sm->getMqttTopicA().isEmpty() || sm->getMqttTopicB().isEmpty()))) return;
 

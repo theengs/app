@@ -35,6 +35,8 @@
 #include <QBluetoothAddress>
 #include <QBluetoothDeviceInfo>
 
+#include <QSqlQuery>
+
 #include <QList>
 #include <QDebug>
 
@@ -91,7 +93,7 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName,
     }
     else
     {
-        qWarning() << "Unknown device model: " << deviceModel_theengs << device_props;
+        qWarning() << "Unknown device model: " << deviceName << deviceModel_theengs << device_props;
     }
 
     return device;
@@ -112,13 +114,13 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
     {
         if (device_modelid_theengs.isEmpty() == false) break;
 
-        DynamicJsonDocument doc(2048);
+        ArduinoJson::DynamicJsonDocument doc(2048);
         doc["id"] = deviceInfo.address().toString().toStdString();
         doc["name"] = deviceInfo.name().toStdString();
         doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + deviceInfo.manufacturerData(id).toHex().toStdString();
 
         TheengsDecoder dec;
-        JsonObject obj = doc.as<JsonObject>();
+        ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
 
         if (dec.decodeBLEJson(obj) >= 0)
         {
@@ -138,14 +140,14 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
     {
         if (device_modelid_theengs.isEmpty() == false) break;
 
-        DynamicJsonDocument doc(2048);
+        ArduinoJson::DynamicJsonDocument doc(2048);
         doc["id"] = deviceInfo.address().toString().toStdString();
         doc["name"] = deviceInfo.name().toStdString();
         doc["servicedata"] = deviceInfo.serviceData(id).toHex().toStdString();
         doc["servicedatauuid"] = id.toString(QUuid::Id128).toStdString();
 
         TheengsDecoder dec;
-        JsonObject obj = doc.as<JsonObject>();
+        ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
 
         if (dec.decodeBLEJson(obj) >= 0)
         {
@@ -207,9 +209,92 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
     return device;
 }
 
-QString DeviceManager::getDeviceModelTheengs(const QString &modelid) const
+QString DeviceManager::getDeviceModelIdTheengs_fromAdv(const QBluetoothDeviceInfo &deviceInfo)
 {
-    return QString::fromUtf8(TheengsDecoder().getTheengAttribute(modelid.toLatin1(), "model"));
+    //qDebug() << "getDeviceModelIdTheengs_fromAdv(" << deviceInfo.name() << ")";
+
+    const QList<quint16> &manufacturerIds = deviceInfo.manufacturerIds();
+    for (const auto id: manufacturerIds)
+    {
+        ArduinoJson::DynamicJsonDocument doc(2048);
+        doc["name"] = deviceInfo.name().toStdString();
+        doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + deviceInfo.manufacturerData(id).toHex().toStdString();
+
+        TheengsDecoder dec;
+        ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
+
+        if (dec.decodeBLEJson(obj) >= 0)
+        {
+            QString model = QString::fromStdString(doc["model"]);
+            if (model == "IBEACON" && model == "IBEACON") continue;
+            return QString::fromStdString(doc["model_id"]);
+        }
+    }
+
+    const QList<QBluetoothUuid> &serviceIds = deviceInfo.serviceIds();
+    for (const auto id: serviceIds)
+    {
+        ArduinoJson::DynamicJsonDocument doc(2048);
+        doc["name"] = deviceInfo.name().toStdString();
+        doc["servicedata"] = deviceInfo.serviceData(id).toHex().toStdString();
+        doc["servicedatauuid"] = id.toString(QUuid::Id128).toStdString();
+
+        TheengsDecoder dec;
+        ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
+
+        if (dec.decodeBLEJson(obj) >= 0)
+        {
+            QString model = QString::fromStdString(doc["model"]);
+            if (model == "IBEACON" && model == "IBEACON") continue;
+            return QString::fromStdString(doc["model_id"]);
+        }
+    }
+
+    return QString();
+}
+
+/* ************************************************************************** */
+
+QString DeviceManager::getDeviceNameTheengs(const QString &modelid)
+{
+    return QString::fromUtf8(TheengsDecoder().getTheengAttribute(modelid.toLocal8Bit(), "name"));
+}
+QString DeviceManager::getDeviceModelTheengs(const QString &modelid)
+{
+    return QString::fromUtf8(TheengsDecoder().getTheengAttribute(modelid.toLocal8Bit(), "model"));
+}
+QString DeviceManager::getDeviceBrandTheengs(const QString &modelid)
+{
+    return QString::fromUtf8(TheengsDecoder().getTheengAttribute(modelid.toLocal8Bit(), "brand"));
+}
+QString DeviceManager::getDevicePropsTheengs(const QString &modelid)
+{
+    return QString::fromUtf8(TheengsDecoder().getTheengProperties(modelid.toLocal8Bit()));
+}
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+
+void DeviceManager::discoverTheengsDevices()
+{
+    //qDebug() << "discoverTheengsDevices()";
+
+    // Load saved devices and sent discovery requests to the MQTT broker
+    QSqlQuery queryDevices;
+    if (queryDevices.exec("SELECT deviceName, deviceModel, deviceAddr FROM devices"))
+    {
+        while (queryDevices.next())
+        {
+            QString deviceName = queryDevices.value(0).toString();
+            QString deviceModel_theengs = queryDevices.value(1).toString();
+            QString deviceManufacturer_theengs = getDeviceBrandTheengs(deviceModel_theengs);
+            QString deviceAddr = queryDevices.value(2).toString();
+            QString device_props = getDevicePropsTheengs(deviceModel_theengs);
+
+            DeviceTheengs::createDiscoveryMQTT(deviceAddr, deviceName, deviceModel_theengs,
+                                               deviceManufacturer_theengs, device_props);
+        }
+    }
 }
 
 /* ************************************************************************** */

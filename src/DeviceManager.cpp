@@ -19,6 +19,7 @@
 #include "DeviceManager.h"
 #include "DatabaseManager.h"
 #include "SettingsManager.h"
+#include "MqttManager.h"
 
 #include "device.h"
 #include "devices/device_flowercare.h"
@@ -1396,6 +1397,7 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
 
     // Theengs device maybe?
     if (!d) d = createTheengsDevice_fromAdv(info);
+    else d->setTheengsModelId("", getDeviceModelIdTheengs_fromAdv(info));
 
     if (d)
     {
@@ -1427,7 +1429,22 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
             }
         }
 
-        //
+        // Add it to the MQTT broker?
+        MqttManager *mqtt = MqttManager::getInstance();
+        if (mqtt && mqtt->getStatus())
+        {
+            QString deviceName = d->getName();
+            QString deviceModel_theengs = d->getModel();
+            QString deviceManufacturer_theengs = getDeviceBrandTheengs(deviceModel_theengs);
+            QString deviceAddr = d->getAddressMAC();
+            QString device_props = getDevicePropsTheengs(deviceModel_theengs);
+
+            // Device discovery
+            DeviceTheengs::createDiscoveryMQTT(deviceAddr, deviceName, deviceModel_theengs,
+                                               deviceManufacturer_theengs, device_props);
+        }
+
+        // Connect and handle update
         connect(d, &Device::deviceUpdated, this, &DeviceManager::refreshDevices_finished);
         connect(d, &Device::deviceSynced, this, &DeviceManager::syncDevices_finished);
 

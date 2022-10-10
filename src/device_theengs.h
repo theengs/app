@@ -86,6 +86,11 @@ class DeviceTheengs: public DeviceSensor
     Q_PROPERTY(bool movement READ getMovement NOTIFY dataUpdated)
     Q_PROPERTY(bool presence READ getPresence NOTIFY dataUpdated)
 
+private:
+    // QLowEnergyController related
+    virtual void serviceScanDone();
+    virtual void addLowEnergyService(const QBluetoothUuid &uuid);
+
 protected:
     int m_deviceSensorsTheengs = 0;     //!< See DeviceSensorsTheengs enum
 
@@ -207,10 +212,10 @@ public:
     bool getMovement() const { return m_movement; }
     bool getPresence() const { return m_presence; }
 
-private:
-    // QLowEnergyController related
-    virtual void serviceScanDone();
-    virtual void addLowEnergyService(const QBluetoothUuid &uuid);
+    // MQTT discovery
+    static bool createDiscoveryMQTT(const QString &deviceAddr, const QString &deviceName,
+                                    const QString &deviceModel, const QString &deviceManufacturer,
+                                    const QString &devicePropsJson);
 };
 
 /* ************************************************************************** */

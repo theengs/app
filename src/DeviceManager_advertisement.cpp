@@ -63,7 +63,6 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
 
             QString mac_qstr = dd->getAddressMAC();
             mac_qstr.remove(':');
-            std::string mac_str = mac_qstr.toStdString();
 
             const QList<quint16> &manufacturerIds = info.manufacturerIds();
             for (const auto id: manufacturerIds)
@@ -76,14 +75,14 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
                 dd->parseAdvertisementData(DeviceUtils::BLE_ADV_MANUFACTURERDATA,
                                            id, info.manufacturerData(id));
 
-                DynamicJsonDocument doc(2048);
-                doc["id"] = mac_str;
+                ArduinoJson::DynamicJsonDocument doc(2048);
+                doc["id"] = mac_qstr.toStdString();
                 doc["name"] = info.name().toStdString();
                 doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + info.manufacturerData(id).toHex().toStdString();
                 doc["rssi"] = info.rssi();
 
                 TheengsDecoder a;
-                JsonObject obj = doc.as<JsonObject>();
+                ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
 
                 if (a.decodeBLEJson(obj) >= 0)
                 {
@@ -93,16 +92,17 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
                     serializeJson(obj, output);
                     //qDebug() << "output:" << output.c_str();
 
+                    dd->setTheengsModelId(QString::fromStdString(doc["model"]), QString::fromStdString(doc["model_id"]));
+
                     DeviceTheengs *ddd = dynamic_cast<DeviceTheengs*>(dd);
                     if (ddd) ddd->parseTheengsAdvertisement(QString::fromStdString(output));
 
                     SettingsManager *sm = SettingsManager::getInstance();
                     MqttManager *mq = MqttManager::getInstance();
-                    if (sm && mq && !mac_str.empty())
+                    if (sm && mq && !mac_qstr.isEmpty())
                     {
                         QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr;
-
-                        status = mq->publish(topic, QString::fromStdString(output));
+                        status = mq->publishData(topic, QString::fromStdString(output));
                     }
 
                     status = true;
@@ -126,14 +126,14 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
                 dd->parseAdvertisementData(DeviceUtils::BLE_ADV_MANUFACTURERDATA,
                                            id.toUInt16(), info.serviceData(id));
 
-                DynamicJsonDocument doc(2048);
-                doc["id"] = mac_str;
+                ArduinoJson::DynamicJsonDocument doc(2048);
+                doc["id"] = mac_qstr.toStdString();
                 doc["name"] = info.name().toStdString();
                 doc["servicedata"] = info.serviceData(id).toHex().toStdString();
                 doc["servicedatauuid"] = QByteArray::number(id.toUInt16(), 16).rightJustified(4, '0').toStdString();
                 doc["rssi"] = info.rssi();
 
-                JsonObject obj = doc.as<JsonObject>();
+                ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
 
                 TheengsDecoder dec;
                 if (dec.decodeBLEJson(obj) >= 0)
@@ -145,16 +145,17 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
                     serializeJson(obj, output);
                     //qDebug() << "output:" << output.c_str();
 
+                    dd->setTheengsModelId(QString::fromStdString(doc["model"]), QString::fromStdString(doc["model_id"]));
+
                     DeviceTheengs *ddd = dynamic_cast<DeviceTheengs*>(dd);
                     if (ddd) ddd->parseTheengsAdvertisement(QString::fromStdString(output));
 
                     SettingsManager *sm = SettingsManager::getInstance();
                     MqttManager *mq = MqttManager::getInstance();
-                    if (sm && mq)
+                    if (sm && mq && !mac_qstr.isEmpty())
                     {
                         QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr;
-
-                        status = mq->publish(topic, QString::fromStdString(output));
+                        status = mq->publishData(topic, QString::fromStdString(output));
                     }
 
                     status = true;
@@ -207,8 +208,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
     if (!status && !appleOS) // UN-KNOWN DEVICES ///////////////////////////////////////////
     {
         QString mac_qstr = info.address().toString();
-        QString mac_qstr_clean = mac_qstr;
-        std::string mac_str = mac_qstr.toStdString();
+        mac_qstr.remove(':');
 
         const QList<quint16> &manufacturerIds = info.manufacturerIds();
         for (const auto id: manufacturerIds)
@@ -218,14 +218,14 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
             //         << "manufacturer data" << Qt::dec << info.manufacturerData(id).count() << Qt::hex
             //         << "bytes:" << info.manufacturerData(id).toHex();
 
-            DynamicJsonDocument doc(2048);
-            doc["id"] = mac_str;
+            ArduinoJson::DynamicJsonDocument doc(2048);
+            doc["id"] = mac_qstr.toStdString();
             doc["name"] = info.name().toStdString();
             doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + info.manufacturerData(id).toHex().toStdString();
             doc["rssi"] = info.rssi();
 
             TheengsDecoder dec;
-            JsonObject obj = doc.as<JsonObject>();
+            ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
 
             if (dec.decodeBLEJson(obj) >= 0)
             {
@@ -237,11 +237,10 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
 
                 SettingsManager *sm = SettingsManager::getInstance();
                 MqttManager *mq = MqttManager::getInstance();
-                if (sm && mq)
+                if (sm && mq && !mac_qstr.isEmpty())
                 {
-                    QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr_clean;
-
-                    status = mq->publish(topic, QString::fromStdString(output));
+                    QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr;
+                    status = mq->publishData(topic, QString::fromStdString(output));
                 }
 
                 status = true;
@@ -256,15 +255,15 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
             //         << "service data" << Qt::dec << info.serviceData(id).count() << Qt::hex
             //         << "bytes:" << info.serviceData(id).toHex();
 
-            DynamicJsonDocument doc(2048);
-            doc["id"] = mac_str;
+            ArduinoJson::DynamicJsonDocument doc(2048);
+            doc["id"] = mac_qstr.toStdString();
             doc["name"] = info.name().toStdString();
             doc["servicedata"] = info.serviceData(id).toHex().toStdString();
             doc["servicedatauuid"] = QByteArray::number(id.toUInt16(), 16).rightJustified(4, '0').toStdString();
             doc["rssi"] = info.rssi();
 
             TheengsDecoder dec;
-            JsonObject obj = doc.as<JsonObject>();
+            ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
 
             if (dec.decodeBLEJson(obj) >= 0)
             {
@@ -277,11 +276,10 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
 
                 SettingsManager *sm = SettingsManager::getInstance();
                 MqttManager *mq = MqttManager::getInstance();
-                if (sm && mq)
+                if (sm && mq && !mac_qstr.isEmpty())
                 {
-                    QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr_clean;
-
-                    status = mq->publish(topic, QString::fromStdString(output));
+                    QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr;
+                    status = mq->publishData(topic, QString::fromStdString(output));
                 }
 
                 status = true;

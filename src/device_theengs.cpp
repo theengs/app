@@ -18,6 +18,7 @@
 
 #include "device_theengs.h"
 #include "SettingsManager.h"
+#include "MqttManager.h"
 
 #include <cstdint>
 #include <cmath>
@@ -365,12 +366,80 @@ float DeviceTheengs::getTemp6() const
 
 void DeviceTheengs::parseTheengsProps(const QString &json)
 {
-    //
+    Q_UNUSED(json)
 }
 
 void DeviceTheengs::parseTheengsAdvertisement(const QString &json)
 {
-    //
+    Q_UNUSED(json)
+}
+
+/* ************************************************************************** */
+
+bool DeviceTheengs::createDiscoveryMQTT(const QString &deviceAddr, const QString &deviceName,
+                                        const QString &deviceModel, const QString &deviceManufacturer,
+                                        const QString &devicePropsJson)
+{
+    //qDebug() << "DeviceTheengs::createDiscoveryMQTT() deviceName" << deviceName << "  -  " << devicePropsJson;
+    bool status = false;
+
+    MqttManager *mqtt = MqttManager::getInstance();
+    SettingsManager *sm = SettingsManager::getInstance();
+    if (mqtt && mqtt->getStatus() && sm)
+    {
+        QString deviceAddrClean = deviceAddr;
+        deviceAddrClean.remove(':');
+
+        // check required params
+        if (deviceAddrClean.isEmpty() || deviceModel.isEmpty() || devicePropsJson.isEmpty())
+        {
+            return false;
+        }
+
+        // create device object
+        QJsonObject deviceObject;
+        QJsonArray idarr; idarr.push_back(QJsonValue::fromVariant(deviceAddrClean));
+        deviceObject.insert("identifiers", idarr);
+        QStringList conn; conn.push_back("mac"); conn.push_back(deviceAddrClean);
+        QJsonArray connarr; connarr.push_back(QJsonValue::fromVariant(conn).toArray());
+        deviceObject.insert("connections", connarr);
+        deviceObject.insert("manufacturer", QJsonValue::fromVariant(deviceManufacturer));
+        deviceObject.insert("model", QJsonValue::fromVariant(deviceModel));
+        deviceObject.insert("name", QJsonValue::fromVariant(deviceName));
+        //deviceObject.insert("via_device", "");
+
+        QJsonObject prop = QJsonDocument::fromJson(devicePropsJson.toUtf8()).object()["properties"].toObject();
+
+        for (auto it = prop.begin(), end = prop.end(); it != end; ++it)
+        {
+            QString prop_key = it.key(); // TODO // is it really short for the value name?
+            QJsonObject prop_value = it.value().toObject();
+
+            QString value_name;
+            QString value_unit;
+            if (prop_value.contains("name")) value_name = prop_value["name"].toString();
+            if (prop_value.contains("unit")) value_unit = prop_value["unit"].toString();
+
+            // create discovery object
+            QJsonObject discovery;
+            discovery.insert("state_class", "measurement");
+            discovery.insert("state_topic", sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + deviceAddrClean);
+            discovery.insert("device", deviceObject);
+
+            discovery.insert("name", deviceModel + "-" + prop_key);
+            discovery.insert("unique_id", deviceAddrClean + "-" + prop_key);
+            discovery.insert("device_class", value_name);
+            discovery.insert("unit_of_measurement", value_unit);
+            discovery.insert("value_template", "{{ value_json." + prop_key + " | is_defined }}");
+
+            QString mqtt_topic = "homeassistant/sensor/" + deviceAddrClean + "-" + prop_key + "/config";
+            QString str_out(QJsonDocument(discovery).toJson(QJsonDocument::Compact));
+
+            status = mqtt->publishConfig(mqtt_topic, str_out);
+        }
+    }
+
+    return status;
 }
 
 /* ************************************************************************** */
