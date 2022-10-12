@@ -129,6 +129,8 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
             device_props = QString::fromUtf8(dec.getTheengProperties(device_modelid_theengs.toLocal8Bit()));
 
             if (device_model_theengs == "IBEACON" && device_modelid_theengs == "IBEACON") continue;
+            if (device_model_theengs == "MS-CDP" && device_modelid_theengs == "MS-CDP") continue;
+            if (device_model_theengs == "GAEN" && device_modelid_theengs == "GAEN") continue;
 
             qDebug() << "addDevice() FOUND [mfd] :" << device_model_theengs << device_modelid_theengs << device_props;
             break;
@@ -156,6 +158,8 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
             device_props = QString::fromUtf8(dec.getTheengProperties(device_modelid_theengs.toLocal8Bit()));
 
             if (device_model_theengs == "IBEACON" && device_modelid_theengs == "IBEACON") continue;
+            if (device_model_theengs == "MS-CDP" && device_modelid_theengs == "MS-CDP") continue;
+            if (device_model_theengs == "GAEN" && device_modelid_theengs == "GAEN") continue;
 
             qDebug() << "addDevice() FOUND [svd] :" << device_model_theengs << device_modelid_theengs << device_props;
             break;
@@ -226,7 +230,9 @@ QString DeviceManager::getDeviceModelIdTheengs_fromAdv(const QBluetoothDeviceInf
         if (dec.decodeBLEJson(obj) >= 0)
         {
             QString model = QString::fromStdString(doc["model"]);
-            if (model == "IBEACON" && model == "IBEACON") continue;
+            if (model == "IBEACON") continue;
+            if (model == "MS-CDP") continue;
+            if (model == "GAEN") continue;
             return QString::fromStdString(doc["model_id"]);
         }
     }
@@ -245,7 +251,9 @@ QString DeviceManager::getDeviceModelIdTheengs_fromAdv(const QBluetoothDeviceInf
         if (dec.decodeBLEJson(obj) >= 0)
         {
             QString model = QString::fromStdString(doc["model"]);
-            if (model == "IBEACON" && model == "IBEACON") continue;
+            if (model == "IBEACON") continue;
+            if (model == "MS-CDP") continue;
+            if (model == "GAEN") continue;
             return QString::fromStdString(doc["model_id"]);
         }
     }
