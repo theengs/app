@@ -46,7 +46,7 @@ DevicePlantSensor::DevicePlantSensor(const QString &deviceAddr, const QString &d
 
     // Device infos
     m_deviceInfos = new DeviceInfos(this);
-    m_deviceInfos->load(m_deviceName);
+    m_deviceInfos->loadSlow(m_deviceName, m_deviceModel, m_deviceModelID);
 }
 
 DevicePlantSensor::DevicePlantSensor(const QBluetoothDeviceInfo &d, QObject *parent):
@@ -69,7 +69,7 @@ DevicePlantSensor::DevicePlantSensor(const QBluetoothDeviceInfo &d, QObject *par
 
     // Device infos
     m_deviceInfos = new DeviceInfos(this);
-    m_deviceInfos->load(m_deviceName);
+    m_deviceInfos->loadSlow(m_deviceName, m_deviceModel, m_deviceModelID);
 }
 
 DevicePlantSensor::~DevicePlantSensor()
@@ -151,7 +151,7 @@ bool DevicePlantSensor::addDatabaseRecord(const int64_t timestamp,
             }
             else
             {
-                qWarning() << "> addData(" << m_deviceName << ") ERROR"
+                qWarning() << "> addDatabaseRecord_plants(" << m_deviceName << ") ERROR"
                            << addData.lastError().type() << ":" << addData.lastError().text();
             }
         }
@@ -226,7 +226,7 @@ void DevicePlantSensor::resetPlant()
 
 void DevicePlantSensor::resetLimits()
 {
-    //
+    // not for Theengs
 }
 
 /* ************************************************************************** */

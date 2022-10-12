@@ -24,6 +24,8 @@
 
 #include <QObject>
 #include <QString>
+#include <QJsonObject>
+#include <QJsonArray>
 
 /* ************************************************************************** */
 
@@ -109,7 +111,23 @@ public:
     DeviceInfos(QObject *parent);
     ~DeviceInfos();
 
-    void load(const QString &model);
+    void load(const QJsonObject &device);
+    bool loadSlow(const QString &name, const QString &model, const QString &modelId);
+};
+
+class DeviceInfosLoader: public QObject
+{
+    // Singleton
+    static DeviceInfosLoader *instance;
+    DeviceInfosLoader();
+    ~DeviceInfosLoader();
+
+    QJsonArray deviceJsonArray;
+
+public:
+    static DeviceInfosLoader *getInstance();
+
+    DeviceInfos *getDeviceInfos(const QString &name, const QString &model, const QString &modelId);
 };
 
 /* ************************************************************************** */

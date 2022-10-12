@@ -34,11 +34,35 @@ DeviceInfosSensor::DeviceInfosSensor(const QString &sensor, const QString &strin
     else if (sensor == "Soil conductivity") m_sensor = DeviceUtils::SENSOR_SOIL_CONDUCTIVITY;
     else if (sensor == "Soil temperature") m_sensor = DeviceUtils::SENSOR_SOIL_TEMPERATURE;
     else if (sensor == "Soil PH") m_sensor = DeviceUtils::SENSOR_SOIL_PH;
+
     else if (sensor == "Temperature") m_sensor = DeviceUtils::SENSOR_TEMPERATURE;
     else if (sensor == "Humidity") m_sensor = DeviceUtils::SENSOR_HUMIDITY;
+
     else if (sensor == "Pressure") m_sensor = DeviceUtils::SENSOR_PRESSURE;
     else if (sensor == "Luminosity") m_sensor = DeviceUtils::SENSOR_LUMINOSITY;
+    else if (sensor == "UV") m_sensor = DeviceUtils::SENSOR_UV;
+    else if (sensor == "Sound") m_sensor = DeviceUtils::SENSOR_SOUND;
+    else if (sensor == "Water level") m_sensor = DeviceUtils::SENSOR_WATER_LEVEL;
     else if (sensor == "Water tank") m_sensor = DeviceUtils::SENSOR_WATER_LEVEL;
+    else if (sensor == "Wind speed") m_sensor = DeviceUtils::SENSOR_WIND_SPEED;
+    else if (sensor == "Wind direction") m_sensor = DeviceUtils::SENSOR_WIND_DIRECTION;
+
+    else if (sensor == "PM1") m_sensor = DeviceUtils::SENSOR_PM1;
+    else if (sensor == "PM25") m_sensor = DeviceUtils::SENSOR_PM25;
+    else if (sensor == "PM10") m_sensor = DeviceUtils::SENSOR_PM10;
+    else if (sensor == "O2") m_sensor = DeviceUtils::SENSOR_O2;
+    else if (sensor == "O3") m_sensor = DeviceUtils::SENSOR_O3;
+    else if (sensor == "CO") m_sensor = DeviceUtils::SENSOR_CO;
+    else if (sensor == "CO2") m_sensor = DeviceUtils::SENSOR_CO2;
+    else if (sensor == "CO2 (estimated)") m_sensor = DeviceUtils::SENSOR_eCO2;
+    else if (sensor == "NO2") m_sensor = DeviceUtils::SENSOR_NO2;
+    else if (sensor == "SO2") m_sensor = DeviceUtils::SENSOR_SO2;
+    else if (sensor == "VOC") m_sensor = DeviceUtils::SENSOR_VOC;
+    else if (sensor == "TVOC") m_sensor = DeviceUtils::SENSOR_VOC;
+    else if (sensor == "HCHO") m_sensor = DeviceUtils::SENSOR_HCHO;
+
+    else if (sensor == "Radiation") m_sensor = DeviceUtils::SENSOR_GEIGER;
+    else if (sensor == "Geiger counter") m_sensor = DeviceUtils::SENSOR_GEIGER;
 
     m_string = string;
 }
@@ -89,9 +113,51 @@ DeviceInfos::~DeviceInfos()
     m_capabilities.clear();
 }
 
-void DeviceInfos::load(const QString &model)
+void DeviceInfos::load(const QJsonObject &obj)
 {
-    //qDebug() << "DeviceInfos::load(" << model << ")";
+    //qDebug() << "DeviceInfos::load(" << obj << ")";
+
+    m_model = obj["model"].toString();
+    m_manufacturer = obj["manufacturer"].toString();
+    for (const auto &vv: obj["ID"].toArray())
+    {
+        if (!m_id.isEmpty()) m_id += ", ";
+        m_id += vv.toString();
+    }
+
+    m_year = obj["year"].toInt();
+    m_battery = obj["battery"].toString();
+    m_screen = obj["screen"].toString();
+    m_ipx = obj["ipx"].toString();
+
+    for (const auto &vv: obj["sensors"].toArray())
+    {
+        QJsonArray vvv = vv.toArray();
+        if (vvv.size() == 2)
+        {
+            DeviceInfosSensor *dis = new DeviceInfosSensor(vvv.at(0).toString(),
+                                                           vvv.at(1).toString(),
+                                                           this);
+            m_sensors.push_back(dis);
+        }
+    }
+
+    for (const auto &vv: obj["capabilities"].toArray())
+    {
+        QJsonArray vvv = vv.toArray();
+        if (vvv.size() == 2)
+        {
+            DeviceInfosCapability *dic = new DeviceInfosCapability(vvv.at(0).toString(),
+                                                                   vvv.at(1).toString(),
+                                                                   this);
+            m_capabilities.push_back(dic);
+        }
+    }
+}
+
+bool DeviceInfos::loadSlow(const QString &name, const QString &model, const QString &modelId)
+{
+    //qDebug() << "DeviceInfos::loadSlow(" << name << model << modelId << ")";
 
     QFile file(":/devices/devices_sensors.json");
 
@@ -105,7 +171,10 @@ void DeviceInfos::load(const QString &model)
         for (const auto &value: deviceArray)
         {
             QJsonObject obj = value.toObject();
-            if (model.toLower() == obj["model"].toString().toLower())
+            if (name == obj["name_ble"].toString() ||
+                name.toLower() == obj["model"].toString().toLower() ||
+                model.toLower() == obj["model"].toString().toLower() ||
+                obj["ID"].toArray().contains(name))
             {
                 //qDebug() << "DeviceInfos::load(" << model << ") FOUND";
 
@@ -146,10 +215,72 @@ void DeviceInfos::load(const QString &model)
                     }
                 }
 
-                return;
+                return true;
             }
         }
     }
+
+    return false;
+}
+
+/* ************************************************************************** */
+
+DeviceInfosLoader *DeviceInfosLoader::instance = nullptr;
+
+DeviceInfosLoader *DeviceInfosLoader::getInstance()
+{
+    if (instance == nullptr)
+    {
+        instance = new DeviceInfosLoader();
+    }
+
+    return instance;
+}
+
+DeviceInfosLoader::DeviceInfosLoader()
+{
+    //
+}
+
+DeviceInfosLoader::~DeviceInfosLoader()
+{
+    //
+}
+
+DeviceInfos *DeviceInfosLoader::getDeviceInfos(const QString &name, const QString &model, const QString &modelId)
+{
+    //qDebug() << "DeviceInfosLoader::getDeviceInfos(" << name << model << modelId << ")";
+
+    DeviceInfos *dev = nullptr;
+
+    if (deviceJsonArray.isEmpty())
+    {
+        QFile jsonFile(":/devices/devices_sensors.json");
+        if (jsonFile.open(QIODevice::ReadOnly))
+        {
+            QJsonDocument jsonDoc = QJsonDocument().fromJson(jsonFile.readAll());
+            QJsonObject jsonObj = jsonDoc.object();
+
+            deviceJsonArray = jsonObj["devices"].toArray();
+
+            jsonFile.close();
+        }
+    }
+
+    for (const auto &value: qAsConst(deviceJsonArray))
+    {
+        QJsonObject obj = value.toObject();
+        if (name == obj["name_ble"].toString() ||
+            name.toLower() == obj["model"].toString().toLower() ||
+            model.toLower() == obj["model"].toString().toLower() ||
+            obj["ID"].toArray().contains(name))
+        {
+            dev = new DeviceInfos(this);
+            dev->load(obj);
+        }
+    }
+
+    return dev;
 }
 
 /* ************************************************************************** */
