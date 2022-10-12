@@ -96,12 +96,18 @@ Item {
                 border.color: Theme.colorSeparator
                 border.width: 1
 
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: parent.visible = false
+                }
+
                 IconSvg {
                     width: 28
                     height: 28
+                    anchors.top: parent.top
+                    anchors.topMargin: 8
                     anchors.left: parent.left
                     anchors.leftMargin: 8
-                    anchors.verticalCenter: parent.verticalCenter
 
                     source: "qrc:/assets/icons_material/outline-info-24px.svg"
                     color: Theme.colorIcon
@@ -116,7 +122,7 @@ Item {
                     anchors.right: parent.right
                     anchors.rightMargin: 8
 
-                    text: qsTr("The device browser help you locate nearby BLE devices.")
+                    text: qsTr("The device browser help you locate nearby BLE devices. You can also use this screen to blacklist sensors so the scan don't pick them up.")
                     textFormat: Text.StyledText
                     wrapMode: Text.WordWrap
                     color: Theme.colorSubText
@@ -192,6 +198,11 @@ Item {
                 border.color: Theme.colorSeparator
                 border.width: 1
 
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: parent.visible = false
+                }
+
                 IconSvg {
                     width: 28
                     height: 28
@@ -212,7 +223,7 @@ Item {
                     anchors.right: parent.right
                     anchors.rightMargin: 8
 
-                    text: qsTr("The device browser help you locate nearby BLE devices.")
+                    text: qsTr("The device browser help you locate nearby BLE devices. You can also use this screen to blacklist sensors so the scan don't pick them up.")
                     textFormat: Text.StyledText
                     wrapMode: Text.WordWrap
                     color: Theme.colorSubText
@@ -326,7 +337,7 @@ Item {
                         property real alpha: Math.random() * (3.14/2) + (3.14/4)
                         property real a: c * Math.cos(alpha)
                         property real b: c * Math.sin(alpha)
-                        property real c: radar.height * Math.abs(((boxDevice.rssi)+10) / 100)
+                        property real c: radar.height * Math.abs(((boxDevice.rssi)+12) / 100)
 
                         x: (radar.width / 2) - a
                         y: radar.height - b
@@ -350,15 +361,9 @@ Item {
                         }
 
                         color: {
-                            if (boxDevice.rssi < 0) {
-                                if (boxDevice.rssi > -65) return Theme.colorGreen
-                                if (boxDevice.rssi > -85) return Theme.colorOrange
-                                if (boxDevice.rssi > -100) return Theme.colorRed
-                            } else {
-                                if (boxDevice.rssi < 65) return Theme.colorGreen
-                                if (boxDevice.rssi < 85) return Theme.colorOrange
-                                if (boxDevice.rssi < 100) return Theme.colorRed
-                            }
+                            if (Math.abs(boxDevice.rssi) < 65) return Theme.colorGreen
+                            if (Math.abs(boxDevice.rssi) < 85) return Theme.colorOrange
+                            if (Math.abs(boxDevice.rssi) < 100) return Theme.colorRed
                             return Theme.colorRed
                         }
 

@@ -5,14 +5,14 @@ import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
 
 Rectangle {
     id: deviceNearbyWidget
-    implicitWidth: 640
+    implicitWidth: 480
     implicitHeight: 48
 
     opacity: (device.rssi < 0) ? 1 : 0.66
     color: (device.selected) ? Theme.colorForeground : Theme.colorBackground
 
     property var device: pointer
-    property bool deviceSupported: UtilsDeviceSensors.isDeviceSupported(device.deviceName)
+    property bool deviceSupported: true // UtilsDeviceSensors.isDeviceSupported(device.deviceName)
     property bool deviceBlacklisted: deviceManager.isBleDeviceBlacklisted(device.deviceAddress)
 
     Connections {
@@ -63,6 +63,42 @@ Rectangle {
 
         ////////
 
+        IconSvg {
+            anchors.verticalCenter: parent.verticalCenter
+
+            width: 20
+            height: 20
+            visible: deviceSupported
+            enabled: true
+
+            source: deviceBlacklisted ? "qrc:/assets/icons_material/outline-remove_circle-24px.svg"
+                                      : "qrc:/assets/icons_material/outline-add_circle-24px.svg"
+            color: {
+                if (ma.hovered) return Theme.colorPrimary
+                if (deviceBlacklisted) return Theme.colorRed
+                return Theme.colorIcon
+            }
+
+            MouseArea {
+                id: ma
+                anchors.fill: parent
+
+                hoverEnabled: true
+                property bool hovered: false
+                onEntered: hovered = true
+                onExited: hovered = false
+                onCanceled: hovered = false
+
+                onClicked: {
+                    confirmBlacklistDevice.deviceName = device.deviceName
+                    confirmBlacklistDevice.deviceAddress = device.deviceAddress
+                    confirmBlacklistDevice.open()
+                }
+            }
+        }
+
+        ////////
+
         Rectangle {
             id: barbg
             anchors.verticalCenter: parent.verticalCenter
@@ -79,15 +115,9 @@ Rectangle {
                 width: parent.width * Math.abs(device.rssi / 100)
                 radius: 3
                 color: {
-                    if (device.rssi < 0) {
-                        if (device.rssi > -65) return Theme.colorGreen
-                        if (device.rssi > -85) return Theme.colorOrange
-                        if (device.rssi > -100) return Theme.colorRed
-                    } else {
-                        if (device.rssi < 65) return Theme.colorGreen
-                        if (device.rssi < 85) return Theme.colorOrange
-                        if (device.rssi < 100) return Theme.colorRed
-                    }
+                    if (Math.abs(device.rssi) < 65) return Theme.colorGreen
+                    if (Math.abs(device.rssi) < 85) return Theme.colorOrange
+                    if (Math.abs(device.rssi) < 100) return Theme.colorRed
                     return Theme.colorRed
                 }
 
