@@ -77,6 +77,7 @@ public:
         DEVICE_THEENGS_PROBE,
         DEVICE_THEENGS_SCALE,
         DEVICE_THEENGS_MOTIONSENSOR,
+        DEVICE_THEENGS_SMARTWATCH,
     };
     Q_ENUM(DeviceType)
 

@@ -71,7 +71,10 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName,
         }
         else if (deviceModel_theengs == "MUE4094RT" ||
                  deviceModel_theengs == "CGPR1" ||
-                 deviceModel_theengs == "CGH1")
+                 deviceModel_theengs == "CGH1" ||
+                 deviceModel_theengs == "W110150X" ||
+                 deviceModel_theengs == "W120150X" ||
+                 deviceModel_theengs == "W070160X")
         {
             device = new DeviceTheengsMotionSensors(deviceAddr, deviceName,
                                                     deviceModel_theengs, device_props, this);
@@ -188,10 +191,22 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
         }
         else if (device_modelid_theengs == "MUE4094RT" ||
                  device_modelid_theengs == "CGPR1" ||
-                 device_modelid_theengs == "CGH1")
+                 device_modelid_theengs == "CGH1" ||
+                 device_modelid_theengs == "W110150X" ||
+                 device_modelid_theengs == "W120150X" ||
+                 device_modelid_theengs == "W070160X")
         {
             device = new DeviceTheengsMotionSensors(deviceInfo, device_modelid_theengs, device_props, this);
-        }
+        }/*
+        else if (device_modelid_theengs == "MiBand" ||
+                 device_modelid_theengs == "INEM" ||
+                 device_modelid_theengs == "Mokobeacon" ||
+                 device_modelid_theengs == "RuuviTag_RAWv1" ||
+                 device_modelid_theengs == "RuuviTag_RAWv2")
+        {
+            device = new DeviceTheengsBeacons(deviceAddr, deviceName,
+                                              deviceModel_theengs, device_props, this);
+        }*/
         else
         {
             device = new DeviceTheengsGeneric(deviceInfo, device_modelid_theengs, device_props, this);
@@ -326,6 +341,18 @@ void DeviceManager::fakeTheengsDevices()
         QString deviceName = "JQJCY01YM";
         QString deviceModel_theengs = "JQJCY01YM";
         QString deviceAddr = "11:57:43:01:5C:3A";
+
+        Device *d = createTheengsDevice_fromDb(deviceName, deviceModel_theengs, deviceAddr);
+        if (d)
+        {
+            m_devices_model->addDevice(d);
+            qDebug() << "* Device added (from FAKER): " << deviceName << "/" << deviceAddr;
+        }
+    }
+    {
+        QString deviceName = "CGDN1";
+        QString deviceModel_theengs = "CGDN1";
+        QString deviceAddr = "11:57:43:01:5C:3B";
 
         Device *d = createTheengsDevice_fromDb(deviceName, deviceModel_theengs, deviceAddr);
         if (d)
@@ -542,7 +569,7 @@ void DeviceManager::fakeTheengsDevices()
 void DeviceManager::fakeTheengsData()
 {
     QBluetoothDeviceInfo info;
-    int rrdd = (rand() % 17);
+    int rrdd = (rand() % 18);
 
     if (rrdd == 0) // JQJCY01YM
     {
@@ -553,6 +580,16 @@ void DeviceManager::fakeTheengsData()
         else if (rrrr == 1) info.setServiceData(QUuid(0), QByteArray::fromHex("5020df02283a5c014357480610025302"));
         else if (rrrr == 2) info.setServiceData(QUuid(0), QByteArray::fromHex("5020df025b3a5c014357481010020800"));
         else if (rrrr == 3) info.setServiceData(QUuid(0), QByteArray::fromHex("5120df023e3a5c01435748041002c400"));
+        else qWarning() << "RAND ERROR";
+    }
+    if (rrdd == 17) // CGDN1
+    {
+        info = QBluetoothDeviceInfo(QBluetoothAddress("11:57:43:01:5C:3B"), "CGDN1", 0);
+
+        int rrrr = (rand() % 3);
+        if (rrrr == 0) info.setServiceData(QBluetoothUuid(quint32(0xfdcd)), QByteArray::fromHex("080eaabbccddeeff010422014c011204710072001302ed03"));
+        else if (rrrr == 1) info.setServiceData(QBluetoothUuid(quint32(0xfdcd)), QByteArray::fromHex("880eaabbccddeeff0104f900b50112047d0186011302fd02"));
+        else if (rrrr == 2) info.setServiceData(QBluetoothUuid(quint32(0xfdcd)), QByteArray::fromHex("880eaabbccddeeff0104f600ab011204a400d7001302c702"));
         else qWarning() << "RAND ERROR";
     }
 

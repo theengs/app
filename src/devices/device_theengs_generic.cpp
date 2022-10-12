@@ -85,6 +85,9 @@ void DeviceTheengsGeneric::parseTheengsProps(const QString &json)
     if (prop.contains("lux")) m_deviceSensors += DeviceUtils::SENSOR_LUMINOSITY;
     if (prop.contains("pres")) m_deviceSensors += DeviceUtils::SENSOR_PRESSURE;
     if (prop.contains("for")) m_deviceSensors += DeviceUtils::SENSOR_HCHO;
+    if (prop.contains("pm25")) m_deviceSensors += DeviceUtils::SENSOR_PM25;
+    if (prop.contains("pm10")) m_deviceSensors += DeviceUtils::SENSOR_PM10;
+    if (prop.contains("co2")) m_deviceSensors += DeviceUtils::SENSOR_CO2;
     Q_EMIT sensorsUpdated();
 
     // Device mode
@@ -92,8 +95,9 @@ void DeviceTheengsGeneric::parseTheengsProps(const QString &json)
 
     // Device type
     if (hasSoilMoistureSensor() && hasSoilConductivitySensor()) m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR;
-    else if (hasHchoSensor()) m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
     else if (hasWeight()) m_deviceType = DeviceUtils::DEVICE_THEENGS_SCALE;
+    else if (hasHchoSensor() || hasPM10Sensor()) m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
+    else if (hasTemperatureSensor() && hasHumiditySensor() && hasLuminositySensor()) m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
     else if (hasTemperatureSensor() || hasHumiditySensor()) m_deviceType = DeviceUtils::DEVICE_THERMOMETER;
     else m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
 }
@@ -117,7 +121,6 @@ void DeviceTheengsGeneric::parseTheengsAdvertisement(const QString &json)
             Q_EMIT dataUpdated();
         }
     }
-
     if (obj.contains("fer")) {
         if (m_soilConductivity != obj["fer"].toDouble()) {
             m_soilConductivity = obj["fer"].toDouble();
@@ -131,7 +134,6 @@ void DeviceTheengsGeneric::parseTheengsAdvertisement(const QString &json)
             Q_EMIT dataUpdated();
         }
     }
-
     if (obj.contains("hum")) {
         if (m_humidity != obj["hum"].toDouble()) {
             m_humidity = obj["hum"].toDouble();
@@ -145,7 +147,6 @@ void DeviceTheengsGeneric::parseTheengsAdvertisement(const QString &json)
             Q_EMIT dataUpdated();
         }
     }
-
     if (obj.contains("pres")) {
         if (m_pressure != obj["pres"].toDouble()) {
             m_pressure = obj["pres"].toDouble();
@@ -156,6 +157,24 @@ void DeviceTheengsGeneric::parseTheengsAdvertisement(const QString &json)
     if (obj.contains("for")) {
         if (m_hcho != obj["for"].toDouble()) {
             m_hcho = obj["for"].toDouble() * 1000.0;
+            Q_EMIT dataUpdated();
+        }
+    }
+    if (obj.contains("pm25")) {
+        if (m_hcho != obj["pm25"].toDouble()) {
+            m_pm_25 = obj["pm25"].toDouble();
+            Q_EMIT dataUpdated();
+        }
+    }
+    if (obj.contains("pm10")) {
+        if (m_pm_10 != obj["pm10"].toDouble()) {
+            m_pm_10 = obj["pm10"].toDouble();
+            Q_EMIT dataUpdated();
+        }
+    }
+    if (obj.contains("co2")) {
+        if (m_co2 != obj["co2"].toDouble()) {
+            m_co2 = obj["co2"].toDouble();
             Q_EMIT dataUpdated();
         }
     }

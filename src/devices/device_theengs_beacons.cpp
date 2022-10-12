@@ -85,6 +85,8 @@ void DeviceTheengsBeacons::parseTheengsProps(const QString &json)
     }
 
     // Sensors
+    if (prop.contains("steps")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_STEPS;
+    if (prop.contains("act_bpm")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_HEARTRATE;
     Q_EMIT sensorsUpdated();
 }
 

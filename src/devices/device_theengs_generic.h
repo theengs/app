@@ -37,7 +37,6 @@ class DeviceTheengsGeneric: public DeviceTheengs
 {
     Q_OBJECT
 
-private:
     bool areValuesValid_plants(const int soilMoisture, const int soilConductivity,
                                const float temperature, const int luminosity) const;
     bool addDatabaseRecord_plants(const int64_t timestamp,
@@ -63,11 +62,10 @@ public:
     void parseTheengsProps(const QString &json);
     void parseTheengsAdvertisement(const QString &json);
 
-
     // Chart "min/max"
     Q_INVOKABLE void updateChartData_thermometerMinMax(int maxDays);
 
-    // Chart "AIO"
+    // Chart thermometer "AIO"
     Q_INVOKABLE void getChartData_thermometerAIO(int maxDays, QDateTimeAxis *axis,
                                                  QLineSeries *temp, QLineSeries *hygro);
 };

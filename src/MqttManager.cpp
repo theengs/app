@@ -232,6 +232,7 @@ void MqttManager::brokerDisconnected()
 void MqttManager::handleMessage(const QMqttMessage &qmsg)
 {
     //qDebug() << "MqttManager::handleMessage()" << qmsg.topic();
+    Q_UNUSED(qmsg)
 }
 
 /* ************************************************************************** */

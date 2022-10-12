@@ -67,7 +67,7 @@ public:
     void parseTheengsProps(const QString &json);
     void parseTheengsAdvertisement(const QString &json);
 
-    // Chart scale AIO
+    // Chart scale "AIO"
     Q_INVOKABLE void getChartData_scaleAIO(int maxDays, QDateTimeAxis *axis,
                                            QLineSeries *weight, QLineSeries *impedance);
 };

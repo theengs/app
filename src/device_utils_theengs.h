@@ -64,13 +64,20 @@ public:
         SENSOR_GYRO_Y               = (1 << 20),
         SENSOR_GYRO_Z               = (1 << 21),
 
+        // smartwatchs
         SENSOR_STEPS                = (1 << 22), //!< Pedometer
+        SENSOR_HEARTRATE            = (1 << 23), //!< Heart rate monitor
 
         // others
         SENSOR_PRESENCE             = (1 << 24),
         SENSOR_MOVEMENT             = (1 << 25),
         SENSOR_OPEN                 = (1 << 26),
         SENSOR_ALARM                = (1 << 27),
+        SENSOR_DISTANCE             = (1 << 28),
+
+        // generic
+        SENSOR_MODE                 = (1 << 30),
+        SENSOR_STATE                = (1 << 31),
     };
     Q_ENUM(DeviceSensorsTheengs)
 };

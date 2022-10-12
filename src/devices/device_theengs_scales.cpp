@@ -161,6 +161,7 @@ void DeviceTheengsScales::parseTheengsAdvertisement(const QString &json)
 }
 
 /* ************************************************************************** */
+/* ************************************************************************** */
 
 void DeviceTheengsScales::getChartData_scaleAIO(int maxDays, QDateTimeAxis *axis,
                                                 QLineSeries *weight, QLineSeries *impedance)

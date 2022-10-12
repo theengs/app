@@ -127,6 +127,7 @@ protected:
     bool m_open = false;
     bool m_movement = false;
     bool m_presence = false;
+    float m_sensing_distance = -99.f;
 
 protected:
     virtual bool getSqlProbeData(int minutes);

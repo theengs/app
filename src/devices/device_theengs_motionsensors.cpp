@@ -88,6 +88,8 @@ void DeviceTheengsMotionSensors::parseTheengsProps(const QString &json)
     if (prop.contains("open")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_OPEN;
     if (prop.contains("move")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_MOVEMENT;
     if (prop.contains("pres")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_PRESENCE;
+    if (prop.contains("sensingdistance")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_DISTANCE;
+    if (prop.contains("lightlevel")) m_deviceSensors += DeviceUtils::SENSOR_LUMINOSITY;
     if (prop.contains("darkness")) m_deviceSensors += DeviceUtils::SENSOR_LUMINOSITY;
     if (prop.contains("lux")) m_deviceSensors += DeviceUtils::SENSOR_LUMINOSITY;
     Q_EMIT sensorsUpdated();
@@ -124,7 +126,19 @@ void DeviceTheengsMotionSensors::parseTheengsAdvertisement(const QString &json)
             Q_EMIT dataUpdated();
         }
     }
+    if (obj.contains("sensingdistance")) {
+        if (m_sensing_distance != obj["sensingdistance"].toDouble()) {
+            m_sensing_distance = obj["sensingdistance"].toDouble();
+            Q_EMIT dataUpdated();
+        }
+    }
 
+    if (obj.contains("lightlevel")) {
+        if (m_luminosityLux != obj["lightlevel"].toInt()) {
+            m_luminosityLux = obj["lightlevel"].toInt();
+            Q_EMIT dataUpdated();
+        }
+    }
     if (obj.contains("darkness")) {
         if (m_luminosityLux != obj["darkness"].toInt()) {
             m_luminosityLux = obj["darkness"].toInt();

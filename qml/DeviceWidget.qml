@@ -220,10 +220,9 @@ Item {
             } else if (boxDevice.isEnvironmentalSensor) {
 
                 alarmVentilate.visible = false
-                //alarmRadiation.visible = false
                 //alarmWarning.visible = false
 
-                // Air warning
+                // Air quality warning
                 if ((boxDevice.hasVocSensor && boxDevice.voc > 1000) ||
                     (boxDevice.hasHchoSensor && boxDevice.hcho > 1000) ||
                     (boxDevice.hasCo2Sensor && boxDevice.co2 > 1500)) {
@@ -234,17 +233,6 @@ Item {
                            (boxDevice.hasCo2Sensor && boxDevice.co2 > 850)) {
                     alarmVentilate.visible = true
                     alarmVentilate.color = Theme.colorYellow
-                }
-
-                // Radiation warning
-                if (boxDevice.hasGeigerCounter) {
-                    if (boxDevice.radioactivityM > 1) {
-                        //alarmRadiation.visible = true
-                        //if (boxDevice.radioactivityM > 10)
-                        //    alarmRadiation.color = Theme.colorRed
-                        //else
-                        //    alarmRadiation.color = Theme.colorYellow
-                    }
                 }
             }
         }
@@ -500,17 +488,6 @@ Item {
                 color: Theme.colorYellow
             }
 /*
-            IconSvg {
-                id: alarmRadiation
-                width: bigAssMode ? 28 : 24
-                height: bigAssMode ? 28 : 24
-                anchors.verticalCenter: parent.verticalCenter
-
-                visible: false
-                asynchronous: true
-                source: "qrc:/assets/icons_custom/nuclear_icon.svg"
-                color: Theme.colorYellow
-            }
             IconSvg {
                 id: alarmWarning
                 width: bigAssMode ? 28 : 24
