@@ -281,7 +281,7 @@ void DeviceManager::discoverTheengsDevices()
 
     // Load saved devices and sent discovery requests to the MQTT broker
     QSqlQuery queryDevices;
-    if (queryDevices.exec("SELECT deviceName, deviceModel, deviceAddr FROM devices"))
+    if (queryDevices.exec("SELECT deviceName, deviceModel, deviceAddr, deviceAddrMAC FROM devices"))
     {
         while (queryDevices.next())
         {
@@ -289,6 +289,9 @@ void DeviceManager::discoverTheengsDevices()
             QString deviceModel_theengs = queryDevices.value(1).toString();
             QString deviceManufacturer_theengs = getDeviceBrandTheengs(deviceModel_theengs);
             QString deviceAddr = queryDevices.value(2).toString();
+#if defined(Q_OS_MACOS)
+            deviceAddr = queryDevices.value(3).toString();
+#endif
             QString device_props = getDevicePropsTheengs(deviceModel_theengs);
 
             DeviceTheengs::createDiscoveryMQTT(deviceAddr, deviceName, deviceModel_theengs,

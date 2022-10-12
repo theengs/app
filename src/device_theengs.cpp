@@ -399,12 +399,14 @@ bool DeviceTheengs::createDiscoveryMQTT(const QString &deviceAddr, const QString
             return false;
         }
 
+        QJsonArray idarr, connarr;
+        idarr.push_back(QJsonValue::fromVariant(deviceAddr));
+        QStringList conn; conn.push_back("mac"); conn.push_back(deviceAddrClean);
+        connarr.push_back(QJsonValue::fromVariant(conn).toArray());
+
         // create device object
         QJsonObject deviceObject;
-        QJsonArray idarr; idarr.push_back(QJsonValue::fromVariant(deviceAddrClean));
         deviceObject.insert("identifiers", idarr);
-        QStringList conn; conn.push_back("mac"); conn.push_back(deviceAddrClean);
-        QJsonArray connarr; connarr.push_back(QJsonValue::fromVariant(conn).toArray());
         deviceObject.insert("connections", connarr);
         deviceObject.insert("manufacturer", QJsonValue::fromVariant(deviceManufacturer));
         deviceObject.insert("model", QJsonValue::fromVariant(deviceModel));
