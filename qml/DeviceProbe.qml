@@ -277,10 +277,12 @@ Loader {
                         }
                     }
 
+                    ////
+
                     Row {
                         spacing: columnBBQ.pss
 
-                        Rectangle {
+                        Rectangle { // #1
                             width: columnBBQ.psw
                             height: columnBBQ.psh
                             radius: 8
@@ -303,7 +305,7 @@ Loader {
 
                             Text {
                                 anchors.right: parent.right
-                                anchors.rightMargin: 8
+                                anchors.rightMargin: isPhone ? 8 : 12
                                 anchors.verticalCenter: parent.verticalCenter
 
                                 visible: (currentDevice.temperature1 < -80)
@@ -314,20 +316,22 @@ Loader {
                                 color: cccc
                             }
 
-                            Text {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                anchors.horizontalCenterOffset: 16
+                            Row {
+                                anchors.right: parent.right
+                                anchors.rightMargin: isPhone ? 8 : 12
                                 anchors.verticalCenter: parent.verticalCenter
-                                anchors.verticalCenterOffset: 2
-
                                 visible: (currentDevice.temperature1 > -80)
-                                text: currentDevice.temperature1.toFixed(1)
-                                font.pixelSize: columnBBQ.fz1
-                                font.bold: false
-                                color: cccc
 
                                 Text {
-                                    anchors.left: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    visible: (currentDevice.temperature1 > -80)
+                                    text: currentDevice.temperature1.toFixed(1)
+                                    font.pixelSize: columnBBQ.fz1
+                                    font.bold: false
+                                    color: cccc
+                                }
+                                Text {
                                     anchors.top: parent.top
                                     anchors.topMargin: 2
 
@@ -340,7 +344,7 @@ Loader {
                             }
                         }
 
-                        Rectangle {
+                        Rectangle { // #2
                             width: columnBBQ.psw
                             height: columnBBQ.psh
                             radius: 8
@@ -363,7 +367,7 @@ Loader {
 
                             Text {
                                 anchors.right: parent.right
-                                anchors.rightMargin: 8
+                                anchors.rightMargin: isPhone ? 8 : 12
                                 anchors.verticalCenter: parent.verticalCenter
 
                                 visible: (currentDevice.temperature2 < -80)
@@ -374,20 +378,22 @@ Loader {
                                 color: cccc
                             }
 
-                            Text {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                anchors.horizontalCenterOffset: 16
+                            Row {
+                                anchors.right: parent.right
+                                anchors.rightMargin: isPhone ? 8 : 12
                                 anchors.verticalCenter: parent.verticalCenter
-                                anchors.verticalCenterOffset: 2
-
                                 visible: (currentDevice.temperature2 > -80)
-                                text: currentDevice.temperature2.toFixed(1)
-                                font.pixelSize: columnBBQ.fz1
-                                font.bold: false
-                                color: cccc
 
                                 Text {
-                                    anchors.left: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    visible: (currentDevice.temperature2 > -80)
+                                    text: currentDevice.temperature2.toFixed(1)
+                                    font.pixelSize: columnBBQ.fz1
+                                    font.bold: false
+                                    color: cccc
+                                }
+                                Text {
                                     anchors.top: parent.top
                                     anchors.topMargin: 2
 
@@ -401,11 +407,13 @@ Loader {
                         }
                     }
 
+                    ////
+
                     Row {
                         spacing: columnBBQ.pss
                         visible: currentDevice.hasTemperature3
 
-                        Rectangle {
+                        Rectangle { // #3
                             width: columnBBQ.psw
                             height: columnBBQ.psh
                             radius: 8
@@ -428,7 +436,7 @@ Loader {
 
                             Text {
                                 anchors.right: parent.right
-                                anchors.rightMargin: 8
+                                anchors.rightMargin: isPhone ? 8 : 12
                                 anchors.verticalCenter: parent.verticalCenter
 
                                 visible: (currentDevice.temperature3 < -80)
@@ -439,20 +447,22 @@ Loader {
                                 color: cccc
                             }
 
-                            Text {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                anchors.horizontalCenterOffset: 16
+                            Row {
+                                anchors.right: parent.right
+                                anchors.rightMargin: isPhone ? 8 : 12
                                 anchors.verticalCenter: parent.verticalCenter
-                                anchors.verticalCenterOffset: 2
-
                                 visible: (currentDevice.temperature3 > -80)
-                                text: currentDevice.temperature3.toFixed(1)
-                                font.pixelSize: columnBBQ.fz1
-                                font.bold: false
-                                color: cccc
 
                                 Text {
-                                    anchors.left: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    visible: (currentDevice.temperature3 > -80)
+                                    text: currentDevice.temperature3.toFixed(1)
+                                    font.pixelSize: columnBBQ.fz1
+                                    font.bold: false
+                                    color: cccc
+                                }
+                                Text {
                                     anchors.top: parent.top
                                     anchors.topMargin: 2
 
@@ -465,7 +475,7 @@ Loader {
                             }
                         }
 
-                        Rectangle {
+                        Rectangle { // #4
                             width: columnBBQ.psw
                             height: columnBBQ.psh
                             radius: 8
@@ -488,7 +498,7 @@ Loader {
 
                             Text {
                                 anchors.right: parent.right
-                                anchors.rightMargin: 8
+                                anchors.rightMargin: isPhone ? 8 : 12
                                 anchors.verticalCenter: parent.verticalCenter
 
                                 visible: (currentDevice.temperature4 < -80)
@@ -499,20 +509,22 @@ Loader {
                                 color: cccc
                             }
 
-                            Text {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                anchors.horizontalCenterOffset: 16
+                            Row {
+                                anchors.right: parent.right
+                                anchors.rightMargin: isPhone ? 8 : 12
                                 anchors.verticalCenter: parent.verticalCenter
-                                anchors.verticalCenterOffset: 2
-
                                 visible: (currentDevice.temperature4 > -80)
-                                text: currentDevice.temperature4.toFixed(1)
-                                font.pixelSize: columnBBQ.fz1
-                                font.bold: false
-                                color: cccc
 
                                 Text {
-                                    anchors.left: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    visible: (currentDevice.temperature4 > -80)
+                                    text: currentDevice.temperature4.toFixed(1)
+                                    font.pixelSize: columnBBQ.fz1
+                                    font.bold: false
+                                    color: cccc
+                                }
+                                Text {
                                     anchors.top: parent.top
                                     anchors.topMargin: 2
 
@@ -525,6 +537,8 @@ Loader {
                             }
                         }
                     }
+
+                    ////
 
                     Row {
                         spacing: columnBBQ.pss
@@ -553,7 +567,7 @@ Loader {
 
                             Text {
                                 anchors.right: parent.right
-                                anchors.rightMargin: 8
+                                anchors.rightMargin: isPhone ? 8 : 12
                                 anchors.verticalCenter: parent.verticalCenter
 
                                 visible: (currentDevice.temperature5 < -80)
@@ -564,20 +578,21 @@ Loader {
                                 color: cccc
                             }
 
-                            Text {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                anchors.horizontalCenterOffset: 16
+                            Row {
+                                anchors.right: parent.right
+                                anchors.rightMargin: isPhone ? 8 : 12
                                 anchors.verticalCenter: parent.verticalCenter
-                                anchors.verticalCenterOffset: 2
-
                                 visible: (currentDevice.temperature5 > -80)
-                                text: currentDevice.temperature5.toFixed(1)
-                                font.pixelSize: columnBBQ.fz1
-                                font.bold: false
-                                color: cccc
 
                                 Text {
-                                    anchors.left: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    text: currentDevice.temperature5.toFixed(1)
+                                    font.pixelSize: columnBBQ.fz1
+                                    font.bold: false
+                                    color: cccc
+                                }
+                                Text {
                                     anchors.top: parent.top
                                     anchors.topMargin: 2
 
@@ -613,7 +628,7 @@ Loader {
 
                             Text {
                                 anchors.right: parent.right
-                                anchors.rightMargin: 8
+                                anchors.rightMargin: isPhone ? 8 : 12
                                 anchors.verticalCenter: parent.verticalCenter
 
                                 visible: (currentDevice.temperature6 < -80)
@@ -624,20 +639,22 @@ Loader {
                                 color: cccc
                             }
 
-                            Text {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                anchors.horizontalCenterOffset: 16
+                            Row {
+                                anchors.right: parent.right
+                                anchors.rightMargin: isPhone ? 8 : 12
                                 anchors.verticalCenter: parent.verticalCenter
-                                anchors.verticalCenterOffset: 2
-
                                 visible: (currentDevice.temperature6 > -80)
-                                text: currentDevice.temperature6.toFixed(1)
-                                font.pixelSize: columnBBQ.fz1
-                                font.bold: false
-                                color: cccc
 
                                 Text {
-                                    anchors.left: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    visible: (currentDevice.temperature6 > -80)
+                                    text: currentDevice.temperature6.toFixed(1)
+                                    font.pixelSize: columnBBQ.fz1
+                                    font.bold: false
+                                    color: cccc
+                                }
+                                Text {
                                     anchors.top: parent.top
                                     anchors.topMargin: 2
 
@@ -649,6 +666,8 @@ Loader {
                                 }
                             }
                         }
+
+                        ////
                     }
                 }
 
