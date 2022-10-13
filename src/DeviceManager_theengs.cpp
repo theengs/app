@@ -312,7 +312,7 @@ void DeviceManager::discoverTheengsDevices()
             QString deviceModel_theengs = queryDevices.value(1).toString();
             QString deviceManufacturer_theengs = getDeviceBrandTheengs(deviceModel_theengs);
             QString deviceAddr = queryDevices.value(2).toString();
-#if defined(Q_OS_MACOS)
+#if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
             deviceAddr = queryDevices.value(3).toString();
 #endif
             QString device_props = getDevicePropsTheengs(deviceModel_theengs);
