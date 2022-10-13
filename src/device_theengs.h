@@ -31,6 +31,48 @@
 
 /* ************************************************************************** */
 
+class TheengsGenericData: public QObject
+{
+    Q_OBJECT
+    Q_PROPERTY(QString name READ getName CONSTANT)
+    Q_PROPERTY(QString unit READ getUnit CONSTANT)
+    Q_PROPERTY(QVariant value READ getData NOTIFY up)
+    Q_PROPERTY(int value_i READ getData_i NOTIFY up)
+    Q_PROPERTY(float value_f READ getData_f NOTIFY up)
+
+    QString name;
+    QString unit;
+    int data_i = -99;
+    float data_f = -99.f;
+
+Q_SIGNALS:
+    void up();
+
+public:
+    TheengsGenericData(const QString &n, const QString &u, QObject *parent) : QObject(parent) {
+        name = n;
+        unit = u;
+    }
+
+    QString getName() { return name; }
+    QString getUnit() { return unit; }
+    int getData_i() { return data_i; }
+    float getData_f() { return data_f; }
+
+    void setData(const QJsonValue &v) {
+        if (v.isDouble()) data_f = v.toDouble();
+        else if (v.isBool()) data_i = v.toBool();
+        else if (v.isBool()) data_i = v.toInt();
+    }
+    QVariant getData() {
+        if (data_i > -99) return data_i;
+        if (data_f > -99.f) return data_f;
+        return 0;
+    }
+};
+
+/* ************************************************************************** */
+
 /*!
  * Theengs generic device
  */
@@ -52,7 +94,7 @@ class DeviceTheengs: public DeviceSensor
     Q_PROPERTY(float temperature3 READ getTemp3 NOTIFY dataUpdated)
     Q_PROPERTY(float temperature4 READ getTemp4 NOTIFY dataUpdated)
     Q_PROPERTY(float temperature5 READ getTemp5 NOTIFY dataUpdated)
-    Q_PROPERTY(float temperature6 READ getTemp6 NOTIFY dataUpdated)    
+    Q_PROPERTY(float temperature6 READ getTemp6 NOTIFY dataUpdated)
     Q_PROPERTY(int battery1 READ getBattery1 NOTIFY dataUpdated)
     Q_PROPERTY(int battery2 READ getBattery2 NOTIFY dataUpdated)
     Q_PROPERTY(int battery3 READ getBattery3 NOTIFY dataUpdated)
@@ -86,10 +128,16 @@ class DeviceTheengs: public DeviceSensor
     Q_PROPERTY(bool movement READ getMovement NOTIFY dataUpdated)
     Q_PROPERTY(bool presence READ getPresence NOTIFY dataUpdated)
 
+    // generic data
+    Q_PROPERTY(QVariant genericData READ getGenericData NOTIFY genericDataUpdated)
+
 private:
     // QLowEnergyController related
     virtual void serviceScanDone();
     virtual void addLowEnergyService(const QBluetoothUuid &uuid);
+
+Q_SIGNALS:
+    void genericDataUpdated();
 
 protected:
     int m_deviceSensorsTheengs = 0;     //!< See DeviceSensorsTheengs enum
@@ -128,6 +176,10 @@ protected:
     bool m_movement = false;
     bool m_presence = false;
     float m_sensing_distance = -99.f;
+
+    // generic data
+    QList <QObject *> m_genericData;
+    QVariant getGenericData() const { return QVariant::fromValue(m_genericData); }
 
 protected:
     virtual bool getSqlProbeData(int minutes);

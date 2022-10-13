@@ -381,6 +381,10 @@ ApplicationWindow {
             id: screenDeviceMotionSensor
             anchors.fill: parent
         }
+        DeviceGeneric {
+            anchors.fill: parent
+            id: screenDeviceGeneric
+        }
         SettingsMqtt {
             id: screenSettingsMqtt
             anchors.fill: parent
@@ -426,194 +430,223 @@ ApplicationWindow {
             State {
                 name: "DeviceList"
                 PropertyChanges { target: appHeader; title: "Theengs"; }
-                PropertyChanges { target: screenDeviceList; visible: true; enabled: true; }
-                PropertyChanges { target: screenDevicePlantSensor; visible: false; enabled: false }
-                PropertyChanges { target: screenDeviceThermometer; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceEnvironmental; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceProbe; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceScale; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceMotionSensor; visible: false; enabled: false; }
-                PropertyChanges { target: screenSettingsMqtt; visible: false; enabled: false; }
-                PropertyChanges { target: screenSettings; visible: false; enabled: false; }
-                PropertyChanges { target: screenPermissions; visible: false; enabled: false; }
-                PropertyChanges { target: screenAbout; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceBrowser; visible: false; enabled: false; }
+                PropertyChanges { target: screenDeviceList; visible: true; }
+                PropertyChanges { target: screenDevicePlantSensor; visible: false; }
+                PropertyChanges { target: screenDeviceThermometer; visible: false; }
+                PropertyChanges { target: screenDeviceEnvironmental; visible: false; }
+                PropertyChanges { target: screenDeviceProbe; visible: false; }
+                PropertyChanges { target: screenDeviceScale; visible: false; }
+                PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceGeneric; visible: false; }
+                PropertyChanges { target: screenSettingsMqtt; visible: false; }
+                PropertyChanges { target: screenSettings; visible: false; }
+                PropertyChanges { target: screenPermissions; visible: false; }
+                PropertyChanges { target: screenAbout; visible: false; }
+                PropertyChanges { target: screenDeviceBrowser; visible: false; }
             },
             State {
                 name: "DevicePlantSensor"
                 PropertyChanges { target: appHeader; title: selectedDevice.deviceName; }
-                PropertyChanges { target: screenDeviceList; visible: false; enabled: false; }
-                PropertyChanges { target: screenDevicePlantSensor; visible: true; enabled: true; }
-                PropertyChanges { target: screenDeviceThermometer; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceEnvironmental; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceProbe; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceScale; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceMotionSensor; visible: false; enabled: false; }
-                PropertyChanges { target: screenSettingsMqtt; visible: false; enabled: false; }
-                PropertyChanges { target: screenSettings; visible: false; enabled: false; }
-                PropertyChanges { target: screenPermissions; visible: false; enabled: false; }
-                PropertyChanges { target: screenAbout; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceBrowser; visible: false; enabled: false; }
+                PropertyChanges { target: screenDeviceList; visible: false; }
+                PropertyChanges { target: screenDevicePlantSensor; visible: true; }
+                PropertyChanges { target: screenDeviceThermometer; visible: false; }
+                PropertyChanges { target: screenDeviceEnvironmental; visible: false; }
+                PropertyChanges { target: screenDeviceProbe; visible: false; }
+                PropertyChanges { target: screenDeviceScale; visible: false; }
+                PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceGeneric; visible: false; }
+                PropertyChanges { target: screenSettingsMqtt; visible: false; }
+                PropertyChanges { target: screenSettings; visible: false; }
+                PropertyChanges { target: screenPermissions; visible: false; }
+                PropertyChanges { target: screenAbout; visible: false; }
+                PropertyChanges { target: screenDeviceBrowser; visible: false; }
             },
             State {
                 name: "DeviceThermometer"
                 PropertyChanges { target: appHeader; title: qsTr("Thermometer"); }
-                PropertyChanges { target: screenDeviceList; visible: false; enabled: false; }
-                PropertyChanges { target: screenDevicePlantSensor; visible: false; enabled: false }
-                PropertyChanges { target: screenDeviceThermometer; visible: true; enabled: true; }
-                PropertyChanges { target: screenDeviceEnvironmental; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceProbe; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceScale; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceMotionSensor; visible: false; enabled: false; }
-                PropertyChanges { target: screenSettingsMqtt; visible: false; enabled: false; }
-                PropertyChanges { target: screenSettings; visible: false; enabled: false; }
-                PropertyChanges { target: screenPermissions; visible: false; enabled: false; }
-                PropertyChanges { target: screenAbout; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceBrowser; visible: false; enabled: false; }
+                PropertyChanges { target: screenDeviceList; visible: false; }
+                PropertyChanges { target: screenDevicePlantSensor; visible: false; }
+                PropertyChanges { target: screenDeviceThermometer; visible: true; }
+                PropertyChanges { target: screenDeviceEnvironmental; visible: false; }
+                PropertyChanges { target: screenDeviceProbe; visible: false; }
+                PropertyChanges { target: screenDeviceScale; visible: false; }
+                PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceGeneric; visible: false; }
+                PropertyChanges { target: screenSettingsMqtt; visible: false; }
+                PropertyChanges { target: screenSettings; visible: false; }
+                PropertyChanges { target: screenPermissions; visible: false; }
+                PropertyChanges { target: screenAbout; visible: false; }
+                PropertyChanges { target: screenDeviceBrowser; visible: false; }
             },
             State {
                 name: "DeviceEnvironmental"
                 PropertyChanges { target: appHeader; title: selectedDevice.deviceName; }
-                PropertyChanges { target: screenDeviceList; visible: false; enabled: false; }
-                PropertyChanges { target: screenDevicePlantSensor; visible: false; enabled: false }
-                PropertyChanges { target: screenDeviceThermometer; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceEnvironmental; visible: true; enabled: true; }
-                PropertyChanges { target: screenDeviceProbe; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceScale; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceMotionSensor; visible: false; enabled: false; }
-                PropertyChanges { target: screenSettingsMqtt; visible: false; enabled: false; }
-                PropertyChanges { target: screenSettings; visible: false; enabled: false; }
-                PropertyChanges { target: screenPermissions; visible: false; enabled: false; }
-                PropertyChanges { target: screenAbout; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceBrowser; visible: false; enabled: false; }
+                PropertyChanges { target: screenDeviceList; visible: false; }
+                PropertyChanges { target: screenDevicePlantSensor; visible: false; }
+                PropertyChanges { target: screenDeviceThermometer; visible: false; }
+                PropertyChanges { target: screenDeviceEnvironmental; visible: true; }
+                PropertyChanges { target: screenDeviceProbe; visible: false; }
+                PropertyChanges { target: screenDeviceScale; visible: false; }
+                PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceGeneric; visible: false; }
+                PropertyChanges { target: screenSettingsMqtt; visible: false; }
+                PropertyChanges { target: screenSettings; visible: false; }
+                PropertyChanges { target: screenPermissions; visible: false; }
+                PropertyChanges { target: screenAbout; visible: false; }
+                PropertyChanges { target: screenDeviceBrowser; visible: false; }
             },
             State {
                 name: "DeviceProbe"
                 PropertyChanges { target: appHeader; title: selectedDevice.deviceName; }
-                PropertyChanges { target: screenDeviceList; visible: false; enabled: false; }
-                PropertyChanges { target: screenDevicePlantSensor; visible: false; enabled: false }
-                PropertyChanges { target: screenDeviceThermometer; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceEnvironmental; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceProbe; visible: true; enabled: true; }
-                PropertyChanges { target: screenDeviceScale; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceMotionSensor; visible: false; enabled: false; }
-                PropertyChanges { target: screenSettingsMqtt; visible: false; enabled: false; }
-                PropertyChanges { target: screenSettings; visible: false; enabled: false; }
-                PropertyChanges { target: screenPermissions; visible: false; enabled: false; }
-                PropertyChanges { target: screenAbout; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceBrowser; visible: false; enabled: false; }
+                PropertyChanges { target: screenDeviceList; visible: false; }
+                PropertyChanges { target: screenDevicePlantSensor; visible: false; }
+                PropertyChanges { target: screenDeviceThermometer; visible: false; }
+                PropertyChanges { target: screenDeviceEnvironmental; visible: false; }
+                PropertyChanges { target: screenDeviceProbe; visible: true; }
+                PropertyChanges { target: screenDeviceScale; visible: false; }
+                PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceGeneric; visible: false; }
+                PropertyChanges { target: screenSettingsMqtt; visible: false; }
+                PropertyChanges { target: screenSettings; visible: false; }
+                PropertyChanges { target: screenPermissions; visible: false; }
+                PropertyChanges { target: screenAbout; visible: false; }
+                PropertyChanges { target: screenDeviceBrowser; visible: false; }
             },
             State {
                 name: "DeviceScale"
                 PropertyChanges { target: appHeader; title: selectedDevice.deviceName; }
-                PropertyChanges { target: screenDeviceList; visible: false; enabled: false; }
-                PropertyChanges { target: screenDevicePlantSensor; visible: false; enabled: false }
-                PropertyChanges { target: screenDeviceThermometer; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceEnvironmental; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceProbe; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceScale; visible: true; enabled: true; }
-                PropertyChanges { target: screenDeviceMotionSensor; visible: false; enabled: false; }
-                PropertyChanges { target: screenSettingsMqtt; visible: false; enabled: false; }
-                PropertyChanges { target: screenSettings; visible: false; enabled: false; }
-                PropertyChanges { target: screenPermissions; visible: false; enabled: false; }
-                PropertyChanges { target: screenAbout; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceBrowser; visible: false; enabled: false; }
+                PropertyChanges { target: screenDeviceList; visible: false; }
+                PropertyChanges { target: screenDevicePlantSensor; visible: false; }
+                PropertyChanges { target: screenDeviceThermometer; visible: false; }
+                PropertyChanges { target: screenDeviceEnvironmental; visible: false; }
+                PropertyChanges { target: screenDeviceProbe; visible: false; }
+                PropertyChanges { target: screenDeviceScale; visible: true; }
+                PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceGeneric; visible: false; }
+                PropertyChanges { target: screenSettingsMqtt; visible: false; }
+                PropertyChanges { target: screenSettings; visible: false; }
+                PropertyChanges { target: screenPermissions; visible: false; }
+                PropertyChanges { target: screenAbout; visible: false; }
+                PropertyChanges { target: screenDeviceBrowser; visible: false; }
             },
             State {
                 name: "DeviceMotionSensor"
                 PropertyChanges { target: appHeader; title: selectedDevice.deviceName; }
-                PropertyChanges { target: screenDeviceList; visible: false; enabled: false; }
-                PropertyChanges { target: screenDevicePlantSensor; visible: false; enabled: false }
-                PropertyChanges { target: screenDeviceThermometer; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceEnvironmental; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceProbe; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceScale; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceMotionSensor; visible: true; enabled: true; }
-                PropertyChanges { target: screenSettingsMqtt; visible: false; enabled: false; }
-                PropertyChanges { target: screenSettings; visible: false; enabled: false; }
-                PropertyChanges { target: screenPermissions; visible: false; enabled: false; }
-                PropertyChanges { target: screenAbout; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceBrowser; visible: false; enabled: false; }
+                PropertyChanges { target: screenDeviceList; visible: false; }
+                PropertyChanges { target: screenDevicePlantSensor; visible: false; }
+                PropertyChanges { target: screenDeviceThermometer; visible: false; }
+                PropertyChanges { target: screenDeviceEnvironmental; visible: false; }
+                PropertyChanges { target: screenDeviceProbe; visible: false; }
+                PropertyChanges { target: screenDeviceScale; visible: false; }
+                PropertyChanges { target: screenDeviceMotionSensor; visible: true; }
+                PropertyChanges { target: screenDeviceGeneric; visible: false; }
+                PropertyChanges { target: screenSettingsMqtt; visible: false; }
+                PropertyChanges { target: screenSettings; visible: false; }
+                PropertyChanges { target: screenPermissions; visible: false; }
+                PropertyChanges { target: screenAbout; visible: false; }
+                PropertyChanges { target: screenDeviceBrowser; visible: false; }
+            },
+            State {
+                name: "DeviceGeneric"
+                PropertyChanges { target: appHeader; title: selectedDevice.deviceName; }
+                PropertyChanges { target: screenDeviceList; visible: false; }
+                PropertyChanges { target: screenDevicePlantSensor; visible: false; }
+                PropertyChanges { target: screenDeviceThermometer; visible: false; }
+                PropertyChanges { target: screenDeviceEnvironmental; visible: false; }
+                PropertyChanges { target: screenDeviceProbe; visible: false; }
+                PropertyChanges { target: screenDeviceScale; visible: false; }
+                PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceGeneric; visible: true; }
+                PropertyChanges { target: screenSettingsMqtt; visible: false; }
+                PropertyChanges { target: screenSettings; visible: false; }
+                PropertyChanges { target: screenPermissions; visible: false; }
+                PropertyChanges { target: screenAbout; visible: false; }
+                PropertyChanges { target: screenDeviceBrowser; visible: false; }
             },
             State {
                 name: "SettingsMqtt"
                 PropertyChanges { target: appHeader; title: qsTr("Integration"); }
-                PropertyChanges { target: screenDeviceList; visible: false; enabled: false; }
-                PropertyChanges { target: screenDevicePlantSensor; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceThermometer; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceEnvironmental; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceProbe; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceScale; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceMotionSensor; visible: false; enabled: false; }
-                PropertyChanges { target: screenSettingsMqtt; visible: true; enabled: true; }
-                PropertyChanges { target: screenSettings; visible: false; enabled: false; }
-                PropertyChanges { target: screenPermissions; visible: false; enabled: false; }
-                PropertyChanges { target: screenAbout; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceBrowser; visible: false; enabled: false; }
+                PropertyChanges { target: screenDeviceList; visible: false; }
+                PropertyChanges { target: screenDevicePlantSensor; visible: false; }
+                PropertyChanges { target: screenDeviceThermometer; visible: false; }
+                PropertyChanges { target: screenDeviceEnvironmental; visible: false; }
+                PropertyChanges { target: screenDeviceProbe; visible: false; }
+                PropertyChanges { target: screenDeviceScale; visible: false; }
+                PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceGeneric; visible: false; }
+                PropertyChanges { target: screenSettingsMqtt; visible: true; }
+                PropertyChanges { target: screenSettings; visible: false; }
+                PropertyChanges { target: screenPermissions; visible: false; }
+                PropertyChanges { target: screenAbout; visible: false; }
+                PropertyChanges { target: screenDeviceBrowser; visible: false; }
             },
             State {
                 name: "Settings"
                 PropertyChanges { target: appHeader; title: qsTr("Settings"); }
-                PropertyChanges { target: screenDeviceList; visible: false; enabled: false; }
-                PropertyChanges { target: screenDevicePlantSensor; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceThermometer; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceEnvironmental; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceProbe; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceScale; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceMotionSensor; visible: false; enabled: false; }
-                PropertyChanges { target: screenSettingsMqtt; visible: false; enabled: false; }
-                PropertyChanges { target: screenSettings; visible: true; enabled: true; }
-                PropertyChanges { target: screenPermissions; visible: false; enabled: false; }
-                PropertyChanges { target: screenAbout; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceBrowser; visible: false; enabled: false; }
+                PropertyChanges { target: screenDeviceList; visible: false; }
+                PropertyChanges { target: screenDevicePlantSensor; visible: false; }
+                PropertyChanges { target: screenDeviceThermometer; visible: false; }
+                PropertyChanges { target: screenDeviceEnvironmental; visible: false; }
+                PropertyChanges { target: screenDeviceProbe; visible: false; }
+                PropertyChanges { target: screenDeviceScale; visible: false; }
+                PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceGeneric; visible: false; }
+                PropertyChanges { target: screenSettingsMqtt; visible: false; }
+                PropertyChanges { target: screenSettings; visible: true; }
+                PropertyChanges { target: screenPermissions; visible: false; }
+                PropertyChanges { target: screenAbout; visible: false; }
+                PropertyChanges { target: screenDeviceBrowser; visible: false; }
             },
             State {
                 name: "Permissions"
                 PropertyChanges { target: appHeader; title: qsTr("Permissions"); }
-                PropertyChanges { target: screenDeviceList; visible: false; enabled: false; }
-                PropertyChanges { target: screenDevicePlantSensor; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceThermometer; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceEnvironmental; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceProbe; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceScale; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceMotionSensor; visible: false; enabled: false; }
-                PropertyChanges { target: screenSettingsMqtt; visible: false; enabled: false; }
-                PropertyChanges { target: screenSettings; visible: false; enabled: false; }
-                PropertyChanges { target: screenPermissions; visible: true; enabled: true; }
-                PropertyChanges { target: screenAbout; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceBrowser; visible: false; enabled: false; }
+                PropertyChanges { target: screenDeviceList; visible: false; }
+                PropertyChanges { target: screenDevicePlantSensor; visible: false; }
+                PropertyChanges { target: screenDeviceThermometer; visible: false; }
+                PropertyChanges { target: screenDeviceEnvironmental; visible: false; }
+                PropertyChanges { target: screenDeviceProbe; visible: false; }
+                PropertyChanges { target: screenDeviceScale; visible: false; }
+                PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceGeneric; visible: false; }
+                PropertyChanges { target: screenSettingsMqtt; visible: false; }
+                PropertyChanges { target: screenSettings; visible: false; }
+                PropertyChanges { target: screenPermissions; visible: true; }
+                PropertyChanges { target: screenAbout; visible: false; }
+                PropertyChanges { target: screenDeviceBrowser; visible: false; }
             },
             State {
                 name: "About"
                 PropertyChanges { target: appHeader; title: qsTr("About"); }
-                PropertyChanges { target: screenDeviceList; visible: false; enabled: false; }
-                PropertyChanges { target: screenDevicePlantSensor; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceThermometer; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceEnvironmental; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceProbe; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceScale; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceMotionSensor; visible: false; enabled: false; }
-                PropertyChanges { target: screenSettingsMqtt; visible: false; enabled: false; }
-                PropertyChanges { target: screenSettings; visible: false; enabled: false; }
-                PropertyChanges { target: screenPermissions; visible: false; enabled: false; }
-                PropertyChanges { target: screenAbout; visible: true; enabled: true; }
-                PropertyChanges { target: screenDeviceBrowser; visible: false; enabled: false; }
+                PropertyChanges { target: screenDeviceList; visible: false; }
+                PropertyChanges { target: screenDevicePlantSensor; visible: false; }
+                PropertyChanges { target: screenDeviceThermometer; visible: false; }
+                PropertyChanges { target: screenDeviceEnvironmental; visible: false; }
+                PropertyChanges { target: screenDeviceProbe; visible: false; }
+                PropertyChanges { target: screenDeviceScale; visible: false; }
+                PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceGeneric; visible: false; }
+                PropertyChanges { target: screenSettingsMqtt; visible: false; }
+                PropertyChanges { target: screenSettings; visible: false; }
+                PropertyChanges { target: screenPermissions; visible: false; }
+                PropertyChanges { target: screenAbout; visible: true; }
+                PropertyChanges { target: screenDeviceBrowser; visible: false; }
             },
             State {
                 name: "DeviceBrowser"
                 PropertyChanges { target: appHeader; title: qsTr("Device browser"); }
-                PropertyChanges { target: screenDeviceList; visible: false; enabled: false; }
-                PropertyChanges { target: screenDevicePlantSensor; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceThermometer; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceEnvironmental; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceProbe; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceScale; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceMotionSensor; visible: false; enabled: false; }
-                PropertyChanges { target: screenSettingsMqtt; visible: false; enabled: false; }
-                PropertyChanges { target: screenSettings; visible: false; enabled: false; }
-                PropertyChanges { target: screenPermissions; visible: false; enabled: false; }
-                PropertyChanges { target: screenAbout; visible: false; enabled: false; }
-                PropertyChanges { target: screenDeviceBrowser; visible: true; enabled: true; }
+                PropertyChanges { target: screenDeviceList; visible: false; }
+                PropertyChanges { target: screenDevicePlantSensor; visible: false; }
+                PropertyChanges { target: screenDeviceThermometer; visible: false; }
+                PropertyChanges { target: screenDeviceEnvironmental; visible: false; }
+                PropertyChanges { target: screenDeviceProbe; visible: false; }
+                PropertyChanges { target: screenDeviceScale; visible: false; }
+                PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceGeneric; visible: false; }
+                PropertyChanges { target: screenSettingsMqtt; visible: false; }
+                PropertyChanges { target: screenSettings; visible: false; }
+                PropertyChanges { target: screenPermissions; visible: false; }
+                PropertyChanges { target: screenAbout; visible: false; }
+                PropertyChanges { target: screenDeviceBrowser; visible: true; }
             }
         ]
     }

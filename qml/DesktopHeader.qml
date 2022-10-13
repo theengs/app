@@ -205,7 +205,8 @@ Rectangle {
                        appContent.state === "DeviceEnvironmental" ||
                        appContent.state === "DeviceProbe" ||
                        appContent.state === "DeviceScale" ||
-                       appContent.state === "DeviceMotionSensor"))
+                       appContent.state === "DeviceMotionSensor" ||
+                       appContent.state === "DeviceGeneric"))
 
             source: "qrc:/assets/icons_material/baseline-pin-24px.svg"
             tooltipText: qsTr("Set MAC address")
@@ -627,6 +628,7 @@ Rectangle {
                   appContent.state !== "DeviceProbe" &&
                   appContent.state !== "DeviceScale" &&
                   appContent.state !== "DeviceMotionSensor" &&
+                  appContent.state !== "DeviceGeneric" &&
                   appContent.state !== "Tutorial")
 
         height: 2

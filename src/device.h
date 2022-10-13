@@ -69,6 +69,7 @@ class Device: public QObject
     Q_PROPERTY(bool isProbe READ isProbe NOTIFY sensorUpdated)
     Q_PROPERTY(bool isScale READ isScale NOTIFY sensorUpdated)
     Q_PROPERTY(bool isMotionSensor READ isMotionSensor NOTIFY sensorUpdated)
+    Q_PROPERTY(bool isGenericDevice READ isGenericDevice NOTIFY sensorUpdated)
 
     Q_PROPERTY(bool hasBluetoothConnection READ hasBluetoothConnection CONSTANT)
     Q_PROPERTY(bool hasBluetoothAdvertisement READ hasBluetoothAdvertisement CONSTANT)
@@ -278,6 +279,7 @@ public:
     bool isProbe() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_PROBE); }
     bool isScale() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_SCALE); }
     bool isMotionSensor() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_MOTIONSENSOR); }
+    bool isGenericDevice() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_GENERIC); }
 
     virtual bool hasHistory() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_HISTORY); }
     bool hasBatteryLevel() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_BATTERY); }

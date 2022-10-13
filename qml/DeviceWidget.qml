@@ -309,28 +309,42 @@ Item {
 
                     // regular click
                     if (boxDevice.isDataAvailable()) {
-                        selectedDevice = boxDevice
-
                         if (boxDevice.isPlantSensor) {
+                            selectedDevice = boxDevice
                             screenDevicePlantSensor.loadDevice(boxDevice)
                             appContent.state = "DevicePlantSensor"
                         } else if (boxDevice.isThermometer) {
+                            selectedDevice = boxDevice
                             screenDeviceThermometer.loadDevice(boxDevice)
                             appContent.state = "DeviceThermometer"
                         } else if (boxDevice.isEnvironmentalSensor) {
+                            selectedDevice = boxDevice
                             screenDeviceEnvironmental.loadDevice(boxDevice)
                             appContent.state = "DeviceEnvironmental"
                         } else if (boxDevice.isProbe) {
+                            selectedDevice = boxDevice
                             screenDeviceProbe.loadDevice(boxDevice)
                             appContent.state = "DeviceProbe"
                         } else if (boxDevice.isScale) {
+                            selectedDevice = boxDevice
                             screenDeviceScale.loadDevice(boxDevice)
                             appContent.state = "DeviceScale"
                         } else if (boxDevice.isMotionSensor) {
+                            selectedDevice = boxDevice
                             screenDeviceMotionSensor.loadDevice(boxDevice)
                             appContent.state = "DeviceMotionSensor"
+                        } else if (boxDevice.isGenericDevice) {
+                            selectedDevice = boxDevice
+                            screenDeviceGeneric.loadDevice(boxDevice)
+                            appContent.state = "DeviceGeneric"
                         } else {
                             //
+                        }
+                    } else {
+                        if (boxDevice.isGenericDevice) {
+                           selectedDevice = boxDevice
+                           screenDeviceGeneric.loadDevice(boxDevice)
+                           appContent.state = "DeviceGeneric"
                         }
                     }
                 }

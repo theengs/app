@@ -242,11 +242,11 @@ Loader {
 
                     visible: (currentDevice.hasData && !currentDevice.hasProbesTPMS)
 
-                    property int psw: isPhone ? 160 : 200
+                    property int psw: (probeBox.width / 2) - 3*12
                     property int psh: isPhone ? 44 : 48
                     property int pss: isPhone ? 24 : 32
                     property int fz1: isPhone ? 28 : 32
-                    property int fz2: isPhone ? 24 : 28
+                    property int fz2: isPhone ? 18 : 20
 
                     Row {
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -258,7 +258,7 @@ Loader {
                             anchors.verticalCenter: parent.verticalCenter
 
                             text: currentDevice.deviceName
-                            font.pixelSize: columnTPMS.fz2
+                            font.pixelSize: columnBBQ.fz1
                             font.bold: false
                             color: cccc
                             opacity: 0.66
@@ -284,6 +284,7 @@ Loader {
                             width: columnBBQ.psw
                             height: columnBBQ.psh
                             radius: 8
+                            clip: true
                             color: Qt.alpha(cccc, 0.1)
                             border.width: 2
                             border.color: Qt.alpha(cccc, 0.33)
@@ -295,7 +296,7 @@ Loader {
 
                                 text: "#1"
                                 opacity: 0.66
-                                font.pixelSize: 20
+                                font.pixelSize: columnBBQ.fz2
                                 font.bold: false
                                 color: cccc
                             }
@@ -308,7 +309,7 @@ Loader {
                                 visible: (currentDevice.temperature1 < -80)
                                 text: qsTr("unplugged")
                                 opacity: 0.66
-                                font.pixelSize: 20
+                                font.pixelSize: columnBBQ.fz2
                                 font.bold: false
                                 color: cccc
                             }
@@ -321,7 +322,7 @@ Loader {
 
                                 visible: (currentDevice.temperature1 > -80)
                                 text: currentDevice.temperature1.toFixed(1)
-                                font.pixelSize: 30
+                                font.pixelSize: columnBBQ.fz1
                                 font.bold: false
                                 color: cccc
 
@@ -332,7 +333,7 @@ Loader {
 
                                     text: (settingsManager.tempUnit === 'C') ? "°C" : "°F"
                                     opacity: 0.66
-                                    font.pixelSize: 20
+                                    font.pixelSize: columnBBQ.fz2
                                     font.bold: false
                                     color: cccc
                                 }
@@ -343,6 +344,7 @@ Loader {
                             width: columnBBQ.psw
                             height: columnBBQ.psh
                             radius: 8
+                            clip: true
                             color: Qt.alpha(cccc, 0.1)
                             border.width: 2
                             border.color: Qt.alpha(cccc, 0.33)
@@ -354,7 +356,7 @@ Loader {
 
                                 text: "#2"
                                 opacity: 0.66
-                                font.pixelSize: 20
+                                font.pixelSize: columnBBQ.fz2
                                 font.bold: false
                                 color: cccc
                             }
@@ -367,7 +369,7 @@ Loader {
                                 visible: (currentDevice.temperature2 < -80)
                                 text: qsTr("unplugged")
                                 opacity: 0.66
-                                font.pixelSize: 20
+                                font.pixelSize: columnBBQ.fz2
                                 font.bold: false
                                 color: cccc
                             }
@@ -380,7 +382,7 @@ Loader {
 
                                 visible: (currentDevice.temperature2 > -80)
                                 text: currentDevice.temperature2.toFixed(1)
-                                font.pixelSize: 30
+                                font.pixelSize: columnBBQ.fz1
                                 font.bold: false
                                 color: cccc
 
@@ -391,7 +393,7 @@ Loader {
 
                                     text: (settingsManager.tempUnit === 'C') ? "°C" : "°F"
                                     opacity: 0.66
-                                    font.pixelSize: 20
+                                    font.pixelSize: columnBBQ.fz2
                                     font.bold: false
                                     color: cccc
                                 }
@@ -407,6 +409,7 @@ Loader {
                             width: columnBBQ.psw
                             height: columnBBQ.psh
                             radius: 8
+                            clip: true
                             color: Qt.alpha(cccc, 0.1)
                             border.width: 2
                             border.color: Qt.alpha(cccc, 0.33)
@@ -418,7 +421,7 @@ Loader {
 
                                 text: "#3"
                                 opacity: 0.66
-                                font.pixelSize: 20
+                                font.pixelSize: columnBBQ.fz2
                                 font.bold: false
                                 color: cccc
                             }
@@ -431,7 +434,7 @@ Loader {
                                 visible: (currentDevice.temperature3 < -80)
                                 text: qsTr("unplugged")
                                 opacity: 0.66
-                                font.pixelSize: 20
+                                font.pixelSize: columnBBQ.fz2
                                 font.bold: false
                                 color: cccc
                             }
@@ -444,7 +447,7 @@ Loader {
 
                                 visible: (currentDevice.temperature3 > -80)
                                 text: currentDevice.temperature3.toFixed(1)
-                                font.pixelSize: 30
+                                font.pixelSize: columnBBQ.fz1
                                 font.bold: false
                                 color: cccc
 
@@ -455,7 +458,7 @@ Loader {
 
                                     text: (settingsManager.tempUnit === 'C') ? "°C" : "°F"
                                     opacity: 0.66
-                                    font.pixelSize: 20
+                                    font.pixelSize: columnBBQ.fz2
                                     font.bold: false
                                     color: cccc
                                 }
@@ -466,6 +469,7 @@ Loader {
                             width: columnBBQ.psw
                             height: columnBBQ.psh
                             radius: 8
+                            clip: true
                             color: Qt.alpha(cccc, 0.1)
                             border.width: 2
                             border.color: Qt.alpha(cccc, 0.33)
@@ -477,7 +481,7 @@ Loader {
 
                                 text: "#4"
                                 opacity: 0.66
-                                font.pixelSize: 20
+                                font.pixelSize: columnBBQ.fz2
                                 font.bold: false
                                 color: cccc
                             }
@@ -490,7 +494,7 @@ Loader {
                                 visible: (currentDevice.temperature4 < -80)
                                 text: qsTr("unplugged")
                                 opacity: 0.66
-                                font.pixelSize: 20
+                                font.pixelSize: columnBBQ.fz2
                                 font.bold: false
                                 color: cccc
                             }
@@ -503,7 +507,7 @@ Loader {
 
                                 visible: (currentDevice.temperature4 > -80)
                                 text: currentDevice.temperature4.toFixed(1)
-                                font.pixelSize: 30
+                                font.pixelSize: columnBBQ.fz1
                                 font.bold: false
                                 color: cccc
 
@@ -514,7 +518,7 @@ Loader {
 
                                     text: (settingsManager.tempUnit === 'C') ? "°C" : "°F"
                                     opacity: 0.66
-                                    font.pixelSize: 20
+                                    font.pixelSize: columnBBQ.fz2
                                     font.bold: false
                                     color: cccc
                                 }
@@ -530,6 +534,7 @@ Loader {
                             width: columnBBQ.psw
                             height: columnBBQ.psh
                             radius: 8
+                            clip: true
                             color: Qt.alpha(cccc, 0.1)
                             border.width: 2
                             border.color: Qt.alpha(cccc, 0.33)
@@ -541,7 +546,7 @@ Loader {
 
                                 text: "#5"
                                 opacity: 0.66
-                                font.pixelSize: 20
+                                font.pixelSize: columnBBQ.fz2
                                 font.bold: false
                                 color: cccc
                             }
@@ -554,7 +559,7 @@ Loader {
                                 visible: (currentDevice.temperature5 < -80)
                                 text: qsTr("unplugged")
                                 opacity: 0.66
-                                font.pixelSize: 20
+                                font.pixelSize: columnBBQ.fz2
                                 font.bold: false
                                 color: cccc
                             }
@@ -567,7 +572,7 @@ Loader {
 
                                 visible: (currentDevice.temperature5 > -80)
                                 text: currentDevice.temperature5.toFixed(1)
-                                font.pixelSize: 30
+                                font.pixelSize: columnBBQ.fz1
                                 font.bold: false
                                 color: cccc
 
@@ -578,7 +583,7 @@ Loader {
 
                                     text: (settingsManager.tempUnit === 'C') ? "°C" : "°F"
                                     opacity: 0.66
-                                    font.pixelSize: 20
+                                    font.pixelSize: columnBBQ.fz2
                                     font.bold: false
                                     color: cccc
                                 }
@@ -589,6 +594,7 @@ Loader {
                             width: columnBBQ.psw
                             height: columnBBQ.psh
                             radius: 8
+                            clip: true
                             color: Qt.alpha(cccc, 0.1)
                             border.width: 2
                             border.color: Qt.alpha(cccc, 0.33)
@@ -600,7 +606,7 @@ Loader {
 
                                 text: "#6"
                                 opacity: 0.66
-                                font.pixelSize: 20
+                                font.pixelSize: columnBBQ.fz2
                                 font.bold: false
                                 color: cccc
                             }
@@ -613,7 +619,7 @@ Loader {
                                 visible: (currentDevice.temperature6 < -80)
                                 text: qsTr("unplugged")
                                 opacity: 0.66
-                                font.pixelSize: 20
+                                font.pixelSize: columnBBQ.fz2
                                 font.bold: false
                                 color: cccc
                             }
@@ -626,7 +632,7 @@ Loader {
 
                                 visible: (currentDevice.temperature6 > -80)
                                 text: currentDevice.temperature6.toFixed(1)
-                                font.pixelSize: 30
+                                font.pixelSize: columnBBQ.fz1
                                 font.bold: false
                                 color: cccc
 
@@ -637,7 +643,7 @@ Loader {
 
                                     text: (settingsManager.tempUnit === 'C') ? "°C" : "°F"
                                     opacity: 0.66
-                                    font.pixelSize: 20
+                                    font.pixelSize: columnBBQ.fz2
                                     font.bold: false
                                     color: cccc
                                 }

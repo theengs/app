@@ -414,7 +414,6 @@ bool DeviceTheengs::createDiscoveryMQTT(const QString &deviceAddr, const QString
         deviceObject.insert("via_device", QJsonValue::fromVariant(appAddrClean));
 
         QJsonObject prop = QJsonDocument::fromJson(devicePropsJson.toUtf8()).object()["properties"].toObject();
-
         for (auto it = prop.begin(), end = prop.end(); it != end; ++it)
         {
             QString prop_key = it.key();

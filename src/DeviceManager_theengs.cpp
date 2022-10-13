@@ -561,6 +561,44 @@ void DeviceManager::fakeTheengsDevices()
             qDebug() << "* Device added (from FAKER): " << deviceName << "/" << deviceAddr;
         }
     }
+
+
+    {
+        QString deviceName = "ADHS";
+        QString deviceModel_theengs = "ADHS";
+        QString deviceAddr = "61:57:43:01:5C:3A";
+
+        Device *d = createTheengsDevice_fromDb(deviceName, deviceModel_theengs, deviceAddr);
+        if (d)
+        {
+            m_devices_model->addDevice(d);
+            qDebug() << "* Device added (from FAKER): " << deviceName << "/" << deviceAddr;
+        }
+    }
+    {
+        QString deviceName = "INEM";
+        QString deviceModel_theengs = "INEM";
+        QString deviceAddr = "61:57:43:01:5C:3B";
+
+        Device *d = createTheengsDevice_fromDb(deviceName, deviceModel_theengs, deviceAddr);
+        if (d)
+        {
+            m_devices_model->addDevice(d);
+            qDebug() << "* Device added (from FAKER): " << deviceName << "/" << deviceAddr;
+        }
+    }
+    {
+        QString deviceName = "SDLS";
+        QString deviceModel_theengs = "SDLS";
+        QString deviceAddr = "61:57:43:01:5C:3C";
+
+        Device *d = createTheengsDevice_fromDb(deviceName, deviceModel_theengs, deviceAddr);
+        if (d)
+        {
+            m_devices_model->addDevice(d);
+            qDebug() << "* Device added (from FAKER): " << deviceName << "/" << deviceAddr;
+        }
+    }
 }
 
 /* ************************************************************************** */
@@ -569,7 +607,7 @@ void DeviceManager::fakeTheengsDevices()
 void DeviceManager::fakeTheengsData()
 {
     QBluetoothDeviceInfo info;
-    int rrdd = (rand() % 18);
+    int rrdd = (rand() % 21);
 
     if (rrdd == 0) // JQJCY01YM
     {
@@ -743,6 +781,40 @@ void DeviceManager::fakeTheengsData()
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("53:57:43:01:5C:3A"), "MUE4094RT", 0);
         info.setServiceData(QUuid(0), QByteArray::fromHex("4030dd031d0300010100"));
+    }
+
+    if (rrdd == 18) // ADHS
+    {
+        info = QBluetoothDeviceInfo(QBluetoothAddress("61:57:43:01:5C:3A"), "ADHS", 0);
+
+        info.setManufacturerData(endian_flip_16(0xeefa), QByteArray::fromHex("0000240015000015001a0029000c194f000000"));
+    }
+    if (rrdd == 19) // INEM
+    {
+        info = QBluetoothDeviceInfo(QBluetoothAddress("61:57:43:01:5C:3B"), "INEM", 0);
+
+        int rrrr = (rand() % 7);
+        if (rrrr == 0) info.setManufacturerData(endian_flip_16(0x9082), QByteArray::fromHex("6300f0cf0000c409820080"));
+        else if (rrrr == 1) info.setManufacturerData(endian_flip_16(0x9482), QByteArray::fromHex("6300f0cf0000c409260080"));
+        else if (rrrr == 2) info.setManufacturerData(endian_flip_16(0x9082), QByteArray::fromHex("6300f0cf0000c409b60080"));
+        else if (rrrr == 3) info.setManufacturerData(endian_flip_16(0x9282), QByteArray::fromHex("6300f0cf0000c409160080"));
+        else if (rrrr == 4) info.setManufacturerData(endian_flip_16(0x9082), QByteArray::fromHex("dd0061b80000c4096b0080"));
+        else if (rrrr == 5) info.setManufacturerData(endian_flip_16(0x9082), QByteArray::fromHex("6300f0cf0000c419760080"));
+        else if (rrrr == 5) info.setManufacturerData(endian_flip_16(0x9682), QByteArray::fromHex("dd0061b80000c4193b0080"));
+        else qWarning() << "RAND ERROR";
+    }
+    if (rrdd == 20) // SDLS
+    {
+        info = QBluetoothDeviceInfo(QBluetoothAddress("61:57:43:01:5C:3C"), "SDLS", 0);
+
+        int rrrr = (rand() % 6);
+        if (rrrr == 0) info.setManufacturerData(endian_flip_16(0xae01), QByteArray::fromHex("56d708420000c84252006907"));
+        else if (rrrr == 1) info.setManufacturerData(endian_flip_16(0xae01), QByteArray::fromHex("9bc8af4108d7c34208016807"));
+        else if (rrrr == 2) info.setManufacturerData(endian_flip_16(0xae01), QByteArray::fromHex("8c60fe41b8fbc64233006d07"));
+        else if (rrrr == 3) info.setManufacturerData(endian_flip_16(0xae01), QByteArray::fromHex("ca9dec4160fc5f424a005207"));
+        else if (rrrr == 4) info.setManufacturerData(endian_flip_16(0xae01), QByteArray::fromHex("ca9dec4160fc5f424a005200"));
+        else if (rrrr == 5) info.setManufacturerData(endian_flip_16(0xae01), QByteArray::fromHex("ca9dec4160fc5f424a005206"));
+        else qWarning() << "RAND ERROR";
     }
 
     //qDebug() << "DeviceManager::fakeTheengsData(" << info.name() << ")";

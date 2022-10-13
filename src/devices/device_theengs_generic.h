@@ -62,12 +62,15 @@ public:
     void parseTheengsProps(const QString &json);
     void parseTheengsAdvertisement(const QString &json);
 
-    // Chart "min/max"
+    // Chart thermometer "min/max"
     Q_INVOKABLE void updateChartData_thermometerMinMax(int maxDays);
 
     // Chart thermometer "AIO"
     Q_INVOKABLE void getChartData_thermometerAIO(int maxDays, QDateTimeAxis *axis,
                                                  QLineSeries *temp, QLineSeries *hygro);
+
+    // Chart environmental
+    Q_INVOKABLE void updateChartData_environmentalVoc(int maxDays);
 };
 
 /* ************************************************************************** */
