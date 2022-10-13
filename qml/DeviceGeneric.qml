@@ -332,7 +332,10 @@ Loader {
                             Row {
                                 spacing: 4
                                 Text {
-                                    text: modelData.value
+                                    text: {
+                                        if (modelData.value_f > -99) return modelData.value_f.toFixed(2)
+                                        return modelData.value
+                                    }
                                     textFormat: Text.PlainText
                                     color: Theme.colorText
                                     font.pixelSize: Theme.fontSizeContentBig
