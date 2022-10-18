@@ -205,6 +205,13 @@ public:
     // beacon data
     // TODO
 
+    // watch data
+    // TODO
+
+    // thermometer
+    void setThermometer() { m_deviceType = DeviceUtils::DEVICE_THERMOMETER; }
+    void setEnvironmental() { m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL; }
+
     // probe data
     bool hasProbesTPMS() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_PROBES_TPMS); }
     bool hasTemp1() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_TEMPERATURE_1); }

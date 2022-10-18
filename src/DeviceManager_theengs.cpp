@@ -46,7 +46,7 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName,
                                                    const QString &deviceModel_theengs,
                                                    const QString &deviceAddr)
 {
-    Device *device = nullptr;
+    DeviceTheengs *device = nullptr;
 
     QString device_props = QString::fromUtf8(TheengsDecoder().getTheengProperties(deviceModel_theengs.toLocal8Bit()));
 
@@ -56,8 +56,7 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName,
             deviceModel_theengs == "H5055" ||
             deviceModel_theengs == "IBT-2X" ||
             deviceModel_theengs == "IBT-4XS" ||
-            deviceModel_theengs == "IBT-6XS" ||
-            deviceModel_theengs == "SOLIS-6" ||
+            deviceModel_theengs == "IBT-6XS" || deviceModel_theengs == "SOLIS-6" ||
             deviceModel_theengs == "IBT-6XS/SOLIS-6")
         {
             device = new DeviceTheengsProbes(deviceAddr, deviceName,
@@ -78,16 +77,57 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName,
         {
             device = new DeviceTheengsMotionSensors(deviceAddr, deviceName,
                                                     deviceModel_theengs, device_props, this);
-        }/*
-        else if (deviceModel_theengs == "MiBand" ||
+        }
+/*
+        else if (deviceModel_theengs == "MB/SW")
+        {
+            device = new DeviceTheengsWatches(deviceAddr, deviceName,
+                                              deviceModel_theengs, device_props, this);
+        }
+        else if (deviceModel_theengs == "ABTemp" ||
                  deviceModel_theengs == "INEM" ||
+                 deviceModel_theengs == "MBXPRO" ||
                  deviceModel_theengs == "Mokobeacon" ||
                  deviceModel_theengs == "RuuviTag_RAWv1" ||
                  deviceModel_theengs == "RuuviTag_RAWv2")
         {
             device = new DeviceTheengsBeacons(deviceAddr, deviceName,
                                               deviceModel_theengs, device_props, this);
-        }*/
+        }
+        else if (deviceModel_theengs == "ABN03" ||
+                 deviceModel_theengs == "BPv1.0-1.2" ||
+                 deviceModel_theengs == "CGDN1" ||
+                 deviceModel_theengs == "CGP1W" ||
+                 deviceModel_theengs == "JQJCY01YM")
+        {
+            device = new DeviceTheengsGeneric(deviceAddr, deviceName,
+                                              deviceModel_theengs, device_props, this);
+            device->setEnvironmental();
+        }
+*/
+        else if (deviceModel_theengs == "ABN03" ||
+                 deviceModel_theengs == "BM_V23" ||
+                 deviceModel_theengs == "CGG1" ||
+                 deviceModel_theengs == "CGD1" ||
+                 deviceModel_theengs == "CGDK2" ||
+                 deviceModel_theengs == "H5072" ||
+                 deviceModel_theengs == "H5075" ||
+                 deviceModel_theengs == "H5102" ||
+                 deviceModel_theengs == "IBS-TH1" ||
+                 deviceModel_theengs == "IBS-TH2/P01B" ||
+                 deviceModel_theengs == "LYWSDCGQ" ||
+                 deviceModel_theengs == "LYWSD02" ||
+                 deviceModel_theengs == "LYWSD03MMC_ATC" ||
+                 deviceModel_theengs == "LYWSD03MMC_PVVX" ||
+                 deviceModel_theengs == "THX1/W230150X" ||
+                 deviceModel_theengs == "T301" ||
+                 deviceModel_theengs == "TP357/8" ||
+                 deviceModel_theengs == "WS02/WS08")
+        {
+            device = new DeviceTheengsGeneric(deviceAddr, deviceName,
+                                              deviceModel_theengs, device_props, this);
+            device->setThermometer();
+        }
         else
         {
             device = new DeviceTheengsGeneric(deviceAddr, deviceName,
@@ -178,8 +218,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
             device_modelid_theengs == "H5055"  ||
             device_modelid_theengs == "IBT-2X" ||
             device_modelid_theengs == "IBT-4XS" ||
-            device_modelid_theengs == "IBT-6XS" ||
-            device_modelid_theengs == "SOLIS-6" ||
+            device_modelid_theengs == "IBT-6XS" || device_modelid_theengs == "SOLIS-6" ||
             device_modelid_theengs == "IBT-6XS/SOLIS-6")
         {
             device = new DeviceTheengsProbes(deviceInfo, device_modelid_theengs, device_props, this);
@@ -197,16 +236,55 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
                  device_modelid_theengs == "W070160X")
         {
             device = new DeviceTheengsMotionSensors(deviceInfo, device_modelid_theengs, device_props, this);
-        }/*
-        else if (device_modelid_theengs == "MiBand" ||
+        }
+/*
+        else if (deviceModel_theengs == "MB/SW")
+        {
+            device = new DeviceTheengsWatches(deviceAddr, deviceName,
+                                              deviceModel_theengs, device_props, this);
+        }
+        else if (device_modelid_theengs == "ABTemp" ||
                  device_modelid_theengs == "INEM" ||
+                 device_modelid_theengs == "MBXPRO" ||
                  device_modelid_theengs == "Mokobeacon" ||
                  device_modelid_theengs == "RuuviTag_RAWv1" ||
                  device_modelid_theengs == "RuuviTag_RAWv2")
         {
             device = new DeviceTheengsBeacons(deviceAddr, deviceName,
                                               deviceModel_theengs, device_props, this);
-        }*/
+        }
+        else if (device_modelid_theengs == "ABN03" ||
+                 device_modelid_theengs == "BPv1.0-1.2" ||
+                 device_modelid_theengs == "CGDN1" ||
+                 device_modelid_theengs == "CGP1W" ||
+                 device_modelid_theengs == "JQJCY01YM")
+        {
+            device = new DeviceTheengsGeneric(deviceInfo, device_modelid_theengs, device_props, this);
+            device->setEnvironmental();
+        }
+*/
+        else if (device_modelid_theengs == "ABN03" ||
+                 device_modelid_theengs == "BM_V23" ||
+                 device_modelid_theengs == "CGG1" ||
+                 device_modelid_theengs == "CGD1" ||
+                 device_modelid_theengs == "CGDK2" ||
+                 device_modelid_theengs == "H5072" ||
+                 device_modelid_theengs == "H5075" ||
+                 device_modelid_theengs == "H5102" ||
+                 device_modelid_theengs == "IBS-TH1" ||
+                 device_modelid_theengs == "IBS-TH2/P01B" ||
+                 device_modelid_theengs == "LYWSDCGQ" ||
+                 device_modelid_theengs == "LYWSD02" ||
+                 device_modelid_theengs == "LYWSD03MMC_ATC" ||
+                 device_modelid_theengs == "LYWSD03MMC_PVVX" ||
+                 device_modelid_theengs == "THX1/W230150X" ||
+                 device_modelid_theengs == "T301" ||
+                 device_modelid_theengs == "TP357/8" ||
+                 device_modelid_theengs == "WS02/WS08")
+        {
+            device = new DeviceTheengsGeneric(deviceInfo, device_modelid_theengs, device_props, this);
+            device->setThermometer();
+        }
         else
         {
             device = new DeviceTheengsGeneric(deviceInfo, device_modelid_theengs, device_props, this);
@@ -599,6 +677,30 @@ void DeviceManager::fakeTheengsDevices()
             qDebug() << "* Device added (from FAKER): " << deviceName << "/" << deviceAddr;
         }
     }
+    {
+        QString deviceName = "BM2";
+        QString deviceModel_theengs = "BM2";
+        QString deviceAddr = "61:57:43:01:5C:3D";
+
+        Device *d = createTheengsDevice_fromDb(deviceName, deviceModel_theengs, deviceAddr);
+        if (d)
+        {
+            m_devices_model->addDevice(d);
+            qDebug() << "* Device added (from FAKER): " << deviceName << "/" << deviceAddr;
+        }
+    }
+    {
+        QString deviceName = "THX1/W230150X";
+        QString deviceModel_theengs = "THX1/W230150X";
+        QString deviceAddr = "61:57:43:01:5C:3E";
+
+        Device *d = createTheengsDevice_fromDb(deviceName, deviceModel_theengs, deviceAddr);
+        if (d)
+        {
+            m_devices_model->addDevice(d);
+            qDebug() << "* Device added (from FAKER): " << deviceName << "/" << deviceAddr;
+        }
+    }
 }
 
 /* ************************************************************************** */
@@ -607,7 +709,7 @@ void DeviceManager::fakeTheengsDevices()
 void DeviceManager::fakeTheengsData()
 {
     QBluetoothDeviceInfo info;
-    int rrdd = (rand() % 21);
+    int rrdd = (rand() % 23);
 
     if (rrdd == 0) // JQJCY01YM
     {
@@ -816,6 +918,26 @@ void DeviceManager::fakeTheengsData()
         else if (rrrr == 5) info.setManufacturerData(endian_flip_16(0xae01), QByteArray::fromHex("ca9dec4160fc5f424a005206"));
         else qWarning() << "RAND ERROR";
     }
+    if (rrdd == 21) // BM2
+    {
+        info = QBluetoothDeviceInfo(QBluetoothAddress("61:57:43:01:5C:3D"), "BM2", 0);
+
+        int rrrr = (rand() % 2);
+        if (rrrr == 0) info.setManufacturerData(endian_flip_16(0x4c00), QByteArray::fromHex("0215655f83caae16a10a702e31f30d58dd82f644000064"));
+        else if (rrrr == 1) info.setManufacturerData(endian_flip_16(0x4c00), QByteArray::fromHex("0215655f83caae16a10a702e31f30d58dd82f441423144"));
+        else qWarning() << "RAND ERROR";
+    }
+    if (rrdd == 22) // THX1/W230150X
+    {
+        info = QBluetoothDeviceInfo(QBluetoothAddress("61:57:43:01:5C:3E"), "THX1/W230150X", 0);
+
+        int rrrr = (rand() % 3);
+        if (rrrr == 0) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("6900ba18993b"));
+        else if (rrrr == 1) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("6900ba031938"));
+        else if (rrrr == 2) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("6900ba379ab8"));
+        else qWarning() << "RAND ERROR";
+    }
+
 
     //qDebug() << "DeviceManager::fakeTheengsData(" << info.name() << ")";
     info.setCoreConfigurations(QBluetoothDeviceInfo::LowEnergyCoreConfiguration);
