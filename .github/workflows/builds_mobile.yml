@@ -64,7 +64,7 @@ jobs:
           host: 'linux'
           target: 'android'
           arch: 'android_arm64_v8a'
-          modules: qtconnectivity qtwebsockets qtcharts qt5compat
+          modules: qtconnectivity qtwebsockets qtcharts qtshadertools qt5compat
 
       # Setup env
       - name: Setup env
