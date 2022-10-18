@@ -65,7 +65,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
             dd->setRssi(info.rssi());
 
             QString mac_qstr = dd->getAddressMAC();
-            mac_qstr.remove(':');
+            QString mac_qstr_clean = dd->getAddressMAC().remove(':');
 
             const QList<quint16> &manufacturerIds = info.manufacturerIds();
             for (const auto id: manufacturerIds)
@@ -102,9 +102,9 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
 
                     SettingsManager *sm = SettingsManager::getInstance();
                     MqttManager *mq = MqttManager::getInstance();
-                    if (sm && mq && !mac_qstr.isEmpty())
+                    if (sm && mq && !mac_qstr_clean.isEmpty())
                     {
-                        QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr;
+                        QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr_clean;
                         status = mq->publishData(topic, QString::fromStdString(output));
                     }
 
@@ -155,9 +155,9 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
 
                     SettingsManager *sm = SettingsManager::getInstance();
                     MqttManager *mq = MqttManager::getInstance();
-                    if (sm && mq && !mac_qstr.isEmpty())
+                    if (sm && mq && !mac_qstr_clean.isEmpty())
                     {
-                        QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr;
+                        QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr_clean;
                         status = mq->publishData(topic, QString::fromStdString(output));
                     }
 
@@ -211,7 +211,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
     if (!status && !appleOS) // UN-KNOWN DEVICES ///////////////////////////////////////////
     {
         QString mac_qstr = info.address().toString();
-        mac_qstr.remove(':');
+        QString mac_qstr_clean = info.address().toString().remove(':');
 
         const QList<quint16> &manufacturerIds = info.manufacturerIds();
         for (const auto id: manufacturerIds)
@@ -240,9 +240,9 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
 
                 SettingsManager *sm = SettingsManager::getInstance();
                 MqttManager *mq = MqttManager::getInstance();
-                if (sm && mq && !mac_qstr.isEmpty())
+                if (sm && mq && !mac_qstr_clean.isEmpty())
                 {
-                    QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr;
+                    QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr_clean;
                     status = mq->publishData(topic, QString::fromStdString(output));
                 }
 
@@ -279,9 +279,9 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
 
                 SettingsManager *sm = SettingsManager::getInstance();
                 MqttManager *mq = MqttManager::getInstance();
-                if (sm && mq && !mac_qstr.isEmpty())
+                if (sm && mq && !mac_qstr_clean.isEmpty())
                 {
-                    QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr;
+                    QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr_clean;
                     status = mq->publishData(topic, QString::fromStdString(output));
                 }
 

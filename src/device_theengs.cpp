@@ -400,7 +400,7 @@ bool DeviceTheengs::createDiscoveryMQTT(const QString &deviceAddr, const QString
         }
 
         QJsonArray idarr, connarr;
-        idarr.push_back(QJsonValue::fromVariant(deviceAddr));
+        idarr.push_back(QJsonValue::fromVariant(deviceAddrClean));
         QStringList conn; conn.push_back("mac"); conn.push_back(deviceAddrClean);
         connarr.push_back(QJsonValue::fromVariant(conn).toArray());
 
