@@ -1324,7 +1324,7 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
     // Various sanity checks
     {
         if (info.rssi() >= 0) return; // we probably just hit the device cache
-        if (info.isCached()) return; // we probably just hit the device cache
+        //if (info.isCached()) return; // we probably just hit the device cache
         if ((info.coreConfigurations() & QBluetoothDeviceInfo::LowEnergyCoreConfiguration) == false) return; // not a BLE device
         if (m_devices_blacklist.contains(info.address().toString())) return; // device is blacklisted
 

@@ -45,7 +45,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
     Q_UNUSED(updatedFields) // We don't use QBluetoothDeviceInfo::Fields, it's unreliable
 
     if (info.rssi() >= 0) return; // we probably just hit the device cache
-    if (info.isCached()) return; // we probably just hit the device cache
+    //if (info.isCached()) return; // we probably just hit the device cache
     if ((info.coreConfigurations() & QBluetoothDeviceInfo::LowEnergyCoreConfiguration) == false) return; // not a BLE device
     if (m_devices_blacklist.contains(info.address().toString())) return; // device is blacklisted
     //if (info.name().isEmpty()) return; // skip beacons
@@ -176,7 +176,6 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
             {
                 if (!dd->isEnabled()) return;
                 if (!dd->hasBluetoothConnection()) return;
-                if (dd->getName() == "ThermoBeacon") return;
 
                 //qDebug() << "adding from updateBleDevice()";
                 //qDebug() << "last upd" << dd->getLastUpdateInt() << dd->needsUpdateRt();
