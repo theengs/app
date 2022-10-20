@@ -304,11 +304,6 @@ bool DeviceTheengs::needsUpdateDb() const
 
 bool DeviceTheengs::isValid() const
 {
-    if (m_deviceModel.isEmpty())
-    {
-        qWarning() << "DeviceTheengs::isValid(false)" << "m_deviceModel.isEmpty()";
-        return false;
-    }
     if (m_deviceType == 0)
     {
         qWarning() << "DeviceTheengs::isValid(false)" << "m_deviceType == 0";
