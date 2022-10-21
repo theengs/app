@@ -29,7 +29,7 @@ jobs:
     steps:
       # Checkout the repository
       - name: Checkout repository and submodules
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: recursive
 
@@ -66,7 +66,7 @@ jobs:
 
       # Upload AppImage
       - name: Upload AppImage
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{env.APPLICATION}}-${{env.VERSION}}-linux64.AppImage
           path: ${{env.APPLICATION}}*.AppImage
@@ -78,7 +78,7 @@ jobs:
     steps:
       # Checkout the repository
       - name: Checkout repository and submodules
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: recursive
 
@@ -115,7 +115,7 @@ jobs:
 
       # Upload app zip
       - name: Upload app zip
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{env.APPLICATION}}-${{env.VERSION}}-macOS.zip
           path: bin/${{env.APPLICATION}}-${{env.VERSION}}-macOS.zip
@@ -127,7 +127,7 @@ jobs:
     steps:
       # Checkout the repository
       - name: Checkout repository and submodules
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: recursive
 
@@ -172,14 +172,14 @@ jobs:
 
       # Upload ZIP
       - name: Upload ZIP
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{env.APPLICATION}}-${{env.VERSION}}-win64.zip
           path: ${{env.APPLICATION}}-${{env.VERSION}}-win64.zip
 
       # Upload NSIS installer
       - name: Upload NSIS installer
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{env.APPLICATION}}-${{env.VERSION}}-win64.exe
           path: ${{env.APPLICATION}}-${{env.VERSION}}-win64.exe
