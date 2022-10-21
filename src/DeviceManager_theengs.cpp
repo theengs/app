@@ -323,10 +323,14 @@ QString DeviceManager::getDeviceModelIdTheengs_fromAdv(const QBluetoothDeviceInf
         if (dec.decodeBLEJson(obj) >= 0)
         {
             QString model = QString::fromStdString(doc["model"]);
+            QString modelId = QString::fromStdString(doc["model_id"]);
+
             if (model == "IBEACON") continue;
             if (model == "MS-CDP") continue;
             if (model == "GAEN") continue;
-            return QString::fromStdString(doc["model_id"]);
+            if (modelId.isEmpty()) continue;
+
+            return modelId;
         }
     }
 
@@ -344,10 +348,14 @@ QString DeviceManager::getDeviceModelIdTheengs_fromAdv(const QBluetoothDeviceInf
         if (dec.decodeBLEJson(obj) >= 0)
         {
             QString model = QString::fromStdString(doc["model"]);
+            QString modelId = QString::fromStdString(doc["model_id"]);
+
             if (model == "IBEACON") continue;
             if (model == "MS-CDP") continue;
             if (model == "GAEN") continue;
-            return QString::fromStdString(doc["model_id"]);
+            if (modelId.isEmpty()) continue;
+
+            return modelId;
         }
     }
 
