@@ -21,9 +21,11 @@
 #include "SettingsManager.h"
 #include "MqttManager.h"
 
+#include "utils_app.h"
+
 #include "device.h"
+#include "device_theengs.h"
 #include "devices/device_flowercare.h"
-#include "devices/device_flowercare_tuya.h"
 #include "devices/device_ropot.h"
 #include "devices/device_hygrotemp_cgd1.h"
 #include "devices/device_hygrotemp_cgdk2.h"
@@ -34,13 +36,6 @@
 #include "devices/device_hygrotemp_lywsdcgq.h"
 #include "devices/device_thermobeacon.h"
 #include "devices/device_jqjcy01ym.h"
-#include "devices/device_theengs_generic.h"
-#include "devices/device_theengs_beacons.h"
-#include "devices/device_theengs_probes.h"
-#include "devices/device_theengs_scales.h"
-#include "devices/device_theengs_motionsensors.h"
-
-#include "utils_app.h"
 
 #include <QList>
 #include <QDateTime>
@@ -120,8 +115,6 @@ DeviceManager::DeviceManager(bool daemon)
 
             if (deviceName == "Flower care" || deviceName == "Flower mate" || deviceName == "Grow care garden")
                 d = new DeviceFlowerCare(deviceAddr, deviceName, this);
-            else if (deviceName == "TY")
-                d = new DeviceFlowerCare_tuya(deviceAddr, deviceName, this);
             else if (deviceName == "ropot")
                 d = new DeviceRopot(deviceAddr, deviceName, this);
 
@@ -1347,7 +1340,6 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
     // Regular WatchFlower device
     if (info.name() == "Flower care" || info.name() == "Flower mate" ||
         info.name() == "Grow care garden" ||
-        info.name() == "TY" ||
         info.name() == "ropot" ||
         info.name().startsWith("Flower power") ||
         info.name().startsWith("Parrot pot") ||
@@ -1368,8 +1360,6 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
         // Create the device
         if (info.name() == "Flower care" || info.name() == "Flower mate" || info.name() == "Grow care garden")
             d = new DeviceFlowerCare(info, this);
-        else if (info.name() == "TY")
-            d = new DeviceFlowerCare_tuya(info, this);
         else if (info.name() == "ropot")
             d = new DeviceRopot(info, this);
 

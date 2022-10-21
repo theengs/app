@@ -74,6 +74,7 @@ SOURCES  += src/main.cpp \
             src/devices/device_theengs_motionsensors.cpp \
             src/devices/device_theengs_probes.cpp \
             src/devices/device_theengs_scales.cpp \
+            src/devices/device_theengs_thermometers.cpp \
             src/thirdparty/RC4/rc4.cpp
 
 HEADERS  += src/SettingsManager.h \
@@ -112,6 +113,7 @@ HEADERS  += src/SettingsManager.h \
             src/devices/device_theengs_motionsensors.h \
             src/devices/device_theengs_probes.h \
             src/devices/device_theengs_scales.h \
+            src/devices/device_theengs_thermometers.h \
             src/thirdparty/RC4/rc4.h
 
 INCLUDEPATH += src/ src/thirdparty/

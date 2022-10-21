@@ -110,6 +110,22 @@ function getDeviceIcon(device, devicePlanted) {
     return src
 }
 
+function getDeviceIconTheengs(device, devicePlanted) {
+    var src = ""
+
+    if (device.isProbe) {
+        src = "qrc:/assets/icons_material/baseline-settings_input_component-24px.svg"
+    } else if (device.isScale) {
+        src = "qrc:/assets/icons_material/baseline-monitor_weight-24px.svg"
+    } else if (device.isMotionSensor) {
+        src = "qrc:/assets/icons_material/baseline-sensors-24px.svg"
+    } else {
+        src = getDeviceIcon(device, devicePlanted)
+    }
+
+    return src
+}
+
 /* ************************************************************************** */
 
 function getDeviceStatusText(deviceStatus) {

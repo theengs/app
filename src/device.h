@@ -267,7 +267,7 @@ public:
     bool hasBluetoothAdvertisement() const { return (m_deviceBluetoothMode & DeviceUtils::DEVICE_BLE_ADVERTISEMENT); }
 
     bool isPlantSensor() const { return (m_deviceType == DeviceUtils::DEVICE_PLANTSENSOR); }
-    bool isThermometer() const { return (m_deviceType == DeviceUtils::DEVICE_THERMOMETER); }
+    bool isThermometer() const { return (m_deviceType == DeviceUtils::DEVICE_THERMOMETER || m_deviceType == DeviceUtils::DEVICE_THEENGS_THERMOMETER); }
     bool isEnvironmentalSensor() const { return (m_deviceType == DeviceUtils::DEVICE_ENVIRONMENTAL); }
     bool isLight() const { return (m_deviceType == DeviceUtils::DEVICE_LIGHT); }
     //bool isBeacon() const { return (m_deviceType == DeviceUtils::DEVICE_BEACON); }

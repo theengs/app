@@ -16,8 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DEVICE_THEENGS_GENERIC_H
-#define DEVICE_THEENGS_GENERIC_H
+#ifndef DEVICE_THEENGS_THERMOMETERS_H
+#define DEVICE_THEENGS_THERMOMETERS_H
 /* ************************************************************************** */
 
 #include "device_theengs.h"
@@ -31,34 +31,38 @@
 /* ************************************************************************** */
 
 /*!
- * Theengs generic devices
+ * Theengs thermometer/hygrometer devices
  */
-class DeviceTheengsGeneric: public DeviceTheengs
+class DeviceTheengsThermometers: public DeviceTheengs
 {
     Q_OBJECT
 
-    bool areValuesValid_plants(const int soilMoisture, const int soilConductivity,
-                               const float temperature, const int luminosity) const;
-    bool addDatabaseRecord_plants(const int64_t timestamp,
-                                  const int soilMoisture, const int soilConductivity,
-                                  const float temperature, const int luminosity);
+    bool areValuesValid_thermometer(const float t) const;
+    bool addDatabaseRecord_thermometer(const int64_t timestamp, const float t);
+
+    bool areValuesValid_hygrometer(const float t, const float h) const;
+    bool addDatabaseRecord_hygrometer(const int64_t timestamp, const float t, const float h);
 
 public:
-    DeviceTheengsGeneric(const QString &deviceAddr, const QString &deviceName,
-                         const QString &deviceModel, const QString &devicePropsJson,
-                         QObject *parent = nullptr);
-    DeviceTheengsGeneric(const QBluetoothDeviceInfo &d,
-                         const QString &deviceModel, const QString &devicePropsJson,
-                         QObject *parent = nullptr);
-    ~DeviceTheengsGeneric();
+    DeviceTheengsThermometers(const QString &deviceAddr, const QString &deviceName,
+                             const QString &deviceModel, const QString &devicePropsJson,
+                             QObject *parent = nullptr);
+    DeviceTheengsThermometers(const QBluetoothDeviceInfo &d,
+                             const QString &deviceModel, const QString &devicePropsJson,
+                             QObject *parent = nullptr);
+    ~DeviceTheengsThermometers();
 
     // theengs decoder
     void parseTheengsProps(const QString &json);
     void parseTheengsAdvertisement(const QString &json);
 
-    // Chart environmental
-    Q_INVOKABLE void updateChartData_environmentalVoc(int maxDays);
+    // Chart thermometer "min/max"
+    Q_INVOKABLE void updateChartData_thermometerMinMax(int maxDays);
+
+    // Chart thermometer "AIO"
+    Q_INVOKABLE void getChartData_thermometerAIO(int maxDays, QDateTimeAxis *axis,
+                                                 QLineSeries *temp, QLineSeries *hygro);
 };
 
 /* ************************************************************************** */
-#endif // DEVICE_THEENGS_GENERIC_H
+#endif // DEVICE_THEENGS_THERMOMETERS_H

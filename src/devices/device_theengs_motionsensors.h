@@ -31,8 +31,7 @@
 /* ************************************************************************** */
 
 /*!
- * Theengs motion detector:
- * -
+ * Theengs motion sensors
  */
 class DeviceTheengsMotionSensors: public DeviceTheengs
 {

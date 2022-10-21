@@ -28,6 +28,7 @@
 #include "devices/device_theengs_probes.h"
 #include "devices/device_theengs_scales.h"
 #include "devices/device_theengs_motionsensors.h"
+#include "devices/device_theengs_thermometers.h"
 
 #include <string>
 
@@ -46,6 +47,8 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName,
                                                    const QString &deviceModel_theengs,
                                                    const QString &deviceAddr)
 {
+    //qDebug() << "createTheengsDevice_fromDb(" << deviceName << "/" << deviceModel_theengs << "/" << deviceAddr << ")";
+
     DeviceTheengs *device = nullptr;
 
     QString device_props = QString::fromUtf8(TheengsDecoder().getTheengProperties(deviceModel_theengs.toLocal8Bit()));
@@ -124,9 +127,8 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName,
                  deviceModel_theengs == "TP357/8" ||
                  deviceModel_theengs == "WS02/WS08")
         {
-            device = new DeviceTheengsGeneric(deviceAddr, deviceName,
-                                              deviceModel_theengs, device_props, this);
-            device->setThermometer();
+            device = new DeviceTheengsThermometers(deviceAddr, deviceName,
+                                                   deviceModel_theengs, device_props, this);
         }
         else
         {
@@ -282,8 +284,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
                  device_modelid_theengs == "TP357/8" ||
                  device_modelid_theengs == "WS02/WS08")
         {
-            device = new DeviceTheengsGeneric(deviceInfo, device_modelid_theengs, device_props, this);
-            device->setThermometer();
+            device = new DeviceTheengsThermometers(deviceInfo, device_modelid_theengs, device_props, this);
         }
         else
         {

@@ -95,6 +95,10 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
                     serializeJson(obj, output);
                     //qDebug() << "output:" << output.c_str();
 
+                    if (doc["model_id"] == "IBEACON") continue;
+                    if (doc["model_id"] == "MS-CDP") continue;
+                    if (doc["model_id"] == "GAEN") continue;
+
                     dd->setTheengsModelId(QString::fromStdString(doc["model"]), QString::fromStdString(doc["model_id"]));
 
                     DeviceTheengs *ddd = dynamic_cast<DeviceTheengs*>(dd);
@@ -147,6 +151,10 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
                     std::string output;
                     serializeJson(obj, output);
                     //qDebug() << "output:" << output.c_str();
+
+                    if (doc["model_id"] == "IBEACON") continue;
+                    if (doc["model_id"] == "MS-CDP") continue;
+                    if (doc["model_id"] == "GAEN") continue;
 
                     dd->setTheengsModelId(QString::fromStdString(doc["model"]), QString::fromStdString(doc["model_id"]));
 

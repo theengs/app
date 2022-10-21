@@ -54,7 +54,7 @@ Item {
 
     function initBoxData() {
         // Set icon
-        imageDevice.source = UtilsDeviceSensors.getDeviceIcon(boxDevice, hasHygro)
+        imageDevice.source = UtilsDeviceSensors.getDeviceIconTheengs(boxDevice, hasHygro)
 
         // Load indicators
         if (!loaderIndicators.sourceComponent) {
