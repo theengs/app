@@ -45,11 +45,11 @@ class DeviceTheengsThermometers: public DeviceTheengs
 
 public:
     DeviceTheengsThermometers(const QString &deviceAddr, const QString &deviceName,
-                             const QString &deviceModel, const QString &devicePropsJson,
-                             QObject *parent = nullptr);
+                              const QString &deviceModel, const QString &devicePropsJson,
+                              QObject *parent = nullptr);
     DeviceTheengsThermometers(const QBluetoothDeviceInfo &d,
-                             const QString &deviceModel, const QString &devicePropsJson,
-                             QObject *parent = nullptr);
+                              const QString &deviceModel, const QString &devicePropsJson,
+                              QObject *parent = nullptr);
     ~DeviceTheengsThermometers();
 
     // theengs decoder

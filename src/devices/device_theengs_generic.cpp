@@ -45,6 +45,30 @@ DeviceTheengsGeneric::DeviceTheengsGeneric(const QString &deviceAddr, const QStr
     m_deviceModel = deviceModel;
 
     parseTheengsProps(devicePropsJson);
+
+    // Load initial data into the GUI (if they are no more than 12h old)
+    if (m_deviceType == DeviceUtils::DEVICE_PLANTSENSOR)
+    {
+        getSqlDeviceInfos();
+        getSqlPlantData(12*60);
+    }
+    else if (m_deviceType == DeviceUtils::DEVICE_ENVIRONMENTAL)
+    {
+        getSqlSensorData(12*60);
+    }
+    else if (m_deviceType == DeviceUtils::DEVICE_THERMOMETER ||
+             m_deviceType == DeviceUtils::DEVICE_THEENGS_THERMOMETER)
+    {
+        getSqlThermoData(12*60);
+    }
+    else if (m_deviceType == DeviceUtils::DEVICE_THEENGS_SCALE)
+    {
+        getSqlScaleData(12*60);
+    }
+    else // if (m_deviceType == DeviceUtils::DEVICE_THEENGS_GENERIC)
+    {
+        getSqlSensorData(12*60);
+    }
 }
 
 DeviceTheengsGeneric::DeviceTheengsGeneric(const QBluetoothDeviceInfo &d,
@@ -55,6 +79,30 @@ DeviceTheengsGeneric::DeviceTheengsGeneric(const QBluetoothDeviceInfo &d,
     m_deviceModel = deviceModel;
 
     parseTheengsProps(devicePropsJson);
+
+    // Load initial data into the GUI (if they are no more than 12h old)
+    if (m_deviceType == DeviceUtils::DEVICE_PLANTSENSOR)
+    {
+        getSqlDeviceInfos();
+        getSqlPlantData(12*60);
+    }
+    else if (m_deviceType == DeviceUtils::DEVICE_ENVIRONMENTAL)
+    {
+        getSqlSensorData(12*60);
+    }
+    else if (m_deviceType == DeviceUtils::DEVICE_THERMOMETER ||
+             m_deviceType == DeviceUtils::DEVICE_THEENGS_THERMOMETER)
+    {
+        getSqlThermoData(12*60);
+    }
+    else if (m_deviceType == DeviceUtils::DEVICE_THEENGS_SCALE)
+    {
+        getSqlScaleData(12*60);
+    }
+    else // if (m_deviceType == DeviceUtils::DEVICE_THEENGS_GENERIC)
+    {
+        getSqlSensorData(12*60);
+    }
 }
 
 DeviceTheengsGeneric::~DeviceTheengsGeneric()

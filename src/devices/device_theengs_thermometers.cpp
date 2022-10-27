@@ -38,8 +38,8 @@
 /* ************************************************************************** */
 
 DeviceTheengsThermometers::DeviceTheengsThermometers(const QString &deviceAddr, const QString &deviceName,
-                                                    const QString &deviceModel, const QString &devicePropsJson,
-                                                    QObject *parent):
+                                                     const QString &deviceModel, const QString &devicePropsJson,
+                                                     QObject *parent):
     DeviceTheengs(deviceAddr, deviceName, deviceModel, parent)
 {
     m_deviceModel = deviceModel;
@@ -47,11 +47,12 @@ DeviceTheengsThermometers::DeviceTheengsThermometers(const QString &deviceAddr, 
     m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 
     parseTheengsProps(devicePropsJson);
+    getSqlThermoData(12*60);
 }
 
 DeviceTheengsThermometers::DeviceTheengsThermometers(const QBluetoothDeviceInfo &d,
-                                                    const QString &deviceModel, const QString &devicePropsJson,
-                                                    QObject *parent):
+                                                     const QString &deviceModel, const QString &devicePropsJson,
+                                                     QObject *parent):
     DeviceTheengs(d, deviceModel, parent)
 {
     m_deviceModel = deviceModel;
@@ -59,6 +60,7 @@ DeviceTheengsThermometers::DeviceTheengsThermometers(const QBluetoothDeviceInfo 
     m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 
     parseTheengsProps(devicePropsJson);
+    getSqlThermoData(12*60);
 }
 
 DeviceTheengsThermometers::~DeviceTheengsThermometers()
@@ -295,7 +297,7 @@ bool DeviceTheengsThermometers::addDatabaseRecord_hygrometer(const int64_t times
 /* ************************************************************************** */
 
 void DeviceTheengsThermometers::getChartData_thermometerAIO(int maxDays, QDateTimeAxis *axis,
-                                                           QLineSeries *temp, QLineSeries *humi)
+                                                            QLineSeries *temp, QLineSeries *humi)
 {
     if (!axis || !temp || !humi) return;
 
