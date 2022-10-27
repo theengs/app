@@ -45,11 +45,8 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
     Q_UNUSED(updatedFields) // We don't use QBluetoothDeviceInfo::Fields, it's unreliable
 
     if (info.rssi() >= 0) return; // we probably just hit the device cache
-    //if (info.isCached()) return; // we probably just hit the device cache
     if ((info.coreConfigurations() & QBluetoothDeviceInfo::LowEnergyCoreConfiguration) == false) return; // not a BLE device
     if (m_devices_blacklist.contains(info.address().toString())) return; // device is blacklisted
-    //if (info.name().isEmpty()) return; // skip beacons
-    if (info.name().replace('-', ':') == info.address().toString()) return; // skip beacons
 
     for (auto d: qAsConst(m_devices_model->m_devices)) // KNOWN DEVICES ////////
     {
@@ -72,7 +69,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
             {
                 //qDebug() << info.name() << info.address() << Qt::hex
                 //         << "ID" << id
-                //         << "manufacturer data" << Qt::dec << info.manufacturerData(id).count() << Qt::hex
+                //         << "manufacturer data" << Qt::dec << info.manufacturerData(id).size() << Qt::hex
                 //         << "bytes:" << info.manufacturerData(id).toHex();
 
                 dd->parseAdvertisementData(DeviceUtils::BLE_ADV_MANUFACTURERDATA,
@@ -118,7 +115,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
                 {
                     //std::string input;
                     //serializeJson(doc, input);
-                    //qDebug() << "input :" << input.c_str();
+                    //qDebug() << "decodeBLEJson(mfd1) error:" << input.c_str();
                 }
             }
 
@@ -127,7 +124,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
             {
                 //qDebug() << info.name() << info.address() << Qt::hex
                 //         << "ID" << id
-                //         << "service data" << Qt::dec << info.serviceData(id).count() << Qt::hex
+                //         << "service data" << Qt::dec << info.serviceData(id).size() << Qt::hex
                 //         << "bytes:" << info.serviceData(id).toHex();
 
                 dd->parseAdvertisementData(DeviceUtils::BLE_ADV_MANUFACTURERDATA,
@@ -175,7 +172,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
                 {
                     //std::string input;
                     //serializeJson(doc, input);
-                    //qDebug() << "input :" << input.c_str();
+                    //qDebug() << "decodeBLEJson(svd1) error:" << input.c_str();
                 }
             }
 
@@ -225,7 +222,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
         {
             //qDebug() << info.name() << info.address() << Qt::hex
             //         << "ID" << id
-            //         << "manufacturer data" << Qt::dec << info.manufacturerData(id).count() << Qt::hex
+            //         << "manufacturer data" << Qt::dec << info.manufacturerData(id).size() << Qt::hex
             //         << "bytes:" << info.manufacturerData(id).toHex();
 
             ArduinoJson::DynamicJsonDocument doc(2048);
@@ -255,6 +252,12 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
 
                 status = true;
             }
+            else
+            {
+                //std::string input;
+                //serializeJson(doc, input);
+                //qDebug() << "decodeBLEJson(mfd2) error:" << input.c_str();
+            }
         }
 
         const QList<QBluetoothUuid> &serviceIds = info.serviceIds();
@@ -262,7 +265,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
         {
             //qDebug() << info.name() << info.address() << Qt::hex
             //         << "ID" << id
-            //         << "service data" << Qt::dec << info.serviceData(id).count() << Qt::hex
+            //         << "service data" << Qt::dec << info.serviceData(id).size() << Qt::hex
             //         << "bytes:" << info.serviceData(id).toHex();
 
             ArduinoJson::DynamicJsonDocument doc(2048);
@@ -293,6 +296,12 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
                 }
 
                 status = true;
+            }
+            else
+            {
+                //std::string input;
+                //serializeJson(doc, input);
+                //qDebug() << "decodeBLEJson(svd2) error:" << input.c_str();
             }
         }
     }

@@ -1312,7 +1312,7 @@ bool DeviceManager::isBleDeviceBlacklisted(const QString &addr)
 
 void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
 {
-    //qDebug() << "DeviceManager::addBleDevice()" << " > NAME" << info.name() << " > RSSI" << info.rssi();
+    qDebug() << "DeviceManager::addBleDevice()" << " > NAME" << info.name() << " > RSSI" << info.rssi();
 
     // Various sanity checks
     {

@@ -24,7 +24,6 @@
 
 #include "device_theengs.h"
 #include "devices/device_theengs_generic.h"
-#include "devices/device_theengs_beacons.h"
 #include "devices/device_theengs_probes.h"
 #include "devices/device_theengs_scales.h"
 #include "devices/device_theengs_motionsensors.h"
@@ -42,12 +41,13 @@
 #include <QDebug>
 
 /* ************************************************************************** */
+/* ************************************************************************** */
 
 Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName,
                                                    const QString &deviceModel_theengs,
                                                    const QString &deviceAddr)
 {
-    //qDebug() << "createTheengsDevice_fromDb(" << deviceName << "/" << deviceModel_theengs << "/" << deviceAddr << ")";
+    qDebug() << "createTheengsDevice_fromDb(" << deviceName << "/" << deviceModel_theengs << "/" << deviceAddr << ")";
 
     DeviceTheengs *device = nullptr;
 
@@ -144,9 +144,11 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName,
     return device;
 }
 
+/* ************************************************************************** */
+
 Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &deviceInfo)
 {
-    //qDebug() << "createTheengsDevice_fromAdv(" << deviceInfo.name() << ")";
+    qDebug() << "createTheengsDevice_fromAdv(" << deviceInfo.name() << ")";
 
     DeviceTheengs *device = nullptr;
 
@@ -173,12 +175,18 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
             device_modelid_theengs = QString::fromStdString(doc["model_id"]);
             device_props = QString::fromUtf8(dec.getTheengProperties(device_modelid_theengs.toLocal8Bit()));
 
-            if (device_model_theengs == "IBEACON" && device_modelid_theengs == "IBEACON") continue;
-            if (device_model_theengs == "MS-CDP" && device_modelid_theengs == "MS-CDP") continue;
-            if (device_model_theengs == "GAEN" && device_modelid_theengs == "GAEN") continue;
+            if (device_modelid_theengs == "IBEACON") continue;
+            if (device_modelid_theengs == "MS-CDP") continue;
+            if (device_modelid_theengs == "GAEN") continue;
 
             qDebug() << "addDevice() FOUND [mfd] :" << device_model_theengs << device_modelid_theengs << device_props;
             break;
+        }
+        else
+        {
+            std::string input;
+            serializeJson(doc, input);
+            qDebug() << "decodeBLEJson(mfd_add) error:" << input.c_str();
         }
     }
 
@@ -191,7 +199,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
         doc["id"] = deviceInfo.address().toString().toStdString();
         doc["name"] = deviceInfo.name().toStdString();
         doc["servicedata"] = deviceInfo.serviceData(id).toHex().toStdString();
-        doc["servicedatauuid"] = id.toString(QUuid::Id128).toStdString();
+        doc["servicedatauuid"] = QByteArray::number(id.toUInt16(), 16).rightJustified(4, '0').toStdString();
 
         TheengsDecoder dec;
         ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
@@ -202,12 +210,18 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
             device_modelid_theengs = QString::fromStdString(doc["model_id"]);
             device_props = QString::fromUtf8(dec.getTheengProperties(device_modelid_theengs.toLocal8Bit()));
 
-            if (device_model_theengs == "IBEACON" && device_modelid_theengs == "IBEACON") continue;
-            if (device_model_theengs == "MS-CDP" && device_modelid_theengs == "MS-CDP") continue;
-            if (device_model_theengs == "GAEN" && device_modelid_theengs == "GAEN") continue;
+            if (device_modelid_theengs == "IBEACON") continue;
+            if (device_modelid_theengs == "MS-CDP") continue;
+            if (device_modelid_theengs == "GAEN") continue;
 
             qDebug() << "addDevice() FOUND [svd] :" << device_model_theengs << device_modelid_theengs << device_props;
             break;
+        }
+        else
+        {
+            std::string input;
+            serializeJson(doc, input);
+            qDebug() << "decodeBLEJson(svd_add) error:" << input.c_str();
         }
     }
 
@@ -306,6 +320,8 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
 
     return device;
 }
+
+/* ************************************************************************** */
 
 QString DeviceManager::getDeviceModelIdTheengs_fromAdv(const QBluetoothDeviceInfo &deviceInfo)
 {
