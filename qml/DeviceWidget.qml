@@ -782,7 +782,12 @@ Item {
                     textTwo.font.pixelSize = bigAssMode ? 22 : 20
 
                     textOne.text = (settingsManager.tempUnit === 'C') ? boxDevice.weight.toFixed(1) + " " + qsTr("kg") : (boxDevice.weight * 2.20462).toFixed(1) + " " + qsTr("lb")
-                    if (boxDevice.impedance > 0) textTwo.text = boxDevice.impedance + " " + "Ω"
+                    if (boxDevice.impedance > 0) {
+                        textTwo.visible = true
+                        textTwo.text = boxDevice.impedance + " " + "Ω"
+                    } else {
+                        textTwo.visible = false
+                    }
                 } else if (boxDevice.isMotionSensor) {
                     textOne.font.pixelSize = bigAssMode ? 26 : 24
                     textTwo.font.pixelSize = bigAssMode ? 22 : 20

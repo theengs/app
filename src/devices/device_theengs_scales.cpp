@@ -128,13 +128,18 @@ void DeviceTheengsScales::parseTheengsAdvertisement(const QString &json)
             m_impedance = obj["impedance"].toInt();
             Q_EMIT dataUpdated();
         }
+    } else {
+        if (m_impedance > -99) {
+            m_impedance = -99;
+            Q_EMIT dataUpdated();
+        }
     }
 
     if (m_weight > -99 || m_impedance > -99)
     {
         m_lastUpdate = QDateTime::currentDateTime();
 
-        if (needsUpdateDb())
+        if (needsUpdateDb() && m_weightMode == "person")
         {
             if (m_dbInternal || m_dbExternal)
             {
