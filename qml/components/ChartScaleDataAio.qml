@@ -368,7 +368,7 @@ Item {
 
         // set date & time
         var date = new Date(verticalIndicator.clickedCoordinates.x)
-        var date_string = date.toLocaleDateString()
+        var date_string = date.toLocaleDateString(Qt.locale(), Locale.ShortFormat)
         //: "at" is used for DATE at HOUR
         var time_string = qsTr("at") + " " + UtilsNumber.padNumber(date.getHours(), 2) + ":" + UtilsNumber.padNumber(date.getMinutes(), 2)
         dateIndicator.text = date_string + " " + time_string
@@ -397,9 +397,9 @@ Item {
         // print data
         if (wei > 0) {
             dataIndicator.visible = true
-            dataIndicator.text = wei.toFixed(1) + (settingsManager.tempUnit === "F" ? "lb" : "kg")
+            dataIndicator.text = wei.toFixed(1) + " " + (settingsManager.tempUnit === "F" ? "lb" : "kg")
             if (currentDevice.hasImpedance && imp > 0) {
-                dataIndicator.text += " / " + imp.toFixed(0) + "Ω"
+                dataIndicator.text += " / " + imp.toFixed(0) + " Ω"
             }
         }
     }
