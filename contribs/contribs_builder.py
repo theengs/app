@@ -395,7 +395,8 @@ for TARGET in TARGETS:
         print("> Building QtMqtt")
         subprocess.check_call([QT_CONF_MODULE_cmd, ".."], cwd=build_dir + DIR_qtmqtt + "/build")
         subprocess.check_call(["cmake", "--build", ".", "--target", "all"], cwd=build_dir + DIR_qtmqtt + "/build")
-        subprocess.check_call(["cmake", "--install", "."], cwd=build_dir + DIR_qtmqtt + "/build")
+        #subprocess.check_call(["cmake", "--install", "."], cwd=build_dir + DIR_qtmqtt + "/build")
+        subprocess.check_call(["ninja", "install"], cwd=build_dir + DIR_qtmqtt + "/build") # Qt bug 91647
 
     ## QtConnectivity (patched)
     if "qtconnectivity" in softwares_selected:
@@ -410,4 +411,5 @@ for TARGET in TARGETS:
             print("> Building QtConnectivity")
             subprocess.check_call([QT_CONF_MODULE_cmd, ".."], cwd=build_dir + DIR_qtconnectivity + "/build")
             subprocess.check_call(["cmake", "--build", ".", "--target", "all"], cwd=build_dir + DIR_qtconnectivity + "/build")
-            subprocess.check_call(["cmake", "--install", "."], cwd=build_dir + DIR_qtconnectivity + "/build")
+            #subprocess.check_call(["cmake", "--install", "."], cwd=build_dir + DIR_qtconnectivity + "/build")
+            subprocess.check_call(["ninja", "install"], cwd=build_dir + DIR_qtconnectivity + "/build") # Qt bug 91647
