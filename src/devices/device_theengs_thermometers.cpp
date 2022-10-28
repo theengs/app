@@ -103,28 +103,9 @@ void DeviceTheengsThermometers::parseTheengsAdvertisement(const QString &json)
     //qDebug() << "DeviceTheengsThermometers::parseTheengsAdvertisement()";
     //qDebug() << "JSON:" << json;
 
+    ///
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
     QJsonObject obj = doc.object();
-
-    {
-        /// full generic ///
-        for (auto it = obj.begin(), end = obj.end(); it != end; ++it)
-        {
-            QString prop_key = it.key();
-            QJsonValue prop_value = it.value();
-            //QJsonObject prop_value = it.value().toObject();
-
-            for (auto gd: m_genericData)
-            {
-                if (static_cast<TheengsGenericData*>(gd)->getName() == prop_key)
-                {
-                    static_cast<TheengsGenericData*>(gd)->setData(it.value());
-                    break;
-                }
-            }
-        }
-        Q_EMIT genericDataUpdated();
-    }
 
     if (obj.contains("batt")) setBattery(obj["batt"].toInt());
     if (obj.contains("mac")) setAddressMAC(obj["mac"].toString());
@@ -161,25 +142,24 @@ void DeviceTheengsThermometers::parseTheengsAdvertisement(const QString &json)
         }
     }
 
+    ///
+    m_lastUpdate = QDateTime::currentDateTime();
+
+    if (needsUpdateDb())
     {
-        m_lastUpdate = QDateTime::currentDateTime();
-
-        if (needsUpdateDb())
+        if (hasTemperatureSensor() && hasHumiditySensor())
         {
-            if (hasTemperatureSensor() && hasHumiditySensor())
-            {
-                addDatabaseRecord_hygrometer(m_lastUpdate.toSecsSinceEpoch(),
-                                             m_temperature, m_humidity);
-            }
-            else if (hasTemperatureSensor())
-            {
-                addDatabaseRecord_thermometer(m_lastUpdate.toSecsSinceEpoch(),
-                                              m_temperature);
-            }
+            addDatabaseRecord_hygrometer(m_lastUpdate.toSecsSinceEpoch(),
+                                         m_temperature, m_humidity);
         }
-
-        refreshDataFinished(true);
+        else if (hasTemperatureSensor())
+        {
+            addDatabaseRecord_thermometer(m_lastUpdate.toSecsSinceEpoch(),
+                                          m_temperature);
+        }
     }
+
+    refreshDataFinished(true);
 }
 
 /* ************************************************************************** */

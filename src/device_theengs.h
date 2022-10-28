@@ -34,12 +34,14 @@
 class TheengsGenericData: public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString key READ getKey CONSTANT)
     Q_PROPERTY(QString name READ getName CONSTANT)
     Q_PROPERTY(QString unit READ getUnit CONSTANT)
     Q_PROPERTY(QVariant value READ getData NOTIFY up)
     Q_PROPERTY(int value_i READ getData_i NOTIFY up)
     Q_PROPERTY(float value_f READ getData_f NOTIFY up)
 
+    QString key;
     QString name;
     QString unit;
     int data_i = -99;
@@ -49,25 +51,28 @@ Q_SIGNALS:
     void up();
 
 public:
-    TheengsGenericData(const QString &n, const QString &u, QObject *parent) : QObject(parent) {
+    TheengsGenericData(const QString &k, const QString &n, const QString &u,
+                       QObject *parent) : QObject(parent) {
+        key = k;
         name = n;
         unit = u;
     }
 
+    QString getKey() { return key; }
     QString getName() { return name; }
     QString getUnit() { return unit; }
+
     int getData_i() { return data_i; }
     float getData_f() { return data_f; }
-
-    void setData(const QJsonValue &v) {
-        if (v.isDouble()) data_f = v.toDouble();
-        else if (v.isBool()) data_i = v.toBool();
-        else if (v.isBool()) data_i = v.toInt();
-    }
     QVariant getData() {
         if (data_i > -99) return data_i;
         if (data_f > -99.f) return data_f;
         return 0;
+    }
+    void setData(const QJsonValue &v) {
+        if (v.isDouble()) data_f = v.toDouble();
+        else if (v.isBool()) data_i = v.toBool();
+        else if (v.isBool()) data_i = v.toInt();
     }
 };
 

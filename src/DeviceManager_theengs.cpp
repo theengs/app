@@ -342,9 +342,9 @@ QString DeviceManager::getDeviceModelIdTheengs_fromAdv(const QBluetoothDeviceInf
             QString model = QString::fromStdString(doc["model"]);
             QString modelId = QString::fromStdString(doc["model_id"]);
 
-            if (model == "IBEACON") continue;
-            if (model == "MS-CDP") continue;
-            if (model == "GAEN") continue;
+            if (modelId == "IBEACON") continue;
+            if (modelId == "MS-CDP") continue;
+            if (modelId == "GAEN") continue;
             if (modelId.isEmpty()) continue;
 
             return modelId;
@@ -367,9 +367,9 @@ QString DeviceManager::getDeviceModelIdTheengs_fromAdv(const QBluetoothDeviceInf
             QString model = QString::fromStdString(doc["model"]);
             QString modelId = QString::fromStdString(doc["model_id"]);
 
-            if (model == "IBEACON") continue;
-            if (model == "MS-CDP") continue;
-            if (model == "GAEN") continue;
+            if (modelId == "IBEACON") continue;
+            if (modelId == "MS-CDP") continue;
+            if (modelId == "GAEN") continue;
             if (modelId.isEmpty()) continue;
 
             return modelId;
@@ -435,7 +435,7 @@ void DeviceManager::fakeTheengsDevices()
     // Theengs fake data ///////////////////////////////////////////////////////
     {
         connect(&m_faker, &QTimer::timeout, this, &DeviceManager::fakeTheengsData);
-        m_faker.setInterval(1*1000); // 1s
+        m_faker.setInterval(1*100); // 100 ms
         m_faker.start();
     }
 
@@ -927,7 +927,7 @@ void DeviceManager::fakeTheengsData()
         else if (rrrr == 3) info.setManufacturerData(endian_flip_16(0x9282), QByteArray::fromHex("6300f0cf0000c409160080"));
         else if (rrrr == 4) info.setManufacturerData(endian_flip_16(0x9082), QByteArray::fromHex("dd0061b80000c4096b0080"));
         else if (rrrr == 5) info.setManufacturerData(endian_flip_16(0x9082), QByteArray::fromHex("6300f0cf0000c419760080"));
-        else if (rrrr == 5) info.setManufacturerData(endian_flip_16(0x9682), QByteArray::fromHex("dd0061b80000c4193b0080"));
+        else if (rrrr == 6) info.setManufacturerData(endian_flip_16(0x9682), QByteArray::fromHex("dd0061b80000c4193b0080"));
         else qWarning() << "RAND ERROR";
     }
     if (rrdd == 20) // SDLS

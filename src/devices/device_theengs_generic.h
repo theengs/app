@@ -43,6 +43,15 @@ class DeviceTheengsGeneric: public DeviceTheengs
                                   const int soilMoisture, const int soilConductivity,
                                   const float temperature, const int luminosity);
 
+    bool areValuesValid_thermometer(const float t) const;
+    bool addDatabaseRecord_thermometer(const int64_t timestamp, const float t);
+
+    bool areValuesValid_hygrometer(const float t, const float h) const;
+    bool addDatabaseRecord_hygrometer(const int64_t timestamp, const float t, const float h);
+
+    bool areValuesValid_weatherstation(const float t, const float h, const float p) const;
+    bool addDatabaseRecord_weatherstation(const int64_t timestamp, const float t, const float h, const float p);
+
 public:
     DeviceTheengsGeneric(const QString &deviceAddr, const QString &deviceName,
                          const QString &deviceModel, const QString &devicePropsJson,
@@ -56,7 +65,18 @@ public:
     void parseTheengsProps(const QString &json);
     void parseTheengsAdvertisement(const QString &json);
 
-    // Chart environmental
+    // Chart plant "AIO"
+    Q_INVOKABLE void getChartData_plantAIO(int maxDays, QDateTimeAxis *axis,
+                                           QLineSeries *hygro, QLineSeries *condu,
+                                           QLineSeries *temp, QLineSeries *lumi);
+    // Chart thermometer "min/max"
+    Q_INVOKABLE void updateChartData_thermometerMinMax(int maxDays);
+
+    // Chart thermometer "AIO"
+    Q_INVOKABLE void getChartData_thermometerAIO(int maxDays, QDateTimeAxis *axis,
+                                                 QLineSeries *temp, QLineSeries *hygro);
+
+    // Chart environmental histogram
     Q_INVOKABLE void updateChartData_environmentalVoc(int maxDays);
 };
 
