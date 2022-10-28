@@ -952,6 +952,8 @@ Item {
 
                 Rectangle {
                     width: 28; height: 28; radius: 28;
+                    border.width: 2
+                    border.color: Qt.darker(color, 1.1)
                     color: {
                         if (boxDevice.alarm1) return Theme.colorRed
                         else if (boxDevice.temperature1 < -80) return Theme.colorSeparator
@@ -960,6 +962,8 @@ Item {
                 }
                 Rectangle {
                     width: 28; height: 28; radius: 28;
+                    border.width: 2
+                    border.color: Qt.darker(color, 1.1)
                     color: {
                         if (boxDevice.alarm2) return Theme.colorRed
                         else if (boxDevice.temperature2 < -80) return Theme.colorSeparator
@@ -973,6 +977,8 @@ Item {
 
                 Rectangle {
                     width: 28; height: 28; radius: 28;
+                    border.width: 2
+                    border.color: Qt.darker(color, 1.1)
                     color: {
                         if (boxDevice.alarm3) return Theme.colorRed
                         else if (boxDevice.temperature3 < -80) return Theme.colorSeparator
@@ -981,6 +987,8 @@ Item {
                 }
                 Rectangle {
                     width: 28; height: 28; radius: 28;
+                    border.width: 2
+                    border.color: Qt.darker(color, 1.1)
                     color: {
                         if (boxDevice.alarm4) return Theme.colorRed
                         else if (boxDevice.temperature4 < -80) return Theme.colorSeparator
