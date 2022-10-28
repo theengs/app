@@ -194,7 +194,7 @@ if len(targets_selected):
         TARGETS.append(["windows", "x86_64", "msvc2019_64"])
     if "msvc2022" in targets_selected:
         MSVC_GEN_VER = "Visual Studio 17 2022"
-        TARGETS.append(["windows", "x86_64", "msvc2022_64"])
+        TARGETS.append(["windows", "x86_64", "msvc2019_64"])
 
     if "android_armv8" in targets_selected: TARGETS.append(["android", "armv8", "android_arm64_v8a"])
     if "android_armv7" in targets_selected: TARGETS.append(["android", "armv7", "android_armv7"])
@@ -220,7 +220,7 @@ if len(TARGETS) == 0:
     if OS_HOST == "Windows":
         if "17.0" in os.getenv('VisualStudioVersion', ''):
             MSVC_GEN_VER = "Visual Studio 17 2022"
-            TARGETS.append(["windows", "x86_64", "msvc2022_64"])
+            TARGETS.append(["windows", "x86_64", "msvc2019_64"])
         else: # if "16.0" in os.getenv('VisualStudioVersion', ''):
             MSVC_GEN_VER = "Visual Studio 16 2019"
             TARGETS.append(["windows", "x86_64", "msvc2019_64"])

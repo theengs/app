@@ -126,7 +126,7 @@ OTHER_FILES += README.md \
                deploy_linux.sh \
                deploy_macos.sh \
                deploy_windows.sh \
-               contribs/contribs.py \
+               contribs/contribs_builder.py \
                .github/workflows/builds_desktop.yml \
                .github/workflows/builds_mobile.yml \
                .github/workflows/flatpak.yml \

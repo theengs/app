@@ -50,7 +50,7 @@ jobs:
       - name: Build dependencies (from contribs script)
         run: |
              cd contribs/
-             python3 contribs_builder.py --qt-directory ${{env.Qt6_DIR}}/../.. --qt-version ${{env.QT_VERSION}} --targets=linux
+             python3 contribs_builder.py --targets=linux --qt-directory ${{env.Qt6_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
              cd ..
 
       # Build application
@@ -94,12 +94,16 @@ jobs:
           version: ${{env.QT_VERSION}}
           modules: qtconnectivity qtwebsockets qtcharts qtshadertools qt5compat
 
+      # Install dependencies (from package manager)
+      - name: Install dependencies (from package manager)
+        run: |
+             brew install ninja automake autoconf libtool pkg-config
+
       # Build dependencies (from contribs script)
       - name: Build dependencies (from contribs script)
         run: |
-             brew install ninja automake autoconf libtool pkg-config
              cd contribs/
-             python3 contribs_builder.py --qt-directory ${{env.Qt6_DIR}}/../.. --qt-version ${{env.QT_VERSION}} --targets=macos
+             python3 contribs_builder.py --targets=macos --qt-directory ${{env.Qt6_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
              cd ..
 
       # Build application
@@ -156,7 +160,7 @@ jobs:
       - name: Build dependencies (from contribs script)
         run: |
              cd contribs/
-             python3 contribs_builder.py --qt-directory ${{env.Qt6_DIR}}/../.. --qt-version ${{env.QT_VERSION}} --targets=msvc2019
+             python3 contribs_builder.py --targets=msvc2019 --qt-directory ${{env.Qt6_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
              cd ..
 
       # Build application
