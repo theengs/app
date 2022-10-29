@@ -281,7 +281,7 @@ Loader {
                             id: textStatus
                             anchors.verticalCenter: parent.verticalCenter
 
-                            text: qsTr("Loading...")
+                            text: qsTr("Loading…")
                             color: cccc
                             font.bold: false
                             font.pixelSize: 17

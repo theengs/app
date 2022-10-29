@@ -33,7 +33,7 @@ Item {
             anchors.topMargin: 24
             anchors.horizontalCenter: parent.horizontalCenter
 
-            text: qsTr("Bluetooth is disabled...")
+            text: qsTr("Bluetooth is disabled…")
             textFormat: Text.PlainText
             font.pixelSize: Theme.fontSizeContentBig
             color: Theme.colorText

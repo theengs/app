@@ -120,7 +120,7 @@ Rectangle {
                             anchors.left: parent.left
                             anchors.leftMargin: 32
 
-                            text: qsTr("..theengs...")
+                            text: qsTr("…theengs…")
                             textFormat: Text.StyledText
                             color: Theme.colorHeaderContent
                             font.pixelSize: Theme.fontSizeContentBig

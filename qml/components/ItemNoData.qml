@@ -29,7 +29,7 @@ Rectangle {
         anchors.topMargin: 16
         anchors.horizontalCenter: parent.horizontalCenter
 
-        text: qsTr("Not enough data...")
+        text: qsTr("Not enough data…")
         textFormat: Text.PlainText
         font.pixelSize: Theme.fontSizeContent
         color: Theme.colorText
