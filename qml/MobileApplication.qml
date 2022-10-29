@@ -679,7 +679,7 @@ ApplicationWindow {
 
         Text {
             anchors.centerIn: parent
-            text: qsTr("Press one more time to exit...")
+            text: qsTr("Press one more time to exit…")
             textFormat: Text.PlainText
             font.pixelSize: Theme.fontSizeContent
             color: Theme.colorText

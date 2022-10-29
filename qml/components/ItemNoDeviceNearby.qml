@@ -46,7 +46,7 @@ Rectangle {
         anchors.topMargin: 16
         anchors.horizontalCenter: parent.horizontalCenter
 
-        text: qsTr("Looking for nearby devices...")
+        text: qsTr("Looking for nearby devices…")
         textFormat: Text.PlainText
         font.pixelSize: Theme.fontSizeContentBig
         color: Theme.colorText

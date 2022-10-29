@@ -391,7 +391,7 @@ Item {
                             anchors.baseline: labelStatus.baseline
                             padding: 4
 
-                            text: qsTr("Loading...")
+                            text: qsTr("Loading…")
                             color: Theme.colorHighContrast
                             font.pixelSize: Theme.fontSizeContentBig
                             font.bold: false
