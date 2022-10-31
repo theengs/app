@@ -17,7 +17,7 @@
     <meta name="msapplication-TileImage" content="/favicon-144x144.png">
     <meta name="msapplication-TileColor" content="#000000">
     
-    <link rel="preload" href="/assets/css/0.styles.7f8e66f6.css" as="style"><link rel="preload" href="/assets/js/app.52608325.js" as="script"><link rel="preload" href="/assets/js/2.db6af830.js" as="script"><link rel="preload" href="/assets/js/3.2c427b1c.js" as="script"><link rel="prefetch" href="/assets/js/10.4eed5690.js"><link rel="prefetch" href="/assets/js/11.3f4465ec.js"><link rel="prefetch" href="/assets/js/12.3cfd87d0.js"><link rel="prefetch" href="/assets/js/13.212a49ed.js"><link rel="prefetch" href="/assets/js/14.997a281b.js"><link rel="prefetch" href="/assets/js/15.07750266.js"><link rel="prefetch" href="/assets/js/16.851adf3c.js"><link rel="prefetch" href="/assets/js/4.281eaba6.js"><link rel="prefetch" href="/assets/js/5.ea36ff80.js"><link rel="prefetch" href="/assets/js/6.adeaa412.js"><link rel="prefetch" href="/assets/js/7.b38042be.js"><link rel="prefetch" href="/assets/js/8.a198ec78.js"><link rel="prefetch" href="/assets/js/9.2d532d6d.js">
+    <link rel="preload" href="/assets/css/0.styles.7f8e66f6.css" as="style"><link rel="preload" href="/assets/js/app.a94b67b4.js" as="script"><link rel="preload" href="/assets/js/2.db6af830.js" as="script"><link rel="preload" href="/assets/js/3.2c427b1c.js" as="script"><link rel="prefetch" href="/assets/js/10.4eed5690.js"><link rel="prefetch" href="/assets/js/11.3f4465ec.js"><link rel="prefetch" href="/assets/js/12.3cfd87d0.js"><link rel="prefetch" href="/assets/js/13.212a49ed.js"><link rel="prefetch" href="/assets/js/14.997a281b.js"><link rel="prefetch" href="/assets/js/15.55de208f.js"><link rel="prefetch" href="/assets/js/16.851adf3c.js"><link rel="prefetch" href="/assets/js/4.281eaba6.js"><link rel="prefetch" href="/assets/js/5.ea36ff80.js"><link rel="prefetch" href="/assets/js/6.adeaa412.js"><link rel="prefetch" href="/assets/js/7.b38042be.js"><link rel="prefetch" href="/assets/js/8.a198ec78.js"><link rel="prefetch" href="/assets/js/9.2d532d6d.js">
     <link rel="stylesheet" href="/assets/css/0.styles.7f8e66f6.css">
   </head>
   <body>
@@ -46,7 +46,7 @@ You would need to go into the app information (long press on the icon -&gt; (i))
 You may also have more regular results when the device is charging.</p></div> <h2 id="linux-live-mode-and-historical-data"><a href="#linux-live-mode-and-historical-data" class="header-anchor">#</a> Linux ('live mode' and 'historical data')</h2> <p>While reading Flower Care and RoPot historical entry count, the sensors usually freeze for up to a second, and the Linux kernel consider that to be a connection timeout.<br>
 To be able to get the historical data working on Linux, you'll need to increase the &quot;supervision timeout&quot; value (while root):</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code><span class="token comment"># echo 100 &gt; /sys/kernel/debug/bluetooth/hci0/supervision_timeout</span>
 </code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><p>You could also give Theengs binary the <em>net_raw</em> and <em>net_admin</em> capabilities, so that it could be allowed to changes the supervision timeout on its own. But at the moment that's not fully implemented.</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code><span class="token comment"># setcap 'cap_net_raw,cap_net_admin+eip' theengs</span>
-</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div></div> <footer class="page-edit"><!----> <div class="last-updated"><span class="prefix">Last Updated:</span> <span class="time">10/31/2022, 5:25:45 PM</span></div></footer> <div class="page-nav"><p class="inner"><span class="prev">
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div></div> <footer class="page-edit"><!----> <div class="last-updated"><span class="prefix">Last Updated:</span> <span class="time">10/31/2022, 6:31:13 PM</span></div></footer> <div class="page-nav"><p class="inner"><span class="prev">
       ←
       <a href="/install/install.html" class="prev">
         2 - Install ✔️
@@ -55,6 +55,6 @@ To be able to get the historical data working on Linux, you'll need to increase 
       </a>
       →
     </span></p></div> </main></div><div class="global-ui"></div></div>
-    <script src="/assets/js/app.52608325.js" defer></script><script src="/assets/js/2.db6af830.js" defer></script><script src="/assets/js/3.2c427b1c.js" defer></script>
+    <script src="/assets/js/app.a94b67b4.js" defer></script><script src="/assets/js/2.db6af830.js" defer></script><script src="/assets/js/3.2c427b1c.js" defer></script>
   </body>
 </html>
