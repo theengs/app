@@ -315,19 +315,19 @@ function getDeviceSensorName(sensorId) {
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_PM10) {
         name = qsTr("PM10")
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_O2) {
-        name = qsTr("O2")
+        name = qsTr("O₂")
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_O3) {
-        name = qsTr("O3")
+        name = qsTr("O₃")
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_CO) {
         name = qsTr("CO")
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_CO2) {
-        name = qsTr("CO2")
+        name = qsTr("CO₂")
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_eCO2) {
-        name = qsTr("eCO2")
+        name = qsTr("eCO₂")
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_NO2) {
-        name = qsTr("NO2")
+        name = qsTr("NO₂")
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_SO2) {
-        name = qsTr("SO2")
+        name = qsTr("SO₂")
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_VOC) {
         name = qsTr("VOC")
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_HCHO) {

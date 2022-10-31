@@ -235,6 +235,7 @@ Loader {
                     spacing: 0
 
                     Rectangle { // scale
+                        id: scalePic
                         width: singleColumn ? scaleBox.height * 0.75 : scaleBox.width * 0.66
                         height: width
                         radius: 16
@@ -242,32 +243,34 @@ Loader {
                         border.width: 2
                         border.color: Qt.alpha(cccc, 0.33)
 
+                        property int foot: isPhone ? 24 : 28
+
                         Rectangle {
                             anchors.top: parent.top
                             anchors.left: parent.left
                             anchors.margins: 12
-                            width: 28; height: 28; radius: 28;
+                            width: scalePic.foot; height: scalePic.foot; radius: scalePic.foot;
                             color: Qt.alpha(cccc, 0.33)
                         }
                         Rectangle {
                             anchors.top: parent.top
                             anchors.right: parent.right
                             anchors.margins: 12
-                            width: 28; height: 28; radius: 28;
+                            width: scalePic.foot; height: scalePic.foot; radius: scalePic.foot;
                             color: Qt.alpha(cccc, 0.33)
                         }
                         Rectangle {
                             anchors.bottom: parent.bottom
                             anchors.left: parent.left
                             anchors.margins: 12
-                            width: 28; height: 28; radius: 28;
+                            width: scalePic.foot; height: scalePic.foot; radius: scalePic.foot;
                             color: Qt.alpha(cccc, 0.33)
                         }
                         Rectangle {
                             anchors.bottom: parent.bottom
                             anchors.right: parent.right
                             anchors.margins: 12
-                            width: 28; height: 28; radius: 28;
+                            width: scalePic.foot; height: scalePic.foot; radius: scalePic.foot;
                             color: Qt.alpha(cccc, 0.33)
                         }
 
@@ -275,7 +278,7 @@ Loader {
                             anchors.top: parent.top
                             anchors.horizontalCenter: parent.horizontalCenter
                             anchors.margins: 12
-                            width: 64; height: 28; radius: 12;
+                            width: 64; height: scalePic.foot; radius: scalePic.foot/2;
                             color: Qt.alpha(cccc, 0.1)
                             border.width: 2
                             border.color: Qt.alpha(cccc, 0.33)

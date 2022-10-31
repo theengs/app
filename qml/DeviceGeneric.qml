@@ -352,7 +352,7 @@ Loader {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             anchors.bottom: parent.bottom
-                            height: 2
+                            height: 1
                             color: Theme.colorSeparator
                         }
                     }

@@ -43,6 +43,10 @@ Loader {
 
         focus: parent.focus
 
+        // 1: single column (single column view or portrait tablet)
+        // 2: wide mode (wide view)
+        property int uiMode: (singleColumn || (isTablet && screenOrientation === Qt.PortraitOrientation)) ? 1 : 2
+
         property bool isAirMonitor: false
         property bool isWeatherStation: false
         property bool isGeigerCounter: false
@@ -242,7 +246,7 @@ Loader {
                 indicatorAirQuality.valueMax = 1000
                 indicatorAirQuality.value = currentDevice.hcho
             } else if (primary === "co2") {
-                indicatorAirQuality.legend = (currentDevice.haseCo2Sensor ? qsTr("eCO2") : qsTr("CO2"))
+                indicatorAirQuality.legend = (currentDevice.haseCo2Sensor ? qsTr("eCO₂") : qsTr("CO₂"))
                 indicatorAirQuality.limitMin = 850
                 indicatorAirQuality.limitMax = 1500
                 indicatorAirQuality.valueMin = 0
@@ -396,48 +400,47 @@ Loader {
             Rectangle {
                 id: headerBox
 
-                property int dimboxw: Math.min(deviceEnvironmental.width * 0.4, isPhone ? 300 : 600)
+                property int dimboxw: Math.min(deviceEnvironmental.width * 0.4, isPhone ? 320 : 600)
                 property int dimboxh: Math.max(deviceEnvironmental.height * 0.333, isPhone ? 180 : 256)
 
-                width: {
-                    if (isTablet && screenOrientation == Qt.PortraitOrientation) return parent.width
-                    return singleColumn ? parent.width : dimboxw
-                }
-                height: {
-                    if (isTablet && screenOrientation == Qt.PortraitOrientation) return dimboxh
-                    return singleColumn ? dimboxh : parent.height
-                }
+                width: (uiMode === 1) ? parent.width : dimboxw
+                height: (uiMode === 1) ? dimboxh : parent.height
 
                 color: Theme.colorHeader
                 z: 5
 
                 //MouseArea { anchors.fill: parent } // prevent clicks below this area
 
-                Flow {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.verticalCenterOffset: headerUnicolor ? -(appHeader.height/2) : -(appHeader.height/4)
-                    spacing: 48
+                Item {
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 24
+
+                    ////////////////
 
                     IconSvg {
                         id: indicatorDisconnected
                         width: isMobile ? 96 : 128
                         height: isMobile ? 96 : 128
+                        anchors.centerIn: parent
 
                         visible: (currentDevice && !currentDevice.hasDataToday)
-                        color: cccc
                         source: "qrc:/assets/icons_material/baseline-bluetooth_disabled-24px.svg"
+                        color: cccc
                     }
 
                     ////////////////
 
                     AirQualityIndicator {
                         id: indicatorAirQuality
-                        width: singleColumn ? headerBox.height * 0.72 : headerBox.width * 0.5
+                        width: (uiMode === 1) ? headerBox.height-24 : headerBox.width * 0.60
                         height: width
+                        anchors.centerIn: parent
 
-                        color: cccc
                         visible: (currentDevice && isAirMonitor && currentDevice.hasDataToday)
+                        color: cccc
                     }
 
                     ////////////////
@@ -448,6 +451,7 @@ Loader {
                         height: isMobile ? 96 : 128
                         spacing: 2
 
+                        anchors.centerIn: parent
                         visible: (currentDevice && primary === "hygrometer")
 
                         Text {
@@ -778,7 +782,7 @@ Loader {
                                     width: airFlow.www
                                     visible: currentDevice.hasO2Sensor
 
-                                    title: qsTr("O2")
+                                    title: qsTr("O₂")
                                     legend: qsTr("µg/m³")
                                     value: currentDevice.o2
                                     precision: 0
@@ -790,7 +794,7 @@ Loader {
                                     width: airFlow.www
                                     visible: currentDevice.hasO3Sensor
 
-                                    title: qsTr("O3")
+                                    title: qsTr("O₃")
                                     legend: qsTr("µg/m³")
                                     value: currentDevice.o3
                                     precision: 0
@@ -802,7 +806,7 @@ Loader {
                                     width: airFlow.www
                                     visible: currentDevice.hasSo2Sensor
 
-                                    title: qsTr("SO2")
+                                    title: qsTr("SO₂")
                                     legend: qsTr("µg/m³")
                                     value: currentDevice.so2
                                     precision: 0
@@ -814,7 +818,7 @@ Loader {
                                     width: airFlow.www
                                     visible: currentDevice.hasNo2Sensor
 
-                                    title: qsTr("NO2")
+                                    title: qsTr("NO₂")
                                     legend: qsTr("µg/m³")
                                     value: currentDevice.no2
                                     precision: 0
@@ -838,7 +842,7 @@ Loader {
                                     width: airFlow.www
                                     visible: currentDevice.hasCo2Sensor
 
-                                    title: (currentDevice.haseCo2Sensor ? qsTr("eCO2") : qsTr("CO2"))
+                                    title: (currentDevice.haseCo2Sensor ? qsTr("eCO₂") : qsTr("CO₂"))
                                     legend: qsTr("PPM")
                                     value: currentDevice.co2
                                     precision: 0
@@ -996,7 +1000,7 @@ Loader {
                                     duo: false
 
                                     title: qsTr("Humidity")
-                                    legend: qsTr("°RH")
+                                    legend: qsTr("%")
                                     icon: "qrc:/assets/icons_material/duotone-water_full-24px.svg"
                                     value: currentDevice.humidity
                                     precision: 0

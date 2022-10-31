@@ -242,9 +242,9 @@ Loader {
 
                     visible: (currentDevice.hasData && !currentDevice.hasProbesTPMS)
 
-                    property int psw: (probeBox.width / 2) - 3*12
+                    property int psw: ((probeBox.width - 3*pss) / 2)
                     property int psh: isPhone ? 44 : 48
-                    property int pss: isPhone ? 24 : 32
+                    property int pss: isPhone ? 24 : 40
                     property int fz1: isPhone ? 28 : 32
                     property int fz2: isPhone ? 18 : 20
 
@@ -326,7 +326,7 @@ Loader {
                                     anchors.verticalCenter: parent.verticalCenter
 
                                     visible: (currentDevice.temperature1 > -80)
-                                    text: currentDevice.temperature1.toFixed(1)
+                                    text: currentDevice.temperature1.toFixed(0)
                                     font.pixelSize: columnBBQ.fz1
                                     font.bold: false
                                     color: cccc
@@ -388,7 +388,7 @@ Loader {
                                     anchors.verticalCenter: parent.verticalCenter
 
                                     visible: (currentDevice.temperature2 > -80)
-                                    text: currentDevice.temperature2.toFixed(1)
+                                    text: currentDevice.temperature2.toFixed(0)
                                     font.pixelSize: columnBBQ.fz1
                                     font.bold: false
                                     color: cccc
@@ -457,7 +457,7 @@ Loader {
                                     anchors.verticalCenter: parent.verticalCenter
 
                                     visible: (currentDevice.temperature3 > -80)
-                                    text: currentDevice.temperature3.toFixed(1)
+                                    text: currentDevice.temperature3.toFixed(0)
                                     font.pixelSize: columnBBQ.fz1
                                     font.bold: false
                                     color: cccc
@@ -519,7 +519,7 @@ Loader {
                                     anchors.verticalCenter: parent.verticalCenter
 
                                     visible: (currentDevice.temperature4 > -80)
-                                    text: currentDevice.temperature4.toFixed(1)
+                                    text: currentDevice.temperature4.toFixed(0)
                                     font.pixelSize: columnBBQ.fz1
                                     font.bold: false
                                     color: cccc
@@ -587,7 +587,7 @@ Loader {
                                 Text {
                                     anchors.verticalCenter: parent.verticalCenter
 
-                                    text: currentDevice.temperature5.toFixed(1)
+                                    text: currentDevice.temperature5.toFixed(0)
                                     font.pixelSize: columnBBQ.fz1
                                     font.bold: false
                                     color: cccc
@@ -649,7 +649,7 @@ Loader {
                                     anchors.verticalCenter: parent.verticalCenter
 
                                     visible: (currentDevice.temperature6 > -80)
-                                    text: currentDevice.temperature6.toFixed(1)
+                                    text: currentDevice.temperature6.toFixed(0)
                                     font.pixelSize: columnBBQ.fz1
                                     font.bold: false
                                     color: cccc

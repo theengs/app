@@ -568,16 +568,16 @@ Item {
         // print data
         dataIndicator.visible = true
         indicatorTop1.visible = (t1 > -40)
-        indicatorTop1.text = t1.toFixed(1)
+        indicatorTop1.text = t1.toFixed(0) + "°"
         indicatorTop2.visible = (t2 > -40)
-        indicatorTop2.text = t2.toFixed(1)
+        indicatorTop2.text = t2.toFixed(0) + "°"
         indicatorTop3.visible = (t3 > -40)
-        indicatorTop3.text = t3.toFixed(1)
+        indicatorTop3.text = t3.toFixed(0) + "°"
         indicatorTop4.visible = (t4 > -40)
-        indicatorTop4.text = t4.toFixed(1)
+        indicatorTop4.text = t4.toFixed(0) + "°"
         indicatorTop5.visible = (t5 > -40)
-        indicatorTop5.text = t5.toFixed(1)
+        indicatorTop5.text = t5.toFixed(0) + "°"
         indicatorTop6.visible = (t6 > -40)
-        indicatorTop6.text = t6.toFixed(1)
+        indicatorTop6.text = t6.toFixed(0) + "°"
     }
 }
