@@ -23,7 +23,7 @@ Once your broker is installed it can be interesting to see the traffic passing t
 * [HIVE MQ Web client](https://github.com/hivemq/hivemq-mqtt-web-client)
 * [MQTT FX](https://mqttfx.jensd.de/)
 
-MQTT enables you to connect easily a controller so as to monitor, control and automate scenarios.
+MQTT enables you to connect easily a controller so as to monitor, control and automate scenariOS.
 
 ## Controller
 The following controllers (and many other software) are compatible with MQTT:
