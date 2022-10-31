@@ -1,5 +1,15 @@
 # Use
 
+Features comparison between OS:
+| OS | Real time data | MQTT integration | Running in background |
+|:-:|:-:|:-:|:-:|
+|iOS|☑️|☑️||
+|Android|☑️|☑️|☑️ *experimental*|
+
+## iOS
+
+The application will ask you for permission to use Bluetooth. You can learn more on Apple [website](https://support.apple.com/HT210578).
+
 ## Android
 
 The Android operating system requires applications to ask for device location permission in order to scan for nearby Bluetooth Low Energy sensors.
@@ -68,10 +78,6 @@ Some devices also require the GPS to be turned on while scanning for new sensors
 Android has drastically reduced the capabilities of apps to run in the background, as a consequence the Update interval set into the app may not be followed by the operating system.
 You may also have more regular results when the device is charging.
 :::
-
-## iOS
-
-The application will ask you for permission to use Bluetooth. You can learn more on Apple [website](https://support.apple.com/HT210578).
 
 ## Linux ('live mode' and 'historical data')
 
