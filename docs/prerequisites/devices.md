@@ -7,7 +7,6 @@ Here is the list of supported devices by the app:
         
 |Devices|Model|Measurements|
 |-|:-:|:-:|
-| Amazfit|Smart Watch/Band|steps, activity heart rate (when activated in the Zepp Life settings)|
 | Hydractiva Digital | Amphiro/Oras|sessions/time/litres/temperature/energy|
 | April Brother|ABTemp|uuid/mfid/major/txpower @ 1 m/temperature/battery|
 | April Brother|N03|temperature/humidity/luminance/battery|
@@ -60,4 +59,3 @@ Here is the list of supported devices by the app:
 | XIAOMI Mi Body Composition Scale|XMTZC02HM/XMTZC05HM|weighing mode/unit/weight/impedance|
 | XIAOMI Mi Temp/Humidity v1|MHO-C401|temperature/humidity/battery/voltage|
 | XIAOMI Mi Temp/Humidity v2|XMWSDJ04MMC|temperature/humidity/battery/voltage|
-| XIAOMI|Mi band|steps/activity heart rate (when activated in the Zepp Life settings)|
