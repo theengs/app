@@ -12,7 +12,6 @@ Here is the list of supported devices by the app:
 | April Brother|ABTemp|uuid/mfid/major/txpower @ 1 m/temperature/battery|
 | April Brother|N03|temperature/humidity/luminance/battery|
 | BlueMaestro|TempoDisc|temperature/humidity/dew point/voltage|
-| BM2 Battery Monitor|BM2|battery|
 | ClearGrass |CGG1|temperature/humidity/battery|
 | ClearGrass alarm clock|CGD1|temperature/humidity|
 | ClearGrass with atmospheric pressure |CGP1W|temperature/humidity/air pressure|
