@@ -548,8 +548,9 @@ Item {
             var graph_at_x = temp1Data.at(i).x
             var dist = (graph_at_x - verticalIndicator.clickedCoordinates.x) / 1000000
 
-            if (dist < 0) {
-                if (x1 < i) x1 = i
+            if (dist <= 0) {
+                if (x1 == 0) x2 = i
+                else if (x1 < i) x1 = i
             } else {
                 x2 = i
                 break

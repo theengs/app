@@ -1141,6 +1141,11 @@ Loader {
                     return singleColumn ? (parent.height - probeBox.height) : parent.height
                 }
 
+                ItemNoData {
+                    id: noDataIndicator
+                    visible: (currentDevice.countDataNamed("temperature", 14) <= 1)
+                }
+
                 Loader {
                     id: graphLoader
                     anchors.top: parent.top
