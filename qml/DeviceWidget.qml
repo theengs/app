@@ -121,19 +121,14 @@ Item {
         if (!boxDevice.isDataToday()) {
             if (boxDevice.status === DeviceUtils.DEVICE_QUEUED) {
                 imageStatus.source = "qrc:/assets/icons_material/duotone-settings_bluetooth-24px.svg"
-                refreshAnimation.running = false
             } else if (boxDevice.status === DeviceUtils.DEVICE_CONNECTING) {
                 imageStatus.source = "qrc:/assets/icons_material/duotone-bluetooth_searching-24px.svg"
-                refreshAnimation.running = true
             } else if (boxDevice.status === DeviceUtils.DEVICE_CONNECTED) {
                 imageStatus.source = "qrc:/assets/icons_material/duotone-bluetooth_connected-24px.svg"
-                refreshAnimation.running = true
             } else if (boxDevice.status >= DeviceUtils.DEVICE_WORKING) {
                 imageStatus.source = "qrc:/assets/icons_material/duotone-bluetooth_connected-24px.svg"
-                refreshAnimation.running = true
             } else {
                 imageStatus.source = "qrc:/assets/icons_material/baseline-bluetooth_disabled-24px.svg"
-                refreshAnimation.running = false
             }
         }
     }
@@ -294,8 +289,6 @@ Item {
                             selectedDevice = boxDevice
                             screenDeviceGeneric.loadDevice(boxDevice)
                             appContent.state = "DeviceGeneric"
-                        } else {
-                            //
                         }
                     } else {
                         if (boxDevice.isGenericDevice) {
@@ -356,7 +349,6 @@ Item {
             }
 
             Column {
-                id: column
                 anchors.verticalCenter: parent.verticalCenter
 
                 Text {
@@ -414,7 +406,8 @@ Item {
                             id: opa
                             loops: Animation.Infinite
                             alwaysRunToEnd: true
-                            running: (boxDevice.status !== DeviceUtils.DEVICE_OFFLINE &&
+                            running: (visible &&
+                                      boxDevice.status !== DeviceUtils.DEVICE_OFFLINE &&
                                       boxDevice.status !== DeviceUtils.DEVICE_QUEUED &&
                                       boxDevice.status !== DeviceUtils.DEVICE_CONNECTED)
 
@@ -424,53 +417,6 @@ Item {
                     }
                 }
             }
-        }
-
-        ////////////////
-
-        Row { // alarms icons
-            height: 24
-            spacing: 8
-            anchors.right: rowRight.left
-            anchors.rightMargin: 12
-            anchors.verticalCenter: rowRight.verticalCenter
-            layoutDirection: Qt.RightToLeft
-
-            visible: boxDevice.hasDataToday
-
-            IconSvg {
-                id: alarmFreeze
-                width: bigAssMode ? 28 : 24
-                height: bigAssMode ? 28 : 24
-                anchors.verticalCenter: parent.verticalCenter
-
-                visible: false
-                source: "qrc:/assets/icons_material/baseline-ac_unit-24px.svg"
-                color: Theme.colorYellow
-            }
-            IconSvg {
-                id: alarmVentilate
-                width: bigAssMode ? 28 : 24
-                height: bigAssMode ? 28 : 24
-                anchors.verticalCenter: parent.verticalCenter
-
-                visible: false
-                source: "qrc:/assets/icons_material/baseline-air-24px.svg"
-                color: Theme.colorYellow
-            }
-/*
-            IconSvg {
-                id: alarmWarning
-                width: bigAssMode ? 28 : 24
-                height: bigAssMode ? 28 : 24
-                anchors.verticalCenter: parent.verticalCenter
-
-                visible: false
-                asynchronous: true
-                source: "qrc:/assets/icons_material/baseline-warning-24px.svg"
-                color: Theme.colorYellow
-            }
-*/
         }
 
         ////////////////
@@ -529,7 +475,10 @@ Item {
             SequentialAnimation on opacity {
                 id: refreshAnimation
                 loops: Animation.Infinite
-                running: false
+                running: (visible &&
+                          boxDevice.status === DeviceUtils.DEVICE_CONNECTING ||
+                          boxDevice.status === DeviceUtils.DEVICE_CONNECTED ||
+                          boxDevice.status === DeviceUtils.DEVICE_WORKING)
                 alwaysRunToEnd: true
                 OpacityAnimator { from: 0.8; to: 0; duration: 750 }
                 OpacityAnimator { from: 0; to: 0.8; duration: 750 }

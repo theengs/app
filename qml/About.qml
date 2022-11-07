@@ -151,7 +151,7 @@ Item {
 
             ////////////////
 
-            Item { height: 1; width: 1; visible: isDesktop; } // spacer
+            Item { height: 1; width: 1; } // spacer
 
             Item {
                 id: desc
