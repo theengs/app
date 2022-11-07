@@ -149,6 +149,7 @@ Loader {
         function backAction() {
             if (plantSensorPages.currentIndex === 0) { // data
                 plantSensorData.backAction()
+                return
             }
             if (plantSensorPages.currentIndex === 1) { // history
                 if (plantSensorHistory.isHistoryMode()) {
@@ -160,6 +161,7 @@ Loader {
             }
             if (plantSensorPages.currentIndex === 2) { // sensor settings
                 appContent.state = "DeviceList"
+                return
             }
         }
 
