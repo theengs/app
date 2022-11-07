@@ -193,49 +193,6 @@ Item {
 
     function updateSensorWarnings() {
         // Warnings icons (for sensors with available data)
-
-        if (boxDevice.isDataToday()) {
-
-            if (boxDevice.isPlantSensor) {
-
-                alarmFreeze.visible = false
-
-                // Extreme temperature notif
-                if (boxDevice.temperatureC > 40) {
-                    alarmFreeze.visible = true
-                    alarmFreeze.color = Theme.colorYellow
-                    alarmFreeze.source = "qrc:/assets/icons_material/duotone-wb_sunny-24px.svg"
-                } else if (boxDevice.temperatureC <= 2 && boxDevice.temperatureC > -80) {
-                    alarmFreeze.visible = true
-                    alarmFreeze.source = "qrc:/assets/icons_material/baseline-ac_unit-24px.svg"
-
-                    if (boxDevice.temperatureC <= -4)
-                        alarmFreeze.color = Theme.colorRed
-                    else if (boxDevice.temperatureC <= -2)
-                        alarmFreeze.color = Theme.colorYellow
-                    else
-                        alarmFreeze.color = Theme.colorBlue
-                }
-
-            } else if (boxDevice.isEnvironmentalSensor) {
-
-                alarmVentilate.visible = false
-                //alarmWarning.visible = false
-
-                // Air quality warning
-                if ((boxDevice.hasVocSensor && boxDevice.voc > 1000) ||
-                    (boxDevice.hasHchoSensor && boxDevice.hcho > 1000) ||
-                    (boxDevice.hasCo2Sensor && boxDevice.co2 > 1500)) {
-                    alarmVentilate.visible = true
-                    alarmVentilate.color = Theme.colorRed
-                } else if ((boxDevice.hasVocSensor && boxDevice.voc > 500) ||
-                           (boxDevice.hasHchoSensor && boxDevice.hcho > 500) ||
-                           (boxDevice.hasCo2Sensor && boxDevice.co2 > 850)) {
-                    alarmVentilate.visible = true
-                    alarmVentilate.color = Theme.colorYellow
-                }
-            }
-        }
     }
 
     function updateSensorData() {
