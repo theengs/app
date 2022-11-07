@@ -199,7 +199,7 @@ Loader {
             itemCount_AirMonitor = 0
             if (currentDevice.hasPM1Sensor) itemCount_AirMonitor++
             if (currentDevice.hasPM25Sensor) itemCount_AirMonitor++
-            if (currentDevice.hasPM100Sensor) itemCount_AirMonitor++
+            if (currentDevice.hasPM10Sensor) itemCount_AirMonitor++
             if (currentDevice.hasVocSensor) itemCount_AirMonitor++
             if (currentDevice.hasHchoSensor) itemCount_AirMonitor++
             if (currentDevice.hasCo2Sensor) itemCount_AirMonitor++
@@ -252,6 +252,20 @@ Loader {
                 indicatorAirQuality.valueMin = 0
                 indicatorAirQuality.valueMax = 2000
                 indicatorAirQuality.value = currentDevice.co2
+            } else if (primary === "pm25") {
+                indicatorAirQuality.legend = qsTr("PM2.5")
+                indicatorAirQuality.limitMin = 60
+                indicatorAirQuality.limitMax = 120
+                indicatorAirQuality.valueMin = 0
+                indicatorAirQuality.valueMax = 240
+                indicatorAirQuality.value = currentDevice.pm25
+            } else if (primary === "pm10") {
+                indicatorAirQuality.legend = qsTr("PM10")
+                indicatorAirQuality.limitMin = 100
+                indicatorAirQuality.limitMax = 350
+                indicatorAirQuality.valueMin = 0
+                indicatorAirQuality.valueMax = 500
+                indicatorAirQuality.value = currentDevice.pm10
             }
 
             if (primary === "hygrometer") {
@@ -320,6 +334,9 @@ Loader {
                 else if (primary === "o3") indicatorAirQuality.value = currentDevice.o3
                 else if (primary === "no2") indicatorAirQuality.value = currentDevice.no2
                 else if (primary === "so2") indicatorAirQuality.value = currentDevice.so2
+                else if (primary === "pm1") indicatorAirQuality.value = currentDevice.pm1
+                else if (primary === "pm25") indicatorAirQuality.value = currentDevice.pm25
+                else if (primary === "pm10") indicatorAirQuality.value = currentDevice.pm10
             }
 
             // Battery level
@@ -721,7 +738,7 @@ Loader {
                                     title: qsTr("PM1")
                                     legend: qsTr("µg/m³")
                                     value: currentDevice.pm1
-                                    precision: 1
+                                    precision: 0
                                     onSensorSelection: primary = "pm1"
                                 }
 
@@ -733,7 +750,9 @@ Loader {
                                     title: qsTr("PM2.5")
                                     legend: qsTr("µg/m³")
                                     value: currentDevice.pm25
-                                    precision: 1
+                                    limit_mid: 60
+                                    limit_high: 120
+                                    precision: 0
                                     onSensorSelection: primary = "pm25"
                                 }
 
@@ -745,7 +764,9 @@ Loader {
                                     title: qsTr("PM10")
                                     legend: qsTr("µg/m³")
                                     value: currentDevice.pm10
-                                    precision: 1
+                                    limit_mid: 100
+                                    limit_high: 350
+                                    precision: 0
                                     onSensorSelection: primary = "pm10"
                                 }
 
@@ -831,7 +852,7 @@ Loader {
                                     visible: currentDevice.hasCoSensor
 
                                     title: qsTr("CO")
-                                    legend: qsTr("PPM")
+                                    legend: qsTr("ppm")
                                     value: currentDevice.co
                                     precision: 0
                                     onSensorSelection: primary = "co"
@@ -843,7 +864,7 @@ Loader {
                                     visible: currentDevice.hasCo2Sensor
 
                                     title: (currentDevice.haseCo2Sensor ? qsTr("eCO₂") : qsTr("CO₂"))
-                                    legend: qsTr("PPM")
+                                    legend: qsTr("ppm")
                                     value: currentDevice.co2
                                     precision: 0
                                     limit_mid: 850
