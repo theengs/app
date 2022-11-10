@@ -464,6 +464,18 @@ void DeviceManager::fakeTheengsDevices()
             qDebug() << "* Device added (from FAKER): " << deviceName << "/" << deviceAddr;
         }
     }
+    {
+        QString deviceName = "CGP1W";
+        QString deviceModel_theengs = "CGP1W";
+        QString deviceAddr = "11:57:43:01:5C:3C";
+
+        Device *d = createTheengsDevice_fromDb(deviceName, deviceModel_theengs, deviceAddr);
+        if (d)
+        {
+            m_devices_model->addDevice(d);
+            qDebug() << "* Device added (from FAKER): " << deviceName << "/" << deviceAddr;
+        }
+    }
 
 
     {
@@ -734,7 +746,7 @@ void DeviceManager::fakeTheengsDevices()
 void DeviceManager::fakeTheengsData()
 {
     QBluetoothDeviceInfo info;
-    int rrdd = (rand() % 23);
+    int rrdd = (rand() % 24);
 
     if (rrdd == 0) // JQJCY01YM
     {
@@ -755,6 +767,16 @@ void DeviceManager::fakeTheengsData()
         if (rrrr == 0) info.setServiceData(QBluetoothUuid(quint32(0xfdcd)), QByteArray::fromHex("080eaabbccddeeff010422014c011204710072001302ed03"));
         else if (rrrr == 1) info.setServiceData(QBluetoothUuid(quint32(0xfdcd)), QByteArray::fromHex("880eaabbccddeeff0104f900b50112047d0186011302fd02"));
         else if (rrrr == 2) info.setServiceData(QBluetoothUuid(quint32(0xfdcd)), QByteArray::fromHex("880eaabbccddeeff0104f600ab011204a400d7001302c702"));
+        else qWarning() << "RAND ERROR";
+    }
+    if (rrdd == 23) // CGP1W
+    {
+        info = QBluetoothDeviceInfo(QBluetoothAddress("11:57:43:01:5C:3C"), "CGP1W", 0);
+
+        int rrrr = (rand() % 3);
+        if (rrrr == 0) info.setServiceData(QBluetoothUuid(quint32(0xfdcd)), QByteArray::fromHex("08094c0140342d5801040801870207024f2702015c"));
+        else if (rrrr == 1) info.setServiceData(QBluetoothUuid(quint32(0xfdcd)), QByteArray::fromHex("08094c0140342d5801040f01880207024f2702015c"));
+        else if (rrrr == 2) info.setServiceData(QBluetoothUuid(quint32(0xfdcd)), QByteArray::fromHex("08094c0140342d580104fc004a0207026627020120"));
         else qWarning() << "RAND ERROR";
     }
 
