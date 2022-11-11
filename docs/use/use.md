@@ -1,10 +1,10 @@
 # Use
 
 Features comparison between OS:
-| OS | Real time data | MQTT integration | Running in background |
-|:-:|:-:|:-:|:-:|
-|iOS|☑️|☑️||
-|Android|☑️|☑️|☑️ *experimental*|
+| OS | Real time data | MQTT integration | Running in background | Home Assistant Auto Discovery |
+|:-:|:-:|:-:|:-:|:-:|
+|iOS|☑️|☑️||☑️|
+|Android|☑️|☑️|☑️ *experimental*|☑️|
 
 ## iOS
 
@@ -78,6 +78,14 @@ Some devices also require the GPS to be turned on while scanning for new sensors
 Android has drastically reduced the capabilities of apps to run in the background, as a consequence the Update interval set into the app may not be followed by the operating system.
 You may also have more regular results when the device is charging.
 :::
+
+## Home Assistant Auto Discovery
+
+Theengs app can publish your sensor definition following Home Assistant MQTT convention, so as to do this you need to activate “Enable discovery” into your MQTT Options and follow the steps below:
+
+![location](./../img/Theengs_app_auto_discovery_BLE_Sensor_Home_Assistant.gif)
+
+The sensor definition will be publish when the app connect to the broker. You can retrigger the publication by deactivating and reactivating the MQTT integration from the application.
 
 ## Linux ('live mode' and 'historical data')
 

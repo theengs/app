@@ -1,5 +1,7 @@
-**Theengs app** is a multi platforms, multi devices application and BLE to MQTT gateway that leverages the [Theengs Decoder library](https://github.com/theengs/decoder).
-It retrieves data from a wide range of [BLE sensors](prerequisites/devices); LYWSD03MMC, CGD1, CGP1W, H5072, H5075, H5102, TH1, TH2, BBQ, CGH1, CGDK2, CGPR1, RuuviTag, WS02, WS08, TPMS, MiScale, LYWSD02, LYWSDCGQ, MiFlora... and enables to read the advertised data from these sensors. It also translates this information into a readable JSON format and pushes those to an MQTT broker if you need.
+**Theengs app** is a multi platforms, multi devices **application** and BLE to MQTT **gateway** that leverages the [Theengs Decoder library](https://github.com/theengs/decoder).
+It retrieves data from a wide range of [BLE sensors](prerequisites/devices) from Xiaomi, Inkbird, Govee, ClearGrass, Qingping, Ruuvi, Switchbot, Thermopro; LYWSD03MMC, CGD1, CGP1W, CGDN1, CGG1, H5055, H5072, H5075, H5102, TH1, TH2, BBQ, CGH1, CGDK2, CGPR1, RuuviTag, WS02, WS08, TPMS, MiScale, LYWSD02, LYWSDCGQ, MiFlora... and enables to read the advertised real time data from these sensors. 
+
+It also translates this information into a readable JSON format and pushes those to an MQTT broker if you need. The Home Assistant MQTT convention is followed so that you can see your add your sensors in a few steps into your favorite controller.
 
 The app uses the bluetooth component of your Phone/Tablet to read the sensor data.
 
@@ -20,10 +22,10 @@ Theengs app read data "broadcasted" by the devices and does not connect to them,
 :::
 
 Features comparison between OS:
-| OS | Real time data | MQTT integration | Running in background |
-|:-:|:-:|:-:|:-:|
-|iOS|☑️|☑️||
-|Android|☑️|☑️|☑️ *experimental*|
+| OS | Real time data | MQTT integration | Running in background | Home Assistant Auto Discovery |
+|:-:|:-:|:-:|:-:|:-:|
+|iOS|☑️|☑️||☑️|
+|Android|☑️|☑️|☑️ *experimental*|☑️|
 
 #### Third party projects used by Theengs app
 
@@ -40,3 +42,11 @@ Features comparison between OS:
 *App Store and Apple logo are registered trademarks of Apple Inc.*
 
 *Google Play and the Google Play logo are trademarks of Google LLC.*
+
+::: warning Note
+All product and company names are trademarks or registered trademarks of their respective holders. Use of them does not imply any affiliation with or endorsement by them.
+:::
+
+::: slot footer
+[GPLv3 Licensed](https://github.com/theengs/home/blob/main/LICENSE) | Copyright © 2022-present Theengs
+:::
