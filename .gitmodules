@@ -1,3 +1,4 @@
 [submodule "src/thirdparty/TheengsDecoder"]
 	path = src/thirdparty/TheengsDecoder
-	url = git@github.com:theengs/decoder.git
+	url = git@github.com:DigiH/decoder.git
+	branch = RDL52832
