@@ -70,6 +70,7 @@ jobs:
         with:
           name: ${{env.APPLICATION}}-${{env.VERSION}}-linux64.AppImage
           path: ${{env.APPLICATION}}*.AppImage
+          retention-days: 1
 
   ## macOS build ###############################################################
   build-mac:
@@ -123,6 +124,7 @@ jobs:
         with:
           name: ${{env.APPLICATION}}-${{env.VERSION}}-macOS.zip
           path: bin/${{env.APPLICATION}}-${{env.VERSION}}-macOS.zip
+          retention-days: 1
 
   ## Windows build #############################################################
   build-windows:
@@ -180,6 +182,7 @@ jobs:
         with:
           name: ${{env.APPLICATION}}-${{env.VERSION}}-win64.zip
           path: ${{env.APPLICATION}}-${{env.VERSION}}-win64.zip
+          retention-days: 1
 
       # Upload NSIS installer
       - name: Upload NSIS installer
@@ -187,3 +190,4 @@ jobs:
         with:
           name: ${{env.APPLICATION}}-${{env.VERSION}}-win64.exe
           path: ${{env.APPLICATION}}-${{env.VERSION}}-win64.exe
+          retention-days: 1
