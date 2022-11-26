@@ -10,6 +10,10 @@ Features comparison between OS:
 
 The application will ask you for permission to use Bluetooth. You can learn more on Apple [website](https://support.apple.com/HT210578).
 
+If you want to push data to an MQTT broker you will need to enter manualy a MAC address for the sensor, this is done from the sensor page see below:
+
+![add-mac](./../img/Theengs-set-mac.png)
+
 ## Android
 
 The Android operating system requires applications to ask for device location permission in order to scan for nearby Bluetooth Low Energy sensors.
