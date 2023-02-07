@@ -85,7 +85,9 @@ bool DatabaseManager::openDatabase_sqlite()
             if (dbDirectory.exists() == false)
             {
                 if (dbDirectory.mkpath(dbPath) == false)
+                {
                     qWarning() << "Cannot create dbDirectory...";
+                }
             }
 
             if (dbDirectory.exists())
@@ -175,7 +177,7 @@ bool DatabaseManager::openDatabase_mysql()
 
         SettingsManager *sm = SettingsManager::getInstance();
 
-        if (sm->getMySQL())
+        if (sm && sm->getMySQL())
         {
             QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
             db.setHostName(sm->getMysqlHost());
@@ -267,8 +269,7 @@ void DatabaseManager::resetDatabase()
         m_dbExternalOpen = false;
 
         // remove db file
-        QFile dbFile(dbName);
-        dbFile.remove();
+        QFile::remove(dbName);
     }
 }
 
