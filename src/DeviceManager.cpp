@@ -1322,6 +1322,7 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
         if (info.rssi() >= 0) return; // we probably just hit the device cache
         if ((info.coreConfigurations() & QBluetoothDeviceInfo::LowEnergyCoreConfiguration) == false) return; // not a BLE device
         if (m_devices_blacklist.contains(info.address().toString())) return; // device is blacklisted
+        if (m_devices_blacklist.contains(info.deviceUuid().toString())) return; // device is blacklisted
 
         if (sm && sm->getBluetoothLimitScanningRange() && info.rssi() < -70) return; // device is too far away
 
