@@ -279,12 +279,11 @@ void DeviceHygrotempCGDK2::parseAdvertisementData(const uint16_t adv_mode,
         float humi = -99.f;
 
         // get data
-        if ((data[0] == 0x88 && data[1] == 0x16) || // CGG1
-            (data[0] == 0x08 && data[1] == 0x07) || // CGG1
-            (data[0] == 0x88 && data[1] == 0x10) || // CGDK2
-            (data[0] == 0x08 && data[1] == 0x10) || // CGDK2
-            (data[0] == 0x08 && data[1] == 0x09) || // CGP1W
-            (data[0] == 0x08 && data[1] == 0x0c))   // CGD1
+        if (data[1] == 0x16 || // CGG1
+            data[1] == 0x07 || // CGG1
+            data[1] == 0x10 || // CGDK2
+            data[1] == 0x09 || // CGP1W
+            data[1] == 0x0c)   // CGD1
         {
             temp = static_cast<int16_t>(data[10] + (data[11] << 8)) / 10.f;
             if (temp != m_temperature)
