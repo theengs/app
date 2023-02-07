@@ -57,7 +57,7 @@ Item {
 
             topPadding: 12
             bottomPadding: 12
-            spacing: 16
+            spacing: 12
 
             ////////////////
 
@@ -103,28 +103,7 @@ Item {
                     anchors.rightMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 4
-/*
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
 
-                        text: settingsManager.mqtt ? qsTr("enabled") : qsTr("disabled")
-                        textFormat: Text.PlainText
-                        font.pixelSize: Theme.fontSizeContent
-                        color: Theme.colorText
-                    }
-
-                    SwitchThemedDesktop {
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        checked: settingsManager.mqtt
-                        onClicked: {
-                            settingsManager.mqtt = checked
-
-                            if (checked) mqttManager.connect()
-                            else mqttManager.disconnect()
-                        }
-                    }
-*/
                     ButtonWireframe {
                         height: 28
                         anchors.verticalCenter: parent.verticalCenter
@@ -146,6 +125,7 @@ Item {
                 anchors.leftMargin: 16
                 anchors.right: parent.right
                 anchors.rightMargin: 12
+                height: 24
 
                 text: qsTr("Connects to a remote MQTT broker.")
                 textFormat: Text.PlainText
@@ -158,6 +138,7 @@ Item {
             ////////
 
             Text {
+                height: Theme.componentHeight
                 anchors.left: parent.left
                 anchors.leftMargin: 16
 
@@ -177,14 +158,27 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 16
 
-                SwitchThemedDesktop {
-                    text: settingsManager.mqtt ? qsTr("Enabled") : qsTr("Disabled")
-                    checked: settingsManager.mqtt
-                    onClicked: {
-                        settingsManager.mqtt = checked
+                Row {
+                    spacing: 8
 
-                        if (checked) mqttManager.connect()
-                        else mqttManager.disconnect()
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        text: qsTr("MQTT")
+                        textFormat: Text.PlainText
+                        font.pixelSize: Theme.fontSizeComponent
+                        color: Theme.colorText
+                    }
+
+                    SwitchThemedDesktop {
+                        text: settingsManager.mqtt ? qsTr("Enabled") : qsTr("Disabled")
+                        checked: settingsManager.mqtt
+                        onClicked: {
+                            settingsManager.mqtt = checked
+
+                            if (checked) mqttManager.connect()
+                            else mqttManager.disconnect()
+                        }
                     }
                 }
             }
@@ -192,6 +186,7 @@ Item {
             ////////
 
             Text {
+                height: Theme.componentHeight
                 anchors.left: parent.left
                 anchors.leftMargin: 16
                 anchors.right: parent.right
@@ -203,21 +198,6 @@ Item {
                 color: Theme.colorSubText
                 font.pixelSize: Theme.fontSizeContentBig
                 verticalAlignment: Text.AlignBottom
-/*
-                ButtonWireframe {
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    height: 32
-
-                    text: qsTr("Save")
-                    fullColor: true
-
-                    onClicked: {
-                        focus = true
-                        if (settingsManager.mqtt) mqttManager.reconnect_forced()
-                    }
-                }
-*/
             }
 
             ////////
@@ -349,6 +329,7 @@ Item {
             ////////
 
             Text {
+                height: Theme.componentHeight
                 anchors.left: parent.left
                 anchors.leftMargin: 16
                 anchors.right: parent.right
@@ -370,7 +351,7 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 16
 
-                rows: 4
+                rows: singleColumn ? 2 : 1
                 columns: singleColumn ? 1 : 2
                 spacing: 12
 
@@ -432,6 +413,51 @@ Item {
             ////////
 
             Text {
+                height: Theme.componentHeight
+                anchors.left: parent.left
+                anchors.leftMargin: 16
+                anchors.right: parent.right
+                anchors.rightMargin: 12
+
+                text: qsTr("Options")
+                textFormat: Text.PlainText
+                wrapMode: Text.WordWrap
+                color: Theme.colorSubText
+                font.pixelSize: Theme.fontSizeContentBig
+                verticalAlignment: Text.AlignBottom
+            }
+
+            ////////
+
+            Column {
+                anchors.left: parent.left
+                anchors.leftMargin: 16
+                anchors.right: parent.right
+                anchors.rightMargin: 16
+
+                Row {
+                    spacing: 8
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        text: qsTr("Discovery")
+                        textFormat: Text.PlainText
+                        font.pixelSize: Theme.fontSizeComponent
+                        color: Theme.colorText
+                    }
+
+                    SwitchThemedDesktop {
+                        text: settingsManager.mqttDiscovery ? qsTr("Enabled") : qsTr("Disabled")
+                        checked: settingsManager.mqttDiscovery
+                        onClicked: settingsManager.mqttDiscovery = checked
+                    }
+                }
+            }
+
+            ////////
+
+            Text {
                 anchors.left: parent.left
                 anchors.leftMargin: 16
                 anchors.right: parent.right
@@ -442,6 +468,8 @@ Item {
                 wrapMode: Text.WordWrap
                 color: Theme.colorSubText
             }
+
+            ////////
         }
     }
 

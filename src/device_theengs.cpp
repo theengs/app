@@ -378,9 +378,10 @@ bool DeviceTheengs::createDiscoveryMQTT(const QString &deviceAddr, const QString
     //qDebug() << "DeviceTheengs::createDiscoveryMQTT() deviceName" << deviceName << "  -  " << devicePropsJson;
     bool status = false;
 
-    MqttManager *mqtt = MqttManager::getInstance();
     SettingsManager *sm = SettingsManager::getInstance();
-    if (mqtt && mqtt->getStatus() && sm)
+    MqttManager *mqtt = MqttManager::getInstance();
+
+    if (sm && sm->getMqttDiscovery() && mqtt && mqtt->getStatus())
     {
         QString appAddrClean = appAddr;
         appAddrClean.remove(':');

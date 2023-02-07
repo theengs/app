@@ -189,6 +189,8 @@ bool SettingsManager::readSettings()
 
         if (settings.contains("mqtt/enabled"))
             m_mqtt = settings.value("mqtt/enabled").toBool();
+        if (settings.contains("mqtt/discovery"))
+            m_mqttDiscovery = settings.value("mqtt/discovery").toBool();
         if (settings.contains("mqtt/host"))
             m_mqttHost = settings.value("mqtt/host").toString();
         if (settings.contains("mqtt/port"))
@@ -254,6 +256,7 @@ bool SettingsManager::writeSettings()
         settings.setValue("database/password", m_mysqlPassword);
 
         settings.setValue("mqtt/enabled", m_mqtt);
+        settings.setValue("mqtt/discovery", m_mqttDiscovery);
         settings.setValue("mqtt/host", m_mqttHost);
         settings.setValue("mqtt/port", m_mqttPort);
         settings.setValue("mqtt/name", m_mqttName);
@@ -350,6 +353,7 @@ void SettingsManager::resetSettings()
     Q_EMIT mysqlChanged();
 
     m_mqtt = false;
+    m_mqttDiscovery = true;
     m_mqttHost = "";
     m_mqttPort = 1883;
     m_mqttName = "theengs";
@@ -654,6 +658,16 @@ void SettingsManager::setMQTT(const bool value)
     if (m_mqtt != value)
     {
         m_mqtt = value;
+        writeSettings();
+        Q_EMIT mqttChanged();
+    }
+}
+
+void SettingsManager::setMqttDiscovery(const bool value)
+{
+    if (m_mqttDiscovery != value)
+    {
+        m_mqttDiscovery = value;
         writeSettings();
         Q_EMIT mqttChanged();
     }

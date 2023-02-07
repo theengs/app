@@ -71,6 +71,7 @@ class SettingsManager: public QObject
     Q_PROPERTY(QString mysqlPassword READ getMysqlPassword WRITE setMysqlPassword NOTIFY mysqlChanged)
 
     Q_PROPERTY(bool mqtt READ getMQTT WRITE setMQTT NOTIFY mqttChanged)
+    Q_PROPERTY(bool mqttDiscovery READ getMqttDiscovery WRITE setMqttDiscovery NOTIFY mqttChanged)
     Q_PROPERTY(QString mqttHost READ getMqttHost WRITE setMqttHost NOTIFY mqttChanged)
     Q_PROPERTY(uint mqttPort READ getMqttPort WRITE setMqttPort NOTIFY mqttChanged)
     Q_PROPERTY(QString mqttUser READ getMqttUser WRITE setMqttUser NOTIFY mqttChanged)
@@ -123,6 +124,7 @@ class SettingsManager: public QObject
     QString m_mysqlPassword = "theengs";
 
     bool m_mqtt = false;
+    bool m_mqttDiscovery = true;
     QString m_mqttHost;
     int m_mqttPort = 1883;
     QString m_mqttName = "theengs";
@@ -276,6 +278,9 @@ public:
 
     bool getMQTT() const { return m_mqtt; }
     void setMQTT(const bool value);
+
+    bool getMqttDiscovery() const { return m_mqttDiscovery; }
+    void setMqttDiscovery(const bool value);
 
     QString getMqttHost() const { return m_mqttHost; }
     void setMqttHost(const QString &value);
