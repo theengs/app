@@ -1,5 +1,5 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick
+import QtQuick.Controls
 
 import ThemeEngine 1.0
 
@@ -7,19 +7,7 @@ Popup {
     id: popupMacAddress
     x: (appWindow.width / 2) - (width / 2)
     y: singleColumn ? (appWindow.height - height) : ((appWindow.height / 2) - (height / 2) /*- (appHeader.height)*/)
-/*
-    y: {
-        if (singleColumn) {
-            //return appHeader.height
-            if (textInputMacAddr.focus)
-                return appHeader.height
-            else
-                return (appWindow.height - height)
-        } else {
-            return ((appWindow.height / 2) - (height / 2) ) //- (appHeader.height))
-        }
-    }
-*/
+
     width: singleColumn ? parent.width : 640
     height: columnContent.height + padding*2
     padding: singleColumn ? 20 : 24

@@ -1,5 +1,5 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick
+import QtQuick.Controls
 
 import ThemeEngine 1.0
 import DeviceUtils 1.0
@@ -22,6 +22,9 @@ Loader {
         // load screen
         deviceThermometer.active = true
         deviceThermometer.item.loadDevice()
+
+        // change screen
+        appContent.state = "DeviceThermometer"
     }
 
     ////////
@@ -42,6 +45,10 @@ Loader {
         implicitHeight: 720
 
         focus: parent.focus
+
+        // 1: single column (single column view or portrait tablet)
+        // 2: wide mode (wide view)
+        property int uiMode: (singleColumn || (isTablet && screenOrientation === Qt.PortraitOrientation)) ? 1 : 2
 
         property alias thermoChart: graphLoader.item
 
@@ -97,7 +104,9 @@ Loader {
         }
 
         Timer {
-            interval: 60000; running: true; repeat: true;
+            interval: 60000
+            running: visible
+            repeat: true
             onTriggered: updateStatusText()
         }
 
@@ -107,7 +116,7 @@ Loader {
                 deviceManager.updateDevice(currentDevice.deviceAddress)
             } else if (event.key === Qt.Key_Backspace) {
                 event.accepted = true
-                appWindow.backAction()
+                backAction()
             }
         }
 
@@ -117,10 +126,13 @@ Loader {
             //console.log("DeviceThermometer // loadDevice() >> " + currentDevice)
 
             sensorTemp.visible = false
-            heatIndex.visible = false
             sensorHygro.visible = false
+            heatIndex.visible = false
 
-            graphLoader.source = "" // force graph reload
+            // force graph reload
+            graphLoader.source = ""
+            graphLoader.opacity = 0
+            noDataIndicator.visible = false
 
             loadGraph()
             updateHeader()
@@ -145,31 +157,36 @@ Loader {
                 sensorDisconnected.visible = true
 
                 sensorTemp.visible = false
-                heatIndex.visible = false
                 sensorHygro.visible = false
+                heatIndex.visible = false
                 imageBattery.visible = false
 
             } else {
                 sensorDisconnected.visible = false
 
-                if (currentDevice.temperatureC >= -40) {
+                if (currentDevice.hasTemperatureSensor && currentDevice.temperatureC >= -40) {
                     sensorTemp.text = currentDevice.getTempString()
                     sensorTemp.visible = true
                 }
-                if (currentDevice.hasHumiditySensor && currentDevice.humidity >= 0) {
-                    sensorHygro.text = currentDevice.humidity.toFixed(0) + "% " + qsTr("humidity")
-                    sensorHygro.visible = true
-                }
-                if (currentDevice.hasHumiditySensor && currentDevice.temperatureC >= 27 && currentDevice.humidity >= 40) {
-                    if (currentDevice.getHeatIndex() > (currentDevice.temperature + 1)) {
-                        heatIndex.text = qsTr("feels like %1").arg(currentDevice.getHeatIndexString())
-                        heatIndex.visible = true
-                    } else {
-                        heatIndex.visible = false
+
+                if (currentDevice.hasHumiditySensor) {
+                    if (currentDevice.humidity >= 0 && currentDevice.humidity <= 100) {
+                        sensorHygro.text = currentDevice.humidity.toFixed(0) + "% " + qsTr("humidity")
+                        sensorHygro.visible = true
+
+                        if (currentDevice.temperatureC >= 27 && currentDevice.humidity >= 40) {
+                            if (currentDevice.getHeatIndex() > (currentDevice.temperature + 1)) {
+                                heatIndex.text = qsTr("feels like %1").arg(currentDevice.getHeatIndexString())
+                                heatIndex.visible = true
+                            } else {
+                                heatIndex.visible = false
+                            }
+                        } else {
+                            heatIndex.visible = false
+                        }
                     }
-                } else {
-                    heatIndex.visible = false
                 }
+
                 if (currentDevice.hasBattery && currentDevice.deviceBattery >= 0) {
                     imageBattery.visible = true
                 }
@@ -197,7 +214,12 @@ Loader {
             var reload = !(settingsManager.graphThermometer === "lines" && graphLoader.source === "ChartPlantDataAio.qml") ||
                          !(settingsManager.graphThermometer === "minmax" && graphLoader.source === "ChartThermometerMinMax.qml")
 
-            if (graphLoader.status !== Loader.Ready || reload) {
+            if (reload) {
+                graphLoader.source = ""
+                graphLoader.opacity = 0
+            }
+
+            if (graphLoader.status !== Loader.Ready) {
                 if (settingsManager.graphThermometer === "lines") {
                     graphLoader.source = "ChartPlantDataAio.qml"
                 } else {
@@ -237,7 +259,7 @@ Loader {
             if (graphLoader.status === Loader.Ready) thermoChart.resetIndicator()
         }
 
-        ////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////
 
         Flow {
             anchors.fill: parent
@@ -245,17 +267,8 @@ Loader {
             Rectangle {
                 id: tempBox
 
-                property int dimboxw: Math.min(deviceThermometer.width * 0.4, isPhone ? 300 : 600)
-                property int dimboxh: Math.max(deviceThermometer.height * 0.333, isPhone ? 180 : 256)
-
-                width: {
-                    if (isTablet && screenOrientation == Qt.PortraitOrientation) return parent.width
-                    return singleColumn ? parent.width : dimboxw
-                }
-                height: {
-                    if (isTablet && screenOrientation == Qt.PortraitOrientation) return dimboxh
-                    return singleColumn ? dimboxh : parent.height
-                }
+                width: (uiMode === 1) ? parent.width : Math.min(deviceThermometer.width * 0.4, isPhone ? 320 : 600)
+                height: (uiMode === 1) ? Math.max(deviceThermometer.height * 0.333, isPhone ? 180 : 256) : parent.height
 
                 color: Theme.colorHeader
                 z: 5
@@ -481,9 +494,14 @@ Loader {
                     onLoaded: {
                         thermoChart.loadGraph()
                         thermoChart.updateGraph()
+
+                        graphLoader.opacity = 1
+                        noDataIndicator.visible = (currentDevice.countDataNamed("temperature", thermoChart.daysVisible) < 1)
                     }
                 }
             }
         }
+
+        ////////////////////////////////////////////////////////////////////////
     }
 }

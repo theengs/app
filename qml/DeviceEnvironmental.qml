@@ -1,5 +1,5 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick
+import QtQuick.Controls
 
 import ThemeEngine 1.0
 import DeviceUtils 1.0
@@ -22,6 +22,9 @@ Loader {
         // load screen
         deviceEnvironmental.active = true
         deviceEnvironmental.item.loadDevice()
+
+        // change screen
+        appContent.state = "DeviceEnvironmental"
     }
 
     ////////
@@ -282,16 +285,12 @@ Loader {
             if (!currentDevice.isEnvironmentalSensor) return
             //console.log("DeviceEnvironmental // updateHeader() >> " + currentDevice)
 
-            //indicatorDisconnected.visible = !currentDevice.hasDataToday
             //indicatorAirQuality.visible = isAirMonitor && currentDevice.hasDataToday
             //indicatorRadioactivity.visible = isGeigerCounter && currentDevice.hasDataToday
             //indicatorHygrometer.visible = isWeatherStation && currentDevice.hasDataToday
 
             // Indicators
             if (primary === "hygrometer") {
-                //indicatorAirQuality.visible = false
-                //indicatorRadioactivity.visible = false
-                //indicatorHygrometer.visible = true
 
                 if (currentDevice.temperatureC < -40) {
                     sensorTemp.visible = false
@@ -318,14 +317,8 @@ Loader {
                     }
                 }
             } else if (primary === "barometer") {
-                //indicatorAirQuality.visible = false
-                //indicatorRadioactivity.visible = false
-                //indicatorHygrometer.visible = true
+                // TODO
             } else if (isAirMonitor) {
-                //indicatorAirQuality.visible = true
-                //indicatorRadioactivity.visible = false
-                //indicatorHygrometer.visible = false
-
                 if (primary === "voc") indicatorAirQuality.value = currentDevice.voc
                 else if (primary === "hcho") indicatorAirQuality.value = currentDevice.hcho
                 else if (primary === "co2") indicatorAirQuality.value = currentDevice.co2
@@ -466,10 +459,11 @@ Loader {
                         id: indicatorHygrometer
                         width: isMobile ? 96 : 128
                         height: isMobile ? 96 : 128
+                        anchors.centerIn: parent
                         spacing: 2
 
-                        anchors.centerIn: parent
-                        visible: (currentDevice && primary === "hygrometer")
+                        visible: (currentDevice && currentDevice.hasDataToday &&
+                                  (primary === "hygrometer" || primary === "barometer"))
 
                         Text {
                             id: sensorTemp
@@ -505,8 +499,9 @@ Loader {
                         id: indicatorRadioactivity
                         width: isMobile ? 128 : 160
                         height: isMobile ? 128 : 160
+                        anchors.centerIn: parent
 
-                        visible: (currentDevice && isGeigerCounter && currentDevice.hasDataToday)
+                        visible: (currentDevice && currentDevice.hasDataToday && primary === "radioactivity")
                         color: cccc
                         source: "qrc:/assets/icons_custom/nuclear_icon_big.svg"
 
@@ -1142,5 +1137,7 @@ Loader {
                 }
             }
         }
+
+        ////////////////////////////////////////////////////////////////////////
     }
 }

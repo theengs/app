@@ -82,12 +82,11 @@ Item {
         id: background
         anchors.fill: parent
         color: (index % 2 === 0) ? Theme.colorBackground : Theme.colorForeground
-        opacity: 0.66
     }
 
     Loader { // 'no data' indicator
         anchors.bottom: dayoftheweek.top
-        anchors.bottomMargin: isPhone ? 12 : 16
+        anchors.bottomMargin: 12
         anchors.horizontalCenter: parent.horizontalCenter
 
         active: (modelData.tempMean < -40)
@@ -103,7 +102,7 @@ Item {
     Text {
         id: dayoftheweek
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: isPhone ? 10 : 16
+        anchors.bottomMargin: isPhone ? 10 : 12
         anchors.horizontalCenter: parent.horizontalCenter
 
         text: modelData.day
@@ -125,16 +124,17 @@ Item {
 
         Rectangle {
             id: rectangle_temp
+            anchors.horizontalCenter: parent.horizontalCenter
+
             width: www
             height: 0
             radius: 16
-            anchors.horizontalCenter: parent.horizontalCenter
 
             color: Theme.colorGreen
             opacity: 0.9
 
-            border.color: "#77eeeeee"
-            border.width: 1
+            border.color: Qt.darker(color, 1.05)
+            border.width: 2
 
             Rectangle {
                 id: rectangle_temp_mean
@@ -183,7 +183,7 @@ Item {
             color: Theme.colorBlue
             opacity: 0.9
 
-            border.color: "#2695c5"
+            border.color: Qt.darker(color, 1.1)
             border.width: 2
 
             Row {
@@ -217,7 +217,7 @@ Item {
             color: Theme.colorBlue
             opacity: 0.9
 
-            border.color: "#2695c5"
+            border.color: Qt.darker(color, 1.1)
             border.width: 2
 
             Row {

@@ -1,5 +1,5 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick
+import QtQuick.Controls
 
 import ThemeEngine 1.0
 
@@ -94,7 +94,7 @@ Item {
 
                 color: Theme.colorComponentBackground
                 border.color: Theme.colorSeparator
-                border.width: 1
+                border.width: 2
 
                 MouseArea {
                     anchors.fill: parent
@@ -196,7 +196,7 @@ Item {
 
                 color: Theme.colorComponentBackground
                 border.color: Theme.colorSeparator
-                border.width: 1
+                border.width: 2
 
                 MouseArea {
                     anchors.fill: parent

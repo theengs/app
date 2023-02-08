@@ -108,7 +108,6 @@ Popup {
                         }
                     }
                 }
-
                 Text {
                     width: parent.width
 

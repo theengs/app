@@ -1,5 +1,5 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick
+import QtQuick.Controls
 
 import ThemeEngine 1.0
 
@@ -20,6 +20,9 @@ Loader {
         // load screen
         devicePlantSensor.active = true
         devicePlantSensor.item.loadDevice()
+
+        // change screen
+        appContent.state = "DevicePlantSensor"
     }
 
     ////////
@@ -142,7 +145,7 @@ Loader {
                 deviceManager.updateDevice(currentDevice.deviceAddress)
             } else if (event.key === Qt.Key_Backspace) {
                 event.accepted = true
-                appWindow.backAction()
+                backAction()
             }
         }
 
@@ -254,5 +257,7 @@ Loader {
                 }
             }
         }
+
+        ////////////////////////////////////////////////////////////////////
     }
 }

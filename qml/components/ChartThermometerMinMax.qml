@@ -9,8 +9,12 @@ Item {
 
     property int widgetWidthTarget: (isPhone ? 48 : 64)
     property int widgetWidth: 48
+
     property int graphMin: currentDevice.tempMin
     property int graphMax: currentDevice.tempMax
+
+    property int days: 14
+    property int daysVisible: 14
 
     function loadGraph() {
         if (typeof currentDevice === "undefined" || !currentDevice) return
@@ -21,13 +25,19 @@ Item {
         if (typeof currentDevice === "undefined" || !currentDevice) return
         //console.log("chartThermometerMinMax // updateGraph() >> " + currentDevice)
 
-        var daysVisible = Math.floor(width / widgetWidthTarget)
-        var daysMax = daysVisible
-        widgetWidth = Math.floor(width / daysVisible)
-        currentDevice.updateChartData_thermometerMinMax(daysMax)
+        var daysVisibleNew = Math.floor(width / widgetWidthTarget)
+        var daysMax = daysVisibleNew
 
-        //mmGraph.visible = (currentDevice.countDataNamed("temperature", daysMax) >= 1)
-        //mmGraphFlick.contentX = mmGraphFlick.width // WIP
+        widgetWidth = Math.floor(width / daysVisibleNew)
+
+        if (daysVisible != daysVisibleNew) {
+            daysVisible = daysVisibleNew
+
+            currentDevice.updateChartData_thermometerMinMax(daysMax)
+
+            mmGraph.visible = currentDevice.countDataNamed("temperature", daysMax)
+            //mmGraphFlick.contentX = (mmGraph.width - mmGraphFlick.width) // WIP
+        }
     }
 
     onWidthChanged: updateGraph()
@@ -36,9 +46,8 @@ Item {
     function resetHistoryMode() { }
 
     ////////////////////////////////////////////////////////////////////////////
-
 /*
-    Flickable {
+    Flickable { // WIP
         id: mmGraphFlick
         anchors.fill: parent
 
@@ -52,7 +61,7 @@ Item {
             anchors.right: parent.right
 
             spacing: 0
-            //layoutDirection: Qt.RightToLeft
+            layoutDirection: Qt.LeftToRight
 
             Repeater {
                 model: currentDevice.aioMinMaxData

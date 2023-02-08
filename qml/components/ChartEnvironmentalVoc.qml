@@ -15,6 +15,9 @@ Item {
     property int limitMin: -1
     property int limitMax: -1
 
+    property int days: 14
+    property int daysVisible: 14
+
     ////////////////////////////////////////////////////////////////////////////
 
     function loadGraph() {
@@ -34,7 +37,15 @@ Item {
             limitMin = 850
             limitMax = 1500
             scaleMax = 2000
+        } else if (itemDeviceEnvironmental.primary === "pm1" ||
+                   itemDeviceEnvironmental.primary === "pm25" ||
+                   itemDeviceEnvironmental.primary === "pm10") {
+            limitMin = 250
+            limitMax = 750
+            scaleMax = 1000
         }
+
+        chartEnvironmentalVoc.visible = currentDevice.countDataNamed("temperature", daysVisible)
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -111,7 +122,7 @@ Item {
             }
         }
 
-        ////////
+        ////////////////
 
         Rectangle {
             id: vocLegendHor
@@ -123,7 +134,7 @@ Item {
             color: Theme.colorSeparator
         }
 
-        ////////////////////////////////////////////////////////////////////
+        ////////////////
 
         Item {
             anchors.fill: parent
@@ -192,7 +203,6 @@ Item {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 anchors.bottom: parent.bottom
 
-                                clip: true
                                 radius: 13
                                 width: 13
                                 height: (valueMax / scaleMax) * barItem.height
@@ -213,9 +223,9 @@ Item {
 
                                     y: {
                                         if (valueMean >= scaleMax) return 1
-                                        return barItem.height - ((valueMean / scaleMax) * barItem.height)
+                                        return (parent.height - ((valueMean / scaleMax) * parent.height))
                                     }
-                                    visible: valueMean > 0
+                                    visible: (valueMean > 0)
                                     width: parent.width - 2
                                     height: width
                                     radius: width
@@ -253,5 +263,7 @@ Item {
                 }
             }
         }
+
+        ///////////////
     }
 }

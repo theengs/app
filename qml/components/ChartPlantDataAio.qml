@@ -37,14 +37,14 @@ Item {
 
         //// DATA
         if (currentDevice.isPlantSensor) {
-            currentDevice.getChartData_plantAIO(days, axisTime, hygroData, conduData, tempData, lumiData);
+            currentDevice.getChartData_plantAIO(days, axisTime, hygroData, conduData, tempData, lumiData)
         } else if (currentDevice.isThermometer) {
-            currentDevice.getChartData_thermometerAIO(days, axisTime, tempData, hygroData);
+            currentDevice.getChartData_thermometerAIO(days, axisTime, tempData, hygroData)
         }
 
         // graph visibility
-        aioGraph.visible = (hygroData.count > 1)
-        showGraphDots = (settingsManager.graphShowDots && hygroData.count < 16)
+        aioGraph.visible = (tempData.count > 1)
+        showGraphDots = (settingsManager.graphShowDots && tempData.count < 16)
 
         //// AXIS
         axisHygro.min = 0
@@ -147,11 +147,13 @@ Item {
             axisY: axisLumi; axisX: axisTime;
         }
 
+        ////////////////
+
         MouseArea {
             id: clickableGraphArea
             anchors.fill: aioGraph
 
-            acceptedButtons: Qt.LeftButton | Qt.RightButton
+            acceptedButtons: (Qt.LeftButton | Qt.RightButton)
 
             onClicked: (mouse) => {
                 if (mouse.button === Qt.LeftButton) {
@@ -342,6 +344,7 @@ Item {
                 anchors.leftMargin: -12
                 anchors.rightMargin: -12
                 anchors.bottomMargin: -8
+
                 z: -1
                 radius: 4
                 color: Theme.colorForeground
@@ -364,6 +367,7 @@ Item {
                 anchors.leftMargin: -12
                 anchors.rightMargin: -12
                 anchors.bottomMargin: -8
+
                 z: -1
                 radius: 4
                 color: Theme.colorForeground
