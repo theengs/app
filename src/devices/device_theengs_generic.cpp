@@ -49,7 +49,6 @@ DeviceTheengsGeneric::DeviceTheengsGeneric(const QString &deviceAddr, const QStr
     // Load initial data into the GUI (if they are no more than 12h old)
     if (m_deviceType == DeviceUtils::DEVICE_PLANTSENSOR)
     {
-        getSqlDeviceInfos();
         getSqlPlantData(12*60);
     }
     else if (m_deviceType == DeviceUtils::DEVICE_ENVIRONMENTAL)

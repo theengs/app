@@ -44,6 +44,12 @@ DeviceTheengs::DeviceTheengs(const QString &deviceAddr, const QString &deviceNam
 {
     m_deviceModel = deviceModel;
     m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
+
+    // Load device saved infos
+    if (m_dbInternal || m_dbExternal)
+    {
+        getSqlDeviceInfos();
+    }
 }
 
 DeviceTheengs::DeviceTheengs(const QBluetoothDeviceInfo &d, const QString &deviceModel, QObject *parent):
@@ -51,6 +57,12 @@ DeviceTheengs::DeviceTheengs(const QBluetoothDeviceInfo &d, const QString &devic
 {
     m_deviceModel = deviceModel;
     m_deviceBluetoothMode = DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
+
+    // Load device saved infos
+    if (m_dbInternal || m_dbExternal)
+    {
+        getSqlDeviceInfos();
+    }
 }
 
 DeviceTheengs::~DeviceTheengs()
