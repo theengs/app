@@ -141,9 +141,7 @@ Item {
             else
                 textTitle.text = boxDevice.deviceName
         } else if (boxDevice.isThermometer) {
-            if (boxDevice.deviceName === "ThermoBeacon")
-                textTitle.text = boxDevice.deviceName
-            else if (boxDevice.deviceModel)
+            if (boxDevice.deviceModel)
                 textTitle.text = deviceManager.getDeviceModelTheengs(boxDevice.deviceModel)
             else if (boxDevice.deviceName)
                 textTitle.text = boxDevice.deviceName
