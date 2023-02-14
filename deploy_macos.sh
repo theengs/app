@@ -3,7 +3,7 @@
 echo "> Theengs App packager (macOS x86_64)"
 
 export APP_NAME="Theengs";
-export APP_VERSION=1.2;
+export APP_VERSION=1.3;
 export GIT_VERSION=$(git rev-parse --short HEAD);
 
 ## CHECKS ######################################################################
