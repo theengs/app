@@ -116,6 +116,8 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName,
                  deviceModel_theengs == "H5072" ||
                  deviceModel_theengs == "H5075" ||
                  deviceModel_theengs == "H5102" ||
+                 deviceModel_theengs == "H5072/75" ||
+                 deviceModel_theengs == "H5101/02/74/77" ||
                  deviceModel_theengs == "IBS-TH1" ||
                  deviceModel_theengs == "IBS-TH2/P01B" ||
                  deviceModel_theengs == "IBS-TH1/TH2/P01B" ||
