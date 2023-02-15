@@ -207,15 +207,17 @@ public:
     virtual void parseTheengsProps(const QString &json);
     virtual void parseTheengsAdvertisement(const QString &json);
 
+    static int getTheengsTypeFromTag(const QString &tag_string);
+
+    void setPlantSensor() { m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR; }
+    void setThermometer() { m_deviceType = DeviceUtils::DEVICE_THERMOMETER; }
+    void setEnvironmental() { m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL; }
+
     // beacon data
     // TODO
 
     // watch data
     // TODO
-
-    // thermometer
-    void setThermometer() { m_deviceType = DeviceUtils::DEVICE_THERMOMETER; }
-    void setEnvironmental() { m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL; }
 
     // probe data
     bool hasProbesTPMS() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_PROBES_TPMS); }

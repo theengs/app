@@ -380,6 +380,31 @@ void DeviceTheengs::parseTheengsAdvertisement(const QString &json)
 {
     Q_UNUSED(json)
 }
+/* ************************************************************************** */
+
+int DeviceTheengs::getTheengsTypeFromTag(const QString &tag_string)
+{
+    int type = DeviceUtils::DEVICE_UNKNOWN;
+    int tag = tag_string.left(2).toInt(nullptr, 16);
+
+    if (tag == DeviceUtilsTheengs::TAG_THB) type = DeviceUtils::DEVICE_THEENGS_THERMOMETER;
+    else if (tag == DeviceUtilsTheengs::TAG_THBX) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+    else if (tag == DeviceUtilsTheengs::TAG_BBQ) type = DeviceUtils::DEVICE_THEENGS_PROBE;
+    else if (tag == DeviceUtilsTheengs::TAG_CTMO) type = DeviceUtils::DEVICE_THEENGS_MOTIONSENSOR;
+    else if (tag == DeviceUtilsTheengs::TAG_SCALE) type = DeviceUtils::DEVICE_THEENGS_SCALE;
+    else if (tag == DeviceUtilsTheengs::TAG_BCON) type = DeviceUtils::DEVICE_THEENGS_BEACON;
+    else if (tag == DeviceUtilsTheengs::TAG_ACEL) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+    else if (tag == DeviceUtilsTheengs::TAG_BATT) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+    else if (tag == DeviceUtilsTheengs::TAG_PLANT) type = DeviceUtils::DEVICE_PLANTSENSOR;
+    else if (tag == DeviceUtilsTheengs::TAG_TIRE) type = DeviceUtils::DEVICE_THEENGS_PROBE;
+    else if (tag == DeviceUtilsTheengs::TAG_BODY) type = DeviceUtils::DEVICE_THEENGS_SMARTWATCH;
+    else if (tag == DeviceUtilsTheengs::TAG_ENRG) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+    else if (tag == DeviceUtilsTheengs::TAG_WCVR) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+    else if (tag == DeviceUtilsTheengs::TAG_ACTR) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+    else if (tag == DeviceUtilsTheengs::TAG_AIR) type = DeviceUtils::DEVICE_ENVIRONMENTAL;
+
+    return type;
+}
 
 /* ************************************************************************** */
 

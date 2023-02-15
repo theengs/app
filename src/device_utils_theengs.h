@@ -80,6 +80,25 @@ public:
         SENSOR_STATE                = (1 << 31),
     };
     Q_ENUM(DeviceSensorsTheengs)
+
+    enum DeviceTagsTheengs {
+        TAG_THB     =  1,   //!< temperature, humidity, battery
+        TAG_THBX    =  2,   //!< temperature, humidity, battery, extras
+        TAG_BBQ     =  3,   //!< temperatures with several probes
+        TAG_CTMO    =  4,   //!< contact and/or motion sensors
+        TAG_SCALE   =  5,   //!< weight scales
+        TAG_BCON    =  6,   //!< iBeacon protocol
+        TAG_ACEL    =  7,   //!< acceleration
+        TAG_BATT    =  8,   //!< battery
+        TAG_PLANT   =  9,   //!< plant sensors
+        TAG_TIRE    = 10,   //!< tire pressure monitoring system
+        TAG_BODY    = 11,   //!< health monitoring devices
+        TAG_ENRG    = 12,   //!< energy monitoring devices
+        TAG_WCVR    = 13,   //!< window covering devices
+        TAG_ACTR    = 14,   //!< ON/OFF actuators
+        TAG_AIR     = 15,   //!< air environmental monitoring devices
+    };
+    Q_ENUM(DeviceTagsTheengs)
 };
 
 /* ************************************************************************** */

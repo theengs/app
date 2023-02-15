@@ -35,7 +35,7 @@ QT_FORWARD_DECLARE_CLASS(QLowEnergyConnectionParameters)
 
 /* ************************************************************************** */
 
-//#define DEBUG_FAKE_DEVICES
+//#define DEBUG_FAKE_DEVICES // Uncomment to enable virtual devices // AND REBUILD
 
 /* ************************************************************************** */
 
@@ -231,9 +231,9 @@ public:
     // THEENGS /////////////////////////////////////////////////////////////////
 
 public:
-    static Q_INVOKABLE QString getDeviceNameTheengs(const QString &modelid);
-    static Q_INVOKABLE QString getDeviceModelTheengs(const QString &modelid);
     static Q_INVOKABLE QString getDeviceBrandTheengs(const QString &modelid);
+    static Q_INVOKABLE QString getDeviceModelTheengs(const QString &modelid);
+    static Q_INVOKABLE QString getDeviceTagTheengs(const QString &modelid);
     static Q_INVOKABLE QString getDevicePropsTheengs(const QString &modelid);
     QString getDeviceModelIdTheengs_fromAdv(const QBluetoothDeviceInfo &deviceInfo);
 
