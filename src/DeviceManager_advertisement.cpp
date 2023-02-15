@@ -44,8 +44,11 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
 
     Q_UNUSED(updatedFields) // We don't use QBluetoothDeviceInfo::Fields, it's unreliable
 
+#if !defined(DEBUG_FAKE_DEVICES)
     if (info.rssi() >= 0) return; // we probably just hit the device cache
     if ((info.coreConfigurations() & QBluetoothDeviceInfo::LowEnergyCoreConfiguration) == false) return; // not a BLE device
+#endif
+
     if (m_devices_blacklist.contains(info.address().toString())) return; // device is blacklisted
     if (m_devices_blacklist.contains(info.deviceUuid().toString())) return; // device is blacklisted
 
@@ -114,9 +117,11 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
                 }
                 else
                 {
-                    //std::string input;
-                    //serializeJson(doc, input);
-                    //qDebug() << "decodeBLEJson(mfd1) error:" << input.c_str();
+#if !defined(QT_NO_DEBUG) && !defined(NDEBUG)
+                    std::string input;
+                    serializeJson(doc, input);
+                    qWarning() << "decodeBLEJson(mfd1) error:" << input.c_str();
+#endif
                 }
             }
 
@@ -171,9 +176,11 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
                 }
                 else
                 {
-                    //std::string input;
-                    //serializeJson(doc, input);
-                    //qDebug() << "decodeBLEJson(svd1) error:" << input.c_str();
+#if !defined(QT_NO_DEBUG) && !defined(NDEBUG)
+                    std::string input;
+                    serializeJson(doc, input);
+                    qWarning() << "decodeBLEJson(svd1) error:" << input.c_str();
+#endif
                 }
             }
 
@@ -257,7 +264,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
             {
                 //std::string input;
                 //serializeJson(doc, input);
-                //qDebug() << "decodeBLEJson(mfd2) error:" << input.c_str();
+                //qWarning() << "decodeBLEJson(mfd2) error:" << input.c_str();
             }
         }
 
@@ -302,7 +309,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
             {
                 //std::string input;
                 //serializeJson(doc, input);
-                //qDebug() << "decodeBLEJson(svd2) error:" << input.c_str();
+                //qWarning() << "decodeBLEJson(svd2) error:" << input.c_str();
             }
         }
     }

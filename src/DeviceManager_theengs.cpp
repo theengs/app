@@ -794,8 +794,8 @@ void DeviceManager::fakeTheengsData()
         info = QBluetoothDeviceInfo(QBluetoothAddress("21:57:43:01:5C:3A"), "TPMS1_10CA8F", 0);
 
         int rrrr = (rand() % 2);
-        if (rrrr == 0) info.setManufacturerData(endian_flip_16(0x0001), QByteArray::fromHex("80eaca10ca8ff46503007c0c00003300"));
-        else if (rrrr == 1) info.setManufacturerData(endian_flip_16(0x0001), QByteArray::fromHex("80eaca115a954b630100ef0900005700"));
+        if (rrrr == 0) info.setManufacturerData(endian_flip_16(0x0001), QByteArray::fromHex("215743015c3af46503007c0c00003300"));
+        else if (rrrr == 1) info.setManufacturerData(endian_flip_16(0x0001), QByteArray::fromHex("215743015c3afb630100ef0900005700"));
         else qWarning() << "RAND ERROR";
     }
     if (rrdd == 2) // H5055
@@ -814,11 +814,11 @@ void DeviceManager::fakeTheengsData()
         info = QBluetoothDeviceInfo(QBluetoothAddress("23:57:43:01:5C:3A"), "iBBQ", 0);
 
         int rrrr = (rand() % 5);
-        if (rrrr == 0) info.setManufacturerData(0, QByteArray::fromHex("0000fc45c30c458ee600e600"));
-        else if (rrrr == 1) info.setManufacturerData(0, QByteArray::fromHex("0000fc45c30c458e18014001"));
-        else if (rrrr == 2) info.setManufacturerData(0, QByteArray::fromHex("0000fc45c30c458ef6ff8a02"));
-        else if (rrrr == 3) info.setManufacturerData(0, QByteArray::fromHex("0000fc45c30d38a8dc00d200"));
-        else if (rrrr == 4) info.setManufacturerData(0, QByteArray::fromHex("0000fc45c30d38a8f6ff4402"));
+        if (rrrr == 0) info.setManufacturerData(0, QByteArray::fromHex("0000235743015c3ae600e600"));
+        else if (rrrr == 1) info.setManufacturerData(0, QByteArray::fromHex("0000235743015c3a18014001"));
+        else if (rrrr == 2) info.setManufacturerData(0, QByteArray::fromHex("0000235743015c3af6ff8a02"));
+        else if (rrrr == 3) info.setManufacturerData(0, QByteArray::fromHex("0000235743015c3adc00d200"));
+        else if (rrrr == 4) info.setManufacturerData(0, QByteArray::fromHex("0000235743015c3af6ff4402"));
         else qWarning() << "RAND ERROR";
     }
     if (rrdd == 4) // IBT-4XS
@@ -826,8 +826,8 @@ void DeviceManager::fakeTheengsData()
         info = QBluetoothDeviceInfo(QBluetoothAddress("24:57:43:01:5C:3A"), "iBBQ", 0);
 
         int rrrr = (rand() % 2);
-        if (rrrr == 0) info.setManufacturerData(0, QByteArray::fromHex("000010082c40abe604010401fa00fa00"));
-        else if (rrrr == 1) info.setManufacturerData(0, QByteArray::fromHex("000010082c40abe60401f6ff58021202"));
+        if (rrrr == 0) info.setManufacturerData(0, QByteArray::fromHex("0000245743015c3a04010401fa00fa00"));
+        else if (rrrr == 1) info.setManufacturerData(0, QByteArray::fromHex("0000245743015c3a0401f6ff58021202"));
         else qWarning() << "RAND ERROR";
     }
     if (rrdd == 5) // IBT-6XS
@@ -920,18 +920,20 @@ void DeviceManager::fakeTheengsData()
 
     if (rrdd == 14) // CGPR1
     {
+        QBluetoothUuid uuid(static_cast<quint16>(0xfdcd));
         info = QBluetoothDeviceInfo(QBluetoothAddress("51:57:43:01:5C:3A"), "CGPR1", 0);
-        info.setServiceData(QUuid(0), QByteArray::fromHex("0812443660342d580201530f0118090400000000"));
+        info.setServiceData(uuid, QByteArray::fromHex("8812aabbccddeeff0201640f01c4090405020000"));
     }
     if (rrdd == 15) // CGH1
     {
+        QBluetoothUuid uuid(static_cast<quint16>(0xfdcd));
         info = QBluetoothDeviceInfo(QBluetoothAddress("52:57:43:01:5C:3A"), "CGH1", 0);
 
         int rrrr = (rand() % 4);
-        if (rrrr == 0) info.setServiceData(QUuid(0), QByteArray::fromHex("0804751060342d580201600f012b0f0100"));
-        else if (rrrr == 1) info.setServiceData(QUuid(0), QByteArray::fromHex("0804751060342d580201600f01420f0101"));
-        else if (rrrr == 2) info.setServiceData(QUuid(0), QByteArray::fromHex("4804751060342d580401000f01cb"));
-        else if (rrrr == 3) info.setServiceData(QUuid(0), QByteArray::fromHex("4804751060342d580401010f01d5"));
+        if (rrrr == 0) info.setServiceData(uuid, QByteArray::fromHex("0804751060342d580201600f012b0f0100"));
+        else if (rrrr == 1) info.setServiceData(uuid, QByteArray::fromHex("0804751060342d580201600f01420f0101"));
+        else if (rrrr == 2) info.setServiceData(uuid, QByteArray::fromHex("4804751060342d580401000f01cb"));
+        else if (rrrr == 3) info.setServiceData(uuid, QByteArray::fromHex("4804751060342d580401010f01d5"));
         else qWarning() << "RAND ERROR";
     }
     if (rrdd == 16) // MUE4094RT

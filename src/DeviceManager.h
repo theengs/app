@@ -35,6 +35,10 @@ QT_FORWARD_DECLARE_CLASS(QLowEnergyConnectionParameters)
 
 /* ************************************************************************** */
 
+//#define DEBUG_FAKE_DEVICES
+
+/* ************************************************************************** */
+
 /*!
  * \brief The DeviceManager class
  */

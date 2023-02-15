@@ -152,7 +152,9 @@ DeviceManager::DeviceManager(bool daemon)
         }
     }
 
-    //fakeTheengsDevices(); // Theengs fake devices //////////////////////////////
+#if defined(DEBUG_FAKE_DEVICES)
+    fakeTheengsDevices(); // Theengs fake devices //////////////////////////////
+#endif
 }
 
 DeviceManager::~DeviceManager()
