@@ -1076,9 +1076,9 @@ void Device::setName(const QString &name)
     }
 }
 
-void Device::setModel(const QString &model)
+void Device::setModel(const QString &model, const bool force)
 {
-    if (!model.isEmpty() && m_deviceModel != model)
+    if (m_deviceModel != model || force == true)
     {
         m_deviceModel = model;
         Q_EMIT sensorUpdated();
@@ -1101,7 +1101,7 @@ void Device::setModel(const QString &model)
 
 void Device::setModelID(const QString &modelID)
 {
-    if (!modelID.isEmpty() && m_deviceModel != modelID)
+    if (m_deviceModelID != modelID)
     {
         m_deviceModelID = modelID;
         Q_EMIT sensorUpdated();
@@ -1109,7 +1109,7 @@ void Device::setModelID(const QString &modelID)
         if (m_dbInternal || m_dbExternal)
         {
             QSqlQuery setModelID;
-            setModelID.prepare("UPDATE devices SET deviceModel = :model WHERE deviceAddr = :deviceAddr");
+            setModelID.prepare("UPDATE devices SET deviceModelID = :model WHERE deviceAddr = :deviceAddr");
             setModelID.bindValue(":model", m_deviceModelID);
             setModelID.bindValue(":deviceAddr", getAddress());
 
@@ -1426,10 +1426,20 @@ void Device::parseAdvertisementData(const uint16_t, const uint16_t, const QByteA
 
 /* ************************************************************************** */
 
-void Device::setTheengsModelId(const QString &model, const QString &id)
+void Device::setTheengsModelId(const QString &model, const QString &modelID)
 {
-    //qDebug() << "Device::setTheengsModelId() model" << model << "  -  id" << id;
-    setModelID(id);
+    //qDebug() << "Device::setTheengsModelId() model" << model << "  -  modelID" << id;
+
+    Q_UNUSED(model)
+    setModel(modelID);
+}
+
+void Device::changeTheengsModelId(const QString &model, const QString &modelID)
+{
+    //qDebug() << "Device::setTheengsModelId() model" << model << "  -  modelID" << id;
+
+    Q_UNUSED(model)
+    setModel(modelID, true);
 }
 
 /* ************************************************************************** */

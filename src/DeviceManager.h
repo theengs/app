@@ -118,7 +118,7 @@ class DeviceManager: public QObject
 
     // THEENGS
     QTimer m_faker;
-    Device *createTheengsDevice_fromDb(const QString &deviceName, const QString &deviceModel_theengs, const QString &deviceAddr);
+    Device *createTheengsDevice_fromDb(const QString &deviceName, QString &deviceModel_theengs, const QString &deviceAddr);
     Device *createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &deviceInfo);
 
     // THEENGS dev

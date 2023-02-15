@@ -231,7 +231,7 @@ protected:
     virtual bool getSqlDeviceInfos();
 
     // helpers
-    void setModel(const QString &model);
+    void setModel(const QString &model, const bool force = false);
     void setModelID(const QString &modelID);
     void setBattery(const int battery);
     void setBatteryFirmware(const int battery, const QString &firmware);
@@ -369,7 +369,8 @@ public:
                                         const QByteArray &data);
 
     // theengs decoder
-    void setTheengsModelId(const QString &model, const QString &id);
+    void setTheengsModelId(const QString &model, const QString &modelID);
+    void changeTheengsModelId(const QString &model, const QString &modelID);
 
 public slots:
     void deviceConnect();               //!< Initiate a BLE connection with a device
