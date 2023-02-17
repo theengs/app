@@ -135,19 +135,7 @@ Item {
 
     function updateSensorSettings() {
         // Title
-        if (boxDevice.isPlantSensor) {
-            if (boxDevice.deviceAssociatedName !== "")
-                textTitle.text = boxDevice.deviceAssociatedName
-            else
-                textTitle.text = boxDevice.deviceName
-        } else if (boxDevice.isThermometer) {
-            if (boxDevice.deviceModel)
-                textTitle.text = deviceManager.getDeviceModelTheengs(boxDevice.deviceModel)
-            else if (boxDevice.deviceName)
-                textTitle.text = boxDevice.deviceName
-            else
-                textTitle.text = qsTr("Thermometer")
-        } else if (boxDevice.isDeviceTheengs) {
+        if (boxDevice.deviceModel) {
             textTitle.text = deviceManager.getDeviceModelTheengs(boxDevice.deviceModel)
         } else {
             textTitle.text = boxDevice.deviceName
