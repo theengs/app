@@ -315,6 +315,7 @@ Loader {
                     delegate: Rectangle {
                         width: genericDataView.width
                         height: 72
+                        color: Theme.colorForeground
 
                         Column {
                             anchors.left: parent.left

@@ -73,6 +73,7 @@ public:
         if (v.isDouble()) data_f = v.toDouble();
         else if (v.isBool()) data_i = v.toBool();
         else if (v.isBool()) data_i = v.toInt();
+        Q_EMIT up();
     }
 };
 
