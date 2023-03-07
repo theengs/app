@@ -940,9 +940,9 @@ Item {
                 } else if (primaryValue === "co2") {
                     gaugeLegend.text = boxDevice.haseCo2Sensor ? qsTr("eCO₂") : qsTr("CO₂")
                     gaugeValue.from = 0
-                    gaugeValue.to = 2000
-                    limitMin = 850
-                    limitMax = 1500
+                    gaugeValue.to = 3000
+                    limitMin = 1000
+                    limitMax = 2000
                     gaugeValue.value = boxDevice.co2
                 } else if (primaryValue === "pm25") {
                     gaugeLegend.text = qsTr("PM2.5")
