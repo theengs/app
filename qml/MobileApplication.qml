@@ -447,7 +447,7 @@ ApplicationWindow {
             },
             State {
                 name: "DevicePlantSensor"
-                PropertyChanges { target: appHeader; title: selectedDevice.deviceName; }
+                PropertyChanges { target: appHeader; title: deviceManager.getDeviceModelTheengs(selectedDevice.deviceModel); }
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: true; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; }
@@ -464,7 +464,7 @@ ApplicationWindow {
             },
             State {
                 name: "DeviceThermometer"
-                PropertyChanges { target: appHeader; title: qsTr("Thermometer"); }
+                PropertyChanges { target: appHeader; title: deviceManager.getDeviceModelTheengs(selectedDevice.deviceModel); }
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: true; }
@@ -481,7 +481,7 @@ ApplicationWindow {
             },
             State {
                 name: "DeviceEnvironmental"
-                PropertyChanges { target: appHeader; title: selectedDevice.deviceName; }
+                PropertyChanges { target: appHeader; title: deviceManager.getDeviceModelTheengs(selectedDevice.deviceModel); }
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; }
@@ -498,7 +498,7 @@ ApplicationWindow {
             },
             State {
                 name: "DeviceProbe"
-                PropertyChanges { target: appHeader; title: selectedDevice.deviceName; }
+                PropertyChanges { target: appHeader; title: deviceManager.getDeviceModelTheengs(selectedDevice.deviceModel); }
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; }
@@ -515,7 +515,7 @@ ApplicationWindow {
             },
             State {
                 name: "DeviceScale"
-                PropertyChanges { target: appHeader; title: selectedDevice.deviceName; }
+                PropertyChanges { target: appHeader; title: deviceManager.getDeviceModelTheengs(selectedDevice.deviceModel); }
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; }
@@ -532,7 +532,7 @@ ApplicationWindow {
             },
             State {
                 name: "DeviceMotionSensor"
-                PropertyChanges { target: appHeader; title: selectedDevice.deviceName; }
+                PropertyChanges { target: appHeader; title: deviceManager.getDeviceModelTheengs(selectedDevice.deviceModel); }
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; }
@@ -549,7 +549,7 @@ ApplicationWindow {
             },
             State {
                 name: "DeviceGeneric"
-                PropertyChanges { target: appHeader; title: selectedDevice.deviceName; }
+                PropertyChanges { target: appHeader; title: deviceManager.getDeviceModelTheengs(selectedDevice.deviceModel); }
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; }
