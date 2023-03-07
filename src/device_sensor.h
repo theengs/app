@@ -216,7 +216,7 @@ protected:
     float m_rs = -99.f;
 
     // plant limits
-    int m_soilMoisture_limit_min = 15;
+    int m_soilMoisture_limit_min = 7;
     int m_soilMoisture_limit_max = 50;
     int m_soilConductivity_limit_min = 100;
     int m_soilConductivity_limit_max = 500;
