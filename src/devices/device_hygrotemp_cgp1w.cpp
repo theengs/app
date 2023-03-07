@@ -90,17 +90,17 @@ void DeviceHygrotempCGP1W::parseAdvertisementData(const uint16_t adv_mode,
         {
             QString mac;
 
-            mac += ba.mid(10,1).toHex().toUpper();
-            mac += ':';
-            mac += ba.mid(9,1).toHex().toUpper();
-            mac += ':';
-            mac += ba.mid(8,1).toHex().toUpper();
-            mac += ':';
             mac += ba.mid(7,1).toHex().toUpper();
             mac += ':';
             mac += ba.mid(6,1).toHex().toUpper();
             mac += ':';
             mac += ba.mid(5,1).toHex().toUpper();
+            mac += ':';
+            mac += ba.mid(4,1).toHex().toUpper();
+            mac += ':';
+            mac += ba.mid(3,1).toHex().toUpper();
+            mac += ':';
+            mac += ba.mid(2,1).toHex().toUpper();
 
             setAddressMAC(mac);
         }

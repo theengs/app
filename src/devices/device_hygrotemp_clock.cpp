@@ -348,7 +348,8 @@ void DeviceHygrotempClock::parseAdvertisementData(const uint16_t adv_mode,
     qDebug() << "DeviceHygrotempClock::parseAdvertisementData(" << m_deviceAddress
              << " - " << adv_mode << " - 0x" << adv_id << ")";
     qDebug() << "DATA (" << ba.size() << "bytes)   >  0x" << ba.toHex();
-*/    // MiBeacon protocol / 12-10 bytes messages
+*/
+    // MiBeacon protocol / 12-10 bytes messages
 
     if (ba.size() >= 12)
     {
