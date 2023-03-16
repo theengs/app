@@ -678,7 +678,7 @@ Item {
 
                     if (boxDevice.hasPresence) {
                         if (boxDevice.presence) textOne.text = qsTr("presence")
-                        else textOne.text = qsTr("noone")
+                        else textOne.text = qsTr("no one")
                     } else if (boxDevice.hasOpen) {
                         if (boxDevice.open) textOne.text = qsTr("opened")
                         else textOne.text = qsTr("closed")
