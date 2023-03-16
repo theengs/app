@@ -44,6 +44,7 @@
         <file alias="ChartScaleDataAio.qml">components/ChartScaleDataAio.qml</file>
         <file alias="ChartThermometerMinMax.qml">components/ChartThermometerMinMax.qml</file>
         <file alias="ChartThermometerMinMaxBar.qml">components/ChartThermometerMinMaxBar.qml</file>
+        <file alias="DebugWidget.qml">components/DebugWidget.qml</file>
         <file alias="IndicatorsCompact.qml">components/IndicatorsCompact.qml</file>
         <file alias="IndicatorsSolid.qml">components/IndicatorsSolid.qml</file>
         <file alias="ItemBannerSync.qml">components/ItemBannerSync.qml</file>

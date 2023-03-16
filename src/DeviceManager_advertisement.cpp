@@ -118,9 +118,9 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
                 else
                 {
 #if !defined(QT_NO_DEBUG) && !defined(NDEBUG)
-                    std::string input;
-                    serializeJson(doc, input);
-                    qWarning() << "decodeBLEJson(mfd1) error:" << input.c_str();
+                    //std::string input;
+                    //serializeJson(doc, input);
+                    //qWarning() << "decodeBLEJson(mfd1) error:" << input.c_str();
 #endif
                 }
             }
@@ -177,9 +177,9 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
                 else
                 {
 #if !defined(QT_NO_DEBUG) && !defined(NDEBUG)
-                    std::string input;
-                    serializeJson(doc, input);
-                    qWarning() << "decodeBLEJson(svd1) error:" << input.c_str();
+                    //std::string input;
+                    //serializeJson(doc, input);
+                    //qWarning() << "decodeBLEJson(svd1) error:" << input.c_str();
 #endif
                 }
             }

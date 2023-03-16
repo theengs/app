@@ -66,8 +66,8 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName_blu
 
     // Device loading
     DeviceTheengs *device = nullptr;
-    QString deviceTags_theengs = QString::fromUtf8(TheengsDecoder().getTheengAttribute(deviceModelID_theengs.toLocal8Bit(), "tag"));
-    QString deviceProps_theengs = QString::fromUtf8(TheengsDecoder().getTheengProperties(deviceModelID_theengs.toLocal8Bit()));
+    QString deviceTags_theengs = QString::fromUtf8(TheengsDecoder().getTheengAttribute(deviceModelID_theengs.toUtf8(), "tag"));
+    QString deviceProps_theengs = QString::fromUtf8(TheengsDecoder().getTheengProperties(deviceModelID_theengs.toUtf8()));
     int deviceType = DeviceTheengs::getTheengsTypeFromTag(deviceTags_theengs);
 
     if (!deviceModelID_theengs.isEmpty() && !deviceProps_theengs.isEmpty())
@@ -143,7 +143,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
             deviceModel = QString::fromStdString(doc["model"]);
             deviceModelID = QString::fromStdString(doc["model_id"]);
             deviceTags = QString::fromStdString(doc["tag"]);
-            deviceProps = QString::fromUtf8(dec.getTheengProperties(deviceModelID.toLocal8Bit()));
+            deviceProps = QString::fromUtf8(dec.getTheengProperties(deviceModelID.toUtf8()));
 
             if (deviceModelID == "IBEACON") continue;
             if (deviceModelID == "MS-CDP") continue;
@@ -179,7 +179,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
             deviceModel = QString::fromStdString(doc["model"]);
             deviceModelID = QString::fromStdString(doc["model_id"]);
             deviceTags = QString::fromStdString(doc["tag"]);
-            deviceProps = QString::fromUtf8(dec.getTheengProperties(deviceModelID.toLocal8Bit()));
+            deviceProps = QString::fromUtf8(dec.getTheengProperties(deviceModelID.toUtf8()));
 
             if (deviceModelID == "IBEACON") continue;
             if (deviceModelID == "MS-CDP") continue;
@@ -320,19 +320,19 @@ QString DeviceManager::getDeviceModelIdTheengs_fromAdv(const QBluetoothDeviceInf
 
 QString DeviceManager::getDeviceBrandTheengs(const QString &modelid)
 {
-    return QString::fromUtf8(TheengsDecoder().getTheengAttribute(modelid.toLocal8Bit(), "brand"));
+    return QString::fromUtf8(TheengsDecoder().getTheengAttribute(modelid.toUtf8(), "brand"));
 }
 QString DeviceManager::getDeviceModelTheengs(const QString &modelid)
 {
-    return QString::fromUtf8(TheengsDecoder().getTheengAttribute(modelid.toLocal8Bit(), "model"));
+    return QString::fromUtf8(TheengsDecoder().getTheengAttribute(modelid.toUtf8(), "model"));
 }
 QString DeviceManager::getDeviceTagTheengs(const QString &modelid)
 {
-    return QString::fromUtf8(TheengsDecoder().getTheengAttribute(modelid.toLocal8Bit(), "tag"));
+    return QString::fromUtf8(TheengsDecoder().getTheengAttribute(modelid.toUtf8(), "tag"));
 }
 QString DeviceManager::getDevicePropsTheengs(const QString &modelid)
 {
-    return QString::fromUtf8(TheengsDecoder().getTheengProperties(modelid.toLocal8Bit()));
+    return QString::fromUtf8(TheengsDecoder().getTheengProperties(modelid.toUtf8()));
 }
 
 /* ************************************************************************** */

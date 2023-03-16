@@ -654,6 +654,10 @@ ApplicationWindow {
 
     ////////////////
 
+    //DebugWidget { }
+
+    ////////////////
+
     MobileMenu {
         id: mobileMenu
     }

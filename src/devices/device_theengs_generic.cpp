@@ -389,7 +389,7 @@ bool DeviceTheengsGeneric::addDatabaseRecord_plants(const int64_t timestamp,
     }
     else
     {
-        qWarning() << "DeviceTheengsGeneric values are INVALID";
+        qWarning() << "addDatabaseRecord_plants(" << m_deviceName << ") values are INVALID";
     }
 
     return status;
@@ -452,8 +452,16 @@ bool DeviceTheengsGeneric::addDatabaseRecord_thermometer(const int64_t timestamp
 bool DeviceTheengsGeneric::areValuesValid_hygrometer(const float t, const float h) const
 {
     if (t <= 0.f && h <= 0.f) return false;
-    if (t < -30.f || t > 100.f) return false;
-    if (h < 0.f || h > 100.f) return false;
+
+    if (hasTemperatureSensor())
+    {
+        if (t < -30.f || t > 100.f) return false;
+    }
+
+    if (hasHumiditySensor())
+    {
+        if (h < 0.f || h > 100.f) return false;
+    }
 
     return true;
 }
@@ -507,9 +515,18 @@ bool DeviceTheengsGeneric::addDatabaseRecord_hygrometer(const int64_t timestamp,
 
 bool DeviceTheengsGeneric::areValuesValid_weatherstation(const float t, const float h, const float p) const
 {
-    if (t < -30.f || t > 100.f) return false;
-    if (h < 0.f || h > 100.f) return false;
-    if (p < 800.f || p > 1500.f) return false;
+    if (hasTemperatureSensor())
+    {
+        if (t < -30.f || t > 100.f) return false;
+    }
+    if (hasHumiditySensor())
+    {
+        if (h < 0.f || h > 100.f) return false;
+    }
+    if (hasPressureSensor())
+    {
+        if (p < 800.f || p > 1500.f) return false;
+    }
 
     return true;
 }
@@ -650,6 +667,7 @@ void DeviceTheengsGeneric::getChartData_plantAIO(int maxDays, QDateTimeAxis *axi
         Q_EMIT minmaxUpdated();
     }
 }
+
 /* ************************************************************************** */
 
 void DeviceTheengsGeneric::updateChartData_environmentalVoc(int maxDays)

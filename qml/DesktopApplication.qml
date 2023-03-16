@@ -630,4 +630,6 @@ ApplicationWindow {
             }
         ]
     }
+
+    //DebugWidget { }
 }

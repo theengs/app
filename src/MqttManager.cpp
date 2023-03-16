@@ -131,7 +131,7 @@ bool MqttManager::publishConfig(QString topic, QString str)
             //qDebug() << "MqttManager::publishConfig(" << topic << " : " << str << ")";
 
             QMqttTopicName t(topic);
-            QByteArray m(str.toLocal8Bit());
+            QByteArray m(str.toUtf8());
 
             //QString l = "config: " + topic + " / " + str + "\n";
             //m_mqttLog.push_front(l);
@@ -162,7 +162,7 @@ bool MqttManager::publishData(QString topic, QString str)
         //qDebug() << "MqttManager::publishData(" << topic << " : " << str << ")";
 
         QMqttTopicName t(topic);
-        QByteArray m(str.toLocal8Bit());
+        QByteArray m(str.toUtf8());
 
         //QString l = "publish: " + topic + " / " + str + "\n";
         //m_mqttLog.push_front(l);
@@ -218,7 +218,7 @@ void MqttManager::brokerConnected()
         QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/version";
 
         QMqttTopicName t(topic);
-        QByteArray v("v" + QString::fromLatin1(APP_VERSION).toLocal8Bit());
+        QByteArray v("v" + QString::fromLatin1(APP_VERSION).toUtf8());
 
         m_mqttclient->publish(t, v);
     }
