@@ -17,7 +17,7 @@ QT     += mqtt
 # Use Qt Quick compiler
 ios | android { CONFIG += qtquickcompiler }
 
-ios | macx { DEFINES += NO_MAC_ADDR = "True"}
+ios | macx { DEFINES += NO_MAC_ADDR }
 
 win32 { DEFINES += _USE_MATH_DEFINES }
 
