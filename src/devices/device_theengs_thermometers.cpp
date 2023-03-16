@@ -210,7 +210,7 @@ bool DeviceTheengsThermometers::addDatabaseRecord_thermometer(const int64_t time
     }
     else
     {
-        qWarning() << "DeviceTheengsThermometers values are INVALID";
+        qWarning() << "addDatabaseRecord_thermometer(" << m_deviceName << ") values are INVALID";
     }
 
     return status;
@@ -267,7 +267,7 @@ bool DeviceTheengsThermometers::addDatabaseRecord_hygrometer(const int64_t times
     }
     else
     {
-        qWarning() << "DeviceTheengsThermometers values are INVALID";
+        qWarning() << "addDatabaseRecord_hygrometer(" << m_deviceName << ") values are INVALID";
     }
 
     return status;

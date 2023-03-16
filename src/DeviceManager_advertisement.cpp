@@ -79,7 +79,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
                 dd->parseAdvertisementData(DeviceUtils::BLE_ADV_MANUFACTURERDATA,
                                            id, info.manufacturerData(id));
 
-                ArduinoJson::DynamicJsonDocument doc(2048);
+                ArduinoJson::DynamicJsonDocument doc(4096);
                 doc["id"] = mac_qstr.toStdString();
                 doc["name"] = info.name().toStdString();
                 doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + info.manufacturerData(id).toHex().toStdString();
@@ -136,7 +136,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
                 dd->parseAdvertisementData(DeviceUtils::BLE_ADV_MANUFACTURERDATA,
                                            id.toUInt16(), info.serviceData(id));
 
-                ArduinoJson::DynamicJsonDocument doc(2048);
+                ArduinoJson::DynamicJsonDocument doc(4096);
                 doc["id"] = mac_qstr.toStdString();
                 doc["name"] = info.name().toStdString();
                 doc["servicedata"] = info.serviceData(id).toHex().toStdString();
@@ -233,7 +233,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
             //         << "manufacturer data" << Qt::dec << info.manufacturerData(id).size() << Qt::hex
             //         << "bytes:" << info.manufacturerData(id).toHex();
 
-            ArduinoJson::DynamicJsonDocument doc(2048);
+            ArduinoJson::DynamicJsonDocument doc(4096);
             doc["id"] = mac_qstr.toStdString();
             doc["name"] = info.name().toStdString();
             doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + info.manufacturerData(id).toHex().toStdString();
@@ -276,7 +276,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
             //         << "service data" << Qt::dec << info.serviceData(id).size() << Qt::hex
             //         << "bytes:" << info.serviceData(id).toHex();
 
-            ArduinoJson::DynamicJsonDocument doc(2048);
+            ArduinoJson::DynamicJsonDocument doc(4096);
             doc["id"] = mac_qstr.toStdString();
             doc["name"] = info.name().toStdString();
             doc["servicedata"] = info.serviceData(id).toHex().toStdString();

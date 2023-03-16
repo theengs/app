@@ -380,28 +380,51 @@ void DeviceTheengs::parseTheengsAdvertisement(const QString &json)
 {
     Q_UNUSED(json)
 }
+
 /* ************************************************************************** */
 
-int DeviceTheengs::getTheengsTypeFromTag(const QString &tag_string)
+int DeviceTheengs::getTheengsTypeFromTag(const QString &tag_string, const QString &type_string)
 {
     int type = DeviceUtils::DEVICE_UNKNOWN;
-    int tag = tag_string.left(2).toInt(nullptr, 16);
 
-    if (tag == DeviceUtilsTheengs::TAG_THB) type = DeviceUtils::DEVICE_THEENGS_THERMOMETER;
-    else if (tag == DeviceUtilsTheengs::TAG_THBX) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
-    else if (tag == DeviceUtilsTheengs::TAG_BBQ) type = DeviceUtils::DEVICE_THEENGS_PROBE;
-    else if (tag == DeviceUtilsTheengs::TAG_CTMO) type = DeviceUtils::DEVICE_THEENGS_MOTIONSENSOR;
-    else if (tag == DeviceUtilsTheengs::TAG_SCALE) type = DeviceUtils::DEVICE_THEENGS_SCALE;
-    else if (tag == DeviceUtilsTheengs::TAG_BCON) type = DeviceUtils::DEVICE_THEENGS_BEACON;
-    else if (tag == DeviceUtilsTheengs::TAG_ACEL) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
-    else if (tag == DeviceUtilsTheengs::TAG_BATT) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
-    else if (tag == DeviceUtilsTheengs::TAG_PLANT) type = DeviceUtils::DEVICE_PLANTSENSOR;
-    else if (tag == DeviceUtilsTheengs::TAG_TIRE) type = DeviceUtils::DEVICE_THEENGS_PROBE;
-    else if (tag == DeviceUtilsTheengs::TAG_BODY) type = DeviceUtils::DEVICE_THEENGS_SMARTWATCH;
-    else if (tag == DeviceUtilsTheengs::TAG_ENRG) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
-    else if (tag == DeviceUtilsTheengs::TAG_WCVR) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
-    else if (tag == DeviceUtilsTheengs::TAG_ACTR) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
-    else if (tag == DeviceUtilsTheengs::TAG_AIR) type = DeviceUtils::DEVICE_ENVIRONMENTAL;
+    if (!tag_string.isEmpty() && tag_string != "null")
+    {
+        int tag = tag_string.left(2).toInt(nullptr, 16);
+
+        if (tag == DeviceUtilsTheengs::TAG_THB) type = DeviceUtils::DEVICE_THEENGS_THERMOMETER;
+        else if (tag == DeviceUtilsTheengs::TAG_THBX) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (tag == DeviceUtilsTheengs::TAG_BBQ) type = DeviceUtils::DEVICE_THEENGS_PROBE;
+        else if (tag == DeviceUtilsTheengs::TAG_CTMO) type = DeviceUtils::DEVICE_THEENGS_MOTIONSENSOR;
+        else if (tag == DeviceUtilsTheengs::TAG_SCALE) type = DeviceUtils::DEVICE_THEENGS_SCALE;
+        else if (tag == DeviceUtilsTheengs::TAG_BCON) type = DeviceUtils::DEVICE_THEENGS_BEACON;
+        else if (tag == DeviceUtilsTheengs::TAG_ACEL) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (tag == DeviceUtilsTheengs::TAG_BATT) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (tag == DeviceUtilsTheengs::TAG_PLANT) type = DeviceUtils::DEVICE_PLANTSENSOR;
+        else if (tag == DeviceUtilsTheengs::TAG_TIRE) type = DeviceUtils::DEVICE_THEENGS_PROBE;
+        else if (tag == DeviceUtilsTheengs::TAG_BODY) type = DeviceUtils::DEVICE_THEENGS_SMARTWATCH;
+        else if (tag == DeviceUtilsTheengs::TAG_ENRG) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (tag == DeviceUtilsTheengs::TAG_WCVR) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (tag == DeviceUtilsTheengs::TAG_ACTR) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (tag == DeviceUtilsTheengs::TAG_AIR) type = DeviceUtils::DEVICE_ENVIRONMENTAL;
+    }
+    else if (!type_string.isEmpty() && type_string != "null")
+    {
+        if (type_string == "THB") type = DeviceUtils::DEVICE_THEENGS_THERMOMETER;
+        else if (type_string == "THBX") type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (type_string == "BBQ") type = DeviceUtils::DEVICE_THEENGS_PROBE;
+        else if (type_string == "CTMO") type = DeviceUtils::DEVICE_THEENGS_MOTIONSENSOR;
+        else if (type_string == "SCALE") type = DeviceUtils::DEVICE_THEENGS_SCALE;
+        else if (type_string == "BCON") type = DeviceUtils::DEVICE_THEENGS_BEACON;
+        else if (type_string == "ACEL") type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (type_string == "BATT") type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (type_string == "PLANT") type = DeviceUtils::DEVICE_PLANTSENSOR;
+        else if (type_string == "TIRE") type = DeviceUtils::DEVICE_THEENGS_PROBE;
+        else if (type_string == "BODY") type = DeviceUtils::DEVICE_THEENGS_SMARTWATCH;
+        else if (type_string == "ENRG") type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (type_string == "WCVR") type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (type_string == "ACTR") type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (type_string == "AIR") type = DeviceUtils::DEVICE_ENVIRONMENTAL;
+    }
 
     return type;
 }

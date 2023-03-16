@@ -208,7 +208,7 @@ public:
     virtual void parseTheengsProps(const QString &json);
     virtual void parseTheengsAdvertisement(const QString &json);
 
-    static int getTheengsTypeFromTag(const QString &tag_string);
+    static int getTheengsTypeFromTag(const QString &tag_string, const QString &type_string);
 
     void setPlantSensor() { m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR; }
     void setThermometer() { m_deviceType = DeviceUtils::DEVICE_THERMOMETER; }
