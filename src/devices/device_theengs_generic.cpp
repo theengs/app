@@ -161,7 +161,7 @@ void DeviceTheengsGeneric::parseTheengsProps(const QString &json)
     // Device type
     if (hasSoilMoistureSensor() && hasSoilConductivitySensor()) m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR;
     else if (hasWeight()) m_deviceType = DeviceUtils::DEVICE_THEENGS_SCALE;
-    else if (hasHchoSensor() || hasCo2Sensor() ||hasPM10Sensor()) m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
+    else if (hasHchoSensor() || hasCo2Sensor() || hasPM25Sensor() || hasPM10Sensor()) m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL;
     else
     {
         // full generic?
@@ -260,7 +260,7 @@ void DeviceTheengsGeneric::parseTheengsAdvertisement(const QString &json)
         }
     }
     if (obj.contains("pm25")) {
-        if (m_hcho != obj["pm25"].toDouble()) {
+        if (m_pm_25 != obj["pm25"].toDouble()) {
             m_pm_25 = obj["pm25"].toDouble();
             Q_EMIT dataUpdated();
         }

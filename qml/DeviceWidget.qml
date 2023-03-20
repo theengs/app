@@ -910,6 +910,7 @@ Item {
                     if (boxDevice.hasVocSensor) primaryValue = "voc"
                     else if (boxDevice.hasCo2Sensor) primaryValue = "co2"
                     else if (boxDevice.hasPM10Sensor) primaryValue = "pm10"
+                    else if (boxDevice.hasPM25Sensor) primaryValue = "pm25"
                     else if (boxDevice.hasHchoSensor) primaryValue = "hcho"
                     else if (boxDevice.hasGeigerCounter) primaryValue = "nuclear"
                     else primaryValue = "hygrometer"

@@ -169,6 +169,7 @@ Loader {
                 if (currentDevice.hasVocSensor) primary = "voc"
                 else if (currentDevice.hasCo2Sensor) primary = "co2"
                 else if (currentDevice.hasPM10Sensor) primary = "pm10"
+                else if (currentDevice.hasPM25Sensor) primary = "pm25"
                 else if (currentDevice.hasHchoSensor) primary = "hcho"
                 else if (currentDevice.hasGeigerCounter) primary = "nuclear"
                 else primary = "hygrometer"
