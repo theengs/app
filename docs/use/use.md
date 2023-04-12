@@ -8,7 +8,10 @@
 
 ## Overview
 
-<iframe width="353" height="628" src="/videos/Theengs-app-demo.mp4" frameborder="0" type="video/mp4" allowfullscreen></iframe>
+<video width="353" height="628" controls>
+  <source src="/videos/Theengs-app-demo.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
 ## Real time data
 The app enables to retrieve BLE sensor real time data, to add new sensors tap "Search for new sensors" in the hamburger menu.
@@ -37,7 +40,10 @@ Enter the following informations:
 
 Once done click on the MQTT switch to activate the integration, if the app can connect to the broker, it will display "Connected" in the top right.
 
-<iframe width="353" height="767" src="/videos/Theengs-App-mqtt-integration.mp4" frameborder="0" type="video/mp4" allowfullscreen></iframe>
+<video width="353" height="767" controls>
+  <source src="/videos/Theengs-App-mqtt-integration.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
 ### iOS specificity
 
