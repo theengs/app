@@ -129,7 +129,6 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
     const QList<quint16> &manufacturerIds = deviceInfo.manufacturerIds();
     for (const auto id: manufacturerIds)
     {
-        if (deviceModelID.isEmpty() == false) break;
 
         ArduinoJson::DynamicJsonDocument doc(4096);
         doc["id"] = deviceInfo.address().toString().toStdString();
@@ -141,14 +140,14 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
 
         if (dec.decodeBLEJson(obj) >= 0)
         {
+            // Do not process devices with random macs or IBEACONS packets
+            if (doc["type"] == "RMAC" || doc["model_id"] == "IBEACON") continue;
+
             deviceModel = QString::fromStdString(doc["model"]);
             deviceModelID = QString::fromStdString(doc["model_id"]);
             deviceTags = QString::fromStdString(doc["tag"]);
             deviceTypes = QString::fromStdString(doc["type"]);
             deviceProps = QString::fromStdString(dec.getTheengProperties(deviceModelID.toLatin1()));
-
-            // Do not process devices with random macs
-            if (deviceTypes == "RMAC") continue;
 
             qDebug() << "addDevice() FOUND [mfd] :" << deviceModel << deviceModelID << deviceTags << deviceTypes << deviceProps;
             break;
@@ -164,7 +163,6 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
     const QList<QBluetoothUuid> &serviceIds = deviceInfo.serviceIds();
     for (const auto id: serviceIds)
     {
-        if (deviceModelID.isEmpty() == false) break;
 
         ArduinoJson::DynamicJsonDocument doc(4096);
         doc["id"] = deviceInfo.address().toString().toStdString();
@@ -177,6 +175,9 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
 
         if (dec.decodeBLEJson(obj) >= 0)
         {
+            // Do not process devices with random macs
+            if (doc["type"] == "RMAC") continue;
+
             deviceModel = QString::fromStdString(doc["model"]);
             deviceModelID = QString::fromStdString(doc["model_id"]);
             deviceTags = QString::fromStdString(doc["tag"]);

@@ -96,8 +96,8 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
                     serializeJson(obj, output);
                     //qDebug() << "output:" << output.c_str();
 
-                    // Do not process devices with random macs
-                    if (doc["type"] == "RMAC") continue;
+                    // Do not process devices with random macs or IBEACONS packets
+                    if (doc["type"] == "RMAC" || doc["model_id"] == "IBEACON") continue;
 
                     dd->setTheengsModelId(QString::fromStdString(doc["model"]), QString::fromStdString(doc["model_id"]));
 
