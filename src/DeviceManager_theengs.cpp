@@ -147,9 +147,8 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
             deviceTypes = QString::fromStdString(doc["type"]);
             deviceProps = QString::fromStdString(dec.getTheengProperties(deviceModelID.toLatin1()));
 
-            if (deviceModelID == "IBEACON") continue;
-            if (deviceModelID == "MS-CDP") continue;
-            if (deviceModelID == "GAEN") continue;
+            // Do not process devices with random macs
+            if (deviceTypes == "RMAC") continue;
 
             qDebug() << "addDevice() FOUND [mfd] :" << deviceModel << deviceModelID << deviceTags << deviceTypes << deviceProps;
             break;
@@ -184,9 +183,8 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
             deviceTypes = QString::fromStdString(doc["type"]);
             deviceProps = QString::fromStdString(dec.getTheengProperties(deviceModelID.toLatin1()));
 
-            if (deviceModelID == "IBEACON") continue;
-            if (deviceModelID == "MS-CDP") continue;
-            if (deviceModelID == "GAEN") continue;
+            // Do not process devices with random macs
+            if (deviceTypes == "RMAC") continue;
 
             qDebug() << "addDevice() FOUND [svd] :" << deviceModel << deviceModelID << deviceTags << deviceTypes << deviceProps;
             break;
@@ -281,10 +279,10 @@ QString DeviceManager::getDeviceModelIdTheengs_fromAdv(const QBluetoothDeviceInf
         {
             QString model = QString::fromStdString(doc["model"]);
             QString modelId = QString::fromStdString(doc["model_id"]);
+            QString deviceTypes = QString::fromStdString(doc["type"]);
 
-            if (modelId == "IBEACON") continue;
-            if (modelId == "MS-CDP") continue;
-            if (modelId == "GAEN") continue;
+            // Do not process devices with random macs
+            if (deviceTypes == "RMAC") continue;
             if (modelId.isEmpty()) continue;
 
             return modelId;
@@ -306,10 +304,10 @@ QString DeviceManager::getDeviceModelIdTheengs_fromAdv(const QBluetoothDeviceInf
         {
             QString model = QString::fromStdString(doc["model"]);
             QString modelId = QString::fromStdString(doc["model_id"]);
+            QString deviceTypes = QString::fromStdString(doc["type"]);
 
-            if (modelId == "IBEACON") continue;
-            if (modelId == "MS-CDP") continue;
-            if (modelId == "GAEN") continue;
+            // Do not process devices with random macs
+            if (deviceTypes == "RMAC") continue;
             if (modelId.isEmpty()) continue;
 
             return modelId;
