@@ -56,7 +56,7 @@ Popup {
 
                 text: !deviceIsBlacklisted ?
                           qsTr("Are you sure you want to blacklist the selected sensor?") :
-                          qsTr("Are you sure you want to whitelist the selected sensor?")
+                          qsTr("Are you sure you want to unblacklist the selected sensor?")
                 textFormat: Text.PlainText
                 font.pixelSize: Theme.fontSizeContentVeryBig
                 color: Theme.colorText
@@ -111,7 +111,10 @@ Popup {
                 Text {
                     width: parent.width
 
-                    text: qsTr("Blacklisting a sensor will prevent it from being scanned by the application. You can un-blacklist the sensor at any time.")
+                    text: !deviceIsBlacklisted ?
+                            qsTr("Blacklisting a sensor will prevent it from being scanned by the application. You can unblacklist the sensor at any time."):
+                            qsTr("Unblacklisting a sensor will enable to scan this sensor.")
+                    
                     textFormat: Text.PlainText
                     font.pixelSize: Theme.fontSizeContent
                     color: Theme.colorSubText
@@ -148,7 +151,7 @@ Popup {
                 ButtonWireframe {
                     width: parent.btnSize
 
-                    text: !deviceIsBlacklisted ? qsTr("Blacklist") : qsTr("Whitelist")
+                    text: !deviceIsBlacklisted ? qsTr("Blacklist") : qsTr("Unblacklist")
                     primaryColor: !deviceIsBlacklisted ? Theme.colorRed : Theme.colorGreen
                     fullColor: true
 
