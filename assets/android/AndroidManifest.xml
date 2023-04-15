@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.theengs.app" android:installLocation="auto"
-          android:versionCode="01030001" android:versionName="1.3">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.theengs.app" android:installLocation="auto" android:versionCode="01030107" android:versionName="1.3.1">
 
     <supports-screens android:anyDensity="true" android:largeScreens="true" android:normalScreens="true" android:smallScreens="true"/>
 
@@ -27,24 +25,16 @@
     <uses-feature android:name="android.hardware.location.network" android:required="false"/>
     <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
 
-    <application android:name="org.qtproject.qt.android.bindings.QtApplication" android:label="Theengs"
-                 android:hardwareAccelerated="true" android:extractNativeLibs="true" android:allowNativeHeapPointerTagging="false"
-                 android:theme="@style/AppTheme" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round">
+    <application android:name="org.qtproject.qt.android.bindings.QtApplication" android:label="Theengs BLE" android:hardwareAccelerated="true" android:extractNativeLibs="true" android:allowNativeHeapPointerTagging="false" android:theme="@style/AppTheme" android:roundIcon="@mipmap/ic_launcher_round" android:icon="@drawable/icon">
 
-        <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
-                  android:name="org.qtproject.qt.android.bindings.QtActivity" android:label="Theengs"
-                  android:screenOrientation="unspecified" android:launchMode="singleTop"
-                  android:windowSoftInputMode="adjustResize" android:exported="true">
-
+        <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density" android:name="org.qtproject.qt.android.bindings.QtActivity" android:label="Theengs" android:screenOrientation="unspecified" android:launchMode="singleTop" android:windowSoftInputMode="adjustResize" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-
             <meta-data android:name="android.app.lib_name" android:value="-- %%INSERT_APP_LIB_NAME%% --"/>
             <meta-data android:name="android.app.arguments" android:value="-- %%INSERT_APP_ARGUMENTS%% --"/>
             <meta-data android:name="android.app.extract_android_style" android:value="none"/>
-
             <!-- Splash screen -->
             <!-- Orientation-specific (portrait/landscape) data is checked first. If not available for current orientation,
                  then android.app.splash_screen_drawable. For best results, use together with splash_screen_sticky and
@@ -55,7 +45,6 @@
             <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/splash"/>
             <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
             <!-- Splash screen -->
-
             <!-- Background running -->
             <!-- Warning: changing this value to true may cause unexpected crashes if the
                           application still try to draw after
@@ -63,7 +52,12 @@
                           signal is sent! -->
             <meta-data android:name="android.app.background_running" android:value="false"/>
             <!-- Background running -->
-
+            <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
+            <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
+            <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
+            <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
+            <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
+            <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
         </activity>
 
         <!-- Android service(s) -->

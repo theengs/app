@@ -1,6 +1,6 @@
 TARGET  = Theengs
 
-VERSION = 1.3
+VERSION = 1.3.1
 DEFINES+= APP_NAME=\\\"$$TARGET\\\"
 DEFINES+= APP_VERSION=\\\"$$VERSION\\\"
 
