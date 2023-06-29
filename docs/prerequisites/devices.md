@@ -21,6 +21,7 @@ Here is the list of supported devices by the app, more details in the Compatible
 |CGH1|✅|
 |CGP1W|✅|
 |CGPR1|✅|
+|F525|✅|
 |H5055|✅|
 |H5072|✅|
 |H5074|✅|
@@ -35,9 +36,10 @@ Here is the list of supported devices by the app, more details in the Compatible
 |HHCCPOT002|✅|
 |IBS-TH1|✅|
 |IBS-TH2|✅|
+|IBS-P01B|✅|
 |IBT_2X(S)|✅|
 |IBT_4X(S/C)|✅|
-|IBT_6XV(S)|✅|
+|IBT_6X(S)|✅|
 |JQJCY01YM|✅|
 |LYWSD02|✅|
 |LYWSD03MMC_ATC/PVVX|✅|
@@ -55,12 +57,15 @@ Here is the list of supported devices by the app, more details in the Compatible
 |W110150X|✅|
 |THX1(W230150X)|✅|
 |SDLS|✅|
+|SHT4X|✅|
+|SOLIS_6|✅|
 |T201|✅|
 |T301|✅|
 |WS02/WS08|✅|
 |TP357|✅|
 |TP358|✅|
 |TP359|✅|
+|TP393|✅|
 |TPMS|✅|
 |XMTZC01HM/XMTZC04HM|✅|
 |XMTZC02HM/XMTZC05HM|✅|
