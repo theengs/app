@@ -55,7 +55,6 @@ Here is the list of supported devices by the app, more details in the Compatible
 |W120150X|✅|
 |W070160X|✅|
 |W110150X|✅|
-|W340001X|✅|
 |THX1(W230150X)|✅|
 |SDLS|✅|
 |SHT4X|✅|
