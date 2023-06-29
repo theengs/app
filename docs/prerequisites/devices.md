@@ -22,8 +22,14 @@ Here is the list of supported devices by the app, more details in the Compatible
 |CGP1W|✅|
 |CGPR1|✅|
 |H5055|✅|
-|H5072/75|✅|
+|H5072|✅|
+|H5074|✅|
+|H5075|✅|
 |H5106|✅|
+|H5101|✅|
+|H5102|✅|
+|H5174|✅|
+|H5177|✅|
 |HHCCJCY01HHCC|✅|
 |HHCCJCY10|✅|
 |HHCCPOT002|✅|
@@ -34,7 +40,8 @@ Here is the list of supported devices by the app, more details in the Compatible
 |IBT_6XV(S)|✅|
 |JQJCY01YM|✅|
 |LYWSD02|✅|
-|LYWSD03MMC/MJWSD05MMC_ATC/PVVX|✅|
+|LYWSD03MMC_ATC/PVVX|✅|
+|MJWSD05MMC_ATC/PVVX|✅|
 |LYWSDCGQ|✅|
 |MBXPRO|✅|
 |MHO/MMC-C401_ATC/PVVX|✅|
