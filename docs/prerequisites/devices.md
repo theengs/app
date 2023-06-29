@@ -23,8 +23,13 @@ Here is the list of supported devices by the app, more details in the Compatible
 |CGPR1|✅|
 |H5055|✅|
 |H5072|✅|
+|H5074|✅|
 |H5075|✅|
 |H5106|✅|
+|H5101|✅|
+|H5102|✅|
+|H5174|✅|
+|H5177|✅|
 |HHCCJCY01HHCC|✅|
 |HHCCJCY10|✅|
 |HHCCPOT002|✅|
