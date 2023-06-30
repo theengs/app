@@ -24,16 +24,18 @@ module.exports = {
     lastUpdated: 'Last Updated',
     editLinks: false,
     nav: [
-      { text: 'Shop🆕', link: 'https://shop.theengs.io/'},
+      { text: 'Shop', link: 'https://shop.theengs.io/'},
       { text: 'Home', link: 'https://www.theengs.io', target:'_self', rel:''},
       { text: 'Use cases',
       items: [
         { text: 'Smart Home', link: 'https://www.theengs.io/usecases/smarthome.html', target:'_self', rel:''},
         { text: 'Research', link: 'https://www.theengs.io/usecases/research.html', target:'_self', rel:''}
       ]},
+      { text: 'Compatible', link: 'https://decoder.theengs.io/devices/devices.html', target:'_self', rel:''},
       { text: 'App', link: 'https://app.theengs.io', target:'_self', rel:''},
       { text: 'Gateway', link: 'https://gateway.theengs.io', target:'_self', rel:''},
-      { text: 'Decoder', link: 'https://decoder.theengs.io', target:'_self', rel:''}
+      { text: 'Decoder', link: 'https://decoder.theengs.io', target:'_self', rel:''},
+      { text: 'Web Parser', link: 'https://parser.theengs.io', target:'_self', rel:''}
     ],
     sidebar: [
       ['/','0 - What is it for 🏠'],
