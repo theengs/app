@@ -20,16 +20,24 @@ Item {
         if (typeof currentDevice === "undefined" || !currentDevice) return
         //console.log("chartThermometerMinMax // loadGraph() >> " + currentDevice)
 
-        daysVisible = 0
+        daysVisible = Math.floor(width / widgetWidthTarget)
+        widgetWidth = Math.floor(width / daysVisible)
     }
 
     function updateGraph() {
         if (typeof currentDevice === "undefined" || !currentDevice) return
         //console.log("chartThermometerMinMax // updateGraph() >> " + currentDevice)
 
+        currentDevice.updateChartData_thermometerMinMax(daysVisible)
+        mmGraph.visible = currentDevice.countDataNamed("temperature", daysVisible)
+    }
+
+    function updateGraph_resize() {
+        if (typeof currentDevice === "undefined" || !currentDevice) return
+        //console.log("chartThermometerMinMax // updateGraph_resize() >> " + currentDevice)
+
         var daysVisibleNew = Math.floor(width / widgetWidthTarget)
         var daysMax = daysVisibleNew
-
         widgetWidth = Math.floor(width / daysVisibleNew)
 
         if (daysVisible != daysVisibleNew) {
@@ -42,7 +50,7 @@ Item {
         }
     }
 
-    onWidthChanged: updateGraph()
+    onWidthChanged: updateGraph_resize()
 
     function isIndicator() { return false }
     function resetHistoryMode() { }

@@ -65,7 +65,7 @@ Loader {
             }
             function onHistoryUpdated() {
                 plantSensorData.updateGraph()
-                plantSensorHistory.updateData()
+                plantSensorHistory.loadData()
             }
         }
 

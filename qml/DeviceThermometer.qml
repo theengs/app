@@ -64,6 +64,7 @@ Loader {
             function onStatusUpdated() { updateHeader() }
             function onDataUpdated() {
                 updateData()
+                updateGraph()
             }
             function onRefreshUpdated() {
                 updateData()

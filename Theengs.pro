@@ -17,8 +17,6 @@ QT     += mqtt
 # Use Qt Quick compiler
 ios | android { CONFIG += qtquickcompiler }
 
-ios | macx { DEFINES += NO_MAC_ADDR }
-
 win32 { DEFINES += _USE_MATH_DEFINES }
 
 # Force patched Qt Connectivity for Android Bluetooth background daemon
@@ -36,6 +34,7 @@ DEFINES += QAPPLICATION_CLASS=QApplication
 include(src/thirdparty/AppUtils/AppUtils.pri)
 
 # Theengs submodule
+ios | macx { DEFINES += NO_MAC_ADDR }
 SOURCES         += $${PWD}/src/thirdparty/TheengsDecoder/src/decoder.cpp
 INCLUDEPATH     += $${PWD}/src/thirdparty/TheengsDecoder/src/
 INCLUDEPATH     += $${PWD}/src/thirdparty/TheengsDecoder/src/arduino_json/src/
