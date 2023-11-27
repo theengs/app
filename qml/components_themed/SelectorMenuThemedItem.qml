@@ -1,25 +1,24 @@
 import QtQuick 2.15
+import QtQuick.Controls.impl 2.15
+import QtQuick.Templates 2.15 as T
 
 import ThemeEngine 1.0
 
-Item {
+T.Button {
     id: control
-    implicitWidth: 16 + contentText.width + (source.toString().length ? sourceSize : 0) + 16
-    implicitHeight: 32
 
-    height: parent.height
+    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
+                            implicitContentWidth + leftPadding + rightPadding)
+    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
+                             implicitContentHeight + topPadding + bottomPadding)
 
-    // actions
-    signal clicked()
-    signal pressed()
-    signal pressAndHold()
+    leftPadding: 16
+    rightPadding: 16
 
-    // states
-    property bool selected: false
+    focusPolicy: Qt.NoFocus
 
     // settings
     property int index
-    property string text
     property url source
     property int sourceSize: 32
 
@@ -28,64 +27,53 @@ Item {
     property string colorContentHighlight: Theme.colorComponentContent
     property string colorBackgroundHighlight: Theme.colorComponentDown
 
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////
 
-    MouseArea {
-        id: mouseArea
-        anchors.fill: control
-        hoverEnabled: (isDesktop && control.enabled)
-
-        onClicked: control.clicked()
-        onPressed: control.pressed()
-        onPressAndHold: control.pressAndHold()
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-
-    Rectangle {
-        id: background
-        anchors.fill: control
-        anchors.margins: (Theme.componentBorderWidth / 2)
+    background: Rectangle {
+        implicitWidth: 32
+        implicitHeight: 32
+        radius: Theme.componentRadius
 
         color: control.colorBackgroundHighlight
         opacity: {
-            if (mouseArea.containsMouse && control.selected)
-                return 0.9
-            else if (control.selected)
-                return 0.7
-            else if (mouseArea.containsMouse)
-                return 0.5
-            else
-                return 0
+            if (control.hovered && control.highlighted) return 0.9
+            else if (control.highlighted) return 0.7
+            else if (control.hovered) return 0.5
+            return 0
         }
         Behavior on opacity { OpacityAnimator { duration: 133 } }
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////
 
-    IconSvg {
-        id: contentImage
-        width: control.sourceSize
-        height: control.sourceSize
-        anchors.centerIn: control
+    contentItem: Row {
+        spacing: 4
 
-        source: control.source
-        color: control.selected ? control.colorContentHighlight : control.colorContent
-        opacity: control.selected ? 1 : 0.5
+        IconSvg { // contentImage
+            anchors.verticalCenter: parent.verticalCenter
+            visible: control.source.toString().length
+
+            width: control.sourceSize
+            height: control.sourceSize
+
+            source: control.source
+            color: control.highlighted ? control.colorContentHighlight : control.colorContent
+            opacity: control.highlighted ? 1 : 0.5
+        }
+
+        Text { // contentText
+            anchors.verticalCenter: parent.verticalCenter
+            visible: control.text
+
+            text: control.text
+            textFormat: Text.PlainText
+            font: control.font
+            verticalAlignment: Text.AlignVCenter
+
+            color: control.highlighted ? control.colorContentHighlight : control.colorContent
+            opacity: control.highlighted ? 1 : 0.66
+        }
     }
 
-    Text {
-        id: contentText
-        anchors.centerIn: control
-
-        text: control.text
-        textFormat: Text.PlainText
-        font.pixelSize: Theme.fontSizeComponent
-        verticalAlignment: Text.AlignVCenter
-
-        color: control.selected ? control.colorContentHighlight : control.colorContent
-        opacity: control.selected ? 1 : 0.6
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////
 }

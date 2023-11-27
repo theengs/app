@@ -243,7 +243,7 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                 }
 
-                SwitchThemedDesktop {
+                SwitchThemed {
                     id: switch_appThemeAuto
                     anchors.right: parent.right
                     anchors.rightMargin: 0
@@ -362,7 +362,7 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                 }
 
-                SwitchThemedDesktop {
+                SwitchThemed {
                     id: switch_bluetoothControl
                     anchors.right: parent.right
                     anchors.rightMargin: 0
@@ -487,7 +487,7 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                 }
 
-                SwitchThemedDesktop {
+                SwitchThemed {
                     id: switch_worker
                     anchors.right: parent.right
                     anchors.rightMargin: 0

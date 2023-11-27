@@ -1,22 +1,32 @@
 import QtQuick 2.15
-import QtQuick.Controls 2.15
-//import QtQuick.Controls.impl 2.15
-//import QtQuick.Templates 2.15 as T
+import QtQuick.Controls.impl 2.15
+import QtQuick.Templates 2.15 as T
 
 import ThemeEngine 1.0
 
-CheckBox {
+T.CheckBox {
     id: control
 
-    padding: 4
-    spacing: 12
-    font.pixelSize: Theme.fontSizeComponent
+    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
+                            implicitContentWidth + leftPadding + rightPadding)
+    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
+                             implicitContentHeight + topPadding + bottomPadding)
+
+    padding: 8
+    spacing: 8
+    font.pixelSize: Theme.componentFontSize
+
+    property int layoutDirection: Qt.LeftToRight
+
+    ////////////////
 
     indicator: Rectangle {
         implicitWidth: Theme.componentHeight
         implicitHeight: Theme.componentHeight
 
-        x: control.leftPadding
+        x: (layoutDirection === Qt.LeftToRight) ?
+               (control.leftPadding) :
+               (control.width - control.padding - width)
         y: (parent.height / 2) - (height / 2)
         width: 24
         height: 24
@@ -38,8 +48,11 @@ CheckBox {
         }
     }
 
+    ////////////////
+
     contentItem: Text {
-        leftPadding: control.indicator.width + control.spacing
+        leftPadding: (layoutDirection === Qt.LeftToRight) ? control.indicator.width + control.spacing : 0
+        rightPadding: (layoutDirection === Qt.RightToLeft) ? control.indicator.width + control.spacing : 0
         verticalAlignment: Text.AlignVCenter
 
         text: control.text
@@ -50,4 +63,6 @@ CheckBox {
         color: control.checked ? Theme.colorText : Theme.colorSubText
         opacity: enabled ? 1.0 : 0.33
     }
+
+    ////////////////
 }

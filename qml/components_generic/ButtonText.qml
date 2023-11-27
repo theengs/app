@@ -12,7 +12,10 @@ T.Button {
     implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
                              implicitContentHeight + topPadding + bottomPadding)
 
-    font.pixelSize: Theme.fontSizeComponent
+    leftPadding: 12
+    rightPadding: 12
+
+    font.pixelSize: Theme.componentFontSize
     font.bold: true
 
     flat: true
@@ -21,6 +24,8 @@ T.Button {
     // colors
     property string colorHighlighted: Theme.colorPrimary
     property string colorHovered: Theme.colorHeader
+
+    ////////////////
 
     background: Rectangle {
         implicitWidth: 80
@@ -39,6 +44,8 @@ T.Button {
         }
     }
 
+    ////////////////
+
     contentItem: Text {
         text: control.text
         textFormat: Text.PlainText
@@ -52,4 +59,6 @@ T.Button {
         opacity: control.enabled ? 1 : 0.66
         color: control.highlighted ? "white" : Theme.colorText
     }
+
+    ////////////////
 }

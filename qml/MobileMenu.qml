@@ -86,7 +86,7 @@ Rectangle {
             colorContent: Theme.colorTabletmenuContent
             colorHighlight: Theme.colorTabletmenuHighlight
 
-            selected: (appContent.state === "DeviceList")
+            highlighted: (appContent.state === "DeviceList")
             onClicked: appContent.state = "DeviceList"
         }
         MobileMenuItem_horizontal {
@@ -99,7 +99,7 @@ Rectangle {
             colorContent: Theme.colorTabletmenuContent
             colorHighlight: Theme.colorTabletmenuHighlight
 
-            selected: (appContent.state === "DeviceBrowser")
+            highlighted: (appContent.state === "DeviceBrowser")
             onClicked: screenDeviceBrowser.loadScreen()
         }
         MobileMenuItem_horizontal {
@@ -112,7 +112,7 @@ Rectangle {
             colorContent: Theme.colorTabletmenuContent
             colorHighlight: Theme.colorTabletmenuHighlight
 
-            selected: (appContent.state === "SettingsMqtt")
+            highlighted: (appContent.state === "SettingsMqtt")
             onClicked: appContent.state = "SettingsMqtt"
         }
         MobileMenuItem_horizontal {
@@ -125,7 +125,7 @@ Rectangle {
             colorContent: Theme.colorTabletmenuContent
             colorHighlight: Theme.colorTabletmenuHighlight
 
-            selected: (appContent.state === "Settings")
+            highlighted: (appContent.state === "Settings")
             onClicked: appContent.state = "Settings"
         }
         MobileMenuItem_horizontal {
@@ -138,7 +138,7 @@ Rectangle {
             colorContent: Theme.colorTabletmenuContent
             colorHighlight: Theme.colorTabletmenuHighlight
 
-            selected: (appContent.state === "About" || appContent.state === "Permissions")
+            highlighted: (appContent.state === "About" || appContent.state === "Permissions")
             onClicked: appContent.state = "About"
         }
     }
@@ -164,7 +164,7 @@ Rectangle {
             colorContent: Theme.colorTabletmenuContent
             colorHighlight: Theme.colorTabletmenuHighlight
 
-            //selected: (appContent.state === "DevicePlantSensor")
+            //highlighted: (appContent.state === "DevicePlantSensor")
             onClicked: mobileMenu.deviceDataButtonClicked()
         }
         MobileMenuItem_horizontal {
@@ -178,7 +178,7 @@ Rectangle {
             colorContent: Theme.colorTabletmenuContent
             colorHighlight: Theme.colorTabletmenuHighlight
 
-            //selected: (appContent.state === "DevicePlantSensor")
+            //highlighted: (appContent.state === "DevicePlantSensor")
             onClicked: mobileMenu.deviceHistoryButtonClicked()
         }
         MobileMenuItem_horizontal {
@@ -192,7 +192,7 @@ Rectangle {
             colorContent: Theme.colorTabletmenuContent
             colorHighlight: Theme.colorTabletmenuHighlight
 
-            //selected: (appContent.state === "DevicePlantSensor")
+            //highlighted: (appContent.state === "DevicePlantSensor")
             onClicked: mobileMenu.deviceSettingsButtonClicked()
         }
     }

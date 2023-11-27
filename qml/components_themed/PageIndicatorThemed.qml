@@ -18,18 +18,24 @@ T.PageIndicator {
     count: 1
     currentIndex: 1
 
+    property color color: Theme.colorHeaderContent
+
+    ////////////////
+
     delegate: Rectangle {
         implicitWidth: 12
         implicitHeight: 12
         radius: (width / 2)
 
-        color: Theme.colorHeaderContent
+        color: control.color
         opacity: (index === control.currentIndex) ? (0.95) : (control.pressed ? 0.7 : 0.45)
 
         required property int index
 
         Behavior on opacity { OpacityAnimator { duration: 133 } }
     }
+
+    ////////////////
 
     contentItem: Row {
         spacing: control.spacing
@@ -39,4 +45,6 @@ T.PageIndicator {
             delegate: control.delegate
         }
     }
+
+    ////////////////
 }

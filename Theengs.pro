@@ -123,6 +123,7 @@ HEADERS  += src/SettingsManager.h \
 INCLUDEPATH += src/ src/thirdparty/
 
 RESOURCES   += qml/qml.qrc \
+               qml/components.qrc \
                assets/assets.qrc \
                assets/devices.qrc
 

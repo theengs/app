@@ -1,4 +1,7 @@
 import QtQuick 2.15
+import QtQuick.Layouts 1.15
+import QtQuick.Controls.impl 2.15
+import QtQuick.Templates 2.15 as T
 
 //import QtGraphicalEffects 1.15 // Qt5
 import Qt5Compat.GraphicalEffects // Qt6
@@ -6,24 +9,33 @@ import Qt5Compat.GraphicalEffects // Qt6
 import ThemeEngine 1.0
 import "qrc:/js/UtilsNumber.js" as UtilsNumber
 
-Item {
+T.Button {
     id: control
-    implicitWidth: Theme.componentHeight
-    implicitHeight: Theme.componentHeight
 
-    width: compact ? height : (contentRow.width + 12 + ((source.toString().length && !text) ? 0 : 16))
+    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
+                            implicitContentWidth + leftPadding + rightPadding)
+    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
+                             implicitContentHeight + topPadding + bottomPadding)
+
+    leftPadding: compactInternal ? 0 : 12
+    rightPadding: compactInternal ? 0 : 12 + (control.source.toString().length && control.text ? 2 : 0)
+    spacing: 6
+
+    width: compactInternal ? height : implicitWidth
+    height: compactInternal ? height : implicitHeight
     Behavior on width { NumberAnimation { duration: 133 } }
 
-    // actions
-    signal clicked()
-    signal pressed()
-    signal pressAndHold()
+    font.pixelSize: Theme.componentFontSize
+    font.bold: false
+
+    focusPolicy: Qt.NoFocus
 
     // settings
-    property bool compact: true
-    property string text
+    property bool compact: false
+    property bool compactInternal: compact || !control.text
     property url source
     property int sourceSize: UtilsNumber.alignTo(height * 0.666, 2)
+    property int layoutDirection: Qt.LeftToRight
 
     // colors
     property string textColor: Theme.colorText
@@ -33,42 +45,55 @@ Item {
     // animation
     property string animation // available: rotate, fade, both
     property bool animationRunning: false
-    property bool hoverAnimation: (isDesktop && !compact)
+    property bool hoverAnimation: isDesktop
 
     // tooltip
     property string tooltipText
     property string tooltipPosition: "bottom"
 
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////
 
     MouseArea {
         id: mouseArea
         anchors.fill: parent
 
-        hoverEnabled: (isDesktop && control.enabled)
+        enabled: control.hoverAnimation
+        hoverEnabled: control.hoverAnimation
 
         onClicked: control.clicked()
-        onPressed: {
-            control.pressed()
-            mouseBackground.width = (control.width * 2)
-        }
         onPressAndHold: control.pressAndHold()
 
-        //onReleased: mouseBackground.width = 0 // let the click expand the ripple
-        onEntered: mouseBackground.width = 72
-        onExited: mouseBackground.width = 0
-        onCanceled: mouseBackground.width = 0
+        onPressed: {
+            control.down = true
+            mouseBackground.width = (control.width * 2)
+        }
+        onReleased: {
+            control.down = false
+            //mouseBackground.width = 0 // disabled, we let the click expand the ripple
+        }
+        onEntered: {
+            mouseBackground.width = 72
+        }
+        onExited: {
+            control.down = false
+            mouseBackground.width = 0
+        }
+        onCanceled: {
+            control.down = false
+            mouseBackground.width = 0
+        }
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////
 
-    Rectangle {
-        id: background
-        anchors.fill: control
+    background: Rectangle {
+        implicitWidth: Theme.componentHeight
+        implicitHeight: Theme.componentHeight
 
-        radius: control.compact ? (control.height / 2) : Theme.componentRadius
+        radius: control.compactInternal ? Theme.componentHeight : Theme.componentRadius
         color: control.backgroundColor
-        opacity: (!control.compact || mouseArea.containsMouse) ? 1 : 0
+
+        //opacity: ( mouseArea.containsMouse) ? 1 : 0
         Behavior on opacity { NumberAnimation { duration: 333 } }
 
         Rectangle {
@@ -77,14 +102,14 @@ Item {
             x: mouseArea.mouseX - (width / 2)
             y: mouseArea.mouseY - (width / 2)
 
-            visible: !control.compact
+            //visible: !control.compact
             color: "white"
             opacity: mouseArea.containsMouse ? 0.16 : 0
             Behavior on opacity { NumberAnimation { duration: 333 } }
             Behavior on width { NumberAnimation { duration: 200 } }
         }
 
-        layer.enabled: control.hoverAnimation
+        layer.enabled: true
         layer.effect: OpacityMask {
             maskSource: Rectangle {
                 x: background.x
@@ -96,24 +121,26 @@ Item {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////
 
-    Row {
-        id: contentRow
-        anchors.centerIn: control
-        spacing: 8
+    contentItem: RowLayout {
+        spacing: control.spacing
+        layoutDirection: control.layoutDirection
 
         IconSvg {
-            id: contentImage
             width: control.sourceSize
             height: control.sourceSize
-            anchors.verticalCenter: parent.verticalCenter
 
-            opacity: enabled ? 1.0 : 0.4
-            Behavior on opacity { NumberAnimation { duration: 333 } }
+            visible: control.source.toString().length
+            Layout.maximumWidth: control.sourceSize
+            Layout.maximumHeight: control.sourceSize
+            Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
 
             source: control.source
             color: control.iconColor
+
+            opacity: enabled ? 1.0 : 0.4
+            Behavior on opacity { NumberAnimation { duration: 333 } }
 
             SequentialAnimation on opacity {
                 running: (control.animationRunning &&
@@ -138,24 +165,27 @@ Item {
         }
 
         Text {
-            id: contentText
-            anchors.verticalCenter: parent.verticalCenter
-            visible: !control.compact
-
             text: control.text
             textFormat: Text.PlainText
-            color: control.iconColor
-            font.pixelSize: Theme.fontSizeComponent
-            font.bold: true
+
+            visible: !control.compactInternal
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignVCenter
+
+            font: control.font
             elide: Text.ElideRight
+
+            color: control.iconColor
+            opacity: enabled ? 1.0 : 0.4
+            Behavior on opacity { NumberAnimation { duration: 333 } }
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////
 
     Loader {
         anchors.fill: control
-        active: control.tooltipText
+        active: control.tooltipText && control.compactInternal
 
         sourceComponent: ToolTipFlat {
             visible: mouseArea.containsMouse
@@ -166,5 +196,5 @@ Item {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////
 }

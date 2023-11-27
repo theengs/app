@@ -153,7 +153,7 @@ Item {
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignLeft
                 font.bold: isDesktop ? true : false
-                font.pixelSize: Theme.fontSizeComponent
+                font.pixelSize: Theme.componentFontSize
             }
 
             ButtonWireframe {
@@ -250,7 +250,7 @@ Item {
                     text: qsTr("%n device(s) selected", "", screenDeviceList.selectionCount)
                     color: Theme.colorActionbarContent
                     font.bold: true
-                    font.pixelSize: Theme.fontSizeComponent
+                    font.pixelSize: Theme.componentFontSize
                 }
             }
 

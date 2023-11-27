@@ -81,7 +81,7 @@ Item {
                     source: (validperm) ? "qrc:/assets/icons_material/baseline-check-24px.svg" : "qrc:/assets/icons_material/baseline-close-24px.svg"
                     iconColor: (validperm) ? "white" : "white"
                     backgroundColor: (validperm) ? Theme.colorSuccess : Theme.colorSubText
-                    background: true
+                    backgroundVisible: true
                 }
 
                 Text {
@@ -154,7 +154,7 @@ Item {
                     source: (validperm) ? "qrc:/assets/icons_material/baseline-check-24px.svg" : "qrc:/assets/icons_material/baseline-close-24px.svg"
                     iconColor: (validperm) ? "white" : "white"
                     backgroundColor: (validperm) ? Theme.colorSuccess : Theme.colorSubText
-                    background: true
+                    backgroundVisible: true
                 }
 
                 Text {
@@ -227,7 +227,7 @@ Item {
                     source: (validperm) ? "qrc:/assets/icons_material/baseline-check-24px.svg" : "qrc:/assets/icons_material/baseline-close-24px.svg"
                     iconColor: (validperm) ? "white" : "white"
                     backgroundColor: (validperm) ? Theme.colorSuccess : Theme.colorSubText
-                    background: true
+                    backgroundVisible: true
 
                     onClicked: {
                         utilsApp.vibrate(25)
@@ -321,7 +321,7 @@ Item {
                     source: (validperm) ? "qrc:/assets/icons_material/baseline-check-24px.svg" : "qrc:/assets/icons_material/baseline-close-24px.svg"
                     iconColor: (validperm) ? "white" : "white"
                     backgroundColor: (validperm) ? Theme.colorSuccess : Theme.colorSubText
-                    background: true
+                    backgroundVisible: true
 
                     onClicked: {
                         utilsApp.vibrate(25)
@@ -400,7 +400,7 @@ Item {
                     source: (validperm) ? "qrc:/assets/icons_material/baseline-check-24px.svg" : "qrc:/assets/icons_material/baseline-close-24px.svg"
                     iconColor: (validperm) ? "white" : "white"
                     backgroundColor: (validperm) ? Theme.colorSuccess : Theme.colorSubText
-                    background: true
+                    backgroundVisible: true
 
                     onClicked: {
                         utilsApp.vibrate(25)

@@ -166,11 +166,11 @@ Item {
 
                         text: qsTr("MQTT")
                         textFormat: Text.PlainText
-                        font.pixelSize: Theme.fontSizeComponent
+                        font.pixelSize: Theme.componentFontSize
                         color: Theme.colorText
                     }
 
-                    SwitchThemedDesktop {
+                    SwitchThemed {
                         text: settingsManager.mqtt ? qsTr("Enabled") : qsTr("Disabled")
                         checked: settingsManager.mqtt
                         onClicked: {
@@ -443,11 +443,11 @@ Item {
 
                         text: qsTr("Discovery")
                         textFormat: Text.PlainText
-                        font.pixelSize: Theme.fontSizeComponent
+                        font.pixelSize: Theme.componentFontSize
                         color: Theme.colorText
                     }
 
-                    SwitchThemedDesktop {
+                    SwitchThemed {
                         text: settingsManager.mqttDiscovery ? qsTr("Enabled") : qsTr("Disabled")
                         checked: settingsManager.mqttDiscovery
                         onClicked: settingsManager.mqttDiscovery = checked

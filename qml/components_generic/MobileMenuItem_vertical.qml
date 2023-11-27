@@ -1,26 +1,24 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Controls.impl 2.15
+import QtQuick.Templates 2.15 as T
 
 import ThemeEngine 1.0
 
-Item {
+T.Button {
     id: control
-    implicitWidth: 48
-    implicitHeight: 48
 
-    width: Math.max(parent.height, content.width + 4)
-    height: parent.height
+    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
+                            implicitContentWidth + leftPadding + rightPadding)
+    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
+                             implicitContentHeight + topPadding + bottomPadding)
 
-    // actions
-    signal clicked()
-    signal pressed()
-    signal pressAndHold()
+    leftPadding: 0
+    rightPadding: 0
 
-    // states
-    property bool selected: false
+    focusPolicy: Qt.NoFocus
 
-    // settings
-    property string text
+    // icon
     property url source
     property int sourceSize: 26
 
@@ -28,51 +26,60 @@ Item {
     property string colorContent: Theme.colorTabletmenuContent
     property string colorHighlight: Theme.colorTabletmenuHighlight
 
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////
 
-    MouseArea {
-        anchors.fill: control
-        hoverEnabled: false
-
-        onClicked: control.clicked()
-        onPressed: control.pressed()
-        onPressAndHold: control.pressAndHold()
+    background: Item {
+        implicitWidth: Theme.componentHeight
+        implicitHeight: Theme.componentHeight
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////
 
-    ColumnLayout {
-        id: content
-        anchors.centerIn: control
-        spacing: 0
+    contentItem: ColumnLayout {
+        spacing: -2
 
         IconSvg { // contentImage
-            width: control.sourceSize
-            height: control.sourceSize
-            Layout.maximumWidth: control.sourceSize
-            Layout.maximumHeight: control.sourceSize
+            Layout.preferredWidth: control.sourceSize
+            Layout.preferredHeight: control.sourceSize
             Layout.alignment: Qt.AlignHCenter
+
             visible: source.toString().length
 
             source: control.source
             opacity: control.enabled ? 1.0 : 0.33
-            color: control.selected ? control.colorHighlight : control.colorContent
-            Behavior on color { ColorAnimation { duration: 133 } }
+            color: control.highlighted ? control.colorHighlight : control.colorContent
+            Behavior on color { ColorAnimation { duration: 233 } }
+
+            Rectangle { // backgroundIndicator
+                anchors.centerIn: parent
+                z: -1
+
+                width: 60
+                height: 32
+                radius: height
+                color: control.colorHighlight
+
+                opacity: control.highlighted ? 0.2 : 0
+                Behavior on opacity { OpacityAnimator { duration: 233 } }
+            }
         }
 
         Text { // contentText
-            width: control.width
+            Layout.preferredWidth: control.width
             Layout.alignment: Qt.AlignHCenter
+
             visible: text
 
             text: control.text
             textFormat: Text.PlainText
+            horizontalAlignment: Text.AlignHCenter
             font.pixelSize: Theme.fontSizeContentVerySmall
-            font.bold: false
-            color: control.selected ? control.colorHighlight : control.colorContent
-            Behavior on color { ColorAnimation { duration: 133 } }
+            font.bold: true
+
+            color: control.highlighted ? control.colorHighlight : control.colorContent
+            Behavior on color { ColorAnimation { duration: 233 } }
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////
 }

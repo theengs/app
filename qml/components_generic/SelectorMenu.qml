@@ -10,31 +10,39 @@ Item {
     width: contentRow.width
     opacity: enabled ? 1 : 0.4
 
-    signal menuSelected(var index)
-    property int currentSelection: 1
-
     property var model: null
 
-    Rectangle {
-        id: background
+    // colors
+    property string colorBackground: Theme.colorComponentBackground
+
+    // states
+    property int currentSelection: 1
+    signal menuSelected(var index)
+
+    ////////////////
+
+    Rectangle { // background
         anchors.fill: parent
 
         radius: height
-        color: Theme.colorComponentBackground
+        color: selectorMenu.colorBackground
 
         border.width: 2
         border.color: Theme.colorComponentDown
     }
 
+    ////////////////
+
     Row {
         id: contentRow
         height: parent.height
-        spacing: 0
+        spacing: -4
 
         Repeater {
             model: selectorMenu.model
             delegate: SelectorMenuItem {
-                selected: (selectorMenu.currentSelection === idx)
+                height: parent.height
+                highlighted: (selectorMenu.currentSelection === idx)
                 index: idx ?? 0
                 text: txt ?? ""
                 source: src ?? ""
@@ -43,4 +51,6 @@ Item {
             }
         }
     }
+
+    ////////////////
 }

@@ -469,8 +469,8 @@ Item {
 
                             RoundButtonIcon {
                                 width: 40; height: 40;
-                                border: true
-                                background: true
+                                borderVisible: true
+                                backgroundVisible: true
                                 backgroundColor: Theme.colorBackground
                                 iconColor: Theme.colorText
                                 source: UtilsDeviceSensors.getDeviceSensorIcon(modelData.sensorId)
@@ -515,8 +515,8 @@ Item {
 
                             RoundButtonIcon {
                                 width: 40; height: 40;
-                                border: true
-                                background: true
+                                borderVisible: true
+                                backgroundVisible: true
                                 backgroundColor: Theme.colorBackground
                                 iconColor: Theme.colorText
                                 source: UtilsDeviceSensors.getDeviceCapabilityIcon(modelData.capabilityId)
@@ -572,7 +572,7 @@ Item {
                         font.capitalization: Font.AllUppercase
                     }
 
-                    SwitchThemedDesktop {
+                    SwitchThemed {
                         text: checked ? qsTr("Device is enabled") : qsTr("Device is disabled")
                         checked: currentDevice.deviceEnabled
                         onClicked: currentDevice.deviceEnabled = checked

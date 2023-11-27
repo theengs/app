@@ -16,12 +16,15 @@ T.Button {
     implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
                              implicitContentHeight + topPadding + bottomPadding)
 
+    leftPadding: 12
+    rightPadding: 12
+
     focusPolicy: Qt.NoFocus
 
     // colors
     property string primaryColor: Theme.colorPrimary
 
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////
 
     MouseArea {
         id: mouseArea
@@ -33,11 +36,11 @@ T.Button {
         onClicked: control.clicked()
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////
 
     background: Item {
-        implicitWidth: 256
-        implicitHeight: 56
+        implicitWidth: 80
+        implicitHeight: 48
 
         Rectangle { // mouseBackground
             width: mouseArea.pressed ? control.width*2 : 0
@@ -65,14 +68,14 @@ T.Button {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////
 
     contentItem: Text {
         text: control.text
         textFormat: Text.PlainText
 
         font.bold: false
-        font.pixelSize: Theme.fontSizeComponent
+        font.pixelSize: Theme.componentFontSize
         font.capitalization: Font.AllUppercase
 
         elide: Text.ElideMiddle
@@ -83,4 +86,6 @@ T.Button {
         color: control.primaryColor
         opacity: enabled ? 1.0 : 0.33
     }
+
+    ////////////////
 }
