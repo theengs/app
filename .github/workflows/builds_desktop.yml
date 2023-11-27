@@ -1,6 +1,6 @@
-#--------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # Workflow configuration
-#--------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 name: "Desktop CI builds"
 on:
@@ -8,19 +8,18 @@ on:
   pull_request:
   workflow_dispatch:
 
-#--------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # Define application name & version
-#--------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 env:
-  VERSION: "1.3"
-  APPLICATION: "Theengs"
-  QMAKE_PROJECT: "Theengs.pro"
-  QT_VERSION: "6.4.3"
+  APP_NAME: "Theengs"
+  APP_VERSION: "1.4"
+  QT_VERSION: "6.5.3"
 
-#--------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # Workflow jobs
-#--------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 jobs:
   ## GNU/Linux build ###########################################################
@@ -28,9 +27,9 @@ jobs:
     name: "Linux CI build"
     runs-on: ubuntu-20.04
     steps:
-      # Checkout the repository
-      - name: Checkout repository and submodules
-        uses: actions/checkout@v3
+      # Checkout the repository (and submodules)
+      - name: Checkout repository (and submodules)
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -54,11 +53,15 @@ jobs:
              python3 contribs_builder.py --targets=linux --qt-directory ${{env.Qt6_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
              cd ..
 
+      # Setup env
+      - name: Setup env
+        run: |
+             qmake --version
+
       # Build application
       - name: Build application
         run: |
-             qmake --version
-             qmake ${{env.QMAKE_PROJECT}} CONFIG+=release PREFIX=/usr
+             qmake ${{env.APP_NAME}}.pro CONFIG+=release PREFIX=/usr
              make -j$(nproc)
 
       # Deploy application
@@ -69,25 +72,25 @@ jobs:
       - name: Upload AppImage
         uses: actions/upload-artifact@v3
         with:
-          name: ${{env.APPLICATION}}-${{env.VERSION}}-linux64.AppImage
-          path: ${{env.APPLICATION}}*.AppImage
+          name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-linux64.AppImage
+          path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-linux64.AppImage
           retention-days: 1
 
   ## macOS build ###############################################################
   build-mac:
     name: "macOS CI build"
-    runs-on: macos-11
+    runs-on: macos-12
     steps:
-      # Checkout the repository
-      - name: Checkout repository and submodules
-        uses: actions/checkout@v3
+      # Checkout the repository (and submodules)
+      - name: Checkout repository (and submodules)
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      # Install dependencies
-      #- name: Install dependencies
+      # Install dependencies (from package manager)
+      #- name: Install dependencies (from package manager)
       #  run: |
-      #       brew install qt6
+      #       brew install qt6 cmake
 
       # Install Qt
       - name: Install Qt
@@ -108,23 +111,27 @@ jobs:
              python3 contribs_builder.py --targets=macos --qt-directory ${{env.Qt6_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
              cd ..
 
+      # Setup env
+      - name: Setup env
+        run: |
+             qmake --version
+
       # Build application
       - name: Build application
         run: |
-             qmake --version
-             qmake ${{env.QMAKE_PROJECT}} CONFIG+=release
-             make -j$(nproc)
+             qmake ${{env.APP_NAME}}.pro CONFIG+=release
+             make -j`sysctl -n hw.logicalcpu`
 
       # Deploy application
       - name: Deploy application
         run: ./deploy_macos.sh -c -p
 
-      # Upload app zip
-      - name: Upload app zip
+      # Upload app ZIP
+      - name: Upload app ZIP
         uses: actions/upload-artifact@v3
         with:
-          name: ${{env.APPLICATION}}-${{env.VERSION}}-macOS.zip
-          path: bin/${{env.APPLICATION}}-${{env.VERSION}}-macOS.zip
+          name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS.zip
+          path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS.zip
           retention-days: 1
 
   ## Windows build #############################################################
@@ -132,9 +139,9 @@ jobs:
     name: "Windows CI build"
     runs-on: windows-2022
     steps:
-      # Checkout the repository
-      - name: Checkout repository and submodules
-        uses: actions/checkout@v3
+      # Checkout the repository (and submodules)
+      - name: Checkout repository (and submodules)
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -166,29 +173,33 @@ jobs:
              python3 contribs_builder.py --targets=msvc2019 --qt-directory ${{env.Qt6_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
              cd ..
 
+      # Setup env
+      - name: Setup env
+        run: |
+             qmake --version
+
       # Build application
       - name: Build application
         run: |
-             qmake --version
-             qmake ${{env.QMAKE_PROJECT}} CONFIG+=release
+             qmake ${{env.APP_NAME}}.pro CONFIG+=release
              nmake
 
       # Deploy application
       - name: Deploy application
         run: sh deploy_windows.sh -c -p
 
-      # Upload ZIP
-      - name: Upload ZIP
+      # Upload app ZIP
+      - name: Upload app ZIP
         uses: actions/upload-artifact@v3
         with:
-          name: ${{env.APPLICATION}}-${{env.VERSION}}-win64.zip
-          path: ${{env.APPLICATION}}-${{env.VERSION}}-win64.zip
+          name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.zip
+          path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.zip
           retention-days: 1
 
       # Upload NSIS installer
       - name: Upload NSIS installer
         uses: actions/upload-artifact@v3
         with:
-          name: ${{env.APPLICATION}}-${{env.VERSION}}-win64.exe
-          path: ${{env.APPLICATION}}-${{env.VERSION}}-win64.exe
+          name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.exe
+          path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.exe
           retention-days: 1

@@ -55,7 +55,7 @@ print(str(softwares))
 ## macOS:
 # brew install python cmake automake ninja
 # brew install libtool pkg-config
-# xcode (12+)
+# xcode (13+)
 
 ## Windows:
 # python3 (https://www.python.org/downloads/)
@@ -117,7 +117,7 @@ clean = False
 rebuild = False
 targets_selected = []
 softwares_selected = []
-QT_VERSION = "6.4.3"
+QT_VERSION = "6.6.1"
 QT_DIRECTORY = os.getenv('QT_DIRECTORY', '')
 ANDROID_SDK_ROOT = os.getenv('ANDROID_SDK_ROOT', '')
 ANDROID_NDK_ROOT = os.getenv('ANDROID_NDK_ROOT', '')
@@ -152,6 +152,8 @@ if len(sys.argv) > 1:
         QT_VERSION = result.qtversion
     if result.qtdirectory:
         QT_DIRECTORY = result.qtdirectory
+    if result.androidsdk:
+        ANDROID_SDK_ROOT = result.androidsdk
     if result.androidndk:
         ANDROID_NDK_ROOT = result.androidndk
 
@@ -381,7 +383,7 @@ for TARGET in TARGETS:
         elif ARCH_TARGET == "armv7":
             CMAKE_cmd = ["cmake", "-DCMAKE_TOOLCHAIN_FILE=" + ANDROID_NDK_ROOT + "/build/cmake/android.toolchain.cmake", "-DANDROID_ABI=armeabi-v7a", "-DANDROID_PLATFORM=android-23"]
         else: # ARCH_TARGET == "armv8":
-            CMAKE_cmd = ["cmake", "-DANDROID_NDK=" + ANDROID_NDK_ROOT, "-DCMAKE_TOOLCHAIN_FILE=" + ANDROID_NDK_ROOT + "/build/cmake/android.toolchain.cmake", "-DANDROID_ABI=arm64-v8a", "-DANDROID_PLATFORM=android-23"]
+            CMAKE_cmd = ["cmake", "-DCMAKE_TOOLCHAIN_FILE=" + ANDROID_NDK_ROOT + "/build/cmake/android.toolchain.cmake", "-DANDROID_ABI=arm64-v8a", "-DANDROID_PLATFORM=android-23"]
 
     #### EXTRACT, BUILD & INSTALL ####
 

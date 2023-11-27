@@ -13,10 +13,9 @@ on:
 #-------------------------------------------------------------------------------
 
 env:
-  VERSION: "1.3"
-  APPLICATION: "Theengs"
-  QMAKE_PROJECT: "Theengs.pro"
-  QT_VERSION: "6.4.3"
+  APP_NAME: "Theengs"
+  APP_VERSION: "1.4"
+  QT_VERSION: "6.6.1"
 
 #-------------------------------------------------------------------------------
 # Workflow jobs
@@ -28,9 +27,9 @@ jobs:
     name: "Android CI build"
     runs-on: ubuntu-20.04
     steps:
-      # Checkout the repository
-      - name: Checkout repository and submodules
-        uses: actions/checkout@v3
+      # Checkout the repository (and submodules)
+      - name: Checkout repository (and submodules)
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -46,9 +45,9 @@ jobs:
       #  uses: android-actions/setup-android@v2
       #- name: Install Android SDK / NDK / tools
       #  run: |
-      #       sdkmanager "platforms;android-32"
-      #       sdkmanager "ndk;23.1.7779620"
-      #       sdkmanager "build-tools;30.0.3"
+      #       sdkmanager "platforms;android-34"
+      #       sdkmanager "ndk;26.1.10909125"
+      #       sdkmanager "build-tools;34.0.0"
 
       # Install Qt (Android & desktop)
       - name: Install Qt (Android & desktop)
@@ -81,17 +80,17 @@ jobs:
       # Build application
       - name: Build application
         run: |
-             qmake ${{env.QMAKE_PROJECT}} CONFIG+=release DEFINES+=QT_CONNECTIVITY_PATCHED
+             qmake ${{env.APP_NAME}}.pro CONFIG+=release
              make -j$(nproc)
 
   ## iOS build #################################################################
   build-ios:
     name: "iOS CI build"
-    runs-on: macos-11
+    runs-on: macos-12
     steps:
-      # Checkout the repository
-      - name: Checkout repository and submodules
-        uses: actions/checkout@v3
+      # Checkout the repository (and submodules)
+      - name: Checkout repository (and submodules)
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -124,5 +123,5 @@ jobs:
       # Build application
       - name: Build application
         run: |
-             qmake ${{env.QMAKE_PROJECT}} CONFIG+=release
-             make -j$(nproc)
+             qmake ${{env.APP_NAME}}.pro CONFIG+=release
+             make -j`sysctl -n hw.logicalcpu`
