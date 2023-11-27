@@ -1,21 +1,23 @@
 /*!
- * Copyright (c) 2022 Emeric Grange - All Rights Reserved
+ * Copyright (c) 2020 Emeric Grange
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * \author    Emeric Grange <emeric.grange@gmail.com>
- * \date      2020
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 #include "utils_os_ios.h"
@@ -40,15 +42,15 @@ void UtilsIOS::screenKeepOn(bool on)
 }
 
 /* ************************************************************************** */
-/*
-    enum ScreenOrientation_iOS {
-        UIInterfaceOrientationUnknown = 0,          // The orientation of the device is unknown.
-        UIInterfaceOrientationPortrait,             // The device is in portrait mode, with the device upright and the Home button on the bottom.
-        UIInterfaceOrientationPortraitUpsideDown,   // The device is in portrait mode but is upside down, with the device upright and the Home button at the top.
-        UIInterfaceOrientationLandscapeLeft,        // The device is in landscape mode, with the device upright and the Home button on the left.
-        UIInterfaceOrientationLandscapeRight,       // The device is in landscape mode, with the device upright and the Home button on the right.
-    };
-*/
+
+// For reference:
+//enum ScreenOrientation_iOS {
+//    UIInterfaceOrientationUnknown = 0,          // The orientation of the device is unknown.
+//    UIInterfaceOrientationPortrait,             // The device is in portrait mode, with the device upright and the Home button on the bottom.
+//    UIInterfaceOrientationPortraitUpsideDown,   // The device is in portrait mode but is upside down, with the device upright and the Home button at the top.
+//    UIInterfaceOrientationLandscapeLeft,        // The device is in landscape mode, with the device upright and the Home button on the left.
+//    UIInterfaceOrientationLandscapeRight,       // The device is in landscape mode, with the device upright and the Home button on the right.
+//};
 
 void UtilsIOS::screenLockOrientation(int orientation)
 {
@@ -69,6 +71,18 @@ void UtilsIOS::screenLockOrientation(int orientation, bool autoRotate)
     else if (orientation == 8) value = [NSNumber numberWithInt:UIInterfaceOrientationLandscapeRight];
 
     [[UIDevice currentDevice] setValue:value forKey:@"orientation"];
+}
+
+/* ************************************************************************** */
+
+void UtilsIOS::vibrate(int ms)
+{
+    Q_UNUSED(ms)
+
+    UISelectionFeedbackGenerator *generator = [[UISelectionFeedbackGenerator alloc] init];
+    [generator prepare];
+    [generator selectionChanged];
+    generator = nil;
 }
 
 /* ************************************************************************** */

@@ -1,21 +1,23 @@
 /*!
- * COPYRIGHT (C) 2022 Emeric Grange - All Rights Reserved
+ * Copyright (c) 2021 Emeric Grange
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * \author    Emeric Grange <emeric.grange@gmail.com>
- * \date      2021
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 #ifndef UTILS_SYSINFO_H
@@ -38,7 +40,9 @@ class UtilsSysinfo: public QObject
     Q_PROPERTY(int cpu_coreCount_physical READ getCpuCoreCountPhysical CONSTANT)
     Q_PROPERTY(int cpu_coreCount_logical READ getCpuCoreCountLogical CONSTANT)
     Q_PROPERTY(quint64 ram_total READ getRamTotal CONSTANT)
-    Q_PROPERTY(QString os_name READ getOs CONSTANT)
+
+    Q_PROPERTY(QString os_name READ getOsName CONSTANT)
+    Q_PROPERTY(QString os_version READ getOsVersion CONSTANT)
 
     QString m_cpu_arch;
     int m_cpu_core_physical = 0;
@@ -47,6 +51,7 @@ class UtilsSysinfo: public QObject
     uint64_t m_ram_total = 0;
 
     QString m_os_name;
+    QString m_os_version;
 
     // Singleton
     static UtilsSysinfo *instance;
@@ -69,7 +74,9 @@ public:
 
     Q_INVOKABLE uint64_t getRamTotal() const  { return m_ram_total; };
 
-    Q_INVOKABLE QString getOs() const { return m_os_name; };
+    Q_INVOKABLE QString getOsName() const { return m_os_name; };
+
+    Q_INVOKABLE QString getOsVersion() const { return m_os_version; };
 };
 
 /* ************************************************************************** */

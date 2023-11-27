@@ -1,21 +1,23 @@
 /*!
- * COPYRIGHT (C) 2020 Emeric Grange - All Rights Reserved
+ * Copyright (c) 2019 Emeric Grange
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * \author    Emeric Grange <emeric.grange@gmail.com>
- * \date      2019
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 #include "utils_os_android.h"
@@ -93,6 +95,41 @@ bool UtilsAndroid::getPermission_storage_write()
             qWarning() << "STORAGE WRITE PERMISSION DENIED";
             status = false;
         }
+    }
+
+    return status;
+}
+
+/* ************************************************************************** */
+
+bool UtilsAndroid::checkPermission_storage_filesystem()
+{
+    if (QtAndroid::androidSdkVersion() >= 30)
+    {
+        return QAndroidJniObject::callStaticMethod<jboolean>("android/os/Environment", "isExternalStorageManager");
+    }
+
+    return false;
+}
+
+bool UtilsAndroid::getPermission_storage_filesystem(const QString &packageName)
+{
+    //qDebug() << "> getPermission_storage_filesystem(" << packageName << ")";
+
+    bool status = false;
+
+    if (QtAndroid::androidSdkVersion() >= 30)
+    {
+        if (!checkPermission_storage_filesystem())
+        {
+            openStorageSettings(packageName);
+        }
+
+        status = checkPermission_storage_filesystem();
+    }
+    else
+    {
+        qWarning() << "ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION is not available";
     }
 
     return status;
@@ -248,6 +285,77 @@ bool UtilsAndroid::isGpsEnabled()
     return status;
 }
 
+bool UtilsAndroid::gpsutils_isGpsEnabled()
+{
+    bool status = false;
+
+    QAndroidJniObject activity = QtAndroid::androidActivity();
+    if (activity.isValid())
+    {
+        QAndroidJniObject appCtx = activity.callObjectMethod("getApplicationContext", "()Landroid/content/Context;");
+        if (appCtx.isValid())
+        {
+            jboolean verified = QAndroidJniObject::callStaticMethod<jboolean>(
+                "com/emeric/utils/QGpsUtils",
+                "checkGpsEnabled",
+                "(Landroid/content/Context;)Z",
+                appCtx.object());
+
+            if (verified)
+            {
+                status = true;
+            }
+        }
+    }
+
+    return status;
+}
+
+bool UtilsAndroid::gpsutils_forceGpsEnabled()
+{
+    bool status = false;
+
+    QAndroidJniObject activity = QtAndroid::androidActivity();
+    if (activity.isValid())
+    {
+        QAndroidJniObject appCtx = activity.callObjectMethod("getApplicationContext", "()Landroid/content/Context;");
+        if (appCtx.isValid())
+        {
+            jboolean verified = QAndroidJniObject::callStaticMethod<jboolean>(
+                "com/emeric/utils/QGpsUtils",
+                "forceGpsEnabled",
+                "(Landroid/content/Context;)Z",
+                appCtx.object());
+
+            if (verified)
+            {
+                status = true;
+            }
+        }
+    }
+
+    return status;
+}
+
+void UtilsAndroid::gpsutils_openLocationSettings()
+{
+    QAndroidJniObject activity = QtAndroid::androidActivity();
+    if (activity.isValid())
+    {
+        QAndroidJniObject appCtx = activity.callObjectMethod("getApplicationContext", "()Landroid/content/Context;");
+        if (appCtx.isValid())
+        {
+            QAndroidJniObject intent = QAndroidJniObject::callStaticObjectMethod(
+                "com/emeric/utils/QGpsUtils",
+                "openLocationSettings",
+                "()Landroid/content/Intent;",
+                appCtx.object());
+
+            QtAndroid::startActivity(intent, 0);
+        }
+    }
+}
+
 /* ************************************************************************** */
 /* ************************************************************************** */
 
@@ -264,7 +372,7 @@ QString UtilsAndroid::getAppExternalStorage()
 
     if (context.isValid())
     {
-        QAndroidJniObject dir = QAndroidJniObject::fromString(QString(""));
+        QAndroidJniObject dir = QAndroidJniObject::fromString(QStringLiteral(""));
         QAndroidJniObject path = context.callObjectMethod("getExternalFilesDir",
                                                           "(Ljava/lang/String;)Ljava/io/File;",
                                                           dir.object());
@@ -274,7 +382,7 @@ QString UtilsAndroid::getAppExternalStorage()
     return storage;
 }
 
-QStringList UtilsAndroid::get_storages_by_api()
+QStringList UtilsAndroid::get_storages_by_api() // DEPRECATED
 {
     QStringList storages;
 
@@ -304,7 +412,7 @@ QStringList UtilsAndroid::get_storages_by_api()
     return storages;
 }
 
-QString UtilsAndroid::get_external_storage()
+QString UtilsAndroid::get_external_storage() // DEPRECATED
 {
     QAndroidJniObject mediaDir = QAndroidJniObject::callStaticObjectMethod("android/os/Environment",
                                                                            "getExternalStorageDirectory",
@@ -340,7 +448,7 @@ QString UtilsAndroid::getDeviceSerial()
         QAndroidJniObject contentR = appctx.callObjectMethod("getContentResolver", "()Landroid/content/ContentResolver;");
 
         QAndroidJniObject aidString = QAndroidJniObject::fromString("android_id");
-        QAndroidJniObject aidService = QAndroidJniObject::callStaticObjectMethod("android/provider/Settings$Secure","getString",
+        QAndroidJniObject aidService = QAndroidJniObject::callStaticObjectMethod("android/provider/Settings$Secure", "getString",
                                                                                  "(Landroid/content/ContentResolver;Ljava/lang/String;)Ljava/lang/String;",
                                                                                  contentR.object<jobject>(),
                                                                                  aidString.object<jstring>());
@@ -464,8 +572,27 @@ void UtilsAndroid::vibrate(int milliseconds)
                                                                             vibratorString.object<jstring>());
                 if (vibratorService.callMethod<jboolean>("hasVibrator", "()Z"))
                 {
-                    jlong ms = milliseconds;
-                    vibratorService.callMethod<void>("vibrate", "(J)V", ms);
+                    if (QtAndroid::androidSdkVersion() < 26)
+                    {
+                        // vibrate (long milliseconds) // Deprecated in API level 26
+
+                        jlong ms = milliseconds;
+                        vibratorService.callMethod<void>("vibrate", "(J)V", ms);
+                    }
+                    else
+                    {
+                        // vibrate(VibrationEffect vibe) // Added in API level 26
+
+                        jint effect = 0x00000002;
+                        QAndroidJniObject vibrationEffect = QAndroidJniObject::callStaticObjectMethod("android/os/VibrationEffect",
+                                                                                                      "createPredefined",
+                                                                                                      "(I)Landroid/os/VibrationEffect;",
+                                                                                                      effect);
+
+                        vibratorService.callMethod<void>("vibrate",
+                                                         "(Landroid/os/VibrationEffect;)V",
+                                                         vibrationEffect.object<jobject>());
+                    }
                 }
             }
         }
@@ -482,6 +609,93 @@ void UtilsAndroid::vibrate(int milliseconds)
 void UtilsAndroid::openApplicationInfo(const QString &packageName)
 {
     //qDebug() << "> openApplicationInfo(" << packageName << ")";
+
+    QAndroidJniObject jpackageName = QAndroidJniObject::fromString("package:" + packageName);
+    QAndroidJniObject jintentName = QAndroidJniObject::fromString("android.settings.APPLICATION_DETAILS_SETTINGS");
+
+    QAndroidJniObject juri = QAndroidJniObject::callStaticObjectMethod("android/net/Uri", "parse",
+                                                                       "(Ljava/lang/String;)Landroid/net/Uri;",
+                                                                       jpackageName.object<jstring>());
+    if (!juri.isValid())
+    {
+        qWarning("Unable to create Uri object for APPLICATION_DETAILS_SETTINGS");
+        return;
+    }
+
+    QAndroidJniObject intent("android/content/Intent", "(Ljava/lang/String;)V",
+                      jintentName.object<jstring>());
+    if (!intent.isValid())
+    {
+        qWarning("Unable to create Intent object for APPLICATION_DETAILS_SETTINGS");
+        return;
+    }
+
+    intent.callObjectMethod("addCategory", "(Ljava/lang/String;)Landroid/content/Intent;",
+                            QAndroidJniObject::fromString("android.intent.category.DEFAULT").object<jstring>());
+
+    intent.callObjectMethod("setData", "(Landroid/net/Uri;)Landroid/content/Intent;",
+                            juri.object<jobject>());
+
+    QtAndroid::startActivity(intent, 0);
+}
+
+/* ************************************************************************** */
+
+void UtilsAndroid::openStorageSettings(const QString &packageName)
+{
+    //qDebug() << "> openStorageSettings(" << packageName << ")";
+
+    if (QtAndroid::androidSdkVersion() >= 30)
+    {
+        QAndroidJniObject jpackageName = QAndroidJniObject::fromString("package:" + packageName);
+        QAndroidJniObject jintentObject = QAndroidJniObject::getStaticObjectField("android/provider/Settings",
+                                                                                  "ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION",
+                                                                                  "Ljava/lang/String;");
+
+        QAndroidJniObject juri = QAndroidJniObject::callStaticObjectMethod("android/net/Uri", "parse",
+                                                                           "(Ljava/lang/String;)Landroid/net/Uri;",
+                                                                           jpackageName.object<jstring>());
+        if (!juri.isValid())
+        {
+            qWarning("Unable to create Uri object for ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION");
+            return;
+        }
+
+        QAndroidJniObject intent("android/content/Intent", "(Ljava/lang/String;)V", jintentObject.object());
+        if (!intent.isValid())
+        {
+            qWarning("Unable to create Intent object for ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION");
+            return;
+        }
+
+        intent.callObjectMethod("setData", "(Landroid/net/Uri;)Landroid/content/Intent;",
+                                juri.object<jobject>());
+
+        QtAndroid::startActivity(intent, 0);
+    }
+}
+
+/* ************************************************************************** */
+
+void UtilsAndroid::openLocationSettings()
+{
+    //qDebug() << "> openLocationSettings()";
+
+    QAndroidJniObject jintentObject = QAndroidJniObject::getStaticObjectField("android/provider/Settings",
+                                                                              "ACTION_LOCATION_SOURCE_SETTINGS",
+                                                                              "Ljava/lang/String;");
+
+    QAndroidJniObject intent("android/content/Intent", "(Ljava/lang/String;)V", jintentObject.object());
+    if (!intent.isValid())
+    {
+        qWarning("Unable to create Intent object for ACTION_LOCATION_SOURCE_SETTINGS");
+        return;
+    }
+
+    jint jflag = QAndroidJniObject::getStaticField<jint>("android/content/Intent", "FLAG_ACTIVITY_NEW_TASK");
+    intent.callObjectMethod("setFlags", "(I)Landroid/content/Intent;", jflag);
+
+    QtAndroid::startActivity(intent, 0);
 }
 
 /* ************************************************************************** */

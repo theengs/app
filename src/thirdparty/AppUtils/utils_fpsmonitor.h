@@ -1,5 +1,6 @@
 /*!
- * Copyright (c) 2022 Emeric Grange
+ * Copyright (c) 2022 Luca Carlon
+ * Copyright (c) 2023 Emeric Grange
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,33 +21,53 @@
  * SOFTWARE.
  */
 
-#include "utils_bits.h"
+#ifndef UTILS_FPSMONITOR_H
+#define UTILS_FPSMONITOR_H
+/* ************************************************************************** */
+
+#include <QObject>
+#include <QList>
+#include <QMutex>
+#include <QDateTime>
+
+class QTimer;
+class QQuickWindow;
 
 /* ************************************************************************** */
 
-uint16_t endian_flip_16(uint16_t src)
+/*!
+ * \brief The FrameRateMonitor class
+ *
+ * This class use the QQuickWindow::frameSwapped method from Luca Carlon.
+ * - https://github.com/carlonluca/lqtutils/blob/master/lqtutils_freq.h
+ *
+ * The FrameMonitor widget uses a simplier and pure QML method from qnanopainter.
+ * - https://github.com/QUItCoding/qnanopainter/blob/master/examples/qnanopainter_vs_qpainter_demo/qml/FpsItem.qml
+ */
+class FrameRateMonitor : public QObject
 {
-    return ( ((src & 0x00FF) << 8) | ((src & 0xFF00) >> 8) );
-}
+    Q_OBJECT
 
-uint32_t endian_flip_32(uint32_t src)
-{
-    return ( ((src & 0x000000FF) << 24)
-           | ((src & 0x0000FF00) <<  8)
-           | ((src & 0x00FF0000) >>  8)
-           | ((src & 0xFF000000) >> 24) );
-}
+    Q_PROPERTY(int fps READ fps NOTIFY fpsChanged)
 
-uint64_t endian_flip_64(uint64_t src)
-{
-    return ( ((src & 0x00000000000000FFULL) << 56)
-           | ((src & 0x000000000000FF00ULL) << 40)
-           | ((src & 0x0000000000FF0000ULL) << 24)
-           | ((src & 0x00000000FF000000ULL) <<  8)
-           | ((src & 0x000000FF00000000ULL) >>  8)
-           | ((src & 0x0000FF0000000000ULL) >> 24)
-           | ((src & 0x00FF000000000000ULL) >> 40)
-           | ((src & 0xFF00000000000000ULL) >> 56) );
-}
+    QMutex m_mutex;
+    QList <QDateTime> m_timestamps;
+    QTimer *m_refreshTimer = nullptr;
+
+    int m_fps = 0;
+    int fps() const { return m_fps; }
+
+Q_SIGNALS:
+    void fpsChanged();
+
+public:
+    FrameRateMonitor(QQuickWindow *window = nullptr, QObject *parent = nullptr);
+    Q_INVOKABLE void setWindow(QQuickWindow *window);
+
+public slots:
+    void registerSample();
+    void refresh();
+};
 
 /* ************************************************************************** */
+#endif // UTILS_FPSMONITOR_H

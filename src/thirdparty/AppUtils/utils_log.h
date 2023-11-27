@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2021 Emeric Grange
+ * Copyright (c) 2022 Emeric Grange
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,31 +20,43 @@
  * SOFTWARE.
  */
 
-#ifndef UTILS_MACOS_H
-#define UTILS_MACOS_H
-
-#include <QtGlobal>
-
-#if defined(Q_OS_MACOS)
+#ifndef UTILS_LOG_H
+#define UTILS_LOG_H
 /* ************************************************************************** */
 
+#include <QObject>
 #include <QString>
+#include <QFile>
 
-/*!
- * \brief macOS utils
- *
- * Use with "LIBS += -framework IOKit"
- *
- * Registering and unregistering for sleep and wake notifications:
- * - https://developer.apple.com/library/archive/qa/qa1340/_index.html
- */
-class UtilsMacOS
+/* ************************************************************************** */
+
+class UtilsLog : public QObject
 {
+    Q_OBJECT
+
+    bool m_logging = false;
+    QString m_logPath;
+    QFile m_logFile;
+
+    // Singleton
+    static UtilsLog *instance;
+    UtilsLog(const bool enabled);
+    UtilsLog();
+    ~UtilsLog();
+
 public:
-    static uint32_t screenKeepOn(const QString &application, const QString &reason);
-    static void screenKeepAuto(uint32_t screensaverId);
+    static UtilsLog *getInstance(const bool enabled = true);
+
+    void setEnabled(const bool enabled);
+
+    bool openLogFile(const QString &path = QString());
+
+    Q_INVOKABLE void pushLog(const QString &log);
+
+    Q_INVOKABLE QString getLog();
+
+    Q_INVOKABLE void clearLog();
 };
 
 /* ************************************************************************** */
-#endif // Q_OS_MACOS
-#endif // UTILS_MACOS_H
+#endif // UTILS_LOG_H

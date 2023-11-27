@@ -1,21 +1,23 @@
 /*!
- * Copyright (c) 2022 Emeric Grange - All Rights Reserved
+ * Copyright (c) 2019 Emeric Grange
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * \author    Emeric Grange <emeric.grange@gmail.com>
- * \date      2019
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 #ifndef UTILS_OS_ANDROID_H
@@ -42,26 +44,29 @@ class UtilsAndroid
 {
 public:
     /*!
-     * \brief getSdkVersion
-     * \return
+     * \brief Get Android SDK / API level
+     * \return See https://apilevels.com/
      */
     static int getSdkVersion();
 
-    /*!
-     * \note DEPRECATED in Android 12
-     * \return True if R/W permissions on main storage have been previously obtained.
-     */
+    static bool getPermissions_storage();
     static bool checkPermissions_storage();
-    static bool checkPermission_storage_read();
-    static bool checkPermission_storage_write();
 
     /*!
      * \note DEPRECATED in Android 12
-     * \return True if R/W permissions on main storage have been explicitly obtained.
+     * \return True if R/W permissions on main storage have been previously or explicitly obtained.
      */
-    static bool getPermissions_storage();
+    static bool checkPermission_storage_read();
     static bool getPermission_storage_read();
+    static bool checkPermission_storage_write();
     static bool getPermission_storage_write();
+
+    /*!
+     * \param packageName: the application package, for instance 'com.application.identifier'.
+     * \return True if filesystem access have been previously or explicitly obtained.
+     */
+    static bool checkPermission_storage_filesystem();
+    static bool getPermission_storage_filesystem(const QString &packageName);
 
     /*!
      * \return True if CAMERA permission has been previously obtained.
@@ -113,10 +118,27 @@ public:
      */
     static bool getPermission_phonestate();
 
+    /* ********************************************************************** */
+
     /*!
      * \return True if device GPS is turned on.
      */
     static bool isGpsEnabled();
+
+    /*!
+     * \return True if device GPS is turned on (using QGpsUtils.java).
+     */
+    static bool gpsutils_isGpsEnabled();
+
+    /*!
+     * \return True if device GPS has been turned on turned on (using QGpsUtils.java).
+     */
+    static bool gpsutils_forceGpsEnabled();
+
+    /*!
+     * \brief Open the Android location settings intent (using QGpsUtils.java).
+     */
+    static void gpsutils_openLocationSettings();
 
     /* ********************************************************************** */
 
@@ -156,6 +178,7 @@ public:
     /*!
      * \return The device manufacturer + model.
      *
+     * Documentation:
      * - https://developer.android.com/reference/android/os/Build.html
      */
     static QString getDeviceModel();
@@ -166,6 +189,7 @@ public:
      * Need READ_PHONE_STATE permission.
      * Only work before Android 10 (API < 29).
      *
+     * Documentation:
      * - https://developer.android.com/reference/android/os/Build#getSerial()
      */
     static QString getDeviceSerial();
@@ -209,11 +233,24 @@ public:
     /* ********************************************************************** */
 
     /*!
+     * \brief Open the Android application info intent for the given package name.
      * \param packageName: the application package, for instance 'com.application.identifier'.
-     *
-     * Open the Android application info intent for the given package name.
      */
     static void openApplicationInfo(const QString &packageName);
+
+    /*!
+     * \brief Open the Android "manage all files" intent for the given package name.
+     * \param packageName: the application package, for instance 'com.application.identifier'.
+     *
+     * Documentation:
+     * - https://developer.android.com/training/data-storage/manage-all-files
+     */
+    static void openStorageSettings(const QString &packageName);
+
+    /*!
+     * \brief Open the Android location settings intent.
+     */
+    static void openLocationSettings();
 };
 
 /* ************************************************************************** */

@@ -1,21 +1,23 @@
 /*!
- * Copyright (c) 2022 Emeric Grange - All Rights Reserved
+ * Copyright (c) 2023 Emeric Grange
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * \author    Emeric Grange <emeric.grange@gmail.com>
- * \date      2019
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 #include "utils_app.h"
@@ -55,8 +57,7 @@ UtilsApp::UtilsApp()
     // Set default application path
     m_appPath = QCoreApplication::applicationDirPath();
 
-    //m_appPath = newpath.absolutePath();
-    // Make sure the path is terminated with a separator.
+    // Make sure the path is terminated with a separator?
     //if (!m_appPath.endsWith('/')) m_appPath += '/';
 }
 
@@ -115,6 +116,12 @@ bool UtilsApp::isDebugBuild()
     return true;
 }
 
+QString UtilsApp::qtVersion()
+{
+    return QString(qVersion());
+}
+
+/* ************************************************************************** */
 /* ************************************************************************** */
 
 void UtilsApp::appExit()
@@ -143,6 +150,8 @@ void UtilsApp::vibrate(int ms)
 {
 #if defined(Q_OS_ANDROID)
     return UtilsAndroid::vibrate(ms);
+#elif defined(Q_OS_IOS)
+    return UtilsIOS::vibrate(ms);
 #else
     Q_UNUSED(ms)
 #endif
@@ -256,6 +265,22 @@ void UtilsApp::openAndroidAppInfo(const QString &packageName)
 #endif
 
     Q_UNUSED(packageName)
+}
+
+void UtilsApp::openAndroidStorageSettings(const QString &packageName)
+{
+#if defined(Q_OS_ANDROID)
+    return UtilsAndroid::openStorageSettings(packageName);
+#endif
+
+    Q_UNUSED(packageName)
+}
+
+void UtilsApp::openAndroidLocationSettings()
+{
+#if defined(Q_OS_ANDROID)
+    UtilsAndroid::openLocationSettings();
+#endif
 }
 
 bool UtilsApp::checkMobileLocationPermission()
@@ -380,6 +405,30 @@ bool UtilsApp::getMobileStorageWritePermission()
 #endif
 }
 
+bool UtilsApp::checkMobileStorageFileSystemPermission()
+{
+#if defined(Q_OS_ANDROID)
+    return UtilsAndroid::checkPermission_storage_filesystem();
+#elif defined(Q_OS_IOS)
+    return false;
+#else
+    return true;
+#endif
+}
+
+bool UtilsApp::getMobileStorageFileSystemPermission(const QString &packageName)
+{
+    Q_UNUSED(packageName)
+
+#if defined(Q_OS_ANDROID)
+    return UtilsAndroid::getPermission_storage_filesystem(packageName);
+#elif defined(Q_OS_IOS)
+    return false;
+#else
+    return true;
+#endif
+}
+
 bool UtilsApp::checkMobilePhoneStatePermission()
 {
 #if defined(Q_OS_ANDROID)
@@ -431,9 +480,18 @@ bool UtilsApp::getMobileCameraPermission()
 bool UtilsApp::isMobileGpsEnabled()
 {
 #if defined(Q_OS_ANDROID)
-    return UtilsAndroid::isGpsEnabled();
+    return UtilsAndroid::gpsutils_isGpsEnabled();
+#elif defined(Q_OS_IOS)
+    return false; // TODO
 #else
     return false;
+#endif
+}
+
+void UtilsApp::forceMobileGpsEnabled()
+{
+#if defined(Q_OS_ANDROID)
+    UtilsAndroid::gpsutils_forceGpsEnabled();
 #endif
 }
 

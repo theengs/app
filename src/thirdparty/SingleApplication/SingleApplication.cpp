@@ -44,7 +44,6 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
 #if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
     // On Android and iOS since the library is not supported fallback to
     // standard QApplication behaviour by simply returning at this point.
-    //qWarning() << "SingleApplication is not supported on Android and iOS systems.";
     return;
 #endif
 
@@ -55,8 +54,7 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
     if ( ! userData.isEmpty() )
         d->addAppData( userData );
 
-    // Generating an application ID used for identifying the shared memory
-    // block and QLocalServer
+    // Generating an application ID used for identifying the shared memory block and QLocalServer
     d->genBlockServerName();
 
     // To mitigate QSharedMemory issues with large amount of processes
@@ -66,12 +64,20 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
 #ifdef Q_OS_UNIX
     // By explicitly attaching it and then deleting it we make sure that the
     // memory is deleted even after the process has crashed on Unix.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+    d->memory = new QSharedMemory( QNativeIpcKey( d->blockServerName ) );
+#else
     d->memory = new QSharedMemory( d->blockServerName );
+#endif
     d->memory->attach();
     delete d->memory;
 #endif
     // Guarantee thread safe behaviour with a shared memory block.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+    d->memory = new QSharedMemory( QNativeIpcKey( d->blockServerName ) );
+#else
     d->memory = new QSharedMemory( d->blockServerName );
+#endif
 
     // Create a shared memory block
     if( d->memory->create( sizeof( InstancesInfo ) )){
@@ -107,8 +113,7 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
       // If the shared memory block's checksum is valid continue
       if( d->blockChecksum() == inst->checksum ) break;
 
-      // If more than 5s have elapsed, assume the primary instance crashed and
-      // assume it's position
+      // If more than 5s have elapsed, assume the primary instance crashed and assume it's position
       if( time.elapsed() > 5000 ){
           qWarning() << "SingleApplication: Shared memory block has been in an inconsistent state from more than 5s. Assuming primary instance failure.";
           d->initializeMemoryBlock();
@@ -189,9 +194,8 @@ bool SingleApplication::isSecondary() const
 }
 
 /**
- * Allows you to identify an instance by returning unique consecutive instance
- * ids. It is reset when the first (primary) instance of your app starts and
- * only incremented afterwards.
+ * Allows you to identify an instance by returning unique consecutive instance ids.
+ * It is reset when the first (primary) instance of your app starts and only incremented afterwards.
  * @return Returns a unique instance id.
  */
 quint32 SingleApplication::instanceId() const
@@ -202,8 +206,7 @@ quint32 SingleApplication::instanceId() const
 
 /**
  * Returns the OS PID (Process Identifier) of the process running the primary
- * instance. Especially useful when SingleApplication is coupled with OS.
- * specific APIs.
+ * instance. Especially useful when SingleApplication is coupled with OS specific APIs.
  * @return Returns the primary instance PID.
  */
 qint64 SingleApplication::primaryPid() const
