@@ -1,36 +1,28 @@
-import QtQuick 2.15
+import QtQuick
 
-import ThemeEngine 1.0
+import ThemeEngine
 
 Rectangle {
-    id: rectangleHeaderBar
+    id: appHeader
     anchors.top: parent.top
     anchors.left: parent.left
     anchors.right: parent.right
 
-    height: screenPaddingStatusbar + screenPaddingNotch + headerHeight
+    height: headerHeight + Math.max(screenPaddingStatusbar, screenPaddingTop)
     color: Theme.colorHeader
+    clip: false
     z: 10
 
-    // prevent clicks below this area
-    MouseArea { anchors.fill: parent; acceptedButtons: Qt.AllButtons; }
-
     property int headerHeight: 52
-    property string title: "Theengs"
+
+    property int headerPosition: 56
+
+    property string headerTitle: "Theengs"
 
     ////////////////////////////////////////////////////////////////////////////
 
     property string leftMenuMode: "drawer" // drawer / back / close
     signal leftMenuClicked()
-
-    onLeftMenuModeChanged: {
-        if (leftMenuMode === "drawer")
-            leftMenuImg.source = "qrc:/assets/icons_material/baseline-menu-24px.svg"
-        else if (leftMenuMode === "close")
-            leftMenuImg.source = "qrc:/assets/icons_material/baseline-close-24px.svg"
-        else // back
-            leftMenuImg.source = "qrc:/assets/icons_material/baseline-arrow_back-24px.svg"
-    }
 
     ////////////////////////////////////////////////////////////////////////////
 
@@ -61,11 +53,14 @@ Rectangle {
 
     ////////////////////////////////////////////////////////////////////////////
 
+    // prevent clicks below this area
+    MouseArea { anchors.fill: parent; acceptedButtons: Qt.AllButtons; }
+
     ActionMenuFixed {
         id: actionMenu
 
         x: parent.width - actionMenu.width - 12
-        y: screenPaddingStatusbar + screenPaddingNotch + 16
+        y: Math.max(screenPaddingStatusbar, screenPaddingTop) + 16
 
         onMenuSelected: (index) => {
             //console.log("ActionMenu clicked #" + index)
@@ -74,50 +69,72 @@ Rectangle {
 
     ////////////////////////////////////////////////////////////////////////////
 
+    Rectangle { // OS statusbar area
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+
+        height: Math.max(screenPaddingStatusbar, screenPaddingTop)
+        color: Theme.colorStatusbar
+    }
+
     Item {
         anchors.fill: parent
-        anchors.topMargin: screenPaddingStatusbar + screenPaddingNotch
+        anchors.topMargin: Math.max(screenPaddingStatusbar, screenPaddingTop)
+
+        ////////////
 
         MouseArea { // left button
             width: headerHeight
             height: headerHeight
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
 
             visible: true
             onClicked: leftMenuClicked()
 
+            RippleThemed {
+                anchor: parent
+                width: parent.width
+                height: parent.height
+
+                pressed: parent.pressed
+                //active: enabled && parent.containsPress
+                color: Qt.rgba(Theme.colorForeground.r, Theme.colorForeground.g, Theme.colorForeground.b, 0.1)
+            }
+
             IconSvg {
                 id: leftMenuImg
+                anchors.centerIn: parent
                 width: (headerHeight / 2)
                 height: (headerHeight / 2)
-                anchors.left: parent.left
-                anchors.leftMargin: 16
-                anchors.verticalCenter: parent.verticalCenter
-                source: "qrc:/assets/icons_material/baseline-menu-24px.svg"
+
+                source: {
+                    if (leftMenuMode === "drawer") return "qrc:/assets/icons_material/baseline-menu-24px.svg"
+                    if (leftMenuMode === "close") return "qrc:/assets/icons_material/baseline-close-24px.svg"
+                    return "qrc:/assets/icons_material/baseline-arrow_back-24px.svg"
+                }
                 color: Theme.colorHeaderContent
             }
         }
 
-        Text { // title
-            height: parent.height
+        Text { // header title
             anchors.left: parent.left
-            anchors.leftMargin: 64
+            anchors.leftMargin: headerPosition
+            anchors.right: rightArea.left
+            anchors.rightMargin: 8
             anchors.verticalCenter: parent.verticalCenter
 
-            text: title
-            color: Theme.colorHeaderContent
+            text: headerTitle
+            textFormat: Text.PlainText
             font.bold: true
             font.pixelSize: Theme.fontSizeHeader
-            //font.capitalization: Font.Capitalize
-            verticalAlignment: Text.AlignVCenter
+            color: Theme.colorHeaderContent
+            elide: Text.ElideRight
         }
 
         ////////////
 
         Row { // right area
-            id: menu
+            id: rightArea
             anchors.top: parent.top
             anchors.right: parent.right
             anchors.rightMargin: 4
@@ -172,8 +189,6 @@ Rectangle {
                 }
             }
 
-            ////////////
-
             MouseArea { // right button
                 width: headerHeight
                 height: headerHeight
@@ -190,6 +205,16 @@ Rectangle {
                     actionMenu.open()
                 }
 
+                RippleThemed {
+                    anchor: parent
+                    width: parent.width
+                    height: parent.height
+
+                    pressed: parent.pressed
+                    //active: enabled && parent.containsPress
+                    color: Qt.rgba(Theme.colorForeground.r, Theme.colorForeground.g, Theme.colorForeground.b, 0.1)
+                }
+
                 IconSvg {
                     width: (headerHeight / 2)
                     height: (headerHeight / 2)
@@ -200,6 +225,8 @@ Rectangle {
                 }
             }
         }
+
+        ////////////
     }
 
     ////////////////////////////////////////////////////////////////////////////

@@ -10,7 +10,7 @@ QT     += qml quick quickcontrols2 svg widgets charts
 QT     += mqtt
 
 # Validate Qt version
-!versionAtLeast(QT_VERSION, 6.3) : error("You need at least Qt version 6.3 for $${TARGET}")
+!versionAtLeast(QT_VERSION, 6.4) : error("You need at least Qt version 6.4 for $${TARGET}")
 
 # Project features #############################################################
 
@@ -259,7 +259,7 @@ macx {
     QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
 
     # Target OS
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.15
 }
 
 android {

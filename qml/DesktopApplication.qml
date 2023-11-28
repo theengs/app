@@ -1,9 +1,9 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQuick.Window 2.15
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Window
 
-import ThemeEngine 1.0
-import DeviceUtils 1.0
+import ThemeEngine
+import DeviceUtils
 
 ApplicationWindow {
     id: appWindow
@@ -14,7 +14,7 @@ ApplicationWindow {
     property bool isMobile: false
     property bool isPhone: false
     property bool isTablet: false
-    property bool isHdpi: (utilsScreen.screenDpi > 128 || utilsScreen.screenPar > 1.0)
+    property bool isHdpi: (utilsScreen.screenDpi >= 128 || utilsScreen.screenPar >= 2.0)
 
     property var selectedDevice: null
 
@@ -61,7 +61,8 @@ ApplicationWindow {
     property int screenOrientationFull: Screen.orientation
 
     property int screenPaddingStatusbar: 0
-    property int screenPaddingNotch: 0
+    property int screenPaddingNavbar: 0
+    property int screenPaddingTop: 0
     property int screenPaddingLeft: 0
     property int screenPaddingRight: 0
     property int screenPaddingBottom: 0

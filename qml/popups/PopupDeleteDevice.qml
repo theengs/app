@@ -1,20 +1,23 @@
 import QtQuick
 import QtQuick.Controls
 
-import ThemeEngine 1.0
+import ThemeEngine
 
 Popup {
     id: popupDeleteDevice
-    x: (appWindow.width / 2) - (width / 2)
-    y: singleColumn ? (appWindow.height - height) : ((appWindow.height / 2) - (height / 2) - (appHeader.height))
+
+    x: singleColumn ? 0 : (appWindow.width / 2) - (width / 2)
+    y: singleColumn ? (appWindow.height - height)
+                    : ((appWindow.height / 2) - (height / 2))
 
     width: singleColumn ? parent.width : 640
-    height: columnContent.height + padding*2
-    padding: singleColumn ? 20 : 24
+    height: contentColumn.height + padding*2 + screenPaddingNavbar + screenPaddingBottom
+    padding: Theme.componentMarginXL
 
     modal: true
     focus: true
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+    parent: Overlay.overlay
 
     signal confirmed()
 
@@ -38,14 +41,14 @@ Popup {
 
     contentItem: Item {
         Column {
-            id: columnContent
+            id: contentColumn
             width: parent.width
-            spacing: 20
+            spacing: Theme.componentMarginXL
 
             Text {
                 width: parent.width
 
-                text: qsTr("Are you sure you want to delete selected sensor(s)?")
+                text: qsTr("Are you sure you want to delete selected sensor(s)?", "", screenDeviceList.selectionCount)
                 textFormat: Text.PlainText
                 font.pixelSize: Theme.fontSizeContentVeryBig
                 color: Theme.colorText
@@ -55,7 +58,7 @@ Popup {
             Text {
                 width: parent.width
 
-                text: qsTr("Data from the sensors are kept for an additional 90 days, in case you would like to re-add a sensor later.")
+                text: qsTr("Data from the sensor(s) are kept for an additional 90 days, in case you would like to re-add a sensor later.", "", screenDeviceList.selectionCount)
                 textFormat: Text.PlainText
                 font.pixelSize: Theme.fontSizeContent
                 color: Theme.colorSubText
@@ -63,12 +66,10 @@ Popup {
             }
 
             Flow {
-                id: flowContent
                 width: parent.width
-                height: singleColumn ? 120+40 : 40
+                spacing: Theme.componentMarginXL
 
                 property var btnSize: singleColumn ? width : ((width-spacing) / 2)
-                spacing: 16
 
                 ButtonWireframe {
                     width: parent.btnSize
@@ -79,6 +80,7 @@ Popup {
 
                     onClicked: popupDeleteDevice.close()
                 }
+
                 ButtonWireframe {
                     width: parent.btnSize
 
@@ -94,4 +96,6 @@ Popup {
             }
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////
 }

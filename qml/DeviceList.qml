@@ -71,6 +71,10 @@ Item {
 
         deviceManager.getDeviceByProxyIndex(index).selected = false
     }
+
+    function isSelected() {
+        return (selectionList.length > 0)
+    }
     function exitSelectionMode() {
         selectionMode = false
         selectionList = []

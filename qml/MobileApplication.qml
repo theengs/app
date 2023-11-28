@@ -1,26 +1,24 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQuick.Window 2.15
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Window
 
-import ThemeEngine 1.0
-import MobileUI 1.0
+import ThemeEngine
+import MobileUI
 
 ApplicationWindow {
     id: appWindow
     minimumWidth: 480
     minimumHeight: 960
 
-    flags: (Qt.platform.os === "android") ? Qt.Window : Qt.Window | Qt.MaximizeUsingFullscreenGeometryHint
+    flags: Qt.Window | Qt.MaximizeUsingFullscreenGeometryHint
     color: Theme.colorBackground
     visible: true
 
-    property bool isHdpi: (utilsScreen.screenDpi > 128)
+    property bool isHdpi: (utilsScreen.screenDpi >= 128 || utilsScreen.screenPar >= 2.0)
     property bool isDesktop: (Qt.platform.os !== "ios" && Qt.platform.os !== "android")
     property bool isMobile: (Qt.platform.os === "ios" || Qt.platform.os === "android")
     property bool isPhone: ((Qt.platform.os === "ios" || Qt.platform.os === "android") && (utilsScreen.screenSize < 7.0))
     property bool isTablet: ((Qt.platform.os === "ios" || Qt.platform.os === "android") && (utilsScreen.screenSize >= 7.0))
-
-    property var selectedDevice: null
 
     // Mobile stuff ////////////////////////////////////////////////////////////
 
@@ -28,13 +26,8 @@ ApplicationWindow {
     // 4 = Qt.InvertedPortraitOrientation, 8 = Qt.InvertedLandscapeOrientation
     property int screenOrientation: Screen.primaryOrientation
     property int screenOrientationFull: Screen.orientation
-    onScreenOrientationChanged: {
-        handleSafeAreas()
-        mobileUI.refreshUI()
-    }
 
     property int screenPaddingStatusbar: 0
-    property int screenPaddingNotch: 0
     property int screenPaddingNavbar: 0
 
     property int screenPaddingTop: 0
@@ -42,11 +35,15 @@ ApplicationWindow {
     property int screenPaddingRight: 0
     property int screenPaddingBottom: 0
 
+    onScreenOrientationChanged: handleSafeAreas()
+    onVisibilityChanged: handleSafeAreas()
+
     function handleSafeAreas() {
-        // safe areas are only taken into account if using full screen mode
-        if (flags & Qt.MaximizeUsingFullscreenGeometryHint) {
+        // safe areas are only taken into account when using maximized geometry / full screen mode
+        if (appWindow.visibility === Window.FullScreen ||
+            appWindow.flags & Qt.MaximizeUsingFullscreenGeometryHint) {
+
             screenPaddingStatusbar = mobileUI.statusbarHeight
-            screenPaddingNotch = 0
             screenPaddingNavbar = mobileUI.navbarHeight
 
             screenPaddingTop = mobileUI.safeAreaTop
@@ -54,25 +51,39 @@ ApplicationWindow {
             screenPaddingRight = mobileUI.safeAreaRight
             screenPaddingBottom = mobileUI.safeAreaBottom
 
+            // hacks
             if (Qt.platform.os === "android") {
-                screenPaddingStatusbar = screenPaddingTop // hack
-                screenPaddingNotch = screenPaddingTop - screenPaddingStatusbar
-                screenPaddingBottom = screenPaddingNavbar
+                if (appWindow.visibility === Window.FullScreen) {
+                    screenPaddingStatusbar = 0
+                    screenPaddingNavbar = 0
+                }
             }
+            // hacks
             if (Qt.platform.os === "ios") {
-                screenPaddingNotch = screenPaddingTop - screenPaddingStatusbar
+                if (appWindow.visibility === Window.FullScreen) {
+                    screenPaddingStatusbar = 0
+                }
             }
+        } else {
+            screenPaddingStatusbar = 0
+            screenPaddingNavbar = 0
+            screenPaddingTop = 0
+            screenPaddingLeft = 0
+            screenPaddingRight = 0
+            screenPaddingBottom = 0
         }
 /*
         console.log("> handleSafeAreas()")
+        console.log("- window mode:         " + appWindow.visibility)
+        console.log("- window flags:        " + appWindow.flags)
+        console.log("- screen dpi:          " + Screen.devicePixelRatio)
         console.log("- screen width:        " + Screen.width)
         console.log("- screen width avail:  " + Screen.desktopAvailableWidth)
         console.log("- screen height:       " + Screen.height)
         console.log("- screen height avail: " + Screen.desktopAvailableHeight)
-        console.log("- screen orientation:  " + Screen.orientation)
+        console.log("- screen orientation (full): " + Screen.orientation)
         console.log("- screen orientation (primary): " + Screen.primaryOrientation)
         console.log("- screenSizeStatusbar: " + screenPaddingStatusbar)
-        console.log("- screenSizeNotch:     " + screenPaddingNotch)
         console.log("- screenSizeNavbar:    " + screenPaddingNavbar)
         console.log("- screenPaddingTop:    " + screenPaddingTop)
         console.log("- screenPaddingLeft:   " + screenPaddingLeft)
@@ -86,7 +97,6 @@ ApplicationWindow {
         property bool isLoading: true
 
         statusbarTheme: Theme.themeStatusbar
-        statusbarColor: isLoading ? "white" : Theme.colorStatusbar
         navbarColor: {
             if (isLoading) return "white"
             if (appContent.state === "Tutorial") return Theme.colorHeader
@@ -100,8 +110,6 @@ ApplicationWindow {
 
     MobileDrawer {
         id: appDrawer
-        width: (appWindow.screenOrientation === Qt.PortraitOrientation || appWindow.width < 480) ? 0.8 * appWindow.width : 0.5 * appWindow.width
-        height: appWindow.height
         interactive: (Qt.platform.os !== "ios" ||
                       (Qt.platform.os === "ios" && appDrawer.position > 0.0))
     }
@@ -224,14 +232,6 @@ ApplicationWindow {
         }
     }
 
-    Timer {
-        id: exitTimer
-        interval: 3333
-        running: false
-        repeat: false
-        onRunningChanged: exitWarning.opacity = running
-    }
-
     // UI sizes ////////////////////////////////////////////////////////////////
 
     property bool headerUnicolor: (Theme.colorHeader === Theme.colorBackground)
@@ -254,6 +254,8 @@ ApplicationWindow {
 
     // QML /////////////////////////////////////////////////////////////////////
 
+    property var selectedDevice: null
+
     PopupCalibration {
         id: popupCalibration
     }
@@ -266,10 +268,12 @@ ApplicationWindow {
 
     FocusScope {
         id: appContent
+
         anchors.top: appHeader.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
+        anchors.bottomMargin: screenPaddingNavbar + screenPaddingBottom
 
         focus: true
         Keys.onBackPressed: {
@@ -279,13 +283,14 @@ ApplicationWindow {
             }
 
             if (appContent.state === "DeviceList") {
-                if (screenDeviceList.selectionList.length !== 0) {
+                if (screenDeviceList.isSelected()) {
                     screenDeviceList.exitSelectionMode()
                 } else {
-                    if (exitTimer.running)
+                    if (exitTimer.running) {
                         Qt.quit()
-                    else
+                    } else {
                         exitTimer.start()
+                    }
                 }
             } else if (appContent.state === "DevicePlantSensor") {
                 screenDevicePlantSensor.backAction()
@@ -323,26 +328,32 @@ ApplicationWindow {
         DeviceThermometer {
             id: screenDeviceThermometer
             anchors.fill: parent
+            anchors.bottomMargin: mobileMenu.hhv
         }
         DeviceEnvironmental {
             id: screenDeviceEnvironmental
             anchors.fill: parent
+            anchors.bottomMargin: mobileMenu.hhv
         }
         DeviceProbe {
             id: screenDeviceProbe
             anchors.fill: parent
+            anchors.bottomMargin: mobileMenu.hhv
         }
         DeviceScale {
             id: screenDeviceScale
             anchors.fill: parent
+            anchors.bottomMargin: mobileMenu.hhv
         }
         DeviceMotionSensor {
             id: screenDeviceMotionSensor
             anchors.fill: parent
+            anchors.bottomMargin: mobileMenu.hhv
         }
         DeviceGeneric {
-            anchors.fill: parent
             id: screenDeviceGeneric
+            anchors.fill: parent
+            anchors.bottomMargin: mobileMenu.hhv
         }
         SettingsMqtt {
             id: screenSettingsMqtt
@@ -377,18 +388,19 @@ ApplicationWindow {
         onStateChanged: {
             screenDeviceList.exitSelectionMode()
 
-            if (state === "DeviceList")
+            if (state === "DeviceList") {
                 appHeader.leftMenuMode = "drawer"
-            else if (state === "Tutorial")
+            } else if (state === "Tutorial") {
                 appHeader.leftMenuMode = "close"
-            else
+            } else {
                 appHeader.leftMenuMode = "back"
+            }
         }
 
         states: [
             State {
                 name: "DeviceList"
-                PropertyChanges { target: appHeader; title: "Theengs"; }
+                PropertyChanges { target: appHeader; headerTitle: "Theengs"; }
                 PropertyChanges { target: screenDeviceList; visible: true; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; }
@@ -422,7 +434,7 @@ ApplicationWindow {
             },
             State {
                 name: "DeviceThermometer"
-                PropertyChanges { target: appHeader; title: deviceManager.getDeviceModelTheengs(selectedDevice.deviceModel); }
+                PropertyChanges { target: appHeader; headerTitle: deviceManager.getDeviceModelTheengs(selectedDevice.deviceModel); }
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: true; }
@@ -439,7 +451,7 @@ ApplicationWindow {
             },
             State {
                 name: "DeviceEnvironmental"
-                PropertyChanges { target: appHeader; title: deviceManager.getDeviceModelTheengs(selectedDevice.deviceModel); }
+                PropertyChanges { target: appHeader; headerTitle: deviceManager.getDeviceModelTheengs(selectedDevice.deviceModel); }
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; }
@@ -456,7 +468,7 @@ ApplicationWindow {
             },
             State {
                 name: "DeviceProbe"
-                PropertyChanges { target: appHeader; title: deviceManager.getDeviceModelTheengs(selectedDevice.deviceModel); }
+                PropertyChanges { target: appHeader; headerTitle: deviceManager.getDeviceModelTheengs(selectedDevice.deviceModel); }
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; }
@@ -473,7 +485,7 @@ ApplicationWindow {
             },
             State {
                 name: "DeviceScale"
-                PropertyChanges { target: appHeader; title: deviceManager.getDeviceModelTheengs(selectedDevice.deviceModel); }
+                PropertyChanges { target: appHeader; headerTitle: deviceManager.getDeviceModelTheengs(selectedDevice.deviceModel); }
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; }
@@ -490,7 +502,7 @@ ApplicationWindow {
             },
             State {
                 name: "DeviceMotionSensor"
-                PropertyChanges { target: appHeader; title: deviceManager.getDeviceModelTheengs(selectedDevice.deviceModel); }
+                PropertyChanges { target: appHeader; headerTitle: deviceManager.getDeviceModelTheengs(selectedDevice.deviceModel); }
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; }
@@ -507,7 +519,7 @@ ApplicationWindow {
             },
             State {
                 name: "DeviceGeneric"
-                PropertyChanges { target: appHeader; title: deviceManager.getDeviceModelTheengs(selectedDevice.deviceModel); }
+                PropertyChanges { target: appHeader; headerTitle: deviceManager.getDeviceModelTheengs(selectedDevice.deviceModel); }
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; }
@@ -524,7 +536,7 @@ ApplicationWindow {
             },
             State {
                 name: "SettingsMqtt"
-                PropertyChanges { target: appHeader; title: qsTr("Integration"); }
+                PropertyChanges { target: appHeader; headerTitle: qsTr("Integration"); }
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; }
@@ -541,7 +553,7 @@ ApplicationWindow {
             },
             State {
                 name: "Settings"
-                PropertyChanges { target: appHeader; title: qsTr("Settings"); }
+                PropertyChanges { target: appHeader; headerTitle: qsTr("Settings"); }
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; }
@@ -558,7 +570,7 @@ ApplicationWindow {
             },
             State {
                 name: "Permissions"
-                PropertyChanges { target: appHeader; title: qsTr("Permissions"); }
+                PropertyChanges { target: appHeader; headerTitle: qsTr("Permissions"); }
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; }
@@ -575,7 +587,7 @@ ApplicationWindow {
             },
             State {
                 name: "About"
-                PropertyChanges { target: appHeader; title: qsTr("About"); }
+                PropertyChanges { target: appHeader; headerTitle: qsTr("About"); }
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; }
@@ -592,7 +604,7 @@ ApplicationWindow {
             },
             State {
                 name: "DeviceBrowser"
-                PropertyChanges { target: appHeader; title: qsTr("Device browser"); }
+                PropertyChanges { target: appHeader; headerTitle: qsTr("Device browser"); }
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; }
@@ -610,42 +622,70 @@ ApplicationWindow {
         ]
     }
 
-    ////////////////
+    ////////////////////////////////////////////////////////////////////////////
 
     //DebugWidget { }
 
-    ////////////////
+    ////////////////////////////////////////////////////////////////////////////
 
     MobileMenu {
         id: mobileMenu
     }
 
-    ////////////////
+    Rectangle { // navbar area
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        height: screenPaddingNavbar
 
+        visible: (mobileMenu.visible || appContent.state === "Tutorial")
+        opacity: appWindow.isTablet ? 0.5 : 1
+
+        color: {
+            if (appContent.state === "Tutorial") return Theme.colorHeader
+            return Theme.colorBackground
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+
+    Timer {
+        id: exitTimer
+        interval: 2222
+        running: false
+        repeat: false
+    }
     Rectangle {
         id: exitWarning
 
         anchors.left: parent.left
+        anchors.leftMargin: Theme.componentMargin
         anchors.right: parent.right
+        anchors.rightMargin: Theme.componentMargin
         anchors.bottom: parent.bottom
-        anchors.margins: 12
+        anchors.bottomMargin: Theme.componentMargin + screenPaddingNavbar + screenPaddingBottom
 
-        height: 40
-        radius: 4
+        height: Theme.componentHeightL
+        radius: Theme.componentRadius
 
         color: Theme.colorComponentBackground
         border.color: Theme.colorSeparator
         border.width: Theme.componentBorderWidth
 
-        opacity: 0
+        visible: (appContent.state === "DeviceList" && opacity)
+
+        opacity: exitTimer.running ? 1 : 0
         Behavior on opacity { OpacityAnimator { duration: 233 } }
 
         Text {
             anchors.centerIn: parent
+
             text: qsTr("Press one more time to exit…")
             textFormat: Text.PlainText
             font.pixelSize: Theme.fontSizeContent
             color: Theme.colorText
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////
 }

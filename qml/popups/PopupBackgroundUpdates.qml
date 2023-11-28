@@ -1,20 +1,25 @@
 import QtQuick
 import QtQuick.Controls
 
-import ThemeEngine 1.0
+import ThemeEngine
 
 Popup {
     id: popupBackgroundUpdates
-    x: (appWindow.width / 2) - (width / 2)
-    y: singleColumn ? (appWindow.height - height - appHeader.height) : ((appWindow.height / 2) - (height / 2))
+
+    x: singleColumn ? 0 : (appWindow.width / 2) - (width / 2)
+    y: singleColumn ? (appWindow.height - height)
+                    : ((appWindow.height / 2) - (height / 2))
 
     width: singleColumn ? parent.width : 640
-    height: columnContent.height + padding*2
-    padding: singleColumn ? 20 : 24
+    height: contentColumn.height + padding*2 + screenPaddingNavbar + screenPaddingBottom
+    padding: Theme.componentMarginXL
 
     modal: true
     focus: true
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+    parent: Overlay.overlay
+
+    ////////////////////////////////////////////////////////////////////////////
 
     property bool locPerm: false
 
@@ -42,9 +47,11 @@ Popup {
 
     contentItem: Item {
         Column {
-            id: columnContent
+            id: contentColumn
             width: parent.width
-            spacing: 16
+            spacing: Theme.componentMarginXL
+
+            ////////
 
             Text {
                 width: parent.width
@@ -60,7 +67,7 @@ Popup {
 
             Column {
                 width: parent.width
-                spacing: 24
+                spacing: Theme.componentMarginXL
 
                 visible: !popupBackgroundUpdates.locPerm
 
@@ -90,9 +97,9 @@ Popup {
 
                 Flow {
                     width: parent.width
+                    spacing: Theme.componentMargin
 
                     property var btnSize: singleColumn ? width : ((width-spacing*2) / 2)
-                    spacing: 16
 
                     ButtonWireframeIconCentered {
                         width: parent.btnSize
@@ -101,11 +108,14 @@ Popup {
                         primaryColor: Theme.colorSecondary
 
                         text: qsTr("About Bluetooth permissions")
-                        source: "qrc:/assets/icons_material/outline-info-24px.svg"
+                        source: "qrc:/assets/icons_material/baseline-info-24px.svg"
                         sourceSize: 20
 
                         onClicked: {
-                            Qt.openUrlExternally("https://developer.android.com/guide/topics/connectivity/bluetooth/permissions#declare-android11-or-lower")
+                            if (utilsApp.getAndroidSdkVersion() >= 12)
+                                Qt.openUrlExternally("https://developer.android.com/guide/topics/connectivity/bluetooth/permissions#declare-android12-or-higher")
+                            else
+                                Qt.openUrlExternally("https://developer.android.com/guide/topics/connectivity/bluetooth/permissions#declare-android11-or-lower")
                         }
                     }
 
@@ -144,7 +154,7 @@ Popup {
 
             Column {
                 width: parent.width
-                spacing: 24
+                spacing: Theme.componentMarginXL
 
                 visible: popupBackgroundUpdates.locPerm
 
@@ -184,9 +194,9 @@ Popup {
 
                 Flow {
                     width: parent.width
+                    spacing: Theme.componentMargin
 
                     property var btnSize: singleColumn ? width : ((width-spacing*2) / 2)
-                    spacing: 16
 
                     ButtonWireframeIconCentered {
                         width: parent.btnSize
@@ -195,7 +205,7 @@ Popup {
                         primaryColor: Theme.colorSecondary
 
                         text: qsTr("About battery savers")
-                        source: "qrc:/assets/icons_material/outline-info-24px.svg"
+                        source: "qrc:/assets/icons_material/baseline-info-24px.svg"
                         sourceSize: 20
 
                         onClicked: {
@@ -238,4 +248,6 @@ Popup {
             ////////
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////
 }

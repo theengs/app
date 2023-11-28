@@ -15,46 +15,37 @@ Item {
     Flickable {
         anchors.fill: parent
         contentWidth: parent.width
-        contentHeight: column.height
+        contentHeight: contentColumn.height
 
         boundsBehavior: isDesktop ? Flickable.OvershootBounds : Flickable.DragAndOvershootBounds
         ScrollBar.vertical: ScrollBar { visible: false }
 
         Column {
-            id: column
+            id: contentColumn
             anchors.left: parent.left
-            anchors.leftMargin: screenPaddingLeft + 16
             anchors.right: parent.right
-            anchors.rightMargin: screenPaddingRight + 16
-
-            topPadding: 0
-            bottomPadding: 8
-            spacing: 8
 
             ////////////////
 
-            Rectangle {
+            Rectangle { // header area
                 anchors.left: parent.left
-                anchors.leftMargin: -(screenPaddingLeft + 16)
                 anchors.right: parent.right
-                anchors.rightMargin: -(screenPaddingRight + 16)
 
-                height: 88
+                height: 92
                 color: headerUnicolor ? Theme.colorBackground : Theme.colorForeground
 
                 Row {
-                    id: logo
                     anchors.left: parent.left
                     anchors.leftMargin: 16
+                    anchors.verticalCenter: parent.verticalCenter
 
                     z: 2
-                    height: 88
+                    height: 92
                     spacing: 24
 
-                    Image {
-                        id: imageLogo
-                        width: 72
-                        height: 72
+                    Image { // logo
+                        width: 64
+                        height: 64
                         anchors.verticalCenter: parent.verticalCenter
                         source: "qrc:/assets/logos/logo.svg"
                     }
@@ -111,14 +102,16 @@ Item {
 
             ////////////////
 
+            Item { height: 8; width: 8; visible: !wideWideMode; } // spacer
+
             Row {
                 id: buttonsRow
                 height: 56
 
                 anchors.left: parent.left
-                anchors.leftMargin: 0
+                anchors.leftMargin: leftPadding + 16
                 anchors.right: parent.right
-                anchors.rightMargin: 0
+                anchors.rightMargin: rightPadding + 16
 
                 visible: !wideWideMode
                 spacing: 16
@@ -151,307 +144,114 @@ Item {
 
             ////////////////
 
-            Item { height: 1; width: 1; } // spacer
+            ListItem { // description
+                width: parent.width
+                text: qsTr("Efficient, portable and lightweight library for Internet of Things payload decoding.")
+                iconSource: "qrc:/assets/icons_material/outline-info-24px.svg"
+            }
 
-            Item {
-                id: desc
-                height: Math.max(UtilsNumber.alignTo(description.contentHeight, 8), 48)
-                anchors.left: parent.left
-                anchors.leftMargin: 0
-                anchors.right: parent.right
-                anchors.rightMargin: 0
+            Item { height: 4; width: 4; } // spacer
 
-                IconSvg {
-                    id: descImg
-                    width: 32
-                    height: 32
-                    anchors.top: parent.top
-                    anchors.topMargin: 8
-                    anchors.left: parent.left
+            ////////
 
-                    source: "qrc:/assets/icons_material/outline-info-24px.svg"
-                    color: Theme.colorIcon
-                }
+            ListSeparator { }
 
-                Text {
-                    id: description
-                    anchors.left: parent.left
-                    anchors.leftMargin: 48
-                    anchors.right: parent.right
-                    anchors.rightMargin: 0
-                    anchors.verticalCenter: desc.verticalCenter
+            ListItemClickable { // release notes
+                width: parent.width
 
-                    text: qsTr("Efficient, portable and lightweight library for Internet of Things payload decoding.")
-                    textFormat: Text.PlainText
-                    wrapMode: Text.WordWrap
-                    color: Theme.colorText
-                    font.pixelSize: Theme.fontSizeContent
-                }
+                text: qsTr("Release notes")
+                iconSource: "qrc:/assets/icons_material/outline-new_releases-24px.svg"
+                iconSize: 24
+                indicatorSource: "qrc:/assets/icons_material/duotone-launch-24px.svg"
+
+                onClicked: Qt.openUrlExternally("https://github.com/theengs/app/releases")
             }
 
             ////////
 
-            Item {
-                height: 16
-                anchors.left: parent.left
-                anchors.right: parent.right
+            ListSeparator { visible: (Qt.platform.os === "android") }
 
-                Rectangle {
-                    height: 1
-                    color: Theme.colorSeparator
-                    anchors.left: parent.left
-                    anchors.leftMargin: -(screenPaddingLeft + 16)
-                    anchors.right: parent.right
-                    anchors.rightMargin: -(screenPaddingRight + 16)
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-
-            ////////
-
-            Item {
-                id: releasenotes
-                height: 32
-                anchors.left: parent.left
-                anchors.leftMargin: 0
-                anchors.right: parent.right
-                anchors.rightMargin: 0
-
-                IconSvg {
-                    id: releasenotesImg
-                    width: 28
-                    height: 28
-                    anchors.left: parent.left
-                    anchors.leftMargin: 2
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    source: "qrc:/assets/icons_material/outline-new_releases-24px.svg"
-                    color: Theme.colorIcon
-                }
-
-                Text {
-                    id: releasenotesTxt
-                    anchors.left: parent.left
-                    anchors.leftMargin: 48
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: qsTr("Release notes")
-                    textFormat: Text.PlainText
-                    font.pixelSize: Theme.fontSizeContent
-                    color: Theme.colorText
-                }
-
-                IconSvg {
-                    width: 20
-                    height: 20
-                    anchors.right: parent.right
-                    anchors.rightMargin: 0
-                    anchors.verticalCenter: parent.verticalCenter
-                    visible: singleColumn
-
-                    source: "qrc:/assets/icons_material/duotone-launch-24px.svg"
-                    color: Theme.colorIcon
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: Qt.openUrlExternally("https://github.com/theengs/app/releases")
-                }
-            }
-
-            ////////
-
-            Item {
-                height: 16
-                anchors.left: parent.left
-                anchors.right: parent.right
-
+            ListItemClickable { // permissions
+                width: parent.width
                 visible: (Qt.platform.os === "android")
 
-                Rectangle {
-                    height: 1
-                    color: Theme.colorSeparator
-                    anchors.left: parent.left
-                    anchors.leftMargin: -(screenPaddingLeft + 16)
-                    anchors.right: parent.right
-                    anchors.rightMargin: -(screenPaddingRight + 16)
-                    anchors.verticalCenter: parent.verticalCenter
-                }
+                text: qsTr("About app permissions")
+                iconSource: "qrc:/assets/icons_material/baseline-flaky-24px.svg"
+                iconSize: 24
+                indicatorSource: "qrc:/assets/icons_material/baseline-chevron_right-24px.svg"
+
+                onClicked: screenPermissions.loadScreenFrom("About")
             }
 
             ////////
 
-            Item {
-                id: permissions
-                height: 32
-                anchors.left: parent.left
-                anchors.leftMargin: 0
-                anchors.right: parent.right
-                anchors.rightMargin: 0
+            ListSeparator { }
 
-                visible: (Qt.platform.os === "android")
+            ////////
+
+            Item { // list dependencies
+                anchors.left: parent.left
+                anchors.leftMargin: screenPaddingLeft + Theme.componentMargin
+                anchors.right: parent.right
+                anchors.rightMargin: screenPaddingRight + Theme.componentMargin
+
+                height: 40 + dependenciesText.height + dependenciesColumn.height
 
                 IconSvg {
-                    id: permissionsImg
                     width: 24
                     height: 24
                     anchors.left: parent.left
                     anchors.leftMargin: 4
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    source: "qrc:/assets/icons_material/baseline-flaky-24px.svg"
-                    color: Theme.colorIcon
-                }
-
-                Text {
-                    id: permissionsTxt
-                    anchors.left: parent.left
-                    anchors.leftMargin: 48
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: qsTr("About app permissions")
-                    textFormat: Text.PlainText
-                    font.pixelSize: Theme.fontSizeContent
-                    color: Theme.colorText
-                }
-
-                IconSvg {
-                    width: 24
-                    height: 24
-                    anchors.right: parent.right
-                    anchors.rightMargin: 0
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    source: "qrc:/assets/icons_material/baseline-chevron_right-24px.svg"
-                    color: Theme.colorIcon
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: screenPermissions.loadScreenFrom("About")
-                }
-            }
-
-            ////////
-
-            Item {
-                height: 16
-                anchors.left: parent.left
-                anchors.right: parent.right
-
-                Rectangle {
-                    height: 1
-                    color: Theme.colorSeparator
-                    anchors.left: parent.left
-                    anchors.leftMargin: -(screenPaddingLeft + 16)
-                    anchors.right: parent.right
-                    anchors.rightMargin: -(screenPaddingRight + 16)
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-
-            ////////
-
-            Item {
-                id: dependencies
-                height: 24 + dependenciesLabel.height + dependenciesColumn.height
-                anchors.left: parent.left
-                anchors.leftMargin: 0
-                anchors.right: parent.right
-                anchors.rightMargin: 0
-
-                IconSvg {
-                    id: dependenciesImg
-                    width: 24
-                    height: 24
-                    anchors.left: parent.left
-                    anchors.leftMargin: 4
-                    anchors.verticalCenter: dependenciesLabel.verticalCenter
+                    anchors.verticalCenter: dependenciesText.verticalCenter
 
                     source: "qrc:/assets/icons_material/baseline-settings-20px.svg"
-                    color: Theme.colorIcon
+                    color: Theme.colorSubText
                 }
 
                 Text {
-                    id: dependenciesLabel
+                    id: dependenciesText
                     anchors.top: parent.top
-                    anchors.topMargin: 8
+                    anchors.topMargin: 16
                     anchors.left: parent.left
-                    anchors.leftMargin: 48
+                    anchors.leftMargin: appHeader.headerPosition - parent.anchors.leftMargin
                     anchors.right: parent.right
-                    anchors.rightMargin: 0
+                    anchors.rightMargin: 8
 
                     text: qsTr("This application is made possible thanks to a couple of third party open source projects:")
                     textFormat: Text.PlainText
-                    color: Theme.colorText
+                    color: Theme.colorSubText
                     font.pixelSize: Theme.fontSizeContent
                     wrapMode: Text.WordWrap
                 }
 
                 Column {
                     id: dependenciesColumn
-                    anchors.top: dependenciesLabel.bottom
+                    anchors.top: dependenciesText.bottom
                     anchors.topMargin: 8
                     anchors.left: parent.left
-                    anchors.leftMargin: 48
+                    anchors.leftMargin: appHeader.headerPosition - parent.anchors.leftMargin
                     anchors.right: parent.right
-                    anchors.rightMargin: 0
+                    anchors.rightMargin: 8
                     spacing: 4
 
-                    Text {
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.rightMargin: 12
-
-                        text: "- Qt (LGPL 3)"
-                        textFormat: Text.PlainText
-                        color: Theme.colorText
-                        font.pixelSize: Theme.fontSizeContent
-                        wrapMode: Text.WordWrap
-                    }
-                    Text {
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.rightMargin: 12
-
-                        text: "- QtMqtt (GPL 3)"
-                        textFormat: Text.PlainText
-                        color: Theme.colorText
-                        font.pixelSize: Theme.fontSizeContent
-                        wrapMode: Text.WordWrap
-                    }
-                    Text {
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.rightMargin: 12
-
-                        text: "- SingleApplication (MIT)"
-                        textFormat: Text.PlainText
-                        color: Theme.colorText
-                        font.pixelSize: Theme.fontSizeContent
-                        wrapMode: Text.WordWrap
-                    }
-                    Text {
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.rightMargin: 12
-
-                        text: "- Google Material Icons (MIT)"
-                        textFormat: Text.PlainText
-                        color: Theme.colorText
-                        font.pixelSize: Theme.fontSizeContent
-                        wrapMode: Text.WordWrap
-                    }
-                    Text {
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.rightMargin: 12
-
-                        text: "- MobileUI & MobileSharing (MIT)"
-                        textFormat: Text.PlainText
-                        color: Theme.colorText
-                        font.pixelSize: Theme.fontSizeContent
-                        wrapMode: Text.WordWrap
+                    Repeater {
+                        model: [
+                            "Theengs (LGPL v3)",
+                            "Qt6 (LGPL v3)",
+                            "QtMqtt (GPL 3)",
+                            "MobileUI (MIT)",
+                            "MobileSharing (MIT)",
+                            "SingleApplication (MIT)",
+                            "Google Material Icons (MIT)",
+                        ]
+                        delegate: Text {
+                            width: parent.width
+                            text: "- " + modelData
+                            textFormat: Text.PlainText
+                            color: Theme.colorSubText
+                            font.pixelSize: Theme.fontSizeContent
+                            wrapMode: Text.WordWrap
+                        }
                     }
                 }
             }

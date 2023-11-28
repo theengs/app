@@ -1,15 +1,23 @@
-import QtQuick 2.15
+import QtQuick
 
-import ThemeEngine 1.0
+import ThemeEngine
 
 Rectangle {
-    id: rectangleHeaderBar
-    width: parent.width
+    id: appHeader
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+
     height: headerHeight
-    z: 10
     color: Theme.colorHeader
+    clip: false
+    z: 10
 
     property int headerHeight: isHdpi ? 60 : 64
+
+    property int headerPosition: 64
+
+    property string headerTitle: "Theengs"
 
     ////////////////////////////////////////////////////////////////////////////
 
@@ -134,7 +142,7 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
 
         visible: wideMode
-        text: "Theengs"
+        text: headerTitle
         font.bold: true
         font.pixelSize: Theme.fontSizeHeader
         color: Theme.colorHeaderContent
@@ -635,4 +643,6 @@ Rectangle {
         opacity: 0.33
         color: Theme.colorHeaderHighlight
     }
+
+    ////////////
 }

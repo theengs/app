@@ -246,7 +246,7 @@ Item {
                 SwitchThemed {
                     id: switch_appThemeAuto
                     anchors.right: parent.right
-                    anchors.rightMargin: 0
+                    anchors.rightMargin: 8
                     anchors.verticalCenter: parent.verticalCenter
                     z: 1
 
@@ -365,7 +365,7 @@ Item {
                 SwitchThemed {
                     id: switch_bluetoothControl
                     anchors.right: parent.right
-                    anchors.rightMargin: 0
+                    anchors.rightMargin: 8
                     anchors.verticalCenter: parent.verticalCenter
                     z: 1
 
@@ -490,7 +490,7 @@ Item {
                 SwitchThemed {
                     id: switch_worker
                     anchors.right: parent.right
-                    anchors.rightMargin: 0
+                    anchors.rightMargin: 8
                     anchors.verticalCenter: parent.verticalCenter
                     z: 1
 
@@ -591,7 +591,7 @@ Item {
                     width: 140
                     height: 36
                     anchors.right: parent.right
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
                     z: 1
 
@@ -684,24 +684,20 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                 }
 
-                Row {
+                SelectorMenu {
                     id: row_units
+                    height: 32
                     anchors.right: parent.right
-                    anchors.rightMargin: 12
-                    anchors.verticalCenter: text_units.verticalCenter
-                    spacing: 12
+                    anchors.rightMargin: 16
+                    anchors.verticalCenter: parent.verticalCenter
 
-                    RadioButtonThemed {
-                        text: qsTr("Metric")
-                        checked: (settingsManager.appUnits === 0)
-                        onClicked: settingsManager.appUnits = 0
+                    model: ListModel {
+                        ListElement { idx: 0; txt: qsTr("Metric"); src: ""; sz: 16; }
+                        ListElement { idx: 1; txt: qsTr("Imperial"); src: ""; sz: 16; }
                     }
 
-                    RadioButtonThemed {
-                        text: qsTr("Imperial")
-                        checked: (settingsManager.appUnits === 1)
-                        onClicked: settingsManager.appUnits = 1
-                    }
+                    currentSelection: settingsManager.appUnits
+                    onMenuSelected: (index) => { settingsManager.appUnits = index }
                 }
             }
 
