@@ -354,6 +354,13 @@ Item {
         visible: isDesktop
 
         ButtonWireframe {
+            text: qsTr("temps")
+            fullColor: true
+            primaryColor: Theme.colorSecondary
+            onClicked: screenTemperaturePresetList.loadScreen()
+        }
+
+        ButtonWireframe {
             text: qsTr("devices")
             fullColor: true
             primaryColor: Theme.colorSecondary

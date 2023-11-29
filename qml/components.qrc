@@ -25,6 +25,8 @@
         <file alias="RangeSliderValueSolid.qml">components_generic/RangeSliderValueSolid.qml</file>
         <file alias="SelectorMenu.qml">components_generic/SelectorMenu.qml</file>
         <file alias="SelectorMenuItem.qml">components_generic/SelectorMenuItem.qml</file>
+        <file alias="SelectorGrid.qml">components_generic/SelectorGrid.qml</file>
+        <file alias="SelectorGridItem.qml">components_generic/SelectorGridItem.qml</file>
         <file alias="SliderValueSolid.qml">components_generic/SliderValueSolid.qml</file>
         <file alias="ToolTipFlat.qml">components_generic/ToolTipFlat.qml</file>
 
@@ -44,5 +46,7 @@
     <qresource prefix="/js">
         <file alias="UtilsNumber.js">components_js/UtilsNumber.js</file>
         <file alias="UtilsDeviceSensors.js">components_js/UtilsDeviceSensors.js</file>
+        <file alias="UtilsDeviceTheengs.js">components_js/UtilsDeviceTheengs.js</file>
+        <file alias="UtilsPresets.js">components_js/UtilsPresets.js</file>
     </qresource>
 </RCC>

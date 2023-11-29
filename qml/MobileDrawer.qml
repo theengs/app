@@ -119,7 +119,7 @@ DrawerThemed {
                     iconSource: "qrc:/assets/icons_material/baseline-outdoor_grill-24px.svg"
 
                     onClicked: {
-                        screenTemperatureRanges.loadScreen()
+                        screenTemperaturePresetList.loadScreen()
                         appDrawer.close()
                     }
                 }

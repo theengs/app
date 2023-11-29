@@ -18,11 +18,14 @@
 
 #include "DatabaseManager.h"
 #include "SettingsManager.h"
-#include "MqttManager.h"
 #include "DeviceManager.h"
 #include "SystrayManager.h"
 #include "NotificationManager.h"
 #include "MenubarManager.h"
+
+#include "MqttManager.h"
+#include "TempPresetManager.h"
+#include "TempPreset.h"
 #include "device_utils_theengs.h"
 
 #include "utils_app.h"
@@ -126,6 +129,7 @@ int main(int argc, char *argv[])
     SystrayManager *st = SystrayManager::getInstance();
     MenubarManager *mb = MenubarManager::getInstance();
     MqttManager *mq = MqttManager::getInstance();
+    TempPresetManager *pm = TempPresetManager::getInstance();
     NotificationManager *nm = NotificationManager::getInstance();
     DeviceManager *dm = new DeviceManager;
     if (!sm || !st || !mb || !mq || !nm || !dm)
@@ -160,6 +164,7 @@ int main(int argc, char *argv[])
     MobileUI::registerQML();
     DeviceUtils::registerQML();
     DeviceUtilsTheengs::registerQML();
+    PresetUtils::registerQML();
 
     // Then we start the UI
     QQmlApplicationEngine engine;
@@ -170,6 +175,7 @@ int main(int argc, char *argv[])
     engine_context->setContextProperty("systrayManager", st);
     engine_context->setContextProperty("menubarManager", mb);
     engine_context->setContextProperty("mqttManager", mq);
+    engine_context->setContextProperty("presetsManager", pm);
     engine_context->setContextProperty("utilsApp", utilsApp);
     engine_context->setContextProperty("utilsLanguage", utilsLanguage);
     engine_context->setContextProperty("utilsScreen", utilsScreen);

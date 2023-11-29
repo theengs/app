@@ -24,6 +24,10 @@
         <file>DeviceThermometer.qml</file>
         <file>DeviceEnvironmental.qml</file>
         <file>DeviceGeneric.qml</file>
+        <file>TemperaturePresetList.qml</file>
+        <file>TemperaturePresetWidget.qml</file>
+        <file>TemperaturePreset.qml</file>
+        <file>TemperatureRangeWidget.qml</file>
         <file>ThemeEngine.qml</file>
         <file>WindowGeometrySaver.qml</file>
 
@@ -33,6 +37,9 @@
         <file alias="PopupDeleteData.qml">popups/PopupDeleteData.qml</file>
         <file alias="PopupDeleteDevice.qml">popups/PopupDeleteDevice.qml</file>
         <file alias="PopupMacAddress.qml">popups/PopupMacAddress.qml</file>
+        <file alias="PopupPresetAdd.qml">popups/PopupPresetAdd.qml</file>
+        <file alias="PopupPresetDelete.qml">popups/PopupPresetDelete.qml</file>
+        <file alias="PopupPresetRangeAdd.qml">popups/PopupPresetRangeAdd.qml</file>
 
         <file alias="ActionMenuFixed.qml">components/ActionMenuFixed.qml</file>
         <file alias="AirQualityIndicator.qml">components/AirQualityIndicator.qml</file>
@@ -57,5 +64,6 @@
         <file alias="ItemNoDevice.qml">components/ItemNoDevice.qml</file>
         <file alias="ItemNoDeviceNearby.qml">components/ItemNoDeviceNearby.qml</file>
         <file alias="RoundButtonIconShadow.qml">components/RoundButtonIconShadow.qml</file>
+        <file alias="TextInputThemed.qml">components/TextInputThemed.qml</file>
     </qresource>
 </RCC>
