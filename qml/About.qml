@@ -1,19 +1,17 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick
+import QtQuick.Controls
 
-import ThemeEngine 1.0
-import "qrc:/js/UtilsNumber.js" as UtilsNumber
+import ThemeEngine
 
 Item {
     id: aboutScreen
-    width: 480
-    height: 720
     anchors.fill: parent
 
     ////////////////////////////////////////////////////////////////////////////
 
     Flickable {
         anchors.fill: parent
+
         contentWidth: parent.width
         contentHeight: contentColumn.height
 
@@ -144,6 +142,8 @@ Item {
 
             ////////////////
 
+            Item { height: 4; width: 4; visible: isDesktop; } // spacer
+
             ListItem { // description
                 width: parent.width
                 text: qsTr("Efficient, portable and lightweight library for Internet of Things payload decoding.")
@@ -180,7 +180,7 @@ Item {
                 iconSize: 24
                 indicatorSource: "qrc:/assets/icons_material/baseline-chevron_right-24px.svg"
 
-                onClicked: screenPermissions.loadScreenFrom("About")
+                onClicked: screenAboutPermissions.loadScreenFrom("About")
             }
 
             ////////

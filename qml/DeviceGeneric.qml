@@ -248,10 +248,8 @@ Loader {
                             }
                         }
                         IconSvg {
-                            id: imageEditLocation
-                            width: 20
-                            height: 20
                             anchors.verticalCenter: parent.verticalCenter
+                            width: 20; height: 20;
 
                             source: "qrc:/assets/icons_material/duotone-edit-24px.svg"
                             color: cccc

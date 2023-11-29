@@ -385,53 +385,53 @@ ApplicationWindow {
         anchors.bottom: parent.bottom
 
         DeviceList {
-            anchors.fill: parent
             id: screenDeviceList
+            anchors.fill: parent
         }
         DevicePlantSensor {
-            anchors.fill: parent
             id: screenDevicePlantSensor
+            anchors.fill: parent
         }
         DeviceThermometer {
-            anchors.fill: parent
             id: screenDeviceThermometer
+            anchors.fill: parent
         }
         DeviceEnvironmental {
-            anchors.fill: parent
             id: screenDeviceEnvironmental
+            anchors.fill: parent
         }
         DeviceProbe {
-            anchors.fill: parent
             id: screenDeviceProbe
+            anchors.fill: parent
         }
         DeviceScale {
-            anchors.fill: parent
             id: screenDeviceScale
+            anchors.fill: parent
         }
         DeviceMotionSensor {
-            anchors.fill: parent
             id: screenDeviceMotionSensor
+            anchors.fill: parent
         }
         DeviceGeneric {
-            anchors.fill: parent
             id: screenDeviceGeneric
+            anchors.fill: parent
         }
         SettingsMqtt {
             anchors.fill: parent
             id: screenSettingsMqtt
         }
         Settings {
-            anchors.fill: parent
             id: screenSettings
+            anchors.fill: parent
         }
         About {
-            anchors.fill: parent
             id: screenAbout
+            anchors.fill: parent
         }
 
         DeviceBrowser {
-            anchors.fill: parent
             id: screenDeviceBrowser
+            anchors.fill: parent
         }
 
         // Initial state

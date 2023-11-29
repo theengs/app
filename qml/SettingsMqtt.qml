@@ -1,13 +1,10 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick
+import QtQuick.Controls
 
-import ThemeEngine 1.0
-import "qrc:/js/UtilsNumber.js" as UtilsNumber
+import ThemeEngine
 
 Item {
-    id: mqttScreen
-    width: 480
-    height: 720
+    id: settingsMqtt
     anchors.fill: parent
 
     function backAction() {
@@ -45,13 +42,13 @@ Item {
         anchors.fill: parent
 
         contentWidth: -1
-        contentHeight: column.height
+        contentHeight: contentColumn.height
 
         boundsBehavior: isDesktop ? Flickable.OvershootBounds : Flickable.DragAndOvershootBounds
         ScrollBar.vertical: ScrollBar { visible: false }
 
         Column {
-            id: column
+            id: contentColumn
             anchors.left: parent.left
             anchors.right: parent.right
 
@@ -473,5 +470,5 @@ Item {
         }
     }
 
-    ////////
+    ////////////////////////////////////////////////////////////////////////////
 }

@@ -88,7 +88,7 @@ void MenubarManager::setupMenubar(QQuickWindow *view, DeviceManager *dm)
     m_menuSensors->addAction(m_actionSensorScan);
     menuBar->addMenu(m_menuSensors);
 
-    m_actionAbout = new QAction(tr("About WatchFlower"));
+    m_actionAbout = new QAction(tr("About Theengs"));
     m_actionPreferences = new QAction(tr("Preferences"));
     m_actionWebsite = new QAction(tr("Visit website"));
     m_actionIssueTracker = new QAction(tr("Visit issue tracker"));

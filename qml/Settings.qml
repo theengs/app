@@ -1,13 +1,10 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick
+import QtQuick.Controls
 
-import ThemeEngine 1.0
-import "qrc:/js/UtilsNumber.js" as UtilsNumber
+import ThemeEngine
 
 Item {
     id: settingsScreen
-    width: 480
-    height: 720
     anchors.fill: parent
 
     ////////////////////////////////////////////////////////////////////////////
@@ -604,7 +601,7 @@ Item {
                     editable: false
                     wheelEnabled: isDesktop
 
-                    value: (settingsManager.updateIntervalBackground)
+                    value: settingsManager.updateIntervalBackground
                     onValueModified: settingsManager.updateIntervalBackground = value
                 }
             }

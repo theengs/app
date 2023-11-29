@@ -138,7 +138,7 @@ Rectangle {
             colorContent: Theme.colorTabletmenuContent
             colorHighlight: Theme.colorTabletmenuHighlight
 
-            highlighted: (appContent.state === "About" || appContent.state === "Permissions")
+            highlighted: (appContent.state === "About" || appContent.state === "AboutPermissions")
             onClicked: appContent.state = "About"
         }
     }

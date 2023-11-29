@@ -1,6 +1,7 @@
-import QtQuick 2.15
+import QtQuick
+import QtQuick.Layouts
 
-import ThemeEngine 1.0
+import ThemeEngine
 
 Item {
     id: itemNoDevice
@@ -29,7 +30,8 @@ Item {
     ////////////////////////////////////////////////////////////////////////////
 
     Column {
-        id: column
+        id: contentColumn
+
         anchors.left: parent.left
         anchors.leftMargin: 32
         anchors.right: parent.right
@@ -197,4 +199,6 @@ Item {
             ////////
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////
 }
