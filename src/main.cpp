@@ -16,7 +16,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "DatabaseManager.h"
 #include "SettingsManager.h"
 #include "DeviceManager.h"
 #include "SystrayManager.h"
@@ -110,7 +109,7 @@ int main(int argc, char *argv[])
     QSurfaceFormat::setDefaultFormat(format);
 #endif
 
-    SingleApplication app(argc, argv);
+    SingleApplication app(argc, argv, false);
 
     // Application name
     app.setApplicationName("Theengs");

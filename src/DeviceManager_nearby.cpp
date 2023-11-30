@@ -126,7 +126,7 @@ void DeviceManager::addNearbyBleDevice(const QBluetoothDeviceInfo &info)
     //qDebug() << "DeviceManager::addNearbyBleDevice()" << " > NAME" << info.name() << " > RSSI" << info.rssi();
 
     // Check if it's not already in the UI
-    for (auto d: qAsConst(m_devices_nearby_model->m_devices))
+    for (auto d: std::as_const(m_devices_nearby_model->m_devices))
     {
         Device *dd = qobject_cast<Device*>(d);
 
@@ -161,7 +161,7 @@ void DeviceManager::updateNearbyBleDevice(const QBluetoothDeviceInfo &info, QBlu
     Q_UNUSED(updatedFields)
 
     // Check if it's not already in the UI
-    for (auto d: qAsConst(m_devices_nearby_model->m_devices))
+    for (auto d: std::as_const(m_devices_nearby_model->m_devices))
     {
         Device *dd = qobject_cast<Device*>(d);
 

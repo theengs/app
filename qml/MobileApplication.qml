@@ -377,7 +377,7 @@ ApplicationWindow {
             anchors.bottomMargin: mobileMenu.hhv
         }
 
-        TemperatureRanges {
+        TemperaturePresetList {
             id: screenTemperaturePresetList
             anchors.fill: parent
             anchors.bottomMargin: mobileMenu.hhv
@@ -549,7 +549,7 @@ ApplicationWindow {
                 PropertyChanges { target: screenAboutPermissions; visible: false; }
             },
             State {
-                name: "TemperatureRanges"
+                name: "TemperaturePresetList"
                 PropertyChanges { target: appHeader; headerTitle: qsTr("Temperature presets"); }
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }

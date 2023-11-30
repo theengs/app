@@ -21,14 +21,14 @@ Item {
     Connections {
         target: currentDevice
         function onRtGraphUpdated() {
-            console.log("onRtgraphUpdated")
+            //console.log("onRtgraphUpdated")
 
             currentDevice.updateRtGraph(axisTime, 5,
                                         temp1Data, temp2Data, temp3Data,
                                         temp4Data, temp5Data, temp6Data)
         }
         function onRtGraphCleaned() {
-            console.log("onRtgraphCleaned")
+            //console.log("onRtgraphCleaned")
 
             currentDevice.updateRtGraph(axisTime, 5,
                                         temp1Data, temp2Data, temp3Data,

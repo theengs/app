@@ -38,6 +38,11 @@ DeviceFilter::~DeviceFilter()
     //
 }
 
+void DeviceFilter::invalidatefilter()
+{
+    invalidateFilter();
+}
+
 /* ************************************************************************** */
 
 bool DeviceFilter::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
@@ -234,9 +239,9 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-void DeviceModel::getDevices(QList<Device *> &device)
+void DeviceModel::getDevices(QList <Device *> &device)
 {
-    for (auto d: qAsConst(m_devices))
+    for (auto d: std::as_const(m_devices))
     {
         device.push_back(d);
     }
@@ -252,14 +257,22 @@ void DeviceModel::addDevice(Device *d)
     }
 }
 
-void DeviceModel::removeDevice(Device *d)
+void DeviceModel::removeDevice(Device *d, bool del)
 {
     if (d)
     {
         beginRemoveRows(QModelIndex(), m_devices.indexOf(d), m_devices.indexOf(d));
         m_devices.removeOne(d);
-        delete d;
+        if (del) delete d;
         endRemoveRows();
+    }
+}
+
+void DeviceModel::clearDevices()
+{
+    for (auto d: std::as_const(m_devices))
+    {
+        removeDevice(d, true);
     }
 }
 

@@ -52,7 +52,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
     if (m_devices_blacklist.contains(info.address().toString())) return; // device is blacklisted
     if (m_devices_blacklist.contains(info.deviceUuid().toString())) return; // device is blacklisted
 
-    for (auto d: qAsConst(m_devices_model->m_devices)) // KNOWN DEVICES ////////
+    for (auto d: std::as_const(m_devices_model->m_devices)) // KNOWN DEVICES ////////
     {
         Device *dd = qobject_cast<Device*>(d);
 

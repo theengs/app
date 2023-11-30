@@ -262,7 +262,7 @@ ApplicationWindow {
             screenDeviceGeneric.backAction()
         } else if (appContent.state === "DeviceBrowser") {
             screenDeviceBrowser.backAction()
-        } else if (appContent.state === "TemperatureRanges") {
+        } else if (appContent.state === "TemperaturePresetList") {
             screenTemperaturePresetList.backAction()
         } else if (appContent.state === "SettingsMqtt") {
             screenSettingsMqtt.backAction()
@@ -584,7 +584,7 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceBrowser; visible: false; }
             },
             State {
-                name: "TemperatureRanges"
+                name: "TemperaturePresetList"
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; }

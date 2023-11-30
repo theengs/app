@@ -39,6 +39,9 @@ SOURCES         += $${PWD}/src/thirdparty/TheengsDecoder/src/decoder.cpp
 INCLUDEPATH     += $${PWD}/src/thirdparty/TheengsDecoder/src/
 INCLUDEPATH     += $${PWD}/src/thirdparty/TheengsDecoder/src/arduino_json/src/
 
+# Uncomment to enable virtual devices # AND REBUILD
+#DEFINES += DEBUG_FAKE_DEVICES
+
 # Project files ################################################################
 
 SOURCES  += src/main.cpp \
@@ -174,13 +177,6 @@ QMAKE_RPATHDIR  += $${CONTRIBS_DIR}/lib/
 
 # Build settings ###############################################################
 
-unix {
-    # Enables AddressSanitizer
-    #QMAKE_CXXFLAGS += -fsanitize=address,undefined
-    #QMAKE_CXXFLAGS += -Wno-nullability-completeness
-    #QMAKE_LFLAGS += -fsanitize=address,undefined
-}
-
 DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG(release, debug|release) : DEFINES += NDEBUG QT_NO_DEBUG QT_NO_DEBUG_OUTPUT
@@ -287,13 +283,6 @@ android {
                  $${PWD}/assets/android/build.gradle
 
     include($${PWD}/contribs/env/android_openssl-master/openssl.pri)
-
-    #DEFINES += LIBS_SUFFIX='\\"_$${QT_ARCH}.so\\"'
-    #ANDROID_EXTRA_LIBS += \
-    #    $${PWD}/contribs/env/android_armv7/usr/lib/libdecoder.so \
-    #    $${PWD}/contribs/env/android_armv8/usr/lib/libdecoder.so \
-    #    $${PWD}/contribs/env/android_x86/usr/lib/libdecoder.so \
-    #    $${PWD}/contribs/env/android_x86_64/usr/lib/libdecoder.so
 }
 
 ios {

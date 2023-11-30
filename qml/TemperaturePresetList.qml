@@ -14,7 +14,7 @@ Loader {
         screenTemperaturePresetList.active = true
 
         // change screen
-        appContent.state = "TemperatureRanges"
+        appContent.state = "TemperaturePresetList"
     }
 
     function backAction() {
