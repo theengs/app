@@ -261,7 +261,6 @@ Item {
                     } else if (boxDevice.isProbe) {
                         selectedDevice = boxDevice
                         screenDeviceProbe.loadDevice(boxDevice)
-                        appContent.state = "DeviceProbe"
                     } else if (boxDevice.isScale) {
                         selectedDevice = boxDevice
                         screenDeviceScale.loadDevice(boxDevice)

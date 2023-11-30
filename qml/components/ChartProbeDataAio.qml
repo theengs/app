@@ -1,7 +1,7 @@
-import QtQuick 2.15
-import QtCharts 2.15
+import QtQuick
+import QtCharts
 
-import ThemeEngine 1.0
+import ThemeEngine
 import "qrc:/js/UtilsNumber.js" as UtilsNumber
 
 Item {
@@ -11,6 +11,8 @@ Item {
     property bool useOpenGL: true
     property bool showGraphDots: settingsManager.graphShowDots
     property color legendColor: Theme.colorSubText
+
+    ////////////////////////////////////////////////////////////////////////////
 
     function loadGraph() {
         if (typeof currentDevice === "undefined" || !currentDevice) return
@@ -51,14 +53,10 @@ Item {
                                             temp5Data, temp6Data)
 
         //// AXIS
-        axisTemp.min = 0
-        axisTemp.max = 100
-
-        // Max axis for temperature
-        axisTemp.max = currentDevice.tempMax*1.15
         axisTemp.min = currentDevice.tempMin*0.85
+        axisTemp.max = currentDevice.tempMax*1.15
 
-        // Graph visibility
+        /// Graph visibility
         count = temp1Data.count
         aioGraph.visible = (count > 1)
         noDataIndicator.visible = (count <= 0)
@@ -581,4 +579,6 @@ Item {
         indicatorTop6.visible = (t6 > -40)
         indicatorTop6.text = t6.toFixed(0) + "°"
     }
+
+    ////////////////////////////////////////////////////////////////////////////
 }

@@ -13,15 +13,21 @@ Loader {
     ////////
 
     function loadDevice(clickedDevice) {
-        // set device
         if (typeof clickedDevice === "undefined" || !clickedDevice) return
         if (!clickedDevice.isProbe) return
-        if (clickedDevice === currentDevice) return
-        currentDevice = clickedDevice
+
+        // set device
+        if (currentDevice !== clickedDevice) currentDevice = clickedDevice
 
         // load screen
-        deviceProbe.active = true
-        deviceProbe.item.loadDevice()
+        if (!deviceProbe.active) {
+            deviceProbe.active = true
+            deviceProbe.item.loadDevice()
+        }
+
+        // change screen
+        appContent.state = "DeviceProbe"
+        if (isMobile) mobileUI.screenAlwaysOn(true)
     }
 
     ////////
@@ -156,7 +162,8 @@ Loader {
             if (currentDevice.hasProbesTPMS) return
 
             if (graphLoader.status !== Loader.Ready) {
-                graphLoader.source = "ChartProbeDataAio.qml"
+                graphLoader.source = "ChartProbeRealTime.qml"
+                //graphLoader.source = "ChartProbeDataAio.qml"
             }
 
             if (graphLoader.status === Loader.Ready) {
@@ -183,6 +190,7 @@ Loader {
             }
 
             appContent.state = "DeviceList"
+            if (isMobile) mobileUI.setScreenAlwaysOn(false)
         }
         function isHistoryMode() {
             if (graphLoader.status === Loader.Ready) return probeChart.isIndicator()
@@ -1141,14 +1149,87 @@ Loader {
                     return singleColumn ? (parent.height - probeBox.height) : parent.height
                 }
 
+                Rectangle {
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: 40 // Theme.componentHeight
+                    color: Theme.colorForeground
+                    visible: !(currentDevice.hasProbesTPMS)
+
+                    Row {
+                        height: parent.height
+                        spacing: 12
+
+                        Rectangle {
+                            height: parent.height
+                            width: legendPreset.contentWidth + 12
+                            color: Qt.darker(Theme.colorForeground, 1.03)
+
+                            Text {
+                                id: legendPreset
+                                anchors.centerIn: parent
+                                text: qsTr("PRESET")
+                                textFormat: Text.PlainText
+                                color: Theme.colorText
+                            }
+                        }
+
+                        SelectorMenuItem {
+                            anchors.verticalCenter: parent.verticalCenter
+                            highlighted: true
+
+                            text: "seafood"
+                            source: "qrc:/assets/icons_fontawesome/shrimp-solid.svg"
+                            sourceSize: 20
+
+                            onClicked: {
+                                //
+                            }
+                        }
+
+                        Rectangle {
+                            height: parent.height
+                            width: legendInterval.contentWidth + 12
+                            color: Qt.darker(Theme.colorForeground, 1.03)
+
+                            Text {
+                                id: legendInterval
+                                anchors.centerIn: parent
+                                text: qsTr("INTERVAL")
+                                textFormat: Text.PlainText
+                                color: Theme.colorText
+                            }
+                        }
+
+                        SelectorMenu {
+                            anchors.verticalCenter: parent.verticalCenter
+                            height: 32
+
+                            model: ListModel {
+                                ListElement { idx: 0; txt: qsTr("5m"); src: ""; sz: 16; }
+                                ListElement { idx: 1; txt: qsTr("10m"); src: ""; sz: 16; }
+                                ListElement { idx: 2; txt: qsTr("30m"); src: ""; sz: 16; }
+                                ListElement { idx: 3; txt: qsTr("60m"); src: ""; sz: 16; }
+                            }
+
+                            currentSelection: 0
+                            onMenuSelected: (index) => {
+                                //
+                            }
+                        }
+                    }
+                }
+/*
                 ItemNoData {
                     id: noDataIndicator
                     visible: (currentDevice.countDataNamed("temperature", 14) <= 1)
                 }
-
+*/
                 Loader {
                     id: graphLoader
                     anchors.top: parent.top
+                    anchors.topMargin: 40
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
@@ -1160,6 +1241,8 @@ Loader {
                     }
                 }
             }
+
+            ////////////////
         }
     }
 }

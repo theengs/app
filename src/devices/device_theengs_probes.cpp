@@ -169,13 +169,39 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
         m_temperature5 = -99.f;
         m_temperature6 = -99.f;
 
-        if (obj.contains("tempc")) m_temperature1 = obj["tempc"].toDouble();
-        if (obj.contains("tempc1")) m_temperature1 = obj["tempc1"].toDouble();
-        if (obj.contains("tempc2")) m_temperature2 = obj["tempc2"].toDouble();
-        if (obj.contains("tempc3")) m_temperature3 = obj["tempc3"].toDouble();
-        if (obj.contains("tempc4")) m_temperature4 = obj["tempc4"].toDouble();
-        if (obj.contains("tempc5")) m_temperature5 = obj["tempc5"].toDouble();
-        if (obj.contains("tempc6")) m_temperature6 = obj["tempc6"].toDouble();
+        QDateTime ts = QDateTime::currentDateTime();
+
+        if (obj.contains("tempc")) {
+            m_temperature1 = obj["tempc"].toDouble();
+            m_rt_probe1.push_back(std::make_pair(ts, m_temperature1));
+        }
+        if (obj.contains("tempc1")) {
+            m_temperature1 = obj["tempc1"].toDouble();
+            m_rt_probe1.push_back(std::make_pair(ts, m_temperature1));
+        }
+        if (obj.contains("tempc2")) {
+            m_temperature2 = obj["tempc2"].toDouble();
+            m_rt_probe2.push_back(std::make_pair(ts, m_temperature2));
+        }
+        if (obj.contains("tempc3")) {
+            m_temperature3 = obj["tempc3"].toDouble();
+            m_rt_probe3.push_back(std::make_pair(ts, m_temperature3));
+        }
+        if (obj.contains("tempc4")) {
+            m_temperature4 = obj["tempc4"].toDouble();
+            m_rt_probe4.push_back(std::make_pair(ts, m_temperature4));
+        }
+        if (obj.contains("tempc5")) {
+            m_temperature5 = obj["tempc5"].toDouble();
+            m_rt_probe5.push_back(std::make_pair(ts, m_temperature5));
+        }
+        if (obj.contains("tempc6")) {
+            m_temperature6 = obj["tempc6"].toDouble();
+            m_rt_probe6.push_back(std::make_pair(ts, m_temperature6));
+        }
+
+        // signal
+        Q_EMIT rtGraphUpdated();
     }
 
     {
@@ -259,6 +285,72 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
         }
 
         refreshDataFinished(true);
+    }
+}
+
+/* ************************************************************************** */
+
+void DeviceTheengsProbes::updateRtGraph(QDateTimeAxis *axis, int minutes,
+                                        QLineSeries *temp1, QLineSeries *temp2,
+                                        QLineSeries *temp3, QLineSeries *temp4,
+                                        QLineSeries *temp5, QLineSeries *temp6)
+{
+    //qDebug() << "DeviceTheengsProbes::updateRtGraph()" << getAddress() << getName();
+    //qDebug() << "min " << QDateTime::currentDateTime().addSecs(-300).toString("hh:mm:ss");
+    //qDebug() << "max " << QDateTime::currentDateTime().toString("hh:mm:ss");
+
+    axis->setFormat("hh:mm");
+    axis->setMin(QDateTime::currentDateTime().addSecs(-minutes*60));
+    axis->setMax(QDateTime::currentDateTime());
+
+    temp1->clear();
+    temp2->clear();
+    temp3->clear();
+    temp4->clear();
+    temp5->clear();
+    temp6->clear();
+
+    if (temp1 && hasTemp1())
+    {
+        temp1->clear();
+        for (auto p: m_rt_probe1) {
+            temp1->append(p.first.toMSecsSinceEpoch(), p.second);
+        }
+    }
+    if (temp2 && hasTemp2())
+    {
+        temp2->clear();
+        for (auto p: m_rt_probe2) {
+            temp2->append(p.first.toMSecsSinceEpoch(), p.second);
+        }
+    }
+    if (temp3 && hasTemp3())
+    {
+        temp3->clear();
+        for (auto p: m_rt_probe3) {
+            temp3->append(p.first.toMSecsSinceEpoch(), p.second);
+        }
+    }
+    if (temp4 && hasTemp4())
+    {
+        temp4->clear();
+        for (auto p: m_rt_probe4) {
+            temp4->append(p.first.toMSecsSinceEpoch(), p.second);
+        }
+    }
+    if (temp5 && hasTemp5())
+    {
+        temp5->clear();
+        for (auto p: m_rt_probe5) {
+            temp5->append(p.first.toMSecsSinceEpoch(), p.second);
+        }
+    }
+    if (temp6 && hasTemp6())
+    {
+        temp6->clear();
+        for (auto p: m_rt_probe6) {
+            temp6->append(p.first.toMSecsSinceEpoch(), p.second);
+        }
     }
 }
 
