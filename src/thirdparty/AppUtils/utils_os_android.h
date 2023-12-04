@@ -79,6 +79,16 @@ public:
     static bool getPermission_camera();
 
     /*!
+     * \return True if Bluetooth permission has been previously obtained.
+     */
+    static bool checkPermission_bluetooth();
+
+    /*!
+     * \return True if Bluetooth permission has been explicitly obtained.
+     */
+    static bool getPermission_bluetooth();
+
+    /*!
      * \return True if ACCESS_FINE_LOCATION permission has been previously obtained.
      */
     static bool checkPermission_location();

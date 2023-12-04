@@ -92,6 +92,9 @@ public:
     static Q_INVOKABLE bool checkMobileStorageFileSystemPermission();
     static Q_INVOKABLE bool getMobileStorageFileSystemPermission(const QString &packageName);
 
+    static Q_INVOKABLE bool checkMobileBluetoothPermission();
+    static Q_INVOKABLE bool getMobileBluetoothPermission();
+
     static Q_INVOKABLE bool checkMobileLocationPermission();
     static Q_INVOKABLE bool getMobileLocationPermission();
 

@@ -24,6 +24,10 @@ Item {
         loadScreen()
     }
 
+    function backAction() {
+        screenAbout.loadScreen()
+    }
+
     Timer {
         id: refreshPermissions
         interval: 333
@@ -52,14 +56,12 @@ Item {
 
             ////////
 
-            Item {
-                id: element_network
+            Item { // Network access
                 height: 24
                 anchors.left: parent.left
                 anchors.right: parent.right
 
                 RoundButtonIcon {
-                    id: button_network_test
                     width: 32
                     height: 32
                     anchors.left: parent.left
@@ -76,7 +78,6 @@ Item {
                 }
 
                 Text {
-                    id: text_network
                     height: 16
                     anchors.left: parent.left
                     anchors.leftMargin: 64
@@ -92,8 +93,7 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                 }
             }
-            Text {
-                id: legend_network
+            Text { // Network access legend
                 anchors.left: parent.left
                 anchors.leftMargin: 64
                 anchors.right: parent.right
@@ -112,14 +112,12 @@ Item {
 
             ////////
 
-            Item {
-                id: element_bluetooth
+            Item { // Bluetooth control
                 height: 24
                 anchors.left: parent.left
                 anchors.right: parent.right
 
                 RoundButtonIcon {
-                    id: button_bluetooth_test
                     width: 32
                     height: 32
                     anchors.left: parent.left
@@ -135,7 +133,6 @@ Item {
                 }
 
                 Text {
-                    id: text_bluetooth
                     height: 16
                     anchors.left: parent.left
                     anchors.leftMargin: appHeader.headerPosition
@@ -151,8 +148,7 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                 }
             }
-            Text {
-                id: legend_bluetooth
+            Text { // Bluetooth control legend
                 anchors.left: parent.left
                 anchors.leftMargin: appHeader.headerPosition
                 anchors.right: parent.right
@@ -171,14 +167,73 @@ Item {
 
             ////////
 
-            Item {
-                id: element_location
+            Item { // Bluetooth
                 height: 24
                 anchors.left: parent.left
                 anchors.right: parent.right
 
                 RoundButtonIcon {
-                    id: button_location_test
+                    width: 32
+                    height: 32
+                    anchors.left: parent.left
+                    anchors.leftMargin: Theme.componentMargin
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property bool validperm: deviceManager.permissionOS
+
+                    source: (validperm) ? "qrc:/assets/icons_material/baseline-check-24px.svg" : "qrc:/assets/icons_material/baseline-close-24px.svg"
+                    iconColor: (validperm) ? "white" : "white"
+                    backgroundColor: (validperm) ? Theme.colorSuccess : Theme.colorSubText
+                    backgroundVisible: true
+
+                    onClicked: {
+                        utilsApp.vibrate(25)
+                        utilsApp.getMobileBluetoothPermission()
+                        refreshPermissions.start()
+                    }
+                }
+
+                Text {
+                    height: 16
+                    anchors.left: parent.left
+                    anchors.leftMargin: appHeader.headerPosition
+                    anchors.right: parent.right
+                    anchors.rightMargin: Theme.componentMargin
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    text: qsTr("Bluetooth")
+                    textFormat: Text.PlainText
+                    wrapMode: Text.WordWrap
+                    font.pixelSize: 17
+                    color: Theme.colorText
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Text { // Bluetooth legend
+                anchors.left: parent.left
+                anchors.leftMargin: appHeader.headerPosition
+                anchors.right: parent.right
+                anchors.rightMargin: 12
+
+                text: qsTr("The Android operating system requires permission to scan for nearby Bluetooth Low Energy sensors.")
+                textFormat: Text.StyledText
+                wrapMode: Text.WordWrap
+                color: Theme.colorSubText
+                font.pixelSize: Theme.fontSizeContentSmall
+            }
+
+            ////////
+
+            ListSeparatorPadded { height: 16+1 }
+
+            ////////
+
+            Item { // Location
+                height: 24
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                RoundButtonIcon {
                     width: 32
                     height: 32
                     anchors.left: parent.left
@@ -200,7 +255,6 @@ Item {
                 }
 
                 Text {
-                    id: text_location
                     height: 16
                     anchors.left: parent.left
                     anchors.leftMargin: appHeader.headerPosition
@@ -216,8 +270,7 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                 }
             }
-            Text {
-                id: legend_location
+            Text { // Location legend
                 anchors.left: parent.left
                 anchors.leftMargin: appHeader.headerPosition
                 anchors.right: parent.right
@@ -250,85 +303,12 @@ Item {
                 }
             }
 
-            ////////
-
-            ListSeparatorPadded { height: 16+1 }
-
-            ////////
-
-            Item {
-                id: element_location_background
+            Item { // GPS
                 height: 24
                 anchors.left: parent.left
                 anchors.right: parent.right
 
                 RoundButtonIcon {
-                    id: button_location_background_test
-                    width: 32
-                    height: 32
-                    anchors.left: parent.left
-                    anchors.leftMargin: Theme.componentMargin
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    property bool validperm: deviceManager.permissionLocationBackground
-
-                    source: (validperm) ? "qrc:/assets/icons_material/baseline-check-24px.svg" : "qrc:/assets/icons_material/baseline-close-24px.svg"
-                    iconColor: (validperm) ? "white" : "white"
-                    backgroundColor: (validperm) ? Theme.colorSuccess : Theme.colorSubText
-                    backgroundVisible: true
-
-                    onClicked: {
-                        utilsApp.vibrate(25)
-                        utilsApp.getMobileBackgroundLocationPermission()
-                        refreshPermissions.start()
-                    }
-                }
-
-                Text {
-                    id: text_location_background
-                    height: 16
-                    anchors.left: parent.left
-                    anchors.leftMargin: appHeader.headerPosition
-                    anchors.right: parent.right
-                    anchors.rightMargin: Theme.componentMargin
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: qsTr("Background location")
-                    textFormat: Text.PlainText
-                    wrapMode: Text.WordWrap
-                    font.pixelSize: 17
-                    color: Theme.colorText
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Text {
-                id: legend_location_background
-                anchors.left: parent.left
-                anchors.leftMargin: appHeader.headerPosition
-                anchors.right: parent.right
-                anchors.rightMargin: 12
-
-                text: qsTr("Similarly, background location permission is needed if you want to automatically get data from the sensors, while the application is not explicitly opened.")
-                textFormat: Text.StyledText
-                wrapMode: Text.WordWrap
-                color: Theme.colorSubText
-                font.pixelSize: Theme.fontSizeContentSmall
-            }
-
-            ////////
-
-            ListSeparatorPadded { height: 16+1 }
-
-            ////////
-
-            Item {
-                id: element_gps
-                height: 24
-                anchors.left: parent.left
-                anchors.right: parent.right
-
-                RoundButtonIcon {
-                    id: button_gps_test
                     width: 32
                     height: 32
                     anchors.left: parent.left
@@ -349,7 +329,6 @@ Item {
                 }
 
                 Text {
-                    id: text_gps
                     height: 16
                     anchors.left: parent.left
                     anchors.leftMargin: appHeader.headerPosition
@@ -365,8 +344,7 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                 }
             }
-            Text {
-                id: legend_gps
+            Text { // GPS legend
                 anchors.left: parent.left
                 anchors.leftMargin: appHeader.headerPosition
                 anchors.right: parent.right
@@ -392,6 +370,67 @@ Item {
                 sourceSize: 20
 
                 onClicked: utilsApp.openAndroidLocationSettings()
+            }
+
+            ////////
+
+            ListSeparatorPadded { height: 16+1 }
+
+            ////////
+
+            Item { // Background location
+                height: 24
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                RoundButtonIcon {
+                    width: 32
+                    height: 32
+                    anchors.left: parent.left
+                    anchors.leftMargin: Theme.componentMargin
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property bool validperm: deviceManager.permissionLocationBackground
+
+                    source: (validperm) ? "qrc:/assets/icons_material/baseline-check-24px.svg" : "qrc:/assets/icons_material/baseline-close-24px.svg"
+                    iconColor: (validperm) ? "white" : "white"
+                    backgroundColor: (validperm) ? Theme.colorSuccess : Theme.colorSubText
+                    backgroundVisible: true
+
+                    onClicked: {
+                        utilsApp.vibrate(25)
+                        utilsApp.getMobileBackgroundLocationPermission()
+                        refreshPermissions.start()
+                    }
+                }
+
+                Text {
+                    height: 16
+                    anchors.left: parent.left
+                    anchors.leftMargin: appHeader.headerPosition
+                    anchors.right: parent.right
+                    anchors.rightMargin: Theme.componentMargin
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    text: qsTr("Background location")
+                    textFormat: Text.PlainText
+                    wrapMode: Text.WordWrap
+                    font.pixelSize: 17
+                    color: Theme.colorText
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Text { // Background location legend
+                anchors.left: parent.left
+                anchors.leftMargin: appHeader.headerPosition
+                anchors.right: parent.right
+                anchors.rightMargin: 12
+
+                text: qsTr("Similarly, background location permission is needed if you want to automatically get data from the sensors, while the application is not explicitly opened.")
+                textFormat: Text.StyledText
+                wrapMode: Text.WordWrap
+                color: Theme.colorSubText
+                font.pixelSize: Theme.fontSizeContentSmall
             }
 
             ////////

@@ -1,110 +1,211 @@
-import QtQuick 2.15
+import QtQuick
+import QtQuick.Layouts
 
-import ThemeEngine 1.0
+import ThemeEngine
 
 Item {
-    id: itemNoPermission
+    id: itemNoPermissions
     anchors.fill: parent
 
     Column {
         anchors.left: parent.left
-        anchors.leftMargin: 32
+        anchors.leftMargin: Theme.componentMarginXL
         anchors.right: parent.right
-        anchors.rightMargin: 32
+        anchors.rightMargin: Theme.componentMarginXL
         anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: -20
+        anchors.verticalCenterOffset: -Theme.componentMarginXL
+        spacing: Theme.componentMargin
 
-        IconSvg { // imageLock
-            width: (isDesktop || isTablet || (isPhone && appWindow.screenOrientation === Qt.LandscapeOrientation)) ? 256 : (parent.width*0.666)
-            height: width
-            anchors.horizontalCenter: parent.horizontalCenter
-
-            source: "qrc:/assets/icons_material/outline-lock-24px.svg"
-            fillMode: Image.PreserveAspectFit
-            color: Theme.colorIcon
-        }
+        ////
 
         Column {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            spacing: 16
+            anchors.horizontalCenter: parent.horizontalCenter
 
-            ////////
+            Rectangle {
+                anchors.horizontalCenter: parent.horizontalCenter
 
-            Column {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                spacing: 4
+                width: singleColumn ? (itemNoPermissions.width*0.5) : (itemNoPermissions.height*0.4)
+                height: width
+                radius: width
+                color: Theme.colorForeground
 
-                Text {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
+                IconSvg { // lock icon
+                    anchors.centerIn: parent
+                    width: parent.width*0.8
+                    height: width
 
-                    text: qsTr("Authorization to use Bluetooth is required to connect to the sensors.")
-                    textFormat: Text.PlainText
-                    font.pixelSize: Theme.fontSizeContentSmall
+                    source: "qrc:/assets/icons_material/outline-lock-24px.svg"
+                    fillMode: Image.PreserveAspectFit
                     color: Theme.colorSubText
-                    wrapMode: Text.WordWrap
-                    horizontalAlignment: Text.AlignHCenter
-                }
-
-                Text {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    //visible: (Qt.platform.os === "android")
-
-                    text: qsTr("On Android 6+, scanning for Bluetooth Low Energy devices requires <b>location permission</b>.")
-                    textFormat: Text.StyledText
-                    font.pixelSize: Theme.fontSizeContentSmall
-                    color: Theme.colorSubText
-                    wrapMode: Text.WordWrap
-                    horizontalAlignment: Text.AlignHCenter
-                }
-/*
-                Text {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    //visible: (Qt.platform.os === "android")
-
-                    text: qsTr("On Android 10+, <b>background location permission</b> is required to use background updates.")
-                    textFormat: Text.StyledText
-                    font.pixelSize: Theme.fontSizeContentSmall
-                    color: Theme.colorSubText
-                    wrapMode: Text.WordWrap
-                    horizontalAlignment: Text.AlignHCenter
-                }
-*/
-                Text {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    //visible: (Qt.platform.os === "android" && !utilsApp.isMobileGpsEnabled())
-
-                    text: qsTr("Some Android devices also require the actual <b>GPS to be turned on</b>.")
-                    textFormat: Text.StyledText
-                    font.pixelSize: Theme.fontSizeContentSmall
-                    color: Theme.colorSubText
-                    wrapMode: Text.WordWrap
-                    horizontalAlignment: Text.AlignHCenter
-                }
-                Text {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    //visible: (Qt.platform.os === "android")
-
-                    text: qsTr("The application is neither using nor storing your location. Sorry for the inconvenience.")
-                    textFormat: Text.PlainText
-                    font.pixelSize: Theme.fontSizeContentSmall
-                    color: Theme.colorSubText
-                    wrapMode: Text.WordWrap
-                    horizontalAlignment: Text.AlignHCenter
+                    opacity: 0.9
+                    smooth: true
                 }
             }
 
-            ////////
+            Item { width: Theme.componentMarginXL; height: Theme.componentMarginXL; }
+
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                text: qsTr("Bluetooth permission(s) missing…")
+                textFormat: Text.PlainText
+                font.pixelSize: Theme.fontSizeContentBig
+                color: Theme.colorText
+            }
+
+            Item { width: 8; height: 8; }
+
+            Row {
+                anchors.horizontalCenter: parent.horizontalCenter
+                spacing: Theme.componentMargin
+
+                ButtonWireframeIcon {
+                    //width: ((isDesktop || isTablet) && !singleColumn) ? 256 : undefined
+
+                    text: qsTr("Request permission(s)")
+                    primaryColor: Theme.colorPrimary
+                    fullColor: true
+                    sourceSize: 24
+                    source: "qrc:/assets/icons_material/duotone-touch_app-24px.svg"
+
+                    onClicked: {
+                        deviceManager.requestBluetoothPermissions()
+                    }
+                }
+            }
+
+            Item { width: 8; height: 8; }
+        }
+
+        ////
+
+        RowLayout {
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: singleColumn ? (itemNoPermissions.width*0.85) : undefined
+            spacing: Theme.componentMargin
+
+            visible: (Qt.platform.os === "android" || Qt.platform.os === "ios" || Qt.platform.os === "osx")
+
+            IconSvg {
+                Layout.preferredWidth: 20
+                Layout.preferredHeight: 20
+                Layout.alignment: Qt.AlignVCenter
+
+                source: "qrc:/assets/icons_material/baseline-warning-24px.svg"
+                color: Theme.colorWarning
+            }
+            Text {
+                Layout.fillWidth: singleColumn
+                Layout.alignment: Qt.AlignVCenter
+
+                text: qsTr("Authorization to use Bluetooth is <b>required</b> to connect to the sensors.")
+                textFormat: Text.StyledText
+                font.pixelSize: Theme.fontSizeContentSmall
+                color: Theme.colorSubText
+                wrapMode: Text.WordWrap
+                horizontalAlignment: singleColumn ? Text.AlignJustify : Text.AlignHCenter
+            }
+        }
+
+        ////
+
+        RowLayout {
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: singleColumn ? (itemNoPermissions.width*0.85) : undefined
+            spacing: Theme.componentMargin
+
+            visible: (Qt.platform.os === "android")
+
+            IconSvg {
+                Layout.preferredWidth: 20
+                Layout.preferredHeight: 20
+                Layout.alignment: Qt.AlignVCenter
+
+                source: "qrc:/assets/icons_material/baseline-warning-24px.svg"
+                color: Theme.colorWarning
+            }
+            Text {
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter
+
+                text: qsTr("On Android 6+, scanning for Bluetooth Low Energy devices requires <b>location permission</b>.")
+                textFormat: Text.StyledText
+                font.pixelSize: Theme.fontSizeContentSmall
+                color: Theme.colorSubText
+                wrapMode: Text.WordWrap
+                horizontalAlignment: singleColumn ? Text.AlignJustify : Text.AlignHCenter
+            }
+        }
+
+        ////
+
+        RowLayout {
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: singleColumn ? (itemNoPermissions.width*0.85) : undefined
+            spacing: Theme.componentMargin
+
+            visible: (Qt.platform.os === "android" && !deviceManager.permissionLocationGPS)
+
+            IconSvg {
+                Layout.preferredWidth: 20
+                Layout.preferredHeight: 20
+                Layout.alignment: Qt.AlignVCenter
+
+                source: "qrc:/assets/icons_material/baseline-warning-24px.svg"
+                color: Theme.colorSubText
+            }
+
+            Text {
+                Layout.fillWidth: singleColumn
+                Layout.alignment: Qt.AlignVCenter
+
+                text: qsTr("Some Android devices also require the actual <b>GPS to be turned on</b>.")
+                textFormat: Text.StyledText
+                font.pixelSize: Theme.fontSizeContentSmall
+                color: Theme.colorSubText
+                wrapMode: Text.WordWrap
+                horizontalAlignment: singleColumn ? Text.AlignJustify : Text.AlignHCenter
+            }
+        }
+
+        ////
+
+        RowLayout {
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: singleColumn ? (itemNoPermissions.width*0.85) : undefined
+            spacing: Theme.componentMargin
+
+            visible: (Qt.platform.os === "android")
+
+            IconSvg {
+                Layout.preferredWidth: 20
+                Layout.preferredHeight: 20
+                Layout.alignment: Qt.AlignVCenter
+
+                source: "qrc:/assets/icons_material/baseline-info-24px.svg"
+                color: Theme.colorSubText
+            }
+            Text {
+                Layout.fillWidth: singleColumn
+                Layout.alignment: Qt.AlignVCenter
+
+                text: qsTr("The application is neither using nor storing your location. Sorry for the inconvenience.")
+                textFormat: Text.PlainText
+                font.pixelSize: Theme.fontSizeContentSmall
+                color: Theme.colorSubText
+                wrapMode: Text.WordWrap
+                horizontalAlignment: singleColumn ? Text.AlignJustify : Text.AlignHCenter
+            }
+        }
+
+        ////
+
+        Row {
+            anchors.horizontalCenter: parent.horizontalCenter
+            spacing: Theme.componentMargin
 
             ButtonWireframeIcon {
-                anchors.horizontalCenter: parent.horizontalCenter
-                //visible: (Qt.platform.os === "android" || Qt.platform.os === "ios")
+                //width: ((isDesktop || isTablet) && !singleColumn) ? 256 : undefined
 
                 text: qsTr("Official information")
                 primaryColor: Theme.colorSubText
@@ -113,14 +214,17 @@ Item {
 
                 onClicked: {
                     if (Qt.platform.os === "android") {
-                        Qt.openUrlExternally("https://developer.android.com/guide/topics/connectivity/bluetooth/permissions#declare-android11-or-lower")
+                        if (utilsApp.getAndroidSdkVersion() >= 12)
+                            Qt.openUrlExternally("https://developer.android.com/guide/topics/connectivity/bluetooth/permissions#declare-android12-or-higher")
+                        else
+                            Qt.openUrlExternally("https://developer.android.com/guide/topics/connectivity/bluetooth/permissions#declare-android11-or-lower")
                     } else if (Qt.platform.os === "ios") {
                         Qt.openUrlExternally("https://support.apple.com/HT210578")
                     }
                 }
             }
-
-            ////////
         }
+
+        ////
     }
 }

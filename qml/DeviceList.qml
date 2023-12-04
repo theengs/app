@@ -9,29 +9,42 @@ Item {
 
     ////////////////////////////////////////////////////////////////////////////
 
-    property bool deviceAvailable: deviceManager.hasDevices
-    property bool bluetoothAvailable: deviceManager.bluetooth
-    property bool bluetoothPermissionsAvailable: deviceManager.bluetoothPermissions
+    Component.onCompleted: { checkBluetoothStatus() }
 
-    Component.onCompleted: checkStatus()
-    onBluetoothAvailableChanged: checkStatus()
-    onBluetoothPermissionsAvailableChanged: checkStatus()
-    onDeviceAvailableChanged: { checkStatus(); exitSelectionMode(); }
+    Connections {
+        target: deviceManager
+        function onBluetoothChanged() { checkBluetoothStatus() }
+    }
 
-    function checkStatus() {
+    function loadScreen() {
+        checkBluetoothStatus()
 
-        if (!utilsApp.checkMobileBleLocationPermission()) {
-            //utilsApp.getMobileBleLocationPermission()
-        }
+        // change screen
+        appContent.state = "DeviceList"
+    }
+
+    function checkBluetoothStatus() {
+
+        //console.log(">> deviceManager.bluetooth : " + deviceManager.bluetooth)
+        //console.log(">> deviceManager.bluetoothAdapter : " + deviceManager.bluetoothAdapter)
+        //console.log(">> deviceManager.bluetoothEnabled : " + deviceManager.bluetoothEnabled)
+        //console.log(">> deviceManager.bluetoothPermissions : " + deviceManager.bluetoothPermissions)
+
+        //console.log(">> deviceManager.permissionOS : " + deviceManager.permissionOS)
+        //console.log(">> deviceManager.permissionLocationBLE : " + deviceManager.permissionLocationBLE)
+        //console.log(">> deviceManager.permissionLocationBackground : " + deviceManager.permissionLocationBackground)
+        //console.log(">> deviceManager.permissionLocationGPS : " + deviceManager.permissionLocationGPS)
 
         if (deviceManager.hasDevices) {
             // The device list is shown
             itemStatus.source = ""
 
-            if (!deviceManager.bluetooth) {
-                rectangleBluetoothStatus.setBluetoothWarning()
-            } else if (!deviceManager.bluetoothPermissions) {
+            if (!deviceManager.bluetoothPermissions) {
                 rectangleBluetoothStatus.setPermissionWarning()
+            } else if (!deviceManager.bluetoothAdapter) {
+                rectangleBluetoothStatus.setAdapterWarning()
+            } else if (!deviceManager.bluetoothEnabled) {
+                rectangleBluetoothStatus.setBluetoothWarning()
             } else {
                 rectangleBluetoothStatus.hide()
             }
@@ -39,7 +52,9 @@ Item {
             // The device list is not populated
             rectangleBluetoothStatus.hide()
 
-            if (!deviceManager.bluetooth) {
+            if (!deviceManager.bluetoothPermissions) {
+                itemStatus.source = "ItemNoPermissions.qml"
+            } else if (!deviceManager.bluetoothAdapter || !deviceManager.bluetoothEnabled) {
                 itemStatus.source = "ItemNoBluetooth.qml"
             } else {
                 itemStatus.source = "ItemNoDevice.qml"
@@ -162,51 +177,45 @@ Item {
 
             ButtonWireframe {
                 id: buttonBluetoothStatus
-                height: 32
                 anchors.right: parent.right
                 anchors.rightMargin: 16
                 anchors.verticalCenter: parent.verticalCenter
+                height: 32
 
                 fullColor: true
                 primaryColor: Theme.colorActionbarHighlight
 
                 text: {
+                    if (!deviceManager.bluetoothPermissions) return qsTr("Request")
                     if (Qt.platform.os === "android") {
-                        if (!deviceManager.bluetoothEnabled) qsTr("Enable")
-                        else if (!deviceManager.bluetoothPermissions) qsTr("About")
-                        else qsTr("Retry")
-                    } else {
-                        qsTr("Retry")
+                        if (!deviceManager.bluetoothEnabled) return qsTr("Enable")
                     }
+                    return qsTr("Retry")
                 }
                 onClicked: {
-                    if (Qt.platform.os === "android") {
-                        if (!deviceManager.bluetooth) {
-                            deviceManager.enableBluetooth()
-                        } else if (!deviceManager.bluetoothPermissions) {
-                            //utilsApp.getMobileBleLocationPermission()
-                            //deviceManager.checkBluetoothPermissions()
-
-                            // someone clicked 'never ask again'?
-                            screenAboutPermissions.loadScreenFrom("DeviceList")
-                        } else {
-                            deviceManager.checkBluetooth()
-                        }
-                    } else {
-                        deviceManager.checkBluetooth()
+                    if (!deviceManager.bluetoothPermissions) {
+                        deviceManager.requestBluetoothPermissions()
                     }
+                    if (!deviceManager.bluetoothEnabled) {
+                        deviceManager.enableBluetooth()
+                    }
+                    deviceManager.checkBluetooth()
                 }
             }
 
             function hide() {
                 rectangleBluetoothStatus.height = 0
             }
+            function setAdapterWarning() {
+                textBluetoothStatus.text = qsTr("Bluetooth adapter not found...")
+                rectangleBluetoothStatus.height = 48
+            }
             function setBluetoothWarning() {
                 textBluetoothStatus.text = qsTr("Bluetooth is disabled...")
                 rectangleBluetoothStatus.height = 48
             }
             function setPermissionWarning() {
-                textBluetoothStatus.text = qsTr("Bluetooth permission is missing...")
+                textBluetoothStatus.text = qsTr("Bluetooth permission missing...")
                 rectangleBluetoothStatus.height = 48
             }
         }
@@ -334,15 +343,20 @@ Item {
             width: devicesView.cellWidth
             height: devicesView.cellHeight
             bigAssMode: devicesView.bigWidget
-            singleColumn: (appWindow.singleColumn || devicesView.cellColumnsTarget === 1)
+            singleColumn: (singleColumn || devicesView.cellColumnsTarget === 1)
         }
     }
+
+    ////////
 
     Loader {
         id: itemStatus
         anchors.fill: parent
+        visible: !deviceManager.hasDevices
         asynchronous: true
     }
+
+    ////////
 
     Row {
         anchors.right: parent.right
@@ -367,4 +381,6 @@ Item {
             onClicked: screenDeviceBrowser.loadScreen()
         }
     }
+
+    ////////
 }
