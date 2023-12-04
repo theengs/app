@@ -16,7 +16,7 @@ Item {
     property int btnCols: 3
     property int btnRows: 3
     property int btnWidth: width / selectorGrid.btnCols
-    property int btnHeight: 40
+    property int btnHeight: btnWidth
 
     signal menuSelected(var index)
     property int currentSelection: 0

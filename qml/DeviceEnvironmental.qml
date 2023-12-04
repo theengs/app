@@ -495,32 +495,6 @@ Loader {
                     }
 
                     ////////////////
-
-                    IconSvg {
-                        id: indicatorRadioactivity
-                        width: isMobile ? 128 : 160
-                        height: isMobile ? 128 : 160
-                        anchors.centerIn: parent
-
-                        visible: (currentDevice && currentDevice.hasDataToday && primary === "radioactivity")
-                        color: cccc
-                        source: "qrc:/assets/icons_custom/nuclear_icon_big.svg"
-
-                        property real minOpacity: 0.5
-                        property real maxOpacity: 1
-                        property int minDuration: 500
-                        property int maxDuration: 1000
-                        property int duration: 750
-
-                        SequentialAnimation on opacity {
-                            id: radioactivityAnimation
-                            loops: Animation.Infinite
-                            running: false
-                            onStopped: indicatorRadioactivity.opacity = indicatorRadioactivity.maxOpacity
-                            OpacityAnimator { from: indicatorRadioactivity.minOpacity; to: indicatorRadioactivity.maxOpacity; duration: indicatorRadioactivity.duration }
-                            OpacityAnimator { from: indicatorRadioactivity.maxOpacity; to: indicatorRadioactivity.minOpacity; duration: indicatorRadioactivity.duration }
-                        }
-                    }
                 }
 
                 ////////

@@ -646,11 +646,11 @@ Item {
 
             Item {
                 id: element_units
-                height: 48
                 anchors.left: parent.left
                 anchors.leftMargin: screenPaddingLeft
                 anchors.right: parent.right
                 anchors.rightMargin: screenPaddingRight
+                height: 48
 
                 IconSvg {
                     id: image_units
@@ -666,12 +666,12 @@ Item {
 
                 Text {
                     id: text_units
-                    height: 40
                     anchors.left: image_units.right
                     anchors.leftMargin: 24
                     anchors.right: row_units.left
                     anchors.rightMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
+                    height: 40
 
                     text: qsTr("Unit system")
                     textFormat: Text.PlainText
@@ -683,10 +683,10 @@ Item {
 
                 SelectorMenu {
                     id: row_units
-                    height: 32
                     anchors.right: parent.right
                     anchors.rightMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
+                    height: 32
 
                     model: ListModel {
                         ListElement { idx: 0; txt: qsTr("Metric"); src: ""; sz: 16; }

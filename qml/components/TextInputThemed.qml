@@ -8,13 +8,16 @@ Item {
     implicitWidth: 256
     implicitHeight: 48
 
-    property string text: ""
+    property string text
 
-    property int fontsize: Theme.fontSizeContentBig
     property int padding: Theme.componentMargin
+    property int fontsize: Theme.fontSizeContentBig
     property var color: Theme.colorPrimary
+    property bool readOnly: false
 
     signal editingFinished
+
+    ////////
 
     TextInput {
         id: textInput
@@ -30,13 +33,17 @@ Item {
         selectionColor: control.color
         font.pixelSize: control.fontsize
 
+        readOnly: control.readOnly
+
         text: control.text
-        onEditingFinished: {
+        onDisplayTextChanged: {
             focus = false
             control.text = text
             control.editingFinished()
         }
     }
+
+    ////////
 
     IconSvg {
         anchors.right: parent.right
@@ -47,9 +54,11 @@ Item {
         source: "qrc:/assets/icons_material/duotone-edit-24px.svg"
         color: Theme.colorSubText
 
-        opacity: (isMobile || !textInput.text || textInput.focus || textInput.containsMouse) ? 0.9 : 0
+        opacity: !readOnly && (isMobile || !textInput.text || textInput.focus || textInput.containsMouse) ? 0.9 : 0
         Behavior on opacity { OpacityAnimator { duration: 133 } }
     }
+
+    ////////
 
     Rectangle {
         anchors.left: parent.left
@@ -60,4 +69,6 @@ Item {
         opacity: textInput.focus
         Behavior on opacity { OpacityAnimator { duration: 133 } }
     }
+
+    ////////
 }
