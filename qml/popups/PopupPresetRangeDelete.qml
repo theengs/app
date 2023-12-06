@@ -4,7 +4,7 @@ import QtQuick.Controls
 import ThemeEngine
 
 Popup {
-    id: popupPresetDelete
+    id: popupPresetRangeDelete
 
     x: singleColumn ? 0 : (appWindow.width / 2) - (width / 2)
     y: singleColumn ? (appWindow.height - height)
@@ -78,7 +78,7 @@ Popup {
                     primaryColor: Theme.colorSubText
                     secondaryColor: Theme.colorForeground
 
-                    onClicked: popupPresetDelete.close()
+                    onClicked: popupPresetRangeDelete.close()
                 }
 
                 ButtonWireframe {
@@ -89,8 +89,8 @@ Popup {
                     fullColor: true
 
                     onClicked: {
-                        popupPresetDelete.confirmed()
-                        popupPresetDelete.close()
+                        popupPresetRangeDelete.confirmed()
+                        popupPresetRangeDelete.close()
                     }
                 }
             }

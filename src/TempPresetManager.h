@@ -47,10 +47,6 @@ class TempPresetManager: public QObject
     int getPresetCountFiltered() { return m_presetsFiltered.size(); }
     QVariant getPresetsFiltered() { return QVariant::fromValue(m_presetsFiltered); }
 
-    bool m_isLoaded = false;
-    bool readDB_csv(const QString &path);
-    void stats();
-
     // Singleton
     static TempPresetManager *instance;
     TempPresetManager();
@@ -66,11 +62,13 @@ public:
     Q_INVOKABLE bool load();
     Q_INVOKABLE void filter(const QString &filter);
 
-    Q_INVOKABLE bool isNameValid(const QString &name);
-
+    Q_INVOKABLE bool isPresetNameValid(const QString &name);
     Q_INVOKABLE bool addPreset();
     Q_INVOKABLE bool addPreset(const int type, const QString &name);
+    Q_INVOKABLE bool copyPreset(const QString &name, const QString &newName);
     Q_INVOKABLE bool removePreset(const QString &name);
+
+    Q_INVOKABLE TempPreset *getPreset(const QString &name);
 };
 
 /* ************************************************************************** */

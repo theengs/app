@@ -40,6 +40,9 @@ class DeviceTheengsProbes: public DeviceTheengs
 {
     Q_OBJECT
 
+    Q_PROPERTY(QString preset READ getPreset WRITE setPreset NOTIFY presetUpdated)
+    Q_PROPERTY(int realtimeWindow READ getRtWindow WRITE setRtWindow NOTIFY rtWindowUpdated)
+
     // rt data
     QVector <std::pair<QDateTime, float>> m_rt_probe1;
     QVector <std::pair<QDateTime, float>> m_rt_probe2;
@@ -48,9 +51,21 @@ class DeviceTheengsProbes: public DeviceTheengs
     QVector <std::pair<QDateTime, float>> m_rt_probe5;
     QVector <std::pair<QDateTime, float>> m_rt_probe6;
 
+    // probe settings
+    QString m_preset;
+    int m_realtime_window = 5;
+
+    QString getPreset() const { return m_preset; }
+    void setPreset(const QString &p);
+
+    int getRtWindow() const { return m_realtime_window; }
+    void setRtWindow(const int w);
+
 signals:
-    void rtGraphUpdated();
+    void presetUpdated();
     void rtGraphCleaned();
+    void rtGraphUpdated();
+    void rtWindowUpdated();
 
 public:
     DeviceTheengsProbes(const QString &deviceAddr, const QString &deviceName,

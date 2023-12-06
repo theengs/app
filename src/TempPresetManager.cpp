@@ -42,6 +42,9 @@ TempPresetManager *TempPresetManager::getInstance()
 TempPresetManager::TempPresetManager()
 {
     load();
+    filter("");
+
+    qmlRegisterType<TempPreset>("TempPreset", 1, 0, "TempPreset");
 }
 
 TempPresetManager::~TempPresetManager()
@@ -60,25 +63,25 @@ bool TempPresetManager::load()
 
     // Load APP presets
     {
-        TempPreset *t1 = new TempPreset(0, 1, true, "Beef", "", this);
-        t1->addRange("Rare", 49, 52);
-        t1->addRange("Medium Rare", 54, 57);
-        t1->addRange("Medium", 60, 63);
-        t1->addRange("Medium Well", 65, 68);
-        t1->addRange("Well Done", 71, 71);
+        TempPreset *t1 = new TempPreset(0, PresetUtils::PRESET_MEAT, true, "Beef", "", this);
+        t1->addRange("Rare", false, 49, 52);
+        t1->addRange("Medium Rare", false, 54, 57);
+        t1->addRange("Medium", false, 60, 63);
+        t1->addRange("Medium Well", false, 65, 68);
+        t1->addRange("Well Done", false, 71, -1);
         m_presets.push_back(t1);
 
-        TempPreset *t2 = new TempPreset(1, 2, true, "Pork", "", this);
-        t2->addRange("Safe minimum internal temperature", 63, 63);
-        t2->addRange("Ground Pork", 71, 71);
+        TempPreset *t2 = new TempPreset(1, PresetUtils::PRESET_MEAT, true, "Pork", "", this);
+        t2->addRange("Safe minimum internal temperature", false, 63, 63);
+        t2->addRange("Ground Pork", false, 71, -1);
         m_presets.push_back(t2);
 
-        TempPreset *t3 = new TempPreset(2, 3, true, "Chicken", "", this);
-        t3->addRange("Safe minimum internal temperature", 74, 74);
+        TempPreset *t3 = new TempPreset(2, PresetUtils::PRESET_POULTRY, true, "Chicken", "", this);
+        t3->addRange("Safe minimum internal temperature", false, 74, -1);
         m_presets.push_back(t3);
 
-        TempPreset *t4 = new TempPreset(3, 4, true, "Fish", "", this);
-        t4->addRange("Safe minimum internal temperature", 63, 63);
+        TempPreset *t4 = new TempPreset(3, PresetUtils::PRESET_FISH, true, "Fish", "", this);
+        t4->addRange("Safe minimum internal temperature", false, 63, -1);
         m_presets.push_back(t4);
     }
 
@@ -88,11 +91,6 @@ bool TempPresetManager::load()
     }
 
     return status;
-}
-
-void TempPresetManager::stats()
-{
-    qDebug() << "TempPresetManager::readDB()" << m_presets.count() << "items in DB";
 }
 
 void TempPresetManager::filter(const QString &filter)
@@ -115,7 +113,7 @@ void TempPresetManager::filter(const QString &filter)
 
 /* ************************************************************************** */
 
-bool TempPresetManager::isNameValid(const QString &name)
+bool TempPresetManager::isPresetNameValid(const QString &name)
 {
     bool status = false;
 
@@ -166,6 +164,13 @@ bool TempPresetManager::addPreset(const int type, const QString &name)
     return false;
 }
 
+bool TempPresetManager::copyPreset(const QString &name, const QString &newName)
+{
+    qDebug() << "TempPresetManager::copyPreset(" << name << newName << ")";
+
+    return false;
+}
+
 bool TempPresetManager::removePreset(const QString &name)
 {
     bool status = false;
@@ -182,10 +187,29 @@ bool TempPresetManager::removePreset(const QString &name)
 
             Q_EMIT presetsChanged();
             status = true;
+            break;
         }
     }
 
     return status;
+}
+
+/* ************************************************************************** */
+
+TempPreset *TempPresetManager::getPreset(const QString &name)
+{
+    TempPreset *p = nullptr;
+
+    for (auto pp: std::as_const(m_presets))
+    {
+        TempPreset *tp = qobject_cast<TempPreset*>(pp);
+        if (tp && tp->getName() == name)
+        {
+            return tp;
+        }
+    }
+
+    return p;
 }
 
 /* ************************************************************************** */

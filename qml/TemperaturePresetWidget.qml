@@ -21,14 +21,11 @@ SwipeDelegate {
 
         active: false
         asynchronous: false
+
         sourceComponent: PopupPresetDelete {
             id: popupDelete
-            onConfirmed: {
-                presetsManager.removePreset(modelData.name)
-            }
-            onClosed: {
-                swipe.close()
-            }
+            onConfirmed: presetsManager.removePreset(modelData.name)
+            onClosed: swipe.close()
         }
     }
 
@@ -112,7 +109,7 @@ SwipeDelegate {
 
                     Text {
                         visible: (modelData.rangeCount === 0)
-                        text: qsTr("No preset range defined")
+                        text: qsTr("No temperature range defined")
                         font.pixelSize: Theme.fontSizeContent
                         color: Theme.colorSubText
                     }
@@ -135,10 +132,18 @@ SwipeDelegate {
                         }
 
                         visible: modelData.rangeCount
-                        text: qsTr("(%1°%0  /  %2°%0)")
-                                .arg(settingsManager.tempUnit)
-                                .arg(tempCelsiusToFahrenheitOrNot(modelData.rangeMin, settingsManager.appUnits))
-                                .arg(tempCelsiusToFahrenheitOrNot(modelData.rangeMax, settingsManager.appUnits))
+                        text: {
+                            if (modelData.rangeMax > 0) {
+                                return qsTr("(%1°%0 to %2°%0)")
+                                    .arg(settingsManager.tempUnit)
+                                    .arg(tempCelsiusToFahrenheitOrNot(modelData.rangeMin, settingsManager.appUnits))
+                                    .arg(tempCelsiusToFahrenheitOrNot(modelData.rangeMax, settingsManager.appUnits))
+                            } else {
+                                return qsTr("(%1°%0 and up)")
+                                    .arg(settingsManager.tempUnit)
+                                    .arg(tempCelsiusToFahrenheitOrNot(modelData.rangeMin, settingsManager.appUnits))
+                            }
+                        }
                         font.pixelSize: Theme.fontSizeContent
                         color: Theme.colorSubText
                     }

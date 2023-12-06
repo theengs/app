@@ -7,7 +7,7 @@ import "qrc:/js/UtilsPresets.js" as UtilsPresets
 import ThemeEngine
 
 Popup {
-    id: popupPresetAdd
+    id: popupPresetCopy
 
     x: singleColumn ? 0 : (appWindow.width / 2) - (width / 2)
     y: singleColumn ? (appWindow.height - height)
@@ -27,7 +27,6 @@ Popup {
     onAboutToShow: {
         presetName.focus = isDesktop
         presetName.text = ""
-        presetType.currentSelection = 0
     }
     onAboutToHide: {
         //
@@ -62,7 +61,7 @@ Popup {
             Text {
                 width: parent.width
 
-                text: qsTr("Create new temperature preset")
+                text: qsTr("Copy the current preset")
                 textFormat: Text.PlainText
                 font.pixelSize: Theme.fontSizeContentVeryBig
                 color: Theme.colorText
@@ -74,17 +73,17 @@ Popup {
             Column {
                 width: parent.width
                 spacing: 8
-/*
+
                 Text {
                     width: parent.width
 
-                    text: qsTr("Choose a name and a preset type.")
+                    text: qsTr("The new preset will become editable.")
                     textFormat: Text.StyledText
                     font.pixelSize: Theme.fontSizeContent
                     color: Theme.colorSubText
                     wrapMode: Text.WordWrap
                 }
-*/
+
                 TextFieldThemed {
                     id: presetName
                     width: parent.width
@@ -125,33 +124,6 @@ Popup {
 
             ////////
 
-            SelectorGrid {
-                id: presetType
-                width: parent.width
-
-                btnCols: 4
-                btnRows: 2
-                btnHeight: 52
-
-                model: ListModel {
-                    ListElement { idx:  0; txt: ""; src: "qrc:/assets/icons_fontawesome/question-solid.svg"; }
-                    ListElement { idx:  1; txt: ""; src: "qrc:/assets/icons_fontawesome/cow-solid.svg"; }
-                    ListElement { idx:  2; txt: ""; src: "qrc:/assets/icons_fontawesome/fish-fins-solid.svg"; }
-                    ListElement { idx:  3; txt: ""; src: "qrc:/assets/icons_fontawesome/egg-solid.svg"; }
-                    ListElement { idx:  4; txt: ""; src: "qrc:/assets/icons_fontawesome/kiwi-bird-solid.svg"; }
-                    ListElement { idx:  5; txt: ""; src: "qrc:/assets/icons_fontawesome/shrimp-solid.svg"; }
-                    ListElement { idx:  6; txt: ""; src: "qrc:/assets/icons_fontawesome/pepper-hot-solid.svg"; }
-                    ListElement { idx:  7; txt: ""; src: "qrc:/assets/icons_fontawesome/apple-whole-solid.svg"; }
-                }
-                currentSelection: 0
-                onMenuSelected: (index) => {
-                    //console.log("SelectorMenu clicked #" + index)
-                    currentSelection = index
-                }
-            }
-
-            ////////
-
             Flow {
                 width: parent.width
                 spacing: Theme.componentMargin
@@ -166,7 +138,7 @@ Popup {
                     secondaryColor: Theme.colorForeground
 
                     onClicked: {
-                        popupPresetAdd.close()
+                        popupPresetCopy.close()
                     }
                 }
 
@@ -179,8 +151,8 @@ Popup {
 
                     enabled: presetsManager.isPresetNameValid(presetName.text)
                     onClicked: {
-                        presetsManager.addPreset(presetType.currentSelection, presetName.text)
-                        popupPresetAdd.close()
+                        presetsManager.copyPreset(currentPreset.name, presetName.text)
+                        popupPresetCopy.close()
                     }
                 }
             }

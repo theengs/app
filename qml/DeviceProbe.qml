@@ -1,14 +1,21 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls
 
-import ThemeEngine 1.0
-import DeviceUtils 1.0
+import ThemeEngine
+
+import DeviceUtils
 import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
+
+import PresetUtils
+import "qrc:/js/UtilsPresets.js" as UtilsPresets
 
 Loader {
     id: deviceProbe
 
     property var currentDevice: null
+    property var currentPreset: null
+    property int currentInterval: 0
 
     ////////
 
@@ -22,8 +29,8 @@ Loader {
         // load screen
         if (!deviceProbe.active) {
             deviceProbe.active = true
-            deviceProbe.item.loadDevice()
         }
+        deviceProbe.item.loadDevice()
 
         // change screen
         appContent.state = "DeviceProbe"
@@ -40,8 +47,8 @@ Loader {
     ////////////////////////////////////////////////////////////////////////////
 
     active: false
-
     asynchronous: false
+
     sourceComponent: Item {
         id: itemDeviceProbe
         implicitWidth: 480
@@ -120,8 +127,15 @@ Loader {
             //console.log("DeviceProbe // loadDevice() >> " + currentDevice)
 
             graphLoader.source = "" // force graph reload
-
             loadGraph()
+
+            currentPreset = presetsManager.getPreset(currentDevice.preset)
+            currentInterval = currentDevice.realtimeWindow
+            if (currentInterval === 60) selectorInterval.currentSelection = 3
+            else if (currentInterval === 30) selectorInterval.currentSelection = 2
+            else if (currentInterval === 10) selectorInterval.currentSelection = 1
+            else selectorInterval.currentSelection = 0
+
             updateHeader()
             updateData()
         }
@@ -248,7 +262,7 @@ Loader {
                     anchors.verticalCenterOffset: -(appHeader.height / 2)
                     spacing: 24
 
-                    visible: (currentDevice.hasData && !currentDevice.hasProbesTPMS)
+                    visible: (currentDevice.hasData && currentDevice.hasProbesBBQ)
 
                     property int psw: ((probeBox.width - 3*pss) / 2)
                     property int psh: isPhone ? 44 : 48
@@ -1153,17 +1167,24 @@ Loader {
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    height: 40 // Theme.componentHeight
+                    height: 40
+                    z: 2
                     color: Theme.colorForeground
-                    visible: !(currentDevice.hasProbesTPMS)
+                    visible: currentDevice.hasProbesBBQ
 
-                    Row {
+                    RowLayout {
+                        anchors.left: parent.left
+                        anchors.leftMargin: Theme.componentMargin
+                        anchors.right: parent.right
+                        anchors.rightMargin: Theme.componentMargin
                         height: parent.height
                         spacing: 12
 
                         Rectangle {
-                            height: parent.height
-                            width: legendPreset.contentWidth + 12
+                            Layout.preferredHeight: parent.height
+                            Layout.preferredWidth: legendPreset.contentWidth + 12
+
+                            visible: !singleColumn
                             color: Qt.darker(Theme.colorForeground, 1.03)
 
                             Text {
@@ -1176,21 +1197,44 @@ Loader {
                         }
 
                         SelectorMenuItem {
-                            anchors.verticalCenter: parent.verticalCenter
+                            Layout.preferredHeight: 32
+                            Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+
                             highlighted: true
 
-                            text: "seafood"
-                            source: "qrc:/assets/icons_fontawesome/shrimp-solid.svg"
+                            text: {
+                                if (currentPreset) return currentPreset.name
+                                return UtilsPresets.getPresetType(0)
+                            }
+                            source: {
+                                if (currentPreset) return UtilsPresets.getPresetIcon(currentPreset.type)
+                                return UtilsPresets.getPresetIcon(0)
+                            }
                             sourceSize: 20
 
+                            PopupPresetSelection {
+                                id: popupPresetSelection
+                                onSelected: (name) => {
+                                    currentDevice.preset = name
+                                    currentPreset = presetsManager.getPreset(currentDevice.preset)
+                                }
+                            }
+
                             onClicked: {
-                                //
+                                popupPresetSelection.open()
                             }
                         }
 
+                        Item {
+                            Layout.fillWidth: singleColumn
+                            Layout.preferredHeight: 32
+                        }
+
                         Rectangle {
-                            height: parent.height
-                            width: legendInterval.contentWidth + 12
+                            Layout.preferredWidth: legendPreset.contentWidth + 12
+                            Layout.preferredHeight: parent.height
+
+                            visible: !singleColumn
                             color: Qt.darker(Theme.colorForeground, 1.03)
 
                             Text {
@@ -1203,19 +1247,30 @@ Loader {
                         }
 
                         SelectorMenu {
-                            anchors.verticalCenter: parent.verticalCenter
-                            height: 32
+                            id: selectorInterval
+                            Layout.preferredWidth: width
+                            Layout.preferredHeight: 32
 
                             model: ListModel {
-                                ListElement { idx: 0; txt: qsTr("5m"); src: ""; sz: 16; }
-                                ListElement { idx: 1; txt: qsTr("10m"); src: ""; sz: 16; }
-                                ListElement { idx: 2; txt: qsTr("30m"); src: ""; sz: 16; }
-                                ListElement { idx: 3; txt: qsTr("60m"); src: ""; sz: 16; }
+                                id: intervalModel
+                                ListElement { idx: 0; txt: qsTr("5m"); itv: 5; src: ""; sz: 16; }
+                                ListElement { idx: 1; txt: qsTr("10m"); itv: 10; src: ""; sz: 16; }
+                                ListElement { idx: 2; txt: qsTr("30m"); itv: 30; src: ""; sz: 16; }
+                                ListElement { idx: 3; txt: qsTr("60m"); itv: 60; src: ""; sz: 16; }
                             }
 
-                            currentSelection: 0
+                            currentSelection: {
+                                if (currentInterval === 60) return 3
+                                if (currentInterval === 30) return 2
+                                if (currentInterval === 10) return 1
+                                return 0
+                            }
                             onMenuSelected: (index) => {
-                                //
+                                currentSelection = index
+                                var value = model.get(index).itv
+
+                                currentInterval = value
+                                if (currentDevice)currentDevice.realtimeWindow = value
                             }
                         }
                     }
@@ -1229,7 +1284,7 @@ Loader {
                 Loader {
                     id: graphLoader
                     anchors.top: parent.top
-                    anchors.topMargin: 40
+                    anchors.topMargin: currentDevice.hasProbesBBQ ? 40 : 0
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom

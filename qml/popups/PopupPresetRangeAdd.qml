@@ -1,10 +1,14 @@
 import QtQuick
+import QtQuick.Layouts
 import QtQuick.Controls
+
+import PresetUtils
+import "qrc:/js/UtilsPresets.js" as UtilsPresets
 
 import ThemeEngine
 
 Popup {
-    id: popupMacAddress
+    id: popupPresetRangeAdd
 
     x: singleColumn ? 0 : (appWindow.width / 2) - (width / 2)
     y: singleColumn ? (appWindow.height - height)
@@ -21,14 +25,15 @@ Popup {
 
     ////////////////////////////////////////////////////////////////////////////
 
-    signal confirmed()
-
     onAboutToShow: {
-        textInputMacAddr.text = selectedDevice.deviceAddressMAC
-        textInputMacAddr.focus = false
+        rangeName.focus = isDesktop
+        rangeName.text = ""
+
+        beforeAfterToogle.currentSelection = 1
+        beforeAfterToogle.setMinMax()
     }
     onAboutToHide: {
-        textInputMacAddr.focus = false
+        //
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -60,7 +65,7 @@ Popup {
             Text {
                 width: parent.width
 
-                text: qsTr("Set sensor MAC address.")
+                text: qsTr("Add a new temperature range")
                 textFormat: Text.PlainText
                 font.pixelSize: Theme.fontSizeContentVeryBig
                 color: Theme.colorText
@@ -71,74 +76,158 @@ Popup {
 
             Column {
                 width: parent.width
-                spacing: 8
-
+                spacing: 12
+/*
                 Text {
                     width: parent.width
 
-                    text: qsTr("The MAC address of the sensor must be set in order for the history synchronization to work.")
+                    text: qsTr("Choose a name and a preset type.")
                     textFormat: Text.StyledText
                     font.pixelSize: Theme.fontSizeContent
                     color: Theme.colorSubText
                     wrapMode: Text.WordWrap
                 }
-
-                Text {
-                    width: parent.width
-
-                    text: qsTr("Sorry for the inconvenience.")
-                    textFormat: Text.StyledText
-                    font.pixelSize: Theme.fontSizeContent
-                    color: Theme.colorSubText
-                    wrapMode: Text.WordWrap
-                }
-
+*/
                 TextFieldThemed {
-                    id: textInputMacAddr
+                    id: rangeName
                     width: parent.width
+                    height: 48
 
-                    font.pixelSize: 18
+                    font.pixelSize: 20
                     font.bold: false
                     color: Theme.colorText
 
-                    overwriteMode: true
-                    maximumLength: 17
-                    //inputMask: "HH:HH:HH:HH:HH:HH"
-                    //validator: RegularExpressionValidator { regularExpression: /[0-9A-F]+/ }
-                    inputMethodHints: Qt.ImhNoPredictiveText
-
-                    placeholderText: "AA:BB:CC:DD:EE:FF"
+                    placeholderText: qsTr("Range name")
                 }
-/*
-                Rectangle {
+
+                Row {
                     width: parent.width
-                    height: Theme.componentHeight
+                    height: 44
+                    leftPadding: Theme.componentMargin/2
+                    spacing: Theme.componentMargin/2
 
-                    radius: Theme.componentRadius
-                    color: Theme.colorComponentBackground
+                    visible: rangeName.length && !currentPreset.isRangeNameValid(rangeName.text)
 
-                    border.width: 2
-                    border.color: textInputMacAddr.activeFocus ? Theme.colorPrimary : Theme.colorComponentBorder
-
-                    TextInput {
-                        id: textInputMacAddr
-                        width: parent.width
+                    IconSvg {
+                        width: 24; height: 24;
                         anchors.verticalCenter: parent.verticalCenter
-                        padding: 4
+                        source: "qrc:/assets/icons_material/baseline-warning-24px.svg"
+                        color: Theme.colorWarning
+                    }
 
-                        font.pixelSize: 18
-                        font.bold: false
-                        color: Theme.colorHighContrast
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: qsTr("Invalid name.")
+                        textFormat: Text.StyledText
+                        font.pixelSize: Theme.fontSizeContent
+                        color: Theme.colorSubText
+                        wrapMode: Text.WordWrap
+                    }
+                }
 
-                        inputMask: "HH:HH:HH:HH:HH:HH"
-                        validator: RegularExpressionValidator { regularExpression: /[0-9A-F]+/ }
+                Item {
+                    width: parent.width
+                    height: 44
+                    visible: currentPreset && currentPreset.rangeCount
 
-                        onEditingFinished: {
-                            focus = false
+                    SelectorMenu {
+                        id: beforeAfterToogle
+                        anchors.centerIn: parent
+                        height: 36
+
+                        property bool value: (currentSelection === 0) ? true : false
+                        model: ListModel {
+                            ListElement { idx: 0; txt: qsTr("add before"); src: ""; sz: 16; }
+                            ListElement { idx: 1; txt: qsTr("add after"); src: ""; sz: 16; }
+                        }
+
+                        currentSelection: 1
+                        onMenuSelected: (index) => {
+                            currentSelection = index
+                            setMinMax()
+                        }
+
+                        function setMinMax() {
+                            if (currentSelection === 0) { // before
+                                spinboxMin.value = currentPreset.getTempMin_add() - 6
+                                spinboxMax.value = currentPreset.getTempMin_add() - 2
+
+                                spinboxMin.from = 0
+                                spinboxMin.to = currentPreset.getTempMin_add() - 2
+                                spinboxMax.from = 0
+                                spinboxMax.to = currentPreset.getTempMin_add()
+                            } else { // after
+                                spinboxMin.value = currentPreset.getTempMax_add() + 2
+                                spinboxMax.value = currentPreset.getTempMax_add() + 6
+
+                                spinboxMin.from = currentPreset.getTempMax_add()
+                                spinboxMin.to = 200
+                                spinboxMax.from = currentPreset.getTempMax_add() + 2
+                                spinboxMax.to = 200
+                            }
                         }
                     }
                 }
-*/
+
+                RowLayout {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: 36
+
+                    CheckBoxThemed {
+                        checked: true
+                        checkable: false
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
+
+                        text: qsTr("Minimum temperature")
+                        color: Theme.colorSubText
+                    }
+
+                    SpinBoxThemed {
+                        id: spinboxMin
+                        Layout.alignment: Qt.AlignVCenter
+                        Layout.preferredHeight: 36
+
+                        from: 0
+                        to: 200
+                    }
+                }
+
+                RowLayout {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: 36
+
+                    CheckBoxThemed {
+                        id: checkboxMax
+                        Layout.alignment: Qt.AlignVCenter
+
+                        checked: true
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
+
+                        text: checkboxMax.checked ? qsTr("Maximum temperature") : qsTr("No maximum")
+                        color: Theme.colorSubText
+                    }
+
+                    SpinBoxThemed {
+                        id: spinboxMax
+                        Layout.alignment: Qt.AlignVCenter
+                        Layout.preferredHeight: 36
+
+                        visible: checkboxMax.checked
+
+                        from: 0
+                        to: 200
+                    }
+                }
             }
 
             ////////
@@ -157,25 +246,22 @@ Popup {
                     secondaryColor: Theme.colorForeground
 
                     onClicked: {
-                        textInputMacAddr.focus = false
-                        popupMacAddress.close()
+                        popupPresetRangeAdd.close()
                     }
                 }
 
                 ButtonWireframe {
                     width: parent.btnSize
 
-                    text: qsTr("Set MAC")
+                    text: qsTr("Add range")
                     primaryColor: Theme.colorPrimary
                     fullColor: true
 
+                    enabled: currentPreset && currentPreset.isRangeNameValid(rangeName.text)
                     onClicked: {
-                        if (selectedDevice) {
-                             selectedDevice.deviceAddressMAC = textInputMacAddr.text
-                        }
-                        textInputMacAddr.focus = false
-                        popupMacAddress.confirmed()
-                        popupMacAddress.close()
+                        currentPreset.addRange(rangeName.text, beforeAfterToogle.value,
+                                               spinboxMin.value, spinboxMax.value)
+                        popupPresetRangeAdd.close()
                     }
                 }
             }

@@ -38,8 +38,11 @@
         <file alias="PopupDeleteDevice.qml">popups/PopupDeleteDevice.qml</file>
         <file alias="PopupMacAddress.qml">popups/PopupMacAddress.qml</file>
         <file alias="PopupPresetAdd.qml">popups/PopupPresetAdd.qml</file>
+        <file alias="PopupPresetCopy.qml">popups/PopupPresetCopy.qml</file>
         <file alias="PopupPresetDelete.qml">popups/PopupPresetDelete.qml</file>
         <file alias="PopupPresetRangeAdd.qml">popups/PopupPresetRangeAdd.qml</file>
+        <file alias="PopupPresetRangeDelete.qml">popups/PopupPresetRangeDelete.qml</file>
+        <file alias="PopupPresetSelection.qml">popups/PopupPresetSelection.qml</file>
 
         <file alias="ActionMenuFixed.qml">components/ActionMenuFixed.qml</file>
         <file alias="AirQualityIndicator.qml">components/AirQualityIndicator.qml</file>

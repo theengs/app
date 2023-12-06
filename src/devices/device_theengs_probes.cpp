@@ -73,6 +73,26 @@ DeviceTheengsProbes::~DeviceTheengsProbes()
 }
 
 /* ************************************************************************** */
+
+void DeviceTheengsProbes::setPreset(const QString &p)
+{
+    if (m_preset != p)
+    {
+        m_preset = p;
+        Q_EMIT presetUpdated();
+    }
+}
+
+void DeviceTheengsProbes::setRtWindow(const int w)
+{
+    if (m_realtime_window != w)
+    {
+        m_realtime_window = w;
+        Q_EMIT rtWindowUpdated();
+    }
+}
+
+/* ************************************************************************** */
 /* ************************************************************************** */
 
 void DeviceTheengsProbes::parseTheengsProps(const QString &json)

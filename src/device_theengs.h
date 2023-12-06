@@ -95,6 +95,7 @@ class DeviceTheengs: public DeviceSensor
     Q_PROPERTY(bool hasTemperature5 READ hasTemp5 NOTIFY sensorsUpdated)
     Q_PROPERTY(bool hasTemperature6 READ hasTemp6 NOTIFY sensorsUpdated)
 
+    Q_PROPERTY(bool hasProbesBBQ READ hasProbesBBQ NOTIFY sensorsUpdated)
     Q_PROPERTY(float temperature1 READ getTemp1 NOTIFY dataUpdated)
     Q_PROPERTY(float temperature2 READ getTemp2 NOTIFY dataUpdated)
     Q_PROPERTY(float temperature3 READ getTemp3 NOTIFY dataUpdated)
@@ -222,6 +223,8 @@ public:
 
     // probe data
     bool hasProbesTPMS() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_PROBES_TPMS); }
+    bool hasProbesBBQ() const { return !hasProbesTPMS() && hasTemp1() && hasTemp2(); }
+
     bool hasTemp1() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_TEMPERATURE_1); }
     bool hasTemp2() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_TEMPERATURE_2); }
     bool hasTemp3() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_TEMPERATURE_3); }

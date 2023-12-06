@@ -10,10 +10,10 @@ Item {
     id: temperaturePreset
     anchors.fill: parent
 
-    property var preset: null
+    property var currentPreset: null
 
     function loadPreset(p) {
-        preset = p
+        currentPreset = p
     }
 
     function backAction() {
@@ -26,6 +26,7 @@ Item {
         id: presetHeader
         anchors.left: parent.left
         anchors.right: parent.right
+        z: 4
         height: 96
         color: Theme.colorForeground
 
@@ -42,30 +43,101 @@ Item {
                 height: 40
                 smooth: true
                 color: Theme.colorSubText
-                source: UtilsPresets.getPresetIcon(preset.type)
+                source: UtilsPresets.getPresetIcon(currentPreset && currentPreset.type)
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                enabled: currentPreset && !currentPreset.readOnly
+                onClicked: typeChooser.isOpen = !typeChooser.isOpen
             }
         }
 
-        TextInputThemed { // name
+        TextInputThemed { // preset name
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.leftMargin: presetHeader.height
             anchors.right: parent.right
             //anchors.bottom: parent.bottom
-
             height: 48
+
             //placeholderText: qsTr("Preset name")
             fontsize: Theme.fontSizeHeader
+            readOnly: currentPreset && currentPreset.readOnly
 
-            text: preset && preset.name
-            onEditingFinished: preset.name = text
+            text: currentPreset && currentPreset.name
+            onEditingFinished: {
+                if (presetsManager.isPresetNameValid(text)) {
+                    currentPreset.name = text
+                }
+            }
+        }
+
+        Row {
+            anchors.left: parent.left
+            anchors.leftMargin: presetHeader.height + Theme.componentMargin
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height: 48
+
+            ItemTag {
+                anchors.verticalCenter: parent.verticalCenter
+                visible: currentPreset && currentPreset.readOnly
+
+                text: qsTr("Read only")
+                color: Qt.darker(Theme.colorForeground, 1.04)
+            }
+        }
+    }
+
+    Rectangle {
+        id: typeChooser
+        anchors.top: presetHeader.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        z: 3
+
+        property bool isOpen: false
+
+        clip: true
+        height: isOpen ? 256 : 0
+        Behavior on height { NumberAnimation { duration: 333 } }
+
+        color: Qt.darker(Theme.colorForeground, 1.03)
+
+        SelectorGrid {
+            id: presetType
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.margins: Theme.componentMargin
+
+            btnCols: 4
+            btnRows: 2
+            btnHeight: 96
+
+            model: ListModel {
+                ListElement { idx:  0; txt: ""; src: "qrc:/assets/icons_fontawesome/question-solid.svg"; }
+                ListElement { idx:  1; txt: ""; src: "qrc:/assets/icons_fontawesome/cow-solid.svg"; }
+                ListElement { idx:  2; txt: ""; src: "qrc:/assets/icons_fontawesome/fish-fins-solid.svg"; }
+                ListElement { idx:  3; txt: ""; src: "qrc:/assets/icons_fontawesome/egg-solid.svg"; }
+                ListElement { idx:  4; txt: ""; src: "qrc:/assets/icons_fontawesome/kiwi-bird-solid.svg"; }
+                ListElement { idx:  5; txt: ""; src: "qrc:/assets/icons_fontawesome/shrimp-solid.svg"; }
+                ListElement { idx:  6; txt: ""; src: "qrc:/assets/icons_fontawesome/pepper-hot-solid.svg"; }
+                ListElement { idx:  7; txt: ""; src: "qrc:/assets/icons_fontawesome/apple-whole-solid.svg"; }
+            }
+            currentSelection: 0
+            onMenuSelected: (index) => {
+                //console.log("SelectorMenu clicked #" + index)
+                currentSelection = index
+            }
         }
     }
 
     ////////////////////////////////////////////////////////////////////////////
 
     Flickable {
-        anchors.top: presetHeader.bottom
+        anchors.top: typeChooser.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
@@ -86,114 +158,13 @@ Item {
 
             ////////
 /*
-            Item {
-                id: presetheader2
-                anchors.left: parent.left
-                anchors.right: parent.right
-                height: 96
-
-                Rectangle {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    height: 48
-
-                    color: Theme.colorForeground
-
-                    TextInputThemed { // name
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        height: 48
-
-                        //placeholderText: qsTr("Preset name")
-                        text: preset && preset.name
-                        onEditingFinished: preset.name = text
-                    }
-                }
-
-                Rectangle {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    height: 48
-                    width: parent.width - 128
-                    color: Qt.darker(Theme.colorForeground, 1.03)
-
-                    RowLayout {
-                        anchors.fill: parent
-                        anchors.leftMargin: Theme.componentMargin
-                        anchors.rightMargin: Theme.componentMargin
-
-                        Text {
-                            Layout.fillWidth: true
-                            Layout.alignment: Qt.AlignVCenter
-
-                            text: qsTr("PRESET")
-                            textFormat: Text.PlainText
-                            color: Theme.colorSubText
-                            font.pixelSize: Theme.componentFontSize
-                        }
-
-                        ButtonWireframeIcon {
-                            Layout.preferredHeight: 32
-                            fullColor: true
-                            primaryColor: Theme.colorMaterialBlue
-                            text: qsTr("SELECT TYPE")
-                            source: "qrc:/assets/icons_fontawesome/question-solid.svg"
-                        }
-                        ButtonWireframeIcon {
-                            Layout.preferredHeight: 32
-                            fullColor: true
-                            primaryColor: Theme.colorMaterialAmber
-                            text: qsTr("DELETE")
-                            source: "qrc:/assets/icons_material/baseline-delete-24px.svg"
-                        }
-                    }
-                }
-
-                Grid {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    rows: 2
-                    columns: 2
-
-                    Repeater {
-                        model: ListModel {
-                            ListElement { idx: 0; txt: ""; }
-                        }
-                        delegate: IconSvg {
-                            source: txt
-                        }
-                    }
-                }
-
-                Rectangle {
-                    anchors.fill: parent
-                    radius: Theme.componentRadius
-                    color: "transparent"
-                    border.width: 2
-                    border.color: Theme.colorSeparator
-                }
-
-                layer.enabled: true
-                layer.effect: OpacityMask {
-                    maskSource: Rectangle {
-                        x: presetheader.x
-                        y: presetheader.y
-                        width: presetheader.width
-                        height: presetheader.height
-                        radius: Theme.componentRadius
-                    }
-                }
-            }
-*/
-            ////////
-
             Rectangle {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 height: Theme.componentHeight
                 radius: Theme.componentRadius
                 color: Qt.darker(Theme.colorForeground, 1.03)
+                visible: preset && !preset.readOnly
 
                 Text {
                     anchors.left: parent.left
@@ -214,84 +185,27 @@ Item {
                     primaryColor: Theme.colorMaterialLightGreen
                 }
             }
-
+*/
             ////////
 
             Repeater {
-                model: preset && preset.ranges
+                model: currentPreset && currentPreset.ranges
 
-                Rectangle {
+                TemperatureRangeWidget {
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    height: columnContent.height
-                    radius: Theme.componentRadius
-                    color: Theme.colorForeground
-
-                    Column {
-                        id: columnContent
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-
-                        TextInputThemed { // name
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            height: 40
-
-                            text: modelData.name
-                            onEditingFinished: modelData.name = text
-                        }
-
-                        RowLayout {
-                            anchors.left: parent.left
-                            anchors.leftMargin: Theme.componentMargin
-                            anchors.right: parent.right
-                            anchors.rightMargin: Theme.componentMargin
-                            height: 48
-
-                            SpinBoxThemed {
-                                Layout.alignment: Qt.AlignVCenter
-                                Layout.preferredHeight: 36
-
-                                value: modelData.tempMin
-                                onValueModified: modelData.tempMin = value
-                            }
-
-                            Text {
-                                Layout.alignment: Qt.AlignVCenter
-                                text: ("MIN")
-                                color: Theme.colorSubText
-                            }
-
-                            Item {
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: 36
-                            }
-
-                            Text {
-                                Layout.alignment: Qt.AlignVCenter
-                                text: ("MAX")
-                                color: Theme.colorSubText
-                            }
-
-                            SpinBoxThemed {
-                                Layout.alignment: Qt.AlignVCenter
-                                Layout.preferredHeight: 36
-                                value: modelData.tempMax
-                                onValueModified: modelData.tempMax = value
-                            }
-                        }
-                    }
                 }
             }
 
             ////////
-
+/*
             Rectangle {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 height: Theme.componentHeight
                 radius: Theme.componentRadius
                 color: Qt.darker(Theme.colorForeground, 1.03)
+                visible: preset && !preset.readOnly
 
                 Text {
                     anchors.left: parent.left
@@ -312,8 +226,55 @@ Item {
                     primaryColor: Theme.colorMaterialLightGreen
                 }
             }
-
+*/
             ////////
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+
+    PopupPresetCopy {
+        id: popupPresetCopy
+    }
+    PopupPresetRangeAdd {
+        id: popupPresetRangeAdd
+    }
+
+    Column {
+        anchors.right: parent.right
+        anchors.rightMargin: 24
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: (Qt.platform.os === "android" && screenOrientation === Qt.PortraitOrientation) ? 12 : 24
+        spacing: 24
+
+        RoundButtonIconShadow { // copy
+            width: 56
+            height: 56
+
+            source: "qrc:/assets/icons_material/duotone-library_copy-24px.svg"
+            iconColor: "white"
+            background: true
+            backgroundColor: Theme.colorPrimary
+
+            onClicked: {
+                popupPresetCopy.open()
+            }
+        }
+
+        RoundButtonIconShadow { // add
+            width: 56
+            height: 56
+
+            visible: currentPreset && !currentPreset.readOnly
+
+            source: "qrc:/assets/icons_material/baseline-add-24px.svg"
+            iconColor: "white"
+            background: true
+            backgroundColor: Theme.colorPrimary
+
+            onClicked: {
+                popupPresetRangeAdd.open()
+            }
         }
     }
 

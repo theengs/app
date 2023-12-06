@@ -32,28 +32,28 @@ function getPresetIcon(presetType) {
 
 /* ************************************************************************** */
 
-function getPresetName(presetType) {
-    var name = ""
+function getPresetType(presetType) {
+    var type = ""
 
     if (presetType === PresetUtils.PresetUtils.PRESET_UNKNOWN) {
-        name = qsTr("Unknown")
+        type = qsTr("Unknown")
     } else if (presetType === PresetUtils.PresetUtils.PRESET_MEAT) {
-        name = qsTr("Meat")
+        type = qsTr("Meat")
     } else if (presetType === PresetUtils.PresetUtils.PRESET_FISH) {
-        name = qsTr("Fish")
+        type = qsTr("Fish")
     } else if (presetType === PresetUtils.PresetUtils.PRESET_EGG) {
-        name = qsTr("Egg")
+        type = qsTr("Egg")
     } else if (presetType === PresetUtils.PresetUtils.PRESET_POULTRY) {
-        name = qsTr("Poultry")
+        type = qsTr("Poultry")
     } else if (presetType === PresetUtils.PresetUtils.PRESET_SEAFOOD) {
-        name = qsTr("Seafood")
+        type = qsTr("Seafood")
     } else if (presetType === PresetUtils.PresetUtils.PRESET_VEGETABLE) {
-        name = qsTr("Vegetable")
+        type = qsTr("Vegetable")
     } else if (presetType === PresetUtils.PresetUtils.PRESET_FRUIT) {
-        name = qsTr("Fruit")
+        type = qsTr("Fruit")
     }
 
-    return name
+    return type
 }
 
 /* ************************************************************************** */

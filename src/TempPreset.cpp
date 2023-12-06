@@ -36,22 +36,47 @@ TempRange::TempRange(const QString &name, const float tempMin, const float tempM
 
 void TempRange::setName(const QString &n)
 {
-    m_name = n;
+    if (m_name != n)
+    {
+        m_name = n;
+        Q_EMIT nameChanged();
+    }
 }
 
 void TempRange::setColor(const QString &c)
 {
-    m_color = c;
+    if (m_color != c)
+    {
+        m_color = c;
+        Q_EMIT rangeChanged();
+    }
 }
 
 void TempRange::setTempMin(float t)
 {
-    m_tempMin = t;
+    if (m_tempMin != t)
+    {
+        m_tempMin = t;
+        Q_EMIT rangeChanged();
+    }
 }
 
 void TempRange::setTempMax(float t)
 {
-    m_tempMax = t;
+    if (m_tempMax != t)
+    {
+        m_tempMax = t;
+        Q_EMIT rangeChanged();
+    }
+}
+
+void TempRange::setTempMaxDisabled(bool d)
+{
+    if (m_tempMax_disabled != d)
+    {
+        m_tempMax_disabled = d;
+        Q_EMIT rangeChanged();
+    }
 }
 
 /* ************************************************************************** */
@@ -76,10 +101,46 @@ TempPreset::~TempPreset()
 
 /* ************************************************************************** */
 
-bool TempPreset::addRange(const QString &name, const float min, const float max)
+bool TempPreset::isRangeNameValid(const QString &name)
+{
+    bool status = false;
+
+    if (!name.isEmpty())
+    {
+        status = true;
+
+        for (auto rr: std::as_const(m_ranges))
+        {
+            TempRange *tr = qobject_cast<TempRange*>(rr);
+            if (tr && tr->getName() == name)
+            {
+                status = false;
+            }
+        }
+    }
+
+    return status;
+}
+
+bool TempPreset::addRange(const QString &name, const bool before,
+                          const float min, const float max)
 {
     TempRange *r = new TempRange(name, min, max, this);
-    m_ranges.push_back(r);
+    if (r)
+    {
+        if (before)
+        {
+            m_ranges.push_front(r);
+        }
+        else // after
+        {
+            m_ranges.push_back(r);
+        }
+
+        Q_EMIT rangesChanged();
+        return true;
+    }
+
     return false;
 }
 
@@ -100,6 +161,40 @@ bool TempPreset::removeRange(const QString &name)
 
     return false;
 }
+
+/* ************************************************************************** */
+
+float TempPreset::getTempMin_add() const
+{
+    float min = 140;
+
+    if (!m_ranges.isEmpty())
+    {
+        TempRange *tr = qobject_cast<TempRange*>(m_ranges.first());
+        min = tr->getTempMin();
+    }
+
+    return min;
+}
+
+float TempPreset::getTempMax_add() const
+{
+    float max = 160;
+
+    if (!m_ranges.isEmpty())
+    {
+        TempRange *tr = qobject_cast<TempRange*>(m_ranges.last());
+        if (tr->getTempMax() <= 0 || tr->isTempMaxDisabled()) {
+            max = tr->getTempMin();
+        } else {
+            max = tr->getTempMax();
+        }
+    }
+
+    return max;
+}
+
+/* ************************************************************************** */
 
 float TempPreset::getRangeMin() const
 {
@@ -171,23 +266,6 @@ void TempPreset::setName(const QString &n)
         m_name = n;
         Q_EMIT presetChanged();
     }
-}
-
-/* ************************************************************************** */
-
-bool TempPreset::addEntry(const int type, const QString &name, const QString &data)
-{
-    return false;
-}
-
-bool TempPreset::editEntry(const int type, const QString &name, const QString &data)
-{
-    return false;
-}
-
-bool TempPreset::removeEntry()
-{
-    return false;
 }
 
 /* ************************************************************************** */

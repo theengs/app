@@ -61,17 +61,20 @@ class TempRange: public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString name READ getName WRITE setName NOTIFY rangeChanged)
+    Q_PROPERTY(QString name READ getName WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QString color READ getColor WRITE setColor NOTIFY rangeChanged)
     Q_PROPERTY(float tempMin READ getTempMin WRITE setTempMin NOTIFY rangeChanged)
     Q_PROPERTY(float tempMax READ getTempMax WRITE setTempMax NOTIFY rangeChanged)
+    Q_PROPERTY(bool tempMaxDisabled READ isTempMaxDisabled WRITE setTempMaxDisabled NOTIFY rangeChanged)
 
     QString m_name;
     QString m_color;
     float m_tempMin;
     float m_tempMax;
+    bool m_tempMax_disabled = false;
 
 Q_SIGNALS:
+    void nameChanged();
     void rangeChanged();
 
 public:
@@ -89,6 +92,9 @@ public:
 
     float getTempMax() const { return m_tempMax; }
     void setTempMax(float t);
+
+    bool isTempMaxDisabled() const { return m_tempMax_disabled; }
+    void setTempMaxDisabled(bool d);
 };
 
 /* ************************************************************************** */
@@ -125,12 +131,12 @@ public:
                const QString &name, const QString &data, QObject *parent);
     ~TempPreset();
 
-    bool addRange(const QString &name, const float min, const float max);
-    bool removeRange(const QString &name);
+    Q_INVOKABLE bool isRangeNameValid(const QString &name);
+    Q_INVOKABLE bool addRange(const QString &name, const bool beforAfter, const float min, const float max);
+    Q_INVOKABLE bool removeRange(const QString &name);
 
-    bool addEntry(const int type, const QString &name, const QString &data);
-    bool removeEntry();
-    Q_INVOKABLE bool editEntry(const int type, const QString &name, const QString &data);
+    Q_INVOKABLE float getTempMin_add() const;
+    Q_INVOKABLE float getTempMax_add() const;
 
     int getId() const { return m_id; }
     int getType() const { return m_type; }
