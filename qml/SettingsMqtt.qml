@@ -52,8 +52,8 @@ Item {
             anchors.left: parent.left
             anchors.right: parent.right
 
-            topPadding: 12
-            bottomPadding: 12
+            topPadding: Theme.componentMargin
+            bottomPadding: Theme.componentMargin
             spacing: 12
 
             ////////////////

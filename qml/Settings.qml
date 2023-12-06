@@ -24,18 +24,18 @@ Item {
         anchors.fill: parent
 
         contentWidth: -1
-        contentHeight: column.height
+        contentHeight: contentColumn.height
 
         boundsBehavior: isDesktop ? Flickable.OvershootBounds : Flickable.DragAndOvershootBounds
         ScrollBar.vertical: ScrollBar { visible: false }
 
         Column {
-            id: column
+            id: contentColumn
             anchors.left: parent.left
             anchors.right: parent.right
 
-            topPadding: 12
-            bottomPadding: 12
+            topPadding: Theme.componentMargin
+            bottomPadding: Theme.componentMargin
             spacing: 8
 
             ////////////////

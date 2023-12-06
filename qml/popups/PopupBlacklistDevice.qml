@@ -22,8 +22,6 @@ Popup {
 
     ////////////////////////////////////////////////////////////////////////////
 
-    signal confirmed()
-
     property string deviceName
     property string deviceAddress
     property bool deviceIsBlacklisted: false
@@ -171,7 +169,6 @@ Popup {
                         else
                             deviceManager.blacklistBleDevice(deviceAddress)
 
-                        popupBlacklistDevice.confirmed()
                         popupBlacklistDevice.close()
                     }
                 }

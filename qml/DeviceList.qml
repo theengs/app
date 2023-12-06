@@ -343,7 +343,7 @@ Item {
             width: devicesView.cellWidth
             height: devicesView.cellHeight
             bigAssMode: devicesView.bigWidget
-            singleColumn: (singleColumn || devicesView.cellColumnsTarget === 1)
+            singleColumnMode: (singleColumn || devicesView.cellColumnsTarget === 1)
         }
     }
 

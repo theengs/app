@@ -34,8 +34,8 @@ Loader {
     ////////////////////////////////////////////////////////////////////////////
 
     active: false
-
     asynchronous: false
+
     sourceComponent: Item {
         id: itemDeviceGeneric
         implicitWidth: 480

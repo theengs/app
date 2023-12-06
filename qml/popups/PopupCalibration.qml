@@ -19,8 +19,6 @@ Popup {
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
     parent: Overlay.overlay
 
-    signal confirmed()
-
     ////////////////////////////////////////////////////////////////////////////
 
     background: Rectangle {
@@ -123,7 +121,6 @@ Popup {
                         if (selectedDevice) {
                              selectedDevice.actionCalibrate()
                         }
-                        popupCalibration.confirmed()
                         popupCalibration.close()
                     }
                 }

@@ -15,7 +15,7 @@ Item {
 
     property bool wideAssMode: (width >= 380) || (isPhone && width >= 360) || (isTablet && width >= 480)
     property bool bigAssMode: false
-    property bool singleColumn: true
+    property bool singleColumnMode: true
 
     Connections {
         target: boxDevice
@@ -194,26 +194,26 @@ Item {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
 
-        visible: singleColumn
+        visible: singleColumnMode
         color: Theme.colorSeparator
     }
 
     Rectangle {
         id: deviceWidgetRectangleSeparator
         anchors.fill: deviceWidgetRectangle
-        anchors.leftMargin: singleColumn ? -12 : 0
-        anchors.rightMargin: singleColumn ? -12 : 0
-        anchors.topMargin: singleColumn ? -6 : 0
-        anchors.bottomMargin: singleColumn ? -6 : 0
+        anchors.leftMargin: singleColumnMode ? -12 : 0
+        anchors.rightMargin: singleColumnMode ? -12 : 0
+        anchors.topMargin: singleColumnMode ? -6 : 0
+        anchors.bottomMargin: singleColumnMode ? -6 : 0
 
         radius: 4
         border.width: 2
-        border.color: singleColumn ? "transparent" : Theme.colorSeparator
+        border.color: singleColumnMode ? "transparent" : Theme.colorSeparator
 
         color: boxDevice.selected ? Theme.colorSeparator : Theme.colorDeviceWidget
         Behavior on color { ColorAnimation { duration: 133 } }
 
-        opacity: boxDevice.selected ? 0.5 : (singleColumn ? 0 : 1)
+        opacity: boxDevice.selected ? 0.5 : (singleColumnMode ? 0 : 1)
         Behavior on opacity { OpacityAnimator { duration: 133 } }
     }
 
@@ -305,13 +305,13 @@ Item {
             anchors.top: parent.top
             anchors.topMargin: bigAssMode ? 16 : 8
             anchors.left: parent.left
-            anchors.leftMargin: bigAssMode ? (singleColumn ? 4 : 16) : (singleColumn ? 6 : 14)
+            anchors.leftMargin: bigAssMode ? (singleColumnMode ? 4 : 16) : (singleColumnMode ? 6 : 14)
             anchors.right: (rowRight.width > 0) ? rowRight.left : imageStatus.left
-            anchors.rightMargin: singleColumn ? 0 : 8
+            anchors.rightMargin: singleColumnMode ? 0 : 8
             anchors.bottom: parent.bottom
             anchors.bottomMargin: bigAssMode ? 16 : 8
 
-            spacing: bigAssMode ? (singleColumn ? 20 : 12) : (singleColumn ? 24 : 10)
+            spacing: bigAssMode ? (singleColumnMode ? 20 : 12) : (singleColumnMode ? 24 : 10)
 
             IconSvg {
                 id: imageDevice
@@ -405,7 +405,7 @@ Item {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: bigAssMode ? 16 : 8
             anchors.right: parent.right
-            anchors.rightMargin: singleColumn ? (wideAssMode ? 0 : -4) : (bigAssMode ? 14 : 10)
+            anchors.rightMargin: singleColumnMode ? (wideAssMode ? 0 : -4) : (bigAssMode ? 14 : 10)
 
             spacing: 8
 
@@ -429,7 +429,7 @@ Item {
                 height: 32
                 anchors.verticalCenter: parent.verticalCenter
 
-                visible: singleColumn
+                visible: singleColumnMode
                 color: boxDevice.hasData ? Theme.colorHighContrast : Theme.colorSubText
                 source: "qrc:/assets/icons_material/baseline-chevron_right-24px.svg"
             }
@@ -442,7 +442,7 @@ Item {
             width: 32
             height: 32
             anchors.right: parent.right
-            anchors.rightMargin: singleColumn ? 56 : 36
+            anchors.rightMargin: singleColumnMode ? 56 : 36
             anchors.verticalCenter: parent.verticalCenter
 
             visible: !boxDevice.hasDataToday
