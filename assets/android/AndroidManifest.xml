@@ -16,12 +16,14 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:minSdkVersion="29"/>
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" android:minSdkVersion="29"/>
 
+    <!-- Service -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
+    <!-- Others -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
-
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <!-- Hardware permissions -->
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
@@ -33,21 +35,21 @@
                  android:label="Theengs BLE" android:hardwareAccelerated="true" android:allowNativeHeapPointerTagging="false"
                  android:theme="@style/AppTheme" android:roundIcon="@mipmap/ic_launcher_round" android:icon="@mipmap/ic_launcher">
 
-        <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density" android:name="org.qtproject.qt.android.bindings.QtActivity" android:label="Theengs" android:screenOrientation="unspecified" android:launchMode="singleTop" android:windowSoftInputMode="adjustResize" android:exported="true">
+        <!-- Activity -->
+        <activity android:name="org.qtproject.qt.android.bindings.QtActivity"
+                  android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
+                  android:screenOrientation="unspecified" android:windowSoftInputMode="adjustPan" android:launchMode="singleTop" android:exported="true"
+                  android:label="Theengs">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
             <meta-data android:name="android.app.lib_name" android:value="-- %%INSERT_APP_LIB_NAME%% --"/>
             <meta-data android:name="android.app.arguments" android:value="-- %%INSERT_APP_ARGUMENTS%% --"/>
             <meta-data android:name="android.app.extract_android_style" android:value="none"/>
-            <!-- Splash screen -->
-            <!-- Orientation-specific (portrait/landscape) data is checked first. If not available for current orientation,
-                 then android.app.splash_screen_drawable. For best results, use together with splash_screen_sticky and
-                 use hideSplashScreen() with a fade-out animation from Qt Android Extras to hide the splash screen when you
-                 are done populating your window with content. -->
-            <!-- meta-data android:name="android.app.splash_screen_drawable_portrait" android:resource="@drawable/logo_portrait" / -->
-            <!-- meta-data android:name="android.app.splash_screen_drawable_landscape" android:resource="@drawable/logo_landscape" / -->
+            <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/splash" />
             <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
             <meta-data android:name="android.app.background_running" android:value="false"/>
         </activity>
@@ -58,11 +60,13 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
+
         <service android:name=".TheengsAndroidService" android:process=":qt_service">
             <meta-data android:name="android.app.background_running" android:value="true"/>
             <meta-data android:name="android.app.arguments" android:value="--service"/>
             <meta-data android:name="android.app.lib_name" android:value="-- %%INSERT_APP_LIB_NAME%% --"/>
         </service>
+
     </application>
 
 </manifest>
