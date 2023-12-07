@@ -22,14 +22,12 @@ Item {
         target: currentDevice
         function onRtGraphUpdated() {
             //console.log("onRtgraphUpdated")
-
             currentDevice.updateRtGraph(axisTime, 5,
                                         temp1Data, temp2Data, temp3Data,
                                         temp4Data, temp5Data, temp6Data)
         }
         function onRtGraphCleaned() {
             //console.log("onRtgraphCleaned")
-
             currentDevice.updateRtGraph(axisTime, 5,
                                         temp1Data, temp2Data, temp3Data,
                                         temp4Data, temp5Data, temp6Data)
@@ -51,8 +49,8 @@ Item {
                                     temp1Data, temp2Data, temp3Data,
                                     temp4Data, temp5Data, temp6Data)
 
-        axisTemp.min = 0
-        axisTemp.max = 100
+        axisTemp.min = valueMin
+        axisTemp.max = valueMax
 
         legendColor = Qt.rgba(legendColor.r, legendColor.g, legendColor.b, 0.8)
     }
@@ -70,11 +68,14 @@ Item {
     Rectangle {
         id: dataIndicator
 
+        anchors.top: parent.top
+        anchors.right: parent.right
         width: dataIndicatorContent.width + 24
         height: 32
         z: 2
 
         radius: 4
+        opacity: 0.8
         color: Theme.colorForeground
         border.width: Theme.componentBorderWidth
         border.color: Theme.colorSeparator
@@ -181,10 +182,10 @@ Item {
     ChartView {
         id: rtGraph
         anchors.fill: parent
-        anchors.topMargin: -28
-        anchors.leftMargin: -24
-        anchors.rightMargin: -24
-        anchors.bottomMargin: -24
+        anchors.topMargin: -40
+        anchors.leftMargin: -32
+        anchors.rightMargin: -32
+        anchors.bottomMargin: -32
 
         antialiasing: true
         legend.visible: false
@@ -192,9 +193,13 @@ Item {
         backgroundColor: "transparent"
         animationOptions: ChartView.NoAnimation
 
-        ValueAxis { id: axisTemp; visible: false; gridVisible: false; }
+        ValueAxis { id: axisTemp; visible: true; gridVisible: false;
+                    labelFormat: "%i";
+                    labelsFont.pixelSize: Theme.fontSizeContentSmall-1; labelsColor: legendColor;
+                    color: legendColor;
+                    gridLineColor: Theme.colorSeparator; }
 
-        DateTimeAxis { id: axisTime; visible: true;
+        DateTimeAxis { id: axisTime; visible: true; gridVisible: true;
                        labelsFont.pixelSize: Theme.fontSizeContentSmall-1; labelsColor: legendColor;
                        color: legendColor;
                        gridLineColor: Theme.colorSeparator; }
@@ -241,6 +246,69 @@ Item {
             color: Theme.colorRed; width: 2;
             axisY: axisTemp; axisX: axisTime;
         }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+
+    Item {
+        id: legend_area
+
+        width: rtGraph.plotArea.width
+        height: rtGraph.plotArea.height
+        x: rtGraph.plotArea.x + rtGraph.anchors.leftMargin
+        y: rtGraph.plotArea.y + rtGraph.anchors.topMargin
+        z: -1
+
+        clip: true
+
+        // axisTemp.min // axisTemp.max
+        // valueMin // valueMax
+
+        Repeater {
+            model: currentPreset && currentPreset.ranges
+
+            Rectangle {
+                anchors.left: parent.left
+                anchors.right: parent.right
+/*
+                Component.onCompleted: {
+                    console.log("Preset #" + index + " > " + modelData.tempMin + " to " + modelData.tempMaxGraph)
+                    console.log("- plotAreaHeight: " + rtGraph.plotArea.height)
+                    console.log("- x: " + x + " > y: " + y)
+                    console.log("- width: " + width + " > height: " + height)
+                }
+*/
+                y: UtilsNumber.mapNumber(Math.min(modelData.tempMaxGraph, valueMax), // value
+                                         valueMin, valueMax, // from
+                                         rtGraph.plotArea.height, 0) // to
+                height: ((Math.min(modelData.tempMaxGraph, valueMax) - modelData.tempMin) / (valueMax - valueMin)) * rtGraph.plotArea.height
+
+                color: Qt.darker(Theme.colorRed, 1)
+                opacity: 0.33 + ((index) * 0.1)
+            }
+        }
+/*
+        Rectangle {
+            anchors.left: parent.left
+            anchors.right: parent.right
+
+            Component.onCompleted: {
+                console.log(" CONTOUR ")
+                console.log("- x: " + x + " > y: " + y)
+                console.log("- width: " + width + " > height: " + height)
+            }
+
+            y: UtilsNumber.mapNumber(valueMax, // value
+                                     valueMin, valueMax, // from
+                                     rtGraph.plotArea.height, 0) // to
+            height: ((valueMax - valueMin) / (valueMax - valueMin)) * rtGraph.plotArea.height
+
+            color: "transparent"
+            opacity: 0.33
+            border.width: 2
+            border.color: Theme.colorWarning
+        }
+*/
     }
 
     ////////////////////////////////////////////////////////////////////////////

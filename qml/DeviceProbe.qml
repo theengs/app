@@ -34,7 +34,7 @@ Loader {
 
         // change screen
         appContent.state = "DeviceProbe"
-        if (isMobile) mobileUI.screenAlwaysOn(true)
+        if (isMobile) mobileUI.setScreenAlwaysOn(true)
     }
 
     ////////
@@ -244,7 +244,7 @@ Loader {
                     height: isMobile ? 96 : 128
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    anchors.verticalCenterOffset: -(appHeader.height / 2)
+                    anchors.verticalCenterOffset: -(appHeader.headerHeight / 2)
 
                     visible: !currentDevice.hasData
                     source: "qrc:/assets/icons_material/baseline-bluetooth_disabled-24px.svg"
@@ -259,7 +259,7 @@ Loader {
 
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    anchors.verticalCenterOffset: -(appHeader.height / 2)
+                    anchors.verticalCenterOffset: -(appHeader.headerHeight / 2)
                     spacing: 24
 
                     visible: (currentDevice.hasData && currentDevice.hasProbesBBQ)
@@ -701,7 +701,7 @@ Loader {
 
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    anchors.verticalCenterOffset: -(appHeader.height / 3)
+                    anchors.verticalCenterOffset: -(appHeader.headerHeight / 3)
                     spacing: columnTPMS.tsp
 
                     visible: (currentDevice.hasData && currentDevice.hasProbesTPMS)
@@ -1163,128 +1163,184 @@ Loader {
                     return singleColumn ? (parent.height - probeBox.height) : parent.height
                 }
 
-                Rectangle {
-                    anchors.top: parent.top
+                ////////
+
+                Column {
+                    id: presetStuff
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    height: 40
-                    z: 2
-                    color: Theme.colorForeground
-                    visible: currentDevice.hasProbesBBQ
 
-                    RowLayout {
+                    visible: currentDevice.hasProbesBBQ
+                    height: {
+                        if (currentDevice.hasProbesBBQ && currentPreset) return 40 + 36
+                        if (currentDevice.hasProbesBBQ) return 40
+                        return 0
+                    }
+                    z: 2
+
+                    ////////
+
+                    Rectangle {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        height: 40
+
+                        color: Theme.colorForeground
+
+                        RowLayout {
+                            anchors.left: parent.left
+                            anchors.leftMargin: Theme.componentMargin
+                            anchors.right: parent.right
+                            anchors.rightMargin: Theme.componentMargin
+                            height: parent.height
+                            spacing: 12
+
+                            Rectangle {
+                                Layout.preferredHeight: parent.height
+                                Layout.preferredWidth: legendPreset.contentWidth + 12
+
+                                visible: !singleColumn
+                                color: Qt.darker(Theme.colorForeground, 1.03)
+
+                                Text {
+                                    id: legendPreset
+                                    anchors.centerIn: parent
+                                    text: qsTr("PRESET")
+                                    textFormat: Text.PlainText
+                                    color: Theme.colorText
+                                }
+                            }
+
+                            SelectorMenuItem {
+                                Layout.preferredHeight: 32
+                                Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+
+                                highlighted: true
+
+                                text: {
+                                    if (currentPreset) return currentPreset.name
+                                    return UtilsPresets.getPresetType(0)
+                                }
+                                source: {
+                                    if (currentPreset) return UtilsPresets.getPresetIcon(currentPreset.type)
+                                    return UtilsPresets.getPresetIcon(0)
+                                }
+                                sourceSize: 20
+
+                                PopupPresetSelection {
+                                    id: popupPresetSelection
+                                    onSelected: (name) => {
+                                        currentDevice.preset = name
+                                        currentPreset = presetsManager.getPreset(currentDevice.preset)
+                                    }
+                                }
+
+                                onClicked: {
+                                    popupPresetSelection.open()
+                                }
+                            }
+
+                            Item {
+                                Layout.fillWidth: singleColumn
+                                Layout.preferredHeight: 32
+                            }
+
+                            Rectangle {
+                                Layout.preferredWidth: legendPreset.contentWidth + 12
+                                Layout.preferredHeight: parent.height
+
+                                visible: !singleColumn
+                                color: Qt.darker(Theme.colorForeground, 1.03)
+
+                                Text {
+                                    id: legendInterval
+                                    anchors.centerIn: parent
+                                    text: qsTr("INTERVAL")
+                                    textFormat: Text.PlainText
+                                    color: Theme.colorText
+                                }
+                            }
+
+                            SelectorMenu {
+                                id: selectorInterval
+                                Layout.preferredWidth: width
+                                Layout.preferredHeight: 32
+
+                                model: ListModel {
+                                    id: intervalModel
+                                    ListElement { idx: 0; txt: qsTr("5m"); itv: 5; src: ""; sz: 16; }
+                                    ListElement { idx: 1; txt: qsTr("10m"); itv: 10; src: ""; sz: 16; }
+                                    ListElement { idx: 2; txt: qsTr("30m"); itv: 30; src: ""; sz: 16; }
+                                    ListElement { idx: 3; txt: qsTr("60m"); itv: 60; src: ""; sz: 16; }
+                                }
+
+                                currentSelection: {
+                                    if (currentInterval === 60) return 3
+                                    if (currentInterval === 30) return 2
+                                    if (currentInterval === 10) return 1
+                                    return 0
+                                }
+                                onMenuSelected: (index) => {
+                                    currentSelection = index
+                                    var value = model.get(index).itv
+
+                                    currentInterval = value
+                                    if (currentDevice)currentDevice.realtimeWindow = value
+                                }
+                            }
+                        }
+                    }
+
+                    ////////
+
+                    Flickable {
                         anchors.left: parent.left
                         anchors.leftMargin: Theme.componentMargin
                         anchors.right: parent.right
                         anchors.rightMargin: Theme.componentMargin
-                        height: parent.height
-                        spacing: 12
+                        height: 36
+                        visible: currentPreset
 
-                        Rectangle {
-                            Layout.preferredHeight: parent.height
-                            Layout.preferredWidth: legendPreset.contentWidth + 12
+                        contentWidth: presetLegendRow.width
+                        contentHeight: 36
 
-                            visible: !singleColumn
-                            color: Qt.darker(Theme.colorForeground, 1.03)
+                        flickableDirection: Flickable.HorizontalFlick
+                        boundsBehavior: Flickable.StopAtBounds
 
-                            Text {
-                                id: legendPreset
-                                anchors.centerIn: parent
-                                text: qsTr("PRESET")
-                                textFormat: Text.PlainText
-                                color: Theme.colorText
-                            }
-                        }
+                        Row {
+                            id: presetLegendRow
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 12
 
-                        SelectorMenuItem {
-                            Layout.preferredHeight: 32
-                            Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+                            Repeater {
+                                model: currentPreset && currentPreset.ranges
 
-                            highlighted: true
-
-                            text: {
-                                if (currentPreset) return currentPreset.name
-                                return UtilsPresets.getPresetType(0)
-                            }
-                            source: {
-                                if (currentPreset) return UtilsPresets.getPresetIcon(currentPreset.type)
-                                return UtilsPresets.getPresetIcon(0)
-                            }
-                            sourceSize: 20
-
-                            PopupPresetSelection {
-                                id: popupPresetSelection
-                                onSelected: (name) => {
-                                    currentDevice.preset = name
-                                    currentPreset = presetsManager.getPreset(currentDevice.preset)
+                                Rectangle {
+                                    height: 24
+                                    width: txt.contentWidth + 12
+                                    radius: 4
+                                    opacity: 0.66 + ((index) * 0.05)
+                                    color: Theme.colorRed
+                                    Text {
+                                        id: txt
+                                        anchors.centerIn: parent
+                                        text: modelData.name
+                                        color: "white"
+                                   }
                                 }
-                            }
-
-                            onClicked: {
-                                popupPresetSelection.open()
-                            }
-                        }
-
-                        Item {
-                            Layout.fillWidth: singleColumn
-                            Layout.preferredHeight: 32
-                        }
-
-                        Rectangle {
-                            Layout.preferredWidth: legendPreset.contentWidth + 12
-                            Layout.preferredHeight: parent.height
-
-                            visible: !singleColumn
-                            color: Qt.darker(Theme.colorForeground, 1.03)
-
-                            Text {
-                                id: legendInterval
-                                anchors.centerIn: parent
-                                text: qsTr("INTERVAL")
-                                textFormat: Text.PlainText
-                                color: Theme.colorText
-                            }
-                        }
-
-                        SelectorMenu {
-                            id: selectorInterval
-                            Layout.preferredWidth: width
-                            Layout.preferredHeight: 32
-
-                            model: ListModel {
-                                id: intervalModel
-                                ListElement { idx: 0; txt: qsTr("5m"); itv: 5; src: ""; sz: 16; }
-                                ListElement { idx: 1; txt: qsTr("10m"); itv: 10; src: ""; sz: 16; }
-                                ListElement { idx: 2; txt: qsTr("30m"); itv: 30; src: ""; sz: 16; }
-                                ListElement { idx: 3; txt: qsTr("60m"); itv: 60; src: ""; sz: 16; }
-                            }
-
-                            currentSelection: {
-                                if (currentInterval === 60) return 3
-                                if (currentInterval === 30) return 2
-                                if (currentInterval === 10) return 1
-                                return 0
-                            }
-                            onMenuSelected: (index) => {
-                                currentSelection = index
-                                var value = model.get(index).itv
-
-                                currentInterval = value
-                                if (currentDevice)currentDevice.realtimeWindow = value
                             }
                         }
                     }
+
+                    ////////
                 }
-/*
-                ItemNoData {
-                    id: noDataIndicator
-                    visible: (currentDevice.countDataNamed("temperature", 14) <= 1)
-                }
-*/
+
+                ////////
+
                 Loader {
                     id: graphLoader
                     anchors.top: parent.top
-                    anchors.topMargin: currentDevice.hasProbesBBQ ? 40 : 0
+                    anchors.topMargin: presetStuff.height
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
@@ -1296,6 +1352,8 @@ Loader {
                         probeChart.updateGraph()
                     }
                 }
+
+                ////////
             }
 
             ////////////////
