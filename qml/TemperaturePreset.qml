@@ -17,7 +17,11 @@ Item {
     }
 
     function backAction() {
-        //
+        if (presetName.focusalias) {
+            presetName.focusalias = false
+            return false
+        }
+        return true
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -54,6 +58,7 @@ Item {
         }
 
         TextInputThemed { // preset name
+            id: presetName
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.leftMargin: presetHeader.height
@@ -66,6 +71,11 @@ Item {
             readOnly: currentPreset && currentPreset.readOnly
 
             text: currentPreset && currentPreset.name
+            onDisplayTextChanged: {
+                if (presetsManager.isPresetNameValid(text)) {
+                    currentPreset.name = text
+                }
+            }
             onEditingFinished: {
                 if (presetsManager.isPresetNameValid(text)) {
                     currentPreset.name = text
@@ -189,8 +199,9 @@ Item {
             ////////
 
             Repeater {
-                model: currentPreset && currentPreset.ranges
+                id: presetRepeater
 
+                model: currentPreset && currentPreset.ranges
                 TemperatureRangeWidget {
                     anchors.left: parent.left
                     anchors.right: parent.right

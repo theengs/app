@@ -64,24 +64,24 @@ bool TempPresetManager::load()
     // Load APP presets
     {
         TempPreset *t1 = new TempPreset(0, PresetUtils::PRESET_MEAT, true, "Beef", "", this);
-        t1->addRange("Rare", false, 49, 52);
-        t1->addRange("Medium Rare", false, 54, 57);
-        t1->addRange("Medium", false, 60, 63);
-        t1->addRange("Medium Well", false, 65, 68);
-        t1->addRange("Well Done", false, 71, -1);
+        t1->addRange("Rare", false, 49, 52, true);
+        t1->addRange("Medium Rare", false, 54, 57, true);
+        t1->addRange("Medium", false, 60, 63, true);
+        t1->addRange("Medium Well", false, 65, 68, true);
+        t1->addRange("Well Done", false, 71, -1, false);
         m_presets.push_back(t1);
 
         TempPreset *t2 = new TempPreset(1, PresetUtils::PRESET_MEAT, true, "Pork", "", this);
-        t2->addRange("Safe minimum internal temperature", false, 63, 63);
-        t2->addRange("Ground Pork", false, 71, -1);
+        t2->addRange("Safe minimum internal temperature", false, 63, 63, true);
+        t2->addRange("Ground Pork", false, 71, -1, false);
         m_presets.push_back(t2);
 
         TempPreset *t3 = new TempPreset(2, PresetUtils::PRESET_POULTRY, true, "Chicken", "", this);
-        t3->addRange("Safe minimum internal temperature", false, 74, -1);
+        t3->addRange("Safe minimum internal temperature", false, 74, -1, false);
         m_presets.push_back(t3);
 
         TempPreset *t4 = new TempPreset(3, PresetUtils::PRESET_FISH, true, "Fish", "", this);
-        t4->addRange("Safe minimum internal temperature", false, 63, -1);
+        t4->addRange("Safe minimum internal temperature", false, 63, -1, false);
         m_presets.push_back(t4);
     }
 
@@ -142,6 +142,7 @@ bool TempPresetManager::addPreset()
     if (tp)
     {
         m_presets.push_back(tp);
+
         Q_EMIT presetsChanged();
         return true;
     }
@@ -157,6 +158,7 @@ bool TempPresetManager::addPreset(const int type, const QString &name)
     if (tp)
     {
         m_presets.push_back(tp);
+
         Q_EMIT presetsChanged();
         return true;
     }
@@ -167,6 +169,20 @@ bool TempPresetManager::addPreset(const int type, const QString &name)
 bool TempPresetManager::copyPreset(const QString &name, const QString &newName)
 {
     qDebug() << "TempPresetManager::copyPreset(" << name << newName << ")";
+
+    for (auto pp: std::as_const(m_presets))
+    {
+        TempPreset *tp = qobject_cast<TempPreset*>(pp);
+        if (tp && tp->getName() == name)
+        {
+            TempPreset *newpreset = new TempPreset(*tp, this);
+            newpreset->setName(newName);
+            m_presets.push_back(newpreset);
+
+            Q_EMIT presetsChanged();
+            return true;
+        }
+    }
 
     return false;
 }

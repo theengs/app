@@ -306,6 +306,8 @@ ApplicationWindow {
                 screenDeviceMotionSensor.backAction()
             } else if (appContent.state === "DeviceBrowser") {
                 screenDeviceBrowser.backAction()
+            } else if (appContent.state === "TemperaturePresetList") {
+                screenTemperaturePresetList.backAction()
             } else if (appContent.state === "SettingsMqtt") {
                 screenSettingsMqtt.backAction()
             } else if (appContent.state === "AboutPermissions") {

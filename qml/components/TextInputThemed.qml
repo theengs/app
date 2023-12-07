@@ -15,7 +15,10 @@ Item {
     property var color: Theme.colorPrimary
     property bool readOnly: false
 
-    signal editingFinished
+    property alias focusalias: textInput.focus
+
+    signal editingFinished()
+    signal displayTextChanged()
 
     ////////
 
@@ -27,19 +30,24 @@ Item {
         anchors.rightMargin: control.padding
         anchors.verticalCenter: parent.verticalCenter
 
+        text: control.text
+        font.pixelSize: control.fontsize
+
         color: Theme.colorText
         selectByMouse: true
         selectedTextColor: "white"
         selectionColor: control.color
-        font.pixelSize: control.fontsize
-
         readOnly: control.readOnly
 
-        text: control.text
-        onDisplayTextChanged: {
+        Keys.onBackPressed: focus = false
+        onEditingFinished: {
             focus = false
             control.text = text
             control.editingFinished()
+        }
+        onDisplayTextChanged: {
+            control.text = displayText
+            control.displayTextChanged()
         }
     }
 

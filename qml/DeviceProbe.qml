@@ -1291,6 +1291,7 @@ Loader {
 
                     asynchronous: true
                     onLoaded: {
+                        //console.log("graphLoader::onLoaded()")
                         probeChart.loadGraph()
                         probeChart.updateGraph()
                     }

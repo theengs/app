@@ -42,6 +42,12 @@ Rectangle {
 
             readOnly: currentPreset.readOnly
             text: modelData.name
+
+            onDisplayTextChanged: {
+                if (currentPreset.isRangeNameValid(text)) {
+                    modelData.name = text
+                }
+            }
             onEditingFinished: {
                 if (currentPreset.isRangeNameValid(text)) {
                     modelData.name = text
@@ -102,7 +108,7 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
 
-                text: (modelData.tempMax > 0) ? qsTr("Maximum temp.") : qsTr("No maximum")
+                text: modelData.tempMaxEnabled ? qsTr("Maximum temp.") : qsTr("No maximum")
                 color: Theme.colorSubText
             }
 
@@ -110,7 +116,7 @@ Rectangle {
                 Layout.preferredHeight: 34
                 Layout.alignment: Qt.AlignVCenter
 
-                visible: (!currentPreset.readOnly && modelData.tempMax <= 0)
+                visible: (!currentPreset.readOnly && modelData.tempMaxDisabled)
                 text: qsTr("set")
 
                 onClicked: {
@@ -123,7 +129,7 @@ Rectangle {
                 Layout.preferredHeight: 34
                 Layout.alignment: Qt.AlignVCenter
 
-                visible: (modelData.tempMax > 0)
+                visible: modelData.tempMaxEnabled
                 enabled: !currentPreset.readOnly
                 editable: !currentPreset.readOnly
 

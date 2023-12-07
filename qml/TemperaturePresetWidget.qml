@@ -133,7 +133,7 @@ SwipeDelegate {
 
                         visible: modelData.rangeCount
                         text: {
-                            if (modelData.rangeMax > 0) {
+                            if (modelData.tempMaxEnabled) {
                                 return qsTr("(%1°%0 to %2°%0)")
                                     .arg(settingsManager.tempUnit)
                                     .arg(tempCelsiusToFahrenheitOrNot(modelData.rangeMin, settingsManager.appUnits))

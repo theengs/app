@@ -293,6 +293,8 @@ ApplicationWindow {
                 appContent.state = "DeviceMotionSensor"
             else if (appContent.previousStates[appContent.previousStates.length-1] === "DeviceBrowser")
                 appContent.state = "DeviceBrowser"
+            else if (appContent.previousStates[appContent.previousStates.length-1] === "TemperaturePresetList")
+                appContent.state = "TemperaturePresetList"
         }
     }
 

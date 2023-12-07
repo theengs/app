@@ -260,7 +260,7 @@ Popup {
                     enabled: currentPreset && currentPreset.isRangeNameValid(rangeName.text)
                     onClicked: {
                         currentPreset.addRange(rangeName.text, beforeAfterToogle.value,
-                                               spinboxMin.value, spinboxMax.value)
+                                               spinboxMin.value, spinboxMax.value, checkboxMax.checked)
                         popupPresetRangeAdd.close()
                     }
                 }

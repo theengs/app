@@ -24,12 +24,22 @@
 /* ************************************************************************** */
 
 TempRange::TempRange(const QString &name, const float tempMin, const float tempMax,
-                     QObject *parent) : QObject(parent)
+                     const bool tempMaxEnabled, QObject *parent) : QObject(parent)
 {
     m_name = name;
     //m_color = color;
     m_tempMin = tempMin;
     m_tempMax = tempMax;
+    m_tempMax_enabled = tempMaxEnabled;
+}
+
+TempRange::TempRange(const TempRange &p, QObject *parent) : QObject(parent)
+{
+    m_name = p.getName();
+    //m_color = p.getColor();
+    m_tempMin = p.getTempMin();
+    m_tempMax = p.getTempMax();
+    m_tempMax_enabled = p.isTempMaxEnabled();
 }
 
 /* ************************************************************************** */
@@ -70,11 +80,20 @@ void TempRange::setTempMax(float t)
     }
 }
 
+void TempRange::setTempMaxEnabled(bool d)
+{
+    if (m_tempMax_enabled != d)
+    {
+        m_tempMax_enabled = d;
+        Q_EMIT rangeChanged();
+    }
+}
+
 void TempRange::setTempMaxDisabled(bool d)
 {
-    if (m_tempMax_disabled != d)
+    if (m_tempMax_enabled != !d)
     {
-        m_tempMax_disabled = d;
+        m_tempMax_enabled = !d;
         Q_EMIT rangeChanged();
     }
 }
@@ -91,6 +110,22 @@ TempPreset::TempPreset(const int id, const int type, const bool ro,
     m_type = type;
     m_name = name;
     m_data = data;
+}
+
+TempPreset::TempPreset(const TempPreset &p, QObject *parent) : QObject(parent)
+{
+    m_id = p.getId();
+    m_readonly = false; // copied preset are not read only
+    m_type = p.getType();
+    m_name = p.getName();
+
+    //m_data = p.getData(); // unused
+
+    for (auto r: p.getRangesInternal())
+    {
+        TempRange *newrange = new TempRange(*qobject_cast<TempRange*>(r), this);
+        m_ranges.push_back(newrange);
+    }
 }
 
 TempPreset::~TempPreset()
@@ -123,9 +158,9 @@ bool TempPreset::isRangeNameValid(const QString &name)
 }
 
 bool TempPreset::addRange(const QString &name, const bool before,
-                          const float min, const float max)
+                          const float min, const float max, const bool maxEnabled)
 {
-    TempRange *r = new TempRange(name, min, max, this);
+    TempRange *r = new TempRange(name, min, max, maxEnabled, this);
     if (r)
     {
         if (before)

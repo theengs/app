@@ -145,7 +145,7 @@ Popup {
                 ButtonWireframe {
                     width: parent.btnSize
 
-                    text: qsTr("Create new preset")
+                    text: qsTr("Copy preset")
                     primaryColor: Theme.colorPrimary
                     fullColor: true
 

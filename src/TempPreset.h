@@ -65,20 +65,24 @@ class TempRange: public QObject
     Q_PROPERTY(QString color READ getColor WRITE setColor NOTIFY rangeChanged)
     Q_PROPERTY(float tempMin READ getTempMin WRITE setTempMin NOTIFY rangeChanged)
     Q_PROPERTY(float tempMax READ getTempMax WRITE setTempMax NOTIFY rangeChanged)
+    Q_PROPERTY(float tempMaxGraph READ getTempMaxGraph NOTIFY rangeChanged)
+    Q_PROPERTY(bool tempMaxEnabled READ isTempMaxEnabled WRITE setTempMaxEnabled NOTIFY rangeChanged)
     Q_PROPERTY(bool tempMaxDisabled READ isTempMaxDisabled WRITE setTempMaxDisabled NOTIFY rangeChanged)
 
     QString m_name;
     QString m_color;
     float m_tempMin;
     float m_tempMax;
-    bool m_tempMax_disabled = false;
+    bool m_tempMax_enabled = false;
 
 Q_SIGNALS:
     void nameChanged();
     void rangeChanged();
 
 public:
-    TempRange(const QString &name, const float tempMin, const float tempMax, QObject *parent);
+    TempRange(const QString &name, const float tempMin, const float tempMax,
+              const bool tempMaxEnabled, QObject *parent);
+    TempRange(const TempRange &r, QObject *parent);
     ~TempRange() = default;
 
     QString getName() const { return m_name; }
@@ -90,10 +94,13 @@ public:
     float getTempMin() const { return m_tempMin; }
     void setTempMin(float t);
 
+    float getTempMaxGraph() const { return m_tempMax_enabled ? m_tempMax : 100; }
     float getTempMax() const { return m_tempMax; }
     void setTempMax(float t);
 
-    bool isTempMaxDisabled() const { return m_tempMax_disabled; }
+    bool isTempMaxEnabled() const { return m_tempMax_enabled; }
+    void setTempMaxEnabled(bool d);
+    bool isTempMaxDisabled() const { return !m_tempMax_enabled; }
     void setTempMaxDisabled(bool d);
 };
 
@@ -118,6 +125,7 @@ class TempPreset: public QObject
     int m_type = -1;
     bool m_readonly = false;
     QString m_name;
+
     QString m_data;
 
     QList <QObject *> m_ranges;
@@ -129,10 +137,12 @@ Q_SIGNALS:
 public:
     TempPreset(const int id, const int type, const bool ro,
                const QString &name, const QString &data, QObject *parent);
+    TempPreset(const TempPreset &p, QObject *parent);
     ~TempPreset();
 
     Q_INVOKABLE bool isRangeNameValid(const QString &name);
-    Q_INVOKABLE bool addRange(const QString &name, const bool beforAfter, const float min, const float max);
+    Q_INVOKABLE bool addRange(const QString &name, const bool beforAfter,
+                              const float min, const float max, const bool maxEnabled);
     Q_INVOKABLE bool removeRange(const QString &name);
 
     Q_INVOKABLE float getTempMin_add() const;
@@ -144,6 +154,7 @@ public:
     void setType(int t);
     QString getName() const { return m_name; }
     void setName(const QString &n);
+
     QString getData() const { return m_data; }
 
     int getRangeCount() const { return m_ranges.size(); }
@@ -151,6 +162,8 @@ public:
     float getRangeMax() const;
     QString getRangeMinMax() const;
     QVariant getRanges() const { return QVariant::fromValue(m_ranges); }
+
+    QList <QObject *> getRangesInternal() const { return m_ranges; }
 };
 
 /* ************************************************************************** */

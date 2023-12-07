@@ -34,7 +34,9 @@ Loader {
 
         function backAction() {
             if (stackView.depth > 1) {
-                stackView.pop()
+                if (stackView.get(1).backAction() === true) {
+                    stackView.pop()
+                }
                 return
             }
 
