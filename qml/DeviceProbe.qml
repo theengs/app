@@ -231,6 +231,7 @@ Loader {
                 }
                 height: {
                     if (isTablet && screenOrientation == Qt.PortraitOrientation) return dimboxh
+                    if (isMobile && singleColumn && currentDevice.hasProbesBBQ) return columnBBQ.height + 48 + 24
                     return singleColumn ? dimboxh : parent.height
                 }
 
@@ -239,7 +240,10 @@ Loader {
 
                 MouseArea { anchors.fill: parent } // prevent clicks below this area
 
-                IconSvg { // sensorDisconnected
+
+
+
+                IconSvg { // sensor disconnected ///////////////////////////////
                     width: isMobile ? 96 : 128
                     height: isMobile ? 96 : 128
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -259,7 +263,7 @@ Loader {
 
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    anchors.verticalCenterOffset: -(appHeader.headerHeight / 2)
+                    anchors.verticalCenterOffset: -(appHeader.headerHeight * 0.42)
                     spacing: 24
 
                     visible: (currentDevice.hasData && currentDevice.hasProbesBBQ)
@@ -1013,7 +1017,7 @@ Loader {
                     }
                 }
 
-                Text { // deviceName
+                Text { // deviceName TPMS
                     anchors.centerIn: columnTPMS
                     visible: (columnTPMS.visible && isDesktop)
 
@@ -1285,7 +1289,7 @@ Loader {
                                     var value = model.get(index).itv
 
                                     currentInterval = value
-                                    if (currentDevice)currentDevice.realtimeWindow = value
+                                    if (currentDevice) currentDevice.realtimeWindow = value
                                 }
                             }
                         }
@@ -1315,18 +1319,23 @@ Loader {
                             Repeater {
                                 model: currentPreset && currentPreset.ranges
 
-                                Rectangle {
+                                Item {
                                     height: 24
                                     width: txt.contentWidth + 12
-                                    radius: 4
-                                    opacity: 0.66 + ((index) * 0.05)
-                                    color: Theme.colorRed
+
+                                    Rectangle {
+                                        anchors.fill: parent
+                                        radius: 4
+                                        color: Theme.colorRed
+                                        opacity: 0.66 + ((index) * 0.05)
+                                    }
+
                                     Text {
                                         id: txt
                                         anchors.centerIn: parent
                                         text: modelData.name
                                         color: "white"
-                                   }
+                                    }
                                 }
                             }
                         }

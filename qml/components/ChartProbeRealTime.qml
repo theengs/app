@@ -22,21 +22,17 @@ Item {
         target: currentDevice
         function onRtGraphUpdated() {
             //console.log("onRtgraphUpdated")
-            currentDevice.updateRtGraph(axisTime, 5,
-                                        temp1Data, temp2Data, temp3Data,
-                                        temp4Data, temp5Data, temp6Data)
+            updateGraph()
         }
         function onRtGraphCleaned() {
             //console.log("onRtgraphCleaned")
-            currentDevice.updateRtGraph(axisTime, 5,
-                                        temp1Data, temp2Data, temp3Data,
-                                        temp4Data, temp5Data, temp6Data)
+            updateGraph()
         }
     }
 
     function loadGraph() {
         if (typeof currentDevice === "undefined" || !currentDevice) return
-        //console.log("chartProbeRealTime // loadGraph() >> " + currentDevice)
+        console.log("chartProbeRealTime // loadGraph() >> " + currentDevice)
 
         temp1Data.visible = currentDevice.hasTemperature1
         temp2Data.visible = currentDevice.hasTemperature2
@@ -45,9 +41,13 @@ Item {
         temp5Data.visible = currentDevice.hasTemperature5
         temp6Data.visible = currentDevice.hasTemperature6
 
-        currentDevice.updateRtGraph(axisTime, 5,
-                                    temp1Data, temp2Data, temp3Data,
-                                    temp4Data, temp5Data, temp6Data)
+        //// DATA
+        temp1Data.clear()
+        temp2Data.clear()
+        temp3Data.clear()
+        temp4Data.clear()
+        temp5Data.clear()
+        temp6Data.clear()
 
         axisTemp.min = valueMin
         axisTemp.max = valueMax
@@ -58,6 +58,10 @@ Item {
     function updateGraph() {
         if (typeof currentDevice === "undefined" || !currentDevice) return
         //console.log("chartProbeRealTime // updateGraph() >> " + currentDevice)
+
+        currentDevice.updateRtGraph(axisTime, currentDevice.realtimeWindow,
+                                    temp1Data, temp2Data, temp3Data,
+                                    temp4Data, temp5Data, temp6Data)
     }
 
     function isIndicator() { return false }
@@ -185,7 +189,7 @@ Item {
         anchors.topMargin: -40
         anchors.leftMargin: -32
         anchors.rightMargin: -32
-        anchors.bottomMargin: -32
+        anchors.bottomMargin: -40
 
         antialiasing: true
         legend.visible: false

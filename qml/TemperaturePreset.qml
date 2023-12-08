@@ -110,7 +110,7 @@ Item {
         property bool isOpen: false
 
         clip: true
-        height: isOpen ? 256 : 0
+        height: isOpen ? presetType.height + Theme.componentMargin*2 : 0
         Behavior on height { NumberAnimation { duration: 333 } }
 
         color: Qt.darker(Theme.colorForeground, 1.03)
@@ -140,6 +140,7 @@ Item {
             onMenuSelected: (index) => {
                 //console.log("SelectorMenu clicked #" + index)
                 currentSelection = index
+                typeChooser.isOpen = false
             }
         }
     }
@@ -167,36 +168,6 @@ Item {
             spacing: Theme.componentMargin
 
             ////////
-/*
-            Rectangle {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                height: Theme.componentHeight
-                radius: Theme.componentRadius
-                color: Qt.darker(Theme.colorForeground, 1.03)
-                visible: preset && !preset.readOnly
-
-                Text {
-                    anchors.left: parent.left
-                    anchors.leftMargin: Theme.componentMargin
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: qsTr("RANGE (before)")
-                    textFormat: Text.PlainText
-                    color: Theme.colorSubText
-                    font.pixelSize: Theme.componentFontSize
-                }
-
-                ButtonWireframeIcon {
-                    anchors.right: parent.right
-
-                    text: qsTr("ADD")
-                    fullColor: true
-                    primaryColor: Theme.colorMaterialLightGreen
-                }
-            }
-*/
-            ////////
 
             Repeater {
                 id: presetRepeater
@@ -208,36 +179,6 @@ Item {
                 }
             }
 
-            ////////
-/*
-            Rectangle {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                height: Theme.componentHeight
-                radius: Theme.componentRadius
-                color: Qt.darker(Theme.colorForeground, 1.03)
-                visible: preset && !preset.readOnly
-
-                Text {
-                    anchors.left: parent.left
-                    anchors.leftMargin: Theme.componentMargin
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: qsTr("RANGE (after)")
-                    textFormat: Text.PlainText
-                    color: Theme.colorSubText
-                    font.pixelSize: Theme.componentFontSize
-                }
-
-                ButtonWireframeIcon {
-                    anchors.right: parent.right
-
-                    text: qsTr("ADD")
-                    fullColor: true
-                    primaryColor: Theme.colorMaterialLightGreen
-                }
-            }
-*/
             ////////
         }
     }

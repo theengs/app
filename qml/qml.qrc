@@ -26,6 +26,7 @@
         <file>DeviceGeneric.qml</file>
         <file>TemperaturePresetList.qml</file>
         <file>TemperaturePresetWidget.qml</file>
+        <file>TemperaturePresetSearchWidget.qml</file>
         <file>TemperaturePreset.qml</file>
         <file>TemperatureRangeWidget.qml</file>
         <file>ThemeEngine.qml</file>
