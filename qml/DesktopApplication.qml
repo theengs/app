@@ -291,6 +291,8 @@ ApplicationWindow {
                 appContent.state = "DeviceScale"
             else if (appContent.previousStates[appContent.previousStates.length-1] === "DeviceMotionSensor")
                 appContent.state = "DeviceMotionSensor"
+            else if (appContent.previousStates[appContent.previousStates.length-1] === "DeviceGeneric")
+                appContent.state = "DeviceGeneric"
             else if (appContent.previousStates[appContent.previousStates.length-1] === "DeviceBrowser")
                 appContent.state = "DeviceBrowser"
             else if (appContent.previousStates[appContent.previousStates.length-1] === "TemperaturePresetList")

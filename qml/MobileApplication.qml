@@ -134,10 +134,7 @@ ApplicationWindow {
             if (appContent.state === "DeviceList") {
                 appDrawer.open()
             } else {
-                if (appContent.state === "AboutPermissions")
-                    appContent.state = screenAboutPermissions.entryPoint
-                else
-                    appContent.state = "DeviceList"
+                backAction()
             }
         }
         function onRightMenuClicked() {
@@ -232,6 +229,49 @@ ApplicationWindow {
         }
     }
 
+    function backAction() {
+        if (appHeader.rightMenuIsOpen()) {
+            appHeader.rightMenuClose()
+            return
+        }
+
+        if (appContent.state === "DeviceList") {
+            if (screenDeviceList.isSelected()) {
+                screenDeviceList.exitSelectionMode()
+            } else {
+                if (exitTimer.running) {
+                    Qt.quit()
+                } else {
+                    exitTimer.start()
+                }
+            }
+        } else if (appContent.state === "DevicePlantSensor") {
+            screenDevicePlantSensor.backAction()
+        } else if (appContent.state === "DeviceThermometer") {
+            screenDeviceThermometer.backAction()
+        } else if (appContent.state === "DeviceEnvironmental") {
+            screenDeviceEnvironmental.backAction()
+        } else if (appContent.state === "DeviceProbe") {
+            screenDeviceProbe.backAction()
+        } else if (appContent.state === "DeviceScale") {
+            screenDeviceScale.backAction()
+        } else if (appContent.state === "DeviceMotionSensor") {
+            screenDeviceMotionSensor.backAction()
+        } else if (appContent.state === "DeviceGeneric") {
+            screenDeviceGeneric.backAction()
+        } else if (appContent.state === "DeviceBrowser") {
+            screenDeviceBrowser.backAction()
+        } else if (appContent.state === "TemperaturePresetList") {
+            screenTemperaturePresetList.backAction()
+        } else if (appContent.state === "SettingsMqtt") {
+            screenSettingsMqtt.backAction()
+        } else if (appContent.state === "AboutPermissions") {
+            appContent.state = screenAboutPermissions.entryPoint
+        } else {
+            appContent.state = "DeviceList"
+        }
+    }
+
     // UI sizes ////////////////////////////////////////////////////////////////
 
     property bool headerUnicolor: (Theme.colorHeader === Theme.colorBackground)
@@ -276,46 +316,7 @@ ApplicationWindow {
         anchors.bottomMargin: screenPaddingNavbar + screenPaddingBottom
 
         focus: true
-        Keys.onBackPressed: {
-            if (appHeader.rightMenuIsOpen()) {
-                appHeader.rightMenuClose()
-                return
-            }
-
-            if (appContent.state === "DeviceList") {
-                if (screenDeviceList.isSelected()) {
-                    screenDeviceList.exitSelectionMode()
-                } else {
-                    if (exitTimer.running) {
-                        Qt.quit()
-                    } else {
-                        exitTimer.start()
-                    }
-                }
-            } else if (appContent.state === "DevicePlantSensor") {
-                screenDevicePlantSensor.backAction()
-            } else if (appContent.state === "DeviceThermometer") {
-                screenDeviceThermometer.backAction()
-            } else if (appContent.state === "DeviceEnvironmental") {
-                screenDeviceEnvironmental.backAction()
-            } else if (appContent.state === "DeviceProbe") {
-                screenDeviceProbe.backAction()
-            } else if (appContent.state === "DeviceScale") {
-                screenDeviceScale.backAction()
-            } else if (appContent.state === "DeviceMotionSensor") {
-                screenDeviceMotionSensor.backAction()
-            } else if (appContent.state === "DeviceBrowser") {
-                screenDeviceBrowser.backAction()
-            } else if (appContent.state === "TemperaturePresetList") {
-                screenTemperaturePresetList.backAction()
-            } else if (appContent.state === "SettingsMqtt") {
-                screenSettingsMqtt.backAction()
-            } else if (appContent.state === "AboutPermissions") {
-                appContent.state = screenAboutPermissions.entryPoint
-            } else {
-                appContent.state = "DeviceList"
-            }
-        }
+        Keys.onBackPressed: backAction()
 
         DeviceList {
             id: screenDeviceList
