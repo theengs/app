@@ -675,8 +675,8 @@ Item {
                     textOne.font.pixelSize = bigAssMode ? 26 : 24
                     textTwo.font.pixelSize = bigAssMode ? 22 : 20
 
-                    if (boxDevice.hasPresence) {
-                        if (boxDevice.presence) textOne.text = qsTr("presence")
+                    if (boxDevice.hasMotion) {
+                        if (boxDevice.motion) textOne.text = qsTr("presence")
                         else textOne.text = qsTr("no one")
                     } else if (boxDevice.hasOpen) {
                         if (boxDevice.open) textOne.text = qsTr("opened")

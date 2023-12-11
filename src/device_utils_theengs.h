@@ -69,11 +69,10 @@ public:
         SENSOR_HEARTRATE            = (1 << 23), //!< Heart rate monitor
 
         // others
-        SENSOR_PRESENCE             = (1 << 24),
-        SENSOR_MOVEMENT             = (1 << 25),
-        SENSOR_OPEN                 = (1 << 26),
-        SENSOR_ALARM                = (1 << 27),
-        SENSOR_DISTANCE             = (1 << 28),
+        SENSOR_MOTION               = (1 << 24),
+        SENSOR_OPEN                 = (1 << 25),
+        SENSOR_ALARM                = (1 << 26),
+        SENSOR_DISTANCE             = (1 << 27),
 
         // generic
         SENSOR_MODE                 = (1 << 30),
@@ -106,21 +105,35 @@ public:
 //! List of classes available in Home Assistant
 const QStringList availableHASSClasses = {
     "battery",
-    "carbon_monoxide",
     "carbon_dioxide",
-    "pm10",
-    "pm25",
+    "carbon_monoxide",
+    "current",
+    "data_size",
+    "distance",
+    "door",
+    "duration",
+    "energy",
+    "enum",
+    "gas",
     "humidity",
     "illuminance",
+    "irradiance",
+    "motion",
+    "moving",
+    "pm10",
+    "pm25",
+    "power",
+    "power_factor",
+    "pressure",
+    "problem",
+    "restart",
     "signal_strength",
     "temperature",
     "timestamp",
-    "pressure",
-    "power",
-    "current",
-    "energy",
-    "power_factor",
-    "voltage"
+    "voltage",
+    "water",
+    "weight",
+    "window"
 };
 
 //! List of units available in Home Assistant
@@ -135,6 +148,7 @@ const QStringList availableHASSUnits = {
     "°F",
     "ms",
     "s",
+    "min",
     "hPa",
     "L",
     "kg",
@@ -152,7 +166,14 @@ const QStringList availableHASSUnits = {
     "bpm",
     "dB",
     "dBm",
-    "B"
+    "B",
+    "UV index",
+    "m/s",
+    "km/h",
+    "°",
+    "mm",
+    "mm/h",
+    "cm"
 };
 
 /* ************************************************************************** */

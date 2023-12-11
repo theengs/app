@@ -237,9 +237,8 @@ Loader {
                             anchors.horizontalCenter: parent.horizontalCenter
 
                             text: {
-                                if (currentDevice.hasOpen) return "door"
-                                else if (currentDevice.hasMovement) return "movement"
-                                else if (currentDevice.hasPresence) return "presence"
+                                if (currentDevice.hasOpen) return "open"
+                                else if (currentDevice.hasMotion) return "motion"
                             }
 
                             font.pixelSize: isPhone ? 22 : 26
@@ -253,8 +252,7 @@ Loader {
 
                             text: {
                                 if (currentDevice.hasOpen) return (currentDevice.open) ? "opened" : "closed"
-                                else if (currentDevice.hasMovement) return (currentDevice.movement) ? "yes" : "no"
-                                else if (currentDevice.hasPresence) return (currentDevice.presence) ? "yes" : "no"
+                                else if (currentDevice.hasMotion) return (currentDevice.motion) ? "yes" : "no"
                                 else return "?"
                             }
 

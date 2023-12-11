@@ -128,12 +128,10 @@ class DeviceTheengs: public DeviceSensor
 
     // motion sensor data
     Q_PROPERTY(bool hasOpen READ hasOpen NOTIFY sensorsUpdated)
-    Q_PROPERTY(bool hasMovement READ hasMovement NOTIFY sensorsUpdated)
-    Q_PROPERTY(bool hasPresence READ hasPresence NOTIFY sensorsUpdated)
+    Q_PROPERTY(bool hasMotion READ hasMotion NOTIFY sensorsUpdated)
 
     Q_PROPERTY(bool open READ getOpen NOTIFY dataUpdated)
-    Q_PROPERTY(bool movement READ getMovement NOTIFY dataUpdated)
-    Q_PROPERTY(bool presence READ getPresence NOTIFY dataUpdated)
+    Q_PROPERTY(bool motion READ getMotion NOTIFY dataUpdated)
 
     // generic data
     Q_PROPERTY(QVariant genericData READ getGenericData NOTIFY genericDataUpdated)
@@ -183,8 +181,7 @@ protected:
 
     // motion sensor data
     bool m_open = false;
-    bool m_movement = false;
-    bool m_presence = false;
+    bool m_motion = false;
     float m_sensing_distance = -99.f;
 
     // generic data
@@ -279,12 +276,10 @@ public:
 
     // motion sensor data
     bool hasOpen() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_OPEN); }
-    bool hasMovement() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_MOVEMENT); }
-    bool hasPresence() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_PRESENCE); }
+    bool hasMotion() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_MOTION); }
 
     bool getOpen() const { return m_open; }
-    bool getMovement() const { return m_movement; }
-    bool getPresence() const { return m_presence; }
+    bool getMotion() const { return m_motion; }
 
     // MQTT discovery
     static bool createDiscoveryMQTT(const QString &deviceAddr, const QString &deviceName,

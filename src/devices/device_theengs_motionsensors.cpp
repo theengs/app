@@ -86,8 +86,7 @@ void DeviceTheengsMotionSensors::parseTheengsProps(const QString &json)
 
     // Sensors
     if (prop.contains("open")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_OPEN;
-    if (prop.contains("move")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_MOVEMENT;
-    if (prop.contains("pres")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_PRESENCE;
+    if (prop.contains("motion")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_MOTION;
     if (prop.contains("sensingdistance")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_DISTANCE;
     if (prop.contains("lightlevel")) m_deviceSensors += DeviceUtils::SENSOR_LUMINOSITY;
     if (prop.contains("darkness")) m_deviceSensors += DeviceUtils::SENSOR_LUMINOSITY;
@@ -114,15 +113,9 @@ void DeviceTheengsMotionSensors::parseTheengsAdvertisement(const QString &json)
             Q_EMIT dataUpdated();
         }
     }
-    if (obj.contains("movement")) {
-        if (m_movement != obj["movement"].toBool()) {
-            m_movement = obj["movement"].toBool();
-            Q_EMIT dataUpdated();
-        }
-    }
-    if (obj.contains("pres")) {
-        if (m_presence != obj["pres"].toBool()) {
-            m_presence = obj["pres"].toBool();
+    if (obj.contains("motion")) {
+        if (m_motion != obj["motion"].toBool()) {
+            m_motion = obj["motion"].toBool();
             Q_EMIT dataUpdated();
         }
     }

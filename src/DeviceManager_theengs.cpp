@@ -63,6 +63,8 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName_blu
     else if (deviceModelID_theengs == "IBS-TH1") { deviceModelID_theengs = "IBS-TH1/TH2/P01B"; migration = true; }
     else if (deviceModelID_theengs == "IBS-TH2/P01B") { deviceModelID_theengs = "IBS-TH1/TH2/P01B"; migration = true; }
     else if (deviceModelID_theengs == "TP357/8") { deviceModelID_theengs = "TP35X/393"; migration = true; }
+    else if (deviceModelID_theengs == "H5101/02/74/77") { deviceModelID_theengs = "H5100/01/02/04/74/77"; migration = true; }
+    else if (deviceModelID_theengs == "IBS-TH1/TH2/P01B") { deviceModelID_theengs = "IBS-TH1/TH2/P01B/ITH-12S"; migration = true; }
 
     // Device loading
     DeviceTheengs *device = nullptr;
@@ -129,7 +131,6 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
     const QList<quint16> &manufacturerIds = deviceInfo.manufacturerIds();
     for (const auto id: manufacturerIds)
     {
-
         ArduinoJson::DynamicJsonDocument doc(4096);
         doc["id"] = deviceInfo.address().toString().toStdString();
         doc["name"] = deviceInfo.name().toStdString();
@@ -163,7 +164,6 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
     const QList<QBluetoothUuid> &serviceIds = deviceInfo.serviceIds();
     for (const auto id: serviceIds)
     {
-
         ArduinoJson::DynamicJsonDocument doc(4096);
         doc["id"] = deviceInfo.address().toString().toStdString();
         doc["name"] = deviceInfo.name().toStdString();
@@ -689,6 +689,19 @@ void DeviceManager::fakeTheengsDevices()
             qDebug() << "* Device added (from FAKER): " << deviceName << "/" << deviceAddr;
         }
     }
+
+    {
+        QString deviceName = "ORALB_BT";
+        QString deviceModel_theengs = "ORALB_BT";
+        QString deviceAddr = "71:57:43:01:5C:3A";
+
+        Device *d = createTheengsDevice_fromDb(deviceName, deviceModel_theengs, deviceAddr);
+        if (d)
+        {
+            m_devices_model->addDevice(d);
+            qDebug() << "* Device added (from FAKER): " << deviceName << "/" << deviceAddr;
+        }
+    }
 }
 
 /* ************************************************************************** */
@@ -697,7 +710,7 @@ void DeviceManager::fakeTheengsDevices()
 void DeviceManager::fakeTheengsData()
 {
     QBluetoothDeviceInfo info;
-    int rrdd = (rand() % 24);
+    int rrdd = (rand() % 26);
 
 
     if (rrdd == 0) // JQJCY01YM
@@ -943,6 +956,23 @@ void DeviceManager::fakeTheengsData()
         else if (rrrr == 1) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("6900ba031938"));
         else if (rrrr == 2) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("6900ba379ab8"));
         else qWarning() << "RAND ERROR";
+    }
+
+    if (rrdd == 25) // Oral-B
+    {
+        info = QBluetoothDeviceInfo(QBluetoothAddress("71:57:43:01:5C:3A"), "ORALB_BT", 0);
+
+        int rrrr = (rand() % 10);
+        if (rrrr == 0) info.setManufacturerData(endian_flip_16(0xdc00), QByteArray::fromHex("04710502360000000f0004"));
+        else if (rrrr == 1) info.setManufacturerData(endian_flip_16(0xdc00), QByteArray::fromHex("0471050332010301030a04"));
+        else if (rrrr == 2) info.setManufacturerData(endian_flip_16(0xdc00), QByteArray::fromHex("047105013a000002010004"));
+        else if (rrrr == 3) info.setManufacturerData(endian_flip_16(0xdc00), QByteArray::fromHex("0471050432010e03032e04"));
+        else if (rrrr == 4) info.setManufacturerData(endian_flip_16(0xdc00), QByteArray::fromHex("0471057332010e05032e04"));
+        else if (rrrr == 5) info.setManufacturerData(endian_flip_16(0xdc00), QByteArray::fromHex("0471050332010e06032e04"));
+        else if (rrrr == 6) info.setManufacturerData(endian_flip_16(0xdc00), QByteArray::fromHex("0471050332010e07032e04"));
+        else if (rrrr == 7) info.setManufacturerData(endian_flip_16(0xdc00), QByteArray::fromHex("0471050332010e08032e04"));
+        else if (rrrr == 8) info.setManufacturerData(endian_flip_16(0xdc00), QByteArray::fromHex("0202060220000001010004"));
+        else if (rrrr == 9) info.setManufacturerData(endian_flip_16(0xdc00), QByteArray::fromHex("0202067320020f07080004"));
     }
 
 
