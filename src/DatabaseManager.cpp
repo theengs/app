@@ -530,6 +530,24 @@ void DatabaseManager::createDatabase()
                        << createSensorTheengs.lastError().type() << ":" << createSensorTheengs.lastError().text();
         }
     }
+
+    if (!tableExists("tempPresets"))
+    {
+        qDebug() << "+ Adding 'tempPresets' table to local database";
+        QSqlQuery createTempPresets;
+        createTempPresets.prepare("CREATE TABLE tempPresets (" \
+                                  "id INTEGER PRIMARY KEY," \
+                                    "type INTEGER," \
+                                    "name VARCHAR(32)," \
+                                    "ranges VARCHAR(1024)" \
+                                  ");");
+
+        if (createTempPresets.exec() == false)
+        {
+            qWarning() << "> createTempPresets.exec() ERROR"
+                       << createTempPresets.lastError().type() << ":" << createTempPresets.lastError().text();
+        }
+    }
 }
 
 /* ************************************************************************** */

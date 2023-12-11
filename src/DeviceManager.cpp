@@ -46,10 +46,8 @@
 #include <QBluetoothAddress>
 #include <QBluetoothDeviceInfo>
 
-#include <QSqlDatabase>
-#include <QSqlDriver>
-#include <QSqlError>
 #include <QSqlQuery>
+#include <QSqlError>
 
 #if defined(Q_OS_MACOS) || defined(Q_OS_IOS) || defined(Q_OS_ANDROID)
 #if QT_CONFIG(permissions)

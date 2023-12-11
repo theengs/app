@@ -152,6 +152,9 @@ protected:
     // beacon data
     // TODO
 
+    // watch data
+    // TODO
+
     // probe data
     float m_temperature1 = -99.f;
     float m_temperature2 = -99.f;

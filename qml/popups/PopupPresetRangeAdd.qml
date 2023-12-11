@@ -183,7 +183,7 @@ Popup {
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignVCenter
 
-                        text: qsTr("Minimum temperature")
+                        text: qsTr("Minimum")
                         color: Theme.colorSubText
                     }
 
@@ -213,7 +213,7 @@ Popup {
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignVCenter
 
-                        text: checkboxMax.checked ? qsTr("Maximum temperature") : qsTr("No maximum")
+                        text: checkboxMax.checked ? qsTr("Maximum") : qsTr("No maximum")
                         color: Theme.colorSubText
                     }
 

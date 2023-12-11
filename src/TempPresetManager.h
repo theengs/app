@@ -47,6 +47,9 @@ class TempPresetManager: public QObject
     int getPresetCountFiltered() { return m_presetsFiltered.size(); }
     QVariant getPresetsFiltered() { return QVariant::fromValue(m_presetsFiltered); }
 
+    bool m_dbInternal = false;  //!< do we have an internal SQLite database?
+    bool m_dbExternal = false;  //!< do we have a remote MySQL database?
+
     // Singleton
     static TempPresetManager *instance;
     TempPresetManager();
@@ -63,7 +66,6 @@ public:
     Q_INVOKABLE void filter(const QString &filter);
 
     Q_INVOKABLE bool isPresetNameValid(const QString &name);
-    Q_INVOKABLE bool addPreset();
     Q_INVOKABLE bool addPreset(const int type, const QString &name);
     Q_INVOKABLE bool copyPreset(const QString &name, const QString &newName);
     Q_INVOKABLE bool removePreset(const QString &name);

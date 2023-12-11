@@ -48,8 +48,13 @@ DeviceTheengsProbes::DeviceTheengsProbes(const QString &deviceAddr, const QStrin
 
     parseTheengsProps(devicePropsJson);
 
-    if (m_deviceModel == "TPMS") getSqlTpmsData(12*60);
-    else getSqlProbeData(12*60);
+    if (m_deviceModel == "TPMS") {
+        getSqlTpmsData(12*60);
+    } else {
+        if (hasSetting("preset")) m_preset = getSetting("preset").toString();
+        if (hasSetting("interval")) m_realtime_window = getSetting("interval").toInt();
+        //getSqlProbeData(12*60); // disabled
+    }
 }
 
 DeviceTheengsProbes::DeviceTheengsProbes(const QBluetoothDeviceInfo &d,
@@ -63,8 +68,13 @@ DeviceTheengsProbes::DeviceTheengsProbes(const QBluetoothDeviceInfo &d,
 
     parseTheengsProps(devicePropsJson);
 
-    if (m_deviceModel == "TPMS") getSqlTpmsData(12*60);
-    else getSqlProbeData(12*60);
+    if (m_deviceModel == "TPMS") {
+        getSqlTpmsData(12*60);
+    } else {
+        if (hasSetting("preset")) m_preset = getSetting("preset").toString();
+        if (hasSetting("interval")) m_realtime_window = getSetting("interval").toInt();
+        //getSqlProbeData(12*60); // disabled
+    }
 }
 
 DeviceTheengsProbes::~DeviceTheengsProbes()
@@ -79,6 +89,7 @@ void DeviceTheengsProbes::setPreset(const QString &p)
     if (m_preset != p)
     {
         m_preset = p;
+        setSetting("preset", p);
         Q_EMIT presetUpdated();
     }
 }
@@ -88,6 +99,7 @@ void DeviceTheengsProbes::setRtWindow(const int w)
     if (m_realtime_window != w)
     {
         m_realtime_window = w;
+        setSetting("interval", w);
         Q_EMIT rtWindowUpdated();
     }
 }

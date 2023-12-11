@@ -18,12 +18,15 @@
 
 #include "TempPresetManager.h"
 #include "TempPreset.h"
+#include "DatabaseManager.h"
 
 #include <QDir>
 #include <QFile>
 #include <QStringList>
-
 #include <QDebug>
+
+#include <QSqlQuery>
+#include <QSqlError>
 
 /* ************************************************************************** */
 
@@ -63,7 +66,7 @@ bool TempPresetManager::load()
 
     // Load APP presets
     {
-        TempPreset *t1 = new TempPreset(0, PresetUtils::PRESET_MEAT, true, "Beef", "", this);
+        TempPreset *t1 = new TempPreset(-1, PresetUtils::PRESET_MEAT, true, "Beef", "", this);
         t1->addRange("Rare", false, 49, 52, true);
         t1->addRange("Medium Rare", false, 54, 57, true);
         t1->addRange("Medium", false, 60, 63, true);
@@ -71,23 +74,42 @@ bool TempPresetManager::load()
         t1->addRange("Well Done", false, 71, -1, false);
         m_presets.push_back(t1);
 
-        TempPreset *t2 = new TempPreset(1, PresetUtils::PRESET_MEAT, true, "Pork", "", this);
+        TempPreset *t2 = new TempPreset(-2, PresetUtils::PRESET_MEAT, true, "Pork", "", this);
         t2->addRange("Safe minimum internal temperature", false, 63, 63, true);
         t2->addRange("Ground Pork", false, 71, -1, false);
         m_presets.push_back(t2);
 
-        TempPreset *t3 = new TempPreset(2, PresetUtils::PRESET_POULTRY, true, "Chicken", "", this);
+        TempPreset *t3 = new TempPreset(-3, PresetUtils::PRESET_POULTRY, true, "Chicken", "", this);
         t3->addRange("Safe minimum internal temperature", false, 74, -1, false);
         m_presets.push_back(t3);
 
-        TempPreset *t4 = new TempPreset(3, PresetUtils::PRESET_FISH, true, "Fish", "", this);
+        TempPreset *t4 = new TempPreset(-4, PresetUtils::PRESET_FISH, true, "Fish", "", this);
         t4->addRange("Safe minimum internal temperature", false, 63, -1, false);
         m_presets.push_back(t4);
     }
 
     // Load USER presets
+    DatabaseManager *db = DatabaseManager::getInstance();
+    if (db)
     {
-        // TODO
+        m_dbInternal = db->hasDatabaseInternal();
+        m_dbExternal = db->hasDatabaseExternal();
+    }
+
+    if (m_dbInternal || m_dbExternal)
+    {
+        QSqlQuery queryPresets;
+        queryPresets.exec("SELECT id, type, name, ranges FROM tempPresets");
+        while (queryPresets.next())
+        {
+            int id = queryPresets.value(0).toInt();
+            int type = queryPresets.value(1).toInt();
+            QString name = queryPresets.value(2).toString();
+            QString ranges = queryPresets.value(3).toString();
+
+            TempPreset *d = new TempPreset(id, type, false, name, ranges, this);
+            if (d) m_presets.push_back(d);
+        }
     }
 
     return status;
@@ -134,30 +156,16 @@ bool TempPresetManager::isPresetNameValid(const QString &name)
     return status;
 }
 
-bool TempPresetManager::addPreset()
-{
-    //qDebug() << "TempPresetManager::addPreset()";
-
-    TempPreset *tp = new TempPreset(0, 0, false, "New Preset", "", this);
-    if (tp)
-    {
-        m_presets.push_back(tp);
-
-        Q_EMIT presetsChanged();
-        return true;
-    }
-
-    return false;
-}
-
 bool TempPresetManager::addPreset(const int type, const QString &name)
 {
     //qDebug() << "TempPresetManager::addPreset(" << type << name << ")";
 
-    TempPreset *tp = new TempPreset(0, type, false, name, "", this);
-    if (tp)
+    TempPreset *newpreset = new TempPreset(0, type, false, name, "", this);
+    if (newpreset)
     {
-        m_presets.push_back(tp);
+        newpreset->save();
+
+        m_presets.push_back(newpreset);
 
         Q_EMIT presetsChanged();
         return true;
@@ -175,12 +183,17 @@ bool TempPresetManager::copyPreset(const QString &name, const QString &newName)
         TempPreset *tp = qobject_cast<TempPreset*>(pp);
         if (tp && tp->getName() == name)
         {
-            TempPreset *newpreset = new TempPreset(*tp, this);
-            newpreset->setName(newName);
-            m_presets.push_back(newpreset);
+            TempPreset *newpreset = new TempPreset(*tp, newName, this);
+            if (newpreset)
+            {
+                tp->save();
+                tp->saveRanges();
 
-            Q_EMIT presetsChanged();
-            return true;
+                m_presets.push_back(newpreset);
+
+                Q_EMIT presetsChanged();
+                return true;
+            }
         }
     }
 
@@ -198,11 +211,27 @@ bool TempPresetManager::removePreset(const QString &name)
         TempPreset *tp = qobject_cast<TempPreset*>(pp);
         if (tp && tp->getName() == name)
         {
+            // Remove from database
+            if (m_dbInternal || m_dbExternal)
+            {
+                QSqlQuery removePreset;
+                removePreset.prepare("DELETE FROM tempPresets WHERE id = :id");
+                removePreset.bindValue(":id", tp->getId());
+
+                if (removePreset.exec() == false)
+                {
+                    qWarning() << "> removePreset.exec() ERROR"
+                               << removePreset.lastError().type() << ":" << removePreset.lastError().text();
+                }
+            }
+
+            // Remove preset
             m_presets.removeOne(tp);
             delete tp;
 
             Q_EMIT presetsChanged();
             status = true;
+
             break;
         }
     }

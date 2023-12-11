@@ -121,12 +121,10 @@ class TempPreset: public QObject
     Q_PROPERTY(float rangeMin READ getRangeMin NOTIFY rangesChanged)
     Q_PROPERTY(float rangeMax READ getRangeMax NOTIFY rangesChanged)
 
-    int m_id = -1;
-    int m_type = -1;
+    int m_id = 0;
+    int m_type = 0;
     bool m_readonly = false;
     QString m_name;
-
-    QString m_data;
 
     QList <QObject *> m_ranges;
 
@@ -136,9 +134,13 @@ Q_SIGNALS:
 
 public:
     TempPreset(const int id, const int type, const bool ro,
-               const QString &name, const QString &data, QObject *parent);
-    TempPreset(const TempPreset &p, QObject *parent);
+               const QString &name, const QString &ranges, QObject *parent);
+    TempPreset(const TempPreset &p, const QString &name, QObject *parent);
     ~TempPreset();
+
+    void save();
+    void saveRanges();
+    void loadRanges(const QString &json);
 
     Q_INVOKABLE bool isRangeNameValid(const QString &name);
     Q_INVOKABLE bool addRange(const QString &name, const bool beforAfter,
@@ -150,12 +152,10 @@ public:
 
     int getId() const { return m_id; }
     int getType() const { return m_type; }
-    bool getReadOnly() const { return m_readonly; }
     void setType(int t);
+    bool getReadOnly() const { return m_readonly; }
     QString getName() const { return m_name; }
     void setName(const QString &n);
-
-    QString getData() const { return m_data; }
 
     int getRangeCount() const { return m_ranges.size(); }
     float getRangeMin() const;

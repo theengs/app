@@ -22,6 +22,8 @@ Popup {
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
     parent: Overlay.overlay
 
+    signal confirmed()
+
     ////////////////////////////////////////////////////////////////////////////
 
     onAboutToShow: {
@@ -152,6 +154,7 @@ Popup {
                     enabled: presetsManager.isPresetNameValid(presetName.text)
                     onClicked: {
                         presetsManager.copyPreset(currentPreset.name, presetName.text)
+                        popupPresetCopy.confirmed()
                         popupPresetCopy.close()
                     }
                 }

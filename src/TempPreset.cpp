@@ -18,6 +18,11 @@
 
 #include "TempPreset.h"
 
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QSqlQuery>
+#include <QSqlError>
 #include <QDebug>
 
 /* ************************************************************************** */
@@ -102,36 +107,147 @@ void TempRange::setTempMaxDisabled(bool d)
 /* ************************************************************************** */
 
 TempPreset::TempPreset(const int id, const int type, const bool ro,
-                       const QString &name, const QString &data,
+                       const QString &name, const QString &ranges,
                        QObject *parent) : QObject(parent)
 {
     m_id = id;
     m_readonly = ro;
     m_type = type;
     m_name = name;
-    m_data = data;
+
+    loadRanges(ranges);
+
+    if (!m_readonly)
+    {
+        connect(this, &TempPreset::presetChanged, this, &TempPreset::save);
+        connect(this, &TempPreset::rangesChanged, this, &TempPreset::saveRanges);
+    }
 }
 
-TempPreset::TempPreset(const TempPreset &p, QObject *parent) : QObject(parent)
+TempPreset::TempPreset(const TempPreset &p, const QString &name,
+                       QObject *parent) : QObject(parent)
 {
-    m_id = p.getId();
+    m_id = 0; // need a new ID
     m_readonly = false; // copied preset are not read only
     m_type = p.getType();
-    m_name = p.getName();
-
-    //m_data = p.getData(); // unused
+    m_name = name; // need a new name
 
     for (auto r: p.getRangesInternal())
     {
         TempRange *newrange = new TempRange(*qobject_cast<TempRange*>(r), this);
-        m_ranges.push_back(newrange);
+        if (newrange)
+        {
+            connect(newrange, &TempRange::nameChanged, this, &TempPreset::saveRanges);
+            connect(newrange, &TempRange::rangeChanged, this, &TempPreset::saveRanges);
+            m_ranges.push_back(newrange);
+        }
     }
+
+    //
+    connect(this, &TempPreset::presetChanged, this, &TempPreset::save);
+    connect(this, &TempPreset::rangesChanged, this, &TempPreset::saveRanges);
 }
 
 TempPreset::~TempPreset()
 {
     qDeleteAll(m_ranges);
     m_ranges.clear();
+}
+
+/* ************************************************************************** */
+
+void TempPreset::loadRanges(const QString &json)
+{
+    //qDebug() << "TempPreset::loadRanges(" << json << ")";
+
+    QJsonDocument presetDoc = QJsonDocument::fromJson(json.toUtf8());
+    QJsonObject presetObj = presetDoc.object();
+
+    QJsonArray rangeArray = presetObj["ranges"].toArray();
+    for (const auto &value: rangeArray)
+    {
+        QJsonObject obj = value.toObject();
+
+        QString name = obj["name"].toString();
+        float min = obj["min"].toDouble();
+        float max = obj["max"].toDouble();
+        bool maxEnabled = obj["maxEnabled"].toBool();
+
+        TempRange *r = new TempRange(name, min, max, maxEnabled, this);
+        if (r)
+        {
+            connect(r, &TempRange::nameChanged, this, &TempPreset::saveRanges);
+            connect(r, &TempRange::rangeChanged, this, &TempPreset::saveRanges);
+            m_ranges.push_back(r);
+        }
+    }
+
+    if (m_ranges.size()) Q_EMIT rangesChanged();
+}
+
+void TempPreset::save()
+{
+    //qDebug() << "TempPreset::save()";
+
+    QSqlQuery savePreset;
+    if (m_id == 0)
+    {
+        savePreset.prepare("INSERT INTO tempPresets (type, name) VALUES(:type, :name)");
+        savePreset.bindValue(":type", m_type);
+        savePreset.bindValue(":name", m_name);
+    }
+    else
+    {
+        savePreset.prepare("REPLACE INTO tempPresets (id, type, name) VALUES(:id, :type, :name)");
+        savePreset.bindValue(":id", m_id);
+        savePreset.bindValue(":type", m_type);
+        savePreset.bindValue(":name", m_name);
+    }
+
+    if (savePreset.exec() == false)
+    {
+        qWarning() << "> savePreset.exec() ERROR"
+                   << savePreset.lastError().type() << ":" << savePreset.lastError().text();
+    }
+    else
+    {
+        if (m_id == 0)
+        {
+            m_id = savePreset.lastInsertId().toInt();
+        }
+    }
+}
+
+void TempPreset::saveRanges()
+{
+    QJsonArray jsonArray;
+    for (auto rr: std::as_const(m_ranges))
+    {
+        TempRange *tr = qobject_cast<TempRange*>(rr);
+        if (tr)
+        {
+            QJsonObject jsonrange;
+            jsonrange["name"] = tr->getName();
+            jsonrange["min"] = tr->getTempMin();
+            jsonrange["max"] = tr->getTempMax();
+            jsonrange["maxEnabled"] = tr->isTempMaxEnabled();
+            jsonArray.append(jsonrange);
+        }
+    }
+
+    QJsonObject jsonObj;
+    jsonObj["ranges"] = jsonArray;
+
+    QSqlQuery saveRanges;
+    saveRanges.prepare("UPDATE tempPresets SET ranges = :ranges WHERE name = :name");
+    saveRanges.bindValue(":ranges", QString(QJsonDocument(jsonObj).toJson(QJsonDocument::Compact)));
+    saveRanges.bindValue(":name", m_name);
+
+    if (saveRanges.exec() == false)
+    {
+        qWarning() << "> saveRanges.exec() ERROR"
+                   << saveRanges.lastError().type() << ":" << saveRanges.lastError().text();
+    }
 }
 
 /* ************************************************************************** */
@@ -201,7 +317,7 @@ bool TempPreset::removeRange(const QString &name)
 
 float TempPreset::getTempMin_add() const
 {
-    float min = 140;
+    float min = 40;
 
     if (!m_ranges.isEmpty())
     {
@@ -214,7 +330,7 @@ float TempPreset::getTempMin_add() const
 
 float TempPreset::getTempMax_add() const
 {
-    float max = 160;
+    float max = 60;
 
     if (!m_ranges.isEmpty())
     {
@@ -279,7 +395,6 @@ QString TempPreset::getRangeMinMax() const
     }
 
     QString mm = "(min: " + QString::number(min) + "°C" + "  /  " + "max: " + QString::number(max) + "°C)";
-
     return mm;
 }
 

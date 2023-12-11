@@ -157,7 +157,7 @@ Item {
         contentHeight: columnContent.height
 
         topMargin: Theme.componentMargin
-        bottomMargin: Theme.componentMargin
+        bottomMargin: Theme.componentMargin + 160
 
         Column {
             id: columnContent
@@ -187,6 +187,10 @@ Item {
 
     PopupPresetCopy {
         id: popupPresetCopy
+        onConfirmed: {
+            // back to the preset list
+            screenTemperaturePresetList.backAction()
+        }
     }
     PopupPresetRangeAdd {
         id: popupPresetRangeAdd

@@ -64,7 +64,7 @@ Loader {
                     anchors.fill: parent
 
                     topMargin: Theme.componentMargin
-                    bottomMargin: Theme.componentMargin
+                    bottomMargin: Theme.componentMargin + 72
                     spacing: 0
 
                     section.property: "readOnly"

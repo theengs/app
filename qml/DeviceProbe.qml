@@ -177,7 +177,7 @@ Loader {
 
             if (graphLoader.status !== Loader.Ready) {
                 graphLoader.source = "ChartProbeRealTime.qml"
-                //graphLoader.source = "ChartProbeDataAio.qml"
+                //graphLoader.source = "ChartProbeDataAio.qml" // disabled
             }
 
             if (graphLoader.status === Loader.Ready) {
@@ -1290,6 +1290,8 @@ Loader {
 
                                     currentInterval = value
                                     if (currentDevice) currentDevice.realtimeWindow = value
+
+                                    probeChart.updateGraph()
                                 }
                             }
                         }

@@ -80,7 +80,7 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
 
-                text: qsTr("Minimum temp.")
+                text: qsTr("Minimum")
                 color: Theme.colorSubText
             }
             SpinBoxThemed {
@@ -108,7 +108,7 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
 
-                text: modelData.tempMaxEnabled ? qsTr("Maximum temp.") : qsTr("No maximum")
+                text: modelData.tempMaxEnabled ? qsTr("Maximum") : qsTr("No maximum")
                 color: Theme.colorSubText
             }
 
@@ -117,7 +117,7 @@ Rectangle {
                 Layout.alignment: Qt.AlignVCenter
 
                 visible: (!currentPreset.readOnly && modelData.tempMaxDisabled)
-                text: qsTr("set")
+                text: qsTr("Set")
 
                 onClicked: {
                     modelData.tempMaxDisabled = false
