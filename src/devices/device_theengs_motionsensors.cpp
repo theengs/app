@@ -77,20 +77,21 @@ void DeviceTheengsMotionSensors::parseTheengsProps(const QString &json)
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
     QJsonObject prop = doc.object()["properties"].toObject();
 
+    // MAC address
+    if (prop.contains("mac")) m_deviceAddressMAC = prop["mac"].toString();
+
     // Capabilities
-    if (prop.contains("batt"))
-    {
-        m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
-        Q_EMIT capabilitiesUpdated();
-    }
+    if (prop.contains("batt")) m_deviceCapabilities |= DeviceUtils::DEVICE_BATTERY;
+    if (prop.contains("volt")) m_deviceCapabilities |= DeviceUtils::DEVICE_BATTERY;
+    Q_EMIT capabilitiesUpdated();
 
     // Sensors
-    if (prop.contains("open")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_OPEN;
-    if (prop.contains("motion")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_MOTION;
-    if (prop.contains("sensingdistance")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_DISTANCE;
-    if (prop.contains("lightlevel")) m_deviceSensors += DeviceUtils::SENSOR_LUMINOSITY;
-    if (prop.contains("darkness")) m_deviceSensors += DeviceUtils::SENSOR_LUMINOSITY;
-    if (prop.contains("lux")) m_deviceSensors += DeviceUtils::SENSOR_LUMINOSITY;
+    if (prop.contains("open")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_OPEN;
+    if (prop.contains("motion")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_MOTION;
+    if (prop.contains("sensingdistance")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_DISTANCE;
+    if (prop.contains("lightlevel")) m_deviceSensors |= DeviceUtils::SENSOR_LUMINOSITY;
+    if (prop.contains("darkness")) m_deviceSensors |= DeviceUtils::SENSOR_LUMINOSITY;
+    if (prop.contains("lux")) m_deviceSensors |= DeviceUtils::SENSOR_LUMINOSITY;
     Q_EMIT sensorsUpdated();
 }
 

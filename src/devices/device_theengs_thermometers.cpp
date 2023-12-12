@@ -79,20 +79,21 @@ void DeviceTheengsThermometers::parseTheengsProps(const QString &json)
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
     QJsonObject prop = doc.object()["properties"].toObject();
 
+    // MAC address
+    if (prop.contains("mac")) m_deviceAddressMAC = prop["mac"].toString();
+
     // Capabilities
-    if (prop.contains("batt"))
-    {
-        m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
-        Q_EMIT capabilitiesUpdated();
-    }
+    if (prop.contains("batt")) m_deviceCapabilities |= DeviceUtils::DEVICE_BATTERY;
+    if (prop.contains("volt")) m_deviceCapabilities |= DeviceUtils::DEVICE_BATTERY;
+    Q_EMIT capabilitiesUpdated();
 
     // Sensors
-    if (prop.contains("temp")) m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
-    if (prop.contains("tempc")) m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
-    if (prop.contains("tempf")) m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
-    if (prop.contains("hum")) m_deviceSensors += DeviceUtils::SENSOR_HUMIDITY;
-    if (prop.contains("lux")) m_deviceSensors += DeviceUtils::SENSOR_LUMINOSITY;
-    if (prop.contains("pres")) m_deviceSensors += DeviceUtils::SENSOR_PRESSURE;
+    if (prop.contains("temp")) m_deviceSensors |= DeviceUtils::SENSOR_TEMPERATURE;
+    if (prop.contains("tempc")) m_deviceSensors |= DeviceUtils::SENSOR_TEMPERATURE;
+    if (prop.contains("tempf")) m_deviceSensors |= DeviceUtils::SENSOR_TEMPERATURE;
+    if (prop.contains("hum")) m_deviceSensors |= DeviceUtils::SENSOR_HUMIDITY;
+    if (prop.contains("lux")) m_deviceSensors |= DeviceUtils::SENSOR_LUMINOSITY;
+    if (prop.contains("pres")) m_deviceSensors |= DeviceUtils::SENSOR_PRESSURE;
     Q_EMIT sensorsUpdated();
 }
 

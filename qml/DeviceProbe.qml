@@ -129,6 +129,8 @@ Loader {
             graphLoader.source = "" // force graph reload
             loadGraph()
 
+            if (currentDevice.hasProbesBBQ) currentDevice.startRtCapture(true)
+
             currentPreset = presetsManager.getPreset(currentDevice.preset)
             currentInterval = currentDevice.realtimeWindow
             if (currentInterval === 60) selectorInterval.currentSelection = 3

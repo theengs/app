@@ -77,16 +77,17 @@ void DeviceTheengsBeacons::parseTheengsProps(const QString &json)
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
     QJsonObject prop = doc.object()["properties"].toObject();
 
+    // MAC address
+    if (prop.contains("mac")) m_deviceAddressMAC = prop["mac"].toString();
+
     // Capabilities
-    if (prop.contains("batt"))
-    {
-        m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
-        Q_EMIT capabilitiesUpdated();
-    }
+    if (prop.contains("batt")) m_deviceCapabilities |= DeviceUtils::DEVICE_BATTERY;
+    if (prop.contains("volt")) m_deviceCapabilities |= DeviceUtils::DEVICE_BATTERY;
+    Q_EMIT capabilitiesUpdated();
 
     // Sensors
-    if (prop.contains("steps")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_STEPS;
-    if (prop.contains("act_bpm")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_HEARTRATE;
+    if (prop.contains("steps")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_STEPS;
+    if (prop.contains("act_bpm")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_HEARTRATE;
     Q_EMIT sensorsUpdated();
 }
 

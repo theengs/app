@@ -79,18 +79,19 @@ void DeviceTheengsScales::parseTheengsProps(const QString &json)
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
     QJsonObject prop = doc.object()["properties"].toObject();
 
+    // MAC address
+    if (prop.contains("mac")) m_deviceAddressMAC = prop["mac"].toString();
+
     // Capabilities
-    if (prop.contains("batt"))
-    {
-        m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
-        Q_EMIT capabilitiesUpdated();
-    }
+    if (prop.contains("batt")) m_deviceCapabilities |= DeviceUtils::DEVICE_BATTERY;
+    if (prop.contains("volt")) m_deviceCapabilities |= DeviceUtils::DEVICE_BATTERY;
+    Q_EMIT capabilitiesUpdated();
 
     // Sensors
-    if (prop.contains("weighing_mode")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_WEIGHT_MODE;
-    if (prop.contains("unit")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_WEIGHT_UNIT;
-    if (prop.contains("weight")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_WEIGHT;
-    if (prop.contains("impedance")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_IMPEDANCE;
+    if (prop.contains("weighing_mode")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_WEIGHT_MODE;
+    if (prop.contains("unit")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_WEIGHT_UNIT;
+    if (prop.contains("weight")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_WEIGHT;
+    if (prop.contains("impedance")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_IMPEDANCE;
     Q_EMIT sensorsUpdated();
 }
 

@@ -120,24 +120,27 @@ void DeviceTheengsGeneric::parseTheengsProps(const QString &json)
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
     QJsonObject prop = doc.object()["properties"].toObject();
 
+    // MAC address
+    if (prop.contains("mac")) m_deviceAddressMAC = prop["mac"].toString();
+
     // Capabilities
-    if (prop.contains("batt")) m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
-    if (prop.contains("volt")) m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
+    if (prop.contains("batt")) m_deviceCapabilities |= DeviceUtils::DEVICE_BATTERY;
+    if (prop.contains("volt")) m_deviceCapabilities |= DeviceUtils::DEVICE_BATTERY;
     Q_EMIT capabilitiesUpdated();
 
     // Sensors
-    if (prop.contains("moi")) m_deviceSensors += DeviceUtils::SENSOR_SOIL_MOISTURE;
-    if (prop.contains("fer")) m_deviceSensors += DeviceUtils::SENSOR_SOIL_CONDUCTIVITY;
-    if (prop.contains("temp")) m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
-    if (prop.contains("tempc")) m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
-    if (prop.contains("tempf")) m_deviceSensors += DeviceUtils::SENSOR_TEMPERATURE;
-    if (prop.contains("hum")) m_deviceSensors += DeviceUtils::SENSOR_HUMIDITY;
-    if (prop.contains("lux")) m_deviceSensors += DeviceUtils::SENSOR_LUMINOSITY;
-    if (prop.contains("pres")) m_deviceSensors += DeviceUtils::SENSOR_PRESSURE;
-    if (prop.contains("for")) m_deviceSensors += DeviceUtils::SENSOR_HCHO;
-    if (prop.contains("pm25")) m_deviceSensors += DeviceUtils::SENSOR_PM25;
-    if (prop.contains("pm10")) m_deviceSensors += DeviceUtils::SENSOR_PM10;
-    if (prop.contains("co2")) m_deviceSensors += DeviceUtils::SENSOR_CO2;
+    if (prop.contains("moi")) m_deviceSensors |= DeviceUtils::SENSOR_SOIL_MOISTURE;
+    if (prop.contains("fer")) m_deviceSensors |= DeviceUtils::SENSOR_SOIL_CONDUCTIVITY;
+    if (prop.contains("temp")) m_deviceSensors |= DeviceUtils::SENSOR_TEMPERATURE;
+    if (prop.contains("tempc")) m_deviceSensors |= DeviceUtils::SENSOR_TEMPERATURE;
+    if (prop.contains("tempf")) m_deviceSensors |= DeviceUtils::SENSOR_TEMPERATURE;
+    if (prop.contains("hum")) m_deviceSensors |= DeviceUtils::SENSOR_HUMIDITY;
+    if (prop.contains("lux")) m_deviceSensors |= DeviceUtils::SENSOR_LUMINOSITY;
+    if (prop.contains("pres")) m_deviceSensors |= DeviceUtils::SENSOR_PRESSURE;
+    if (prop.contains("for")) m_deviceSensors |= DeviceUtils::SENSOR_HCHO;
+    if (prop.contains("pm25")) m_deviceSensors |= DeviceUtils::SENSOR_PM25;
+    if (prop.contains("pm10")) m_deviceSensors |= DeviceUtils::SENSOR_PM10;
+    if (prop.contains("co2")) m_deviceSensors |= DeviceUtils::SENSOR_CO2;
     Q_EMIT sensorsUpdated();
 
     // Sensors (generic)
@@ -145,6 +148,11 @@ void DeviceTheengsGeneric::parseTheengsProps(const QString &json)
     {
         QString prop_key = it.key();
         QJsonObject prop_value = it.value().toObject();
+
+#if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
+#else
+        if (prop_key == "mac") continue;
+#endif
 
         QString value_name, value_unit;
         if (prop_value.contains("name")) value_name = prop_value["name"].toString();

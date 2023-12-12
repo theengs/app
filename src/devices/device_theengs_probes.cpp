@@ -17,9 +17,9 @@
 */
 
 #include "device_theengs_probes.h"
-
-#include <cstdint>
-#include <cmath>
+#include "NotificationManager.h"
+#include "TempPresetManager.h"
+#include "TempPreset.h"
 
 #include <QBluetoothUuid>
 #include <QBluetoothServiceInfo>
@@ -115,27 +115,28 @@ void DeviceTheengsProbes::parseTheengsProps(const QString &json)
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
     QJsonObject prop = doc.object()["properties"].toObject();
 
+    // MAC address
+    if (prop.contains("mac")) m_deviceAddressMAC = prop["mac"].toString();
+
     // Capabilities
-    if (prop.contains("batt"))
-    {
-        m_deviceCapabilities += DeviceUtils::DEVICE_BATTERY;
-        Q_EMIT capabilitiesUpdated();
-    }
+    if (prop.contains("batt")) m_deviceCapabilities |= DeviceUtils::DEVICE_BATTERY;
+    if (prop.contains("volt")) m_deviceCapabilities |= DeviceUtils::DEVICE_BATTERY;
+    Q_EMIT capabilitiesUpdated();
 
     // Sensors
     if (prop.contains("count") && prop.contains("alarm"))
     {
-        m_deviceSensorsTheengs = DeviceUtilsTheengs::SENSOR_PROBES_TPMS;
+        m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_PROBES_TPMS;
     }
     else
     {
-        if (prop.contains("tempc")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_1;
-        if (prop.contains("tempc1")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_1;
-        if (prop.contains("tempc2")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_2;
-        if (prop.contains("tempc3")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_3;
-        if (prop.contains("tempc4")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_4;
-        if (prop.contains("tempc5")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_5;
-        if (prop.contains("tempc6")) m_deviceSensorsTheengs += DeviceUtilsTheengs::SENSOR_TEMPERATURE_6;
+        if (prop.contains("tempc")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_TEMPERATURE_1;
+        if (prop.contains("tempc1")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_TEMPERATURE_1;
+        if (prop.contains("tempc2")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_TEMPERATURE_2;
+        if (prop.contains("tempc3")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_TEMPERATURE_3;
+        if (prop.contains("tempc4")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_TEMPERATURE_4;
+        if (prop.contains("tempc5")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_TEMPERATURE_5;
+        if (prop.contains("tempc6")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_TEMPERATURE_6;
     }
     Q_EMIT sensorsUpdated();
 }
@@ -205,35 +206,57 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
 
         if (obj.contains("tempc")) {
             m_temperature1 = obj["tempc"].toDouble();
-            m_rt_probe1.push_back(std::make_pair(ts, m_temperature1));
+            if (m_capture_started) m_rt_probe1.push_back(std::make_pair(ts, m_temperature1));
         }
         if (obj.contains("tempc1")) {
             m_temperature1 = obj["tempc1"].toDouble();
-            m_rt_probe1.push_back(std::make_pair(ts, m_temperature1));
+           if (m_capture_started)  m_rt_probe1.push_back(std::make_pair(ts, m_temperature1));
         }
         if (obj.contains("tempc2")) {
             m_temperature2 = obj["tempc2"].toDouble();
-            m_rt_probe2.push_back(std::make_pair(ts, m_temperature2));
+            if (m_capture_started) m_rt_probe2.push_back(std::make_pair(ts, m_temperature2));
         }
         if (obj.contains("tempc3")) {
             m_temperature3 = obj["tempc3"].toDouble();
-            m_rt_probe3.push_back(std::make_pair(ts, m_temperature3));
+            if (m_capture_started) m_rt_probe3.push_back(std::make_pair(ts, m_temperature3));
         }
         if (obj.contains("tempc4")) {
             m_temperature4 = obj["tempc4"].toDouble();
-            m_rt_probe4.push_back(std::make_pair(ts, m_temperature4));
+            if (m_capture_started) m_rt_probe4.push_back(std::make_pair(ts, m_temperature4));
         }
         if (obj.contains("tempc5")) {
             m_temperature5 = obj["tempc5"].toDouble();
-            m_rt_probe5.push_back(std::make_pair(ts, m_temperature5));
+            if (m_capture_started) m_rt_probe5.push_back(std::make_pair(ts, m_temperature5));
         }
         if (obj.contains("tempc6")) {
             m_temperature6 = obj["tempc6"].toDouble();
-            m_rt_probe6.push_back(std::make_pair(ts, m_temperature6));
+            if (m_capture_started) m_rt_probe6.push_back(std::make_pair(ts, m_temperature6));
         }
 
         // signal
         Q_EMIT rtGraphUpdated();
+
+        // notification?
+        if (m_capture_started)
+        {
+            NotificationManager *nm = NotificationManager::getInstance();
+            TempPresetManager *tpm = TempPresetManager::getInstance();
+            if (nm && tpm)
+            {
+                int capture_range_is = -1;
+                //m_capture_range_was = -1;
+
+                TempPreset *tp = tpm->getPreset(m_preset);
+                if (tp)
+                {
+                    capture_range_is = tp->getPresetRangeFromTemp(m_temperature6);
+                }
+                if (capture_range_is != m_capture_range_was)
+                {
+                    //nm->setNotification("probe range crossed", 0);
+                }
+            }
+        }
     }
 
     {
@@ -321,6 +344,11 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
 }
 
 /* ************************************************************************** */
+
+void DeviceTheengsProbes::startRtCapture(bool start)
+{
+    m_capture_started = start;
+}
 
 void DeviceTheengsProbes::updateRtGraph(QDateTimeAxis *axis, int minutes,
                                         QLineSeries *temp1, QLineSeries *temp2,

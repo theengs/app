@@ -44,6 +44,8 @@ class DeviceTheengsProbes: public DeviceTheengs
     Q_PROPERTY(int realtimeWindow READ getRtWindow WRITE setRtWindow NOTIFY rtWindowUpdated)
 
     // rt data
+    bool m_capture_started = false;
+    int m_capture_range_was = -1;
     QVector <std::pair<QDateTime, float>> m_rt_probe1;
     QVector <std::pair<QDateTime, float>> m_rt_probe2;
     QVector <std::pair<QDateTime, float>> m_rt_probe3;
@@ -81,6 +83,7 @@ public:
     void parseTheengsAdvertisement(const QString &json);
 
     // Chart probe realtime
+    Q_INVOKABLE void startRtCapture(bool start = true);
     Q_INVOKABLE void updateRtGraph(QDateTimeAxis *axis, int minutes,
                                    QLineSeries *temp1, QLineSeries *temp2,
                                    QLineSeries *temp3, QLineSeries *temp4,
