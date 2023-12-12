@@ -14,6 +14,7 @@ Item {
 
     function loadPreset(p) {
         currentPreset = p
+        presetType.currentSelection = currentPreset.type
     }
 
     function backAction() {
@@ -111,7 +112,7 @@ Item {
 
         clip: true
         height: isOpen ? presetType.height + Theme.componentMargin*2 : 0
-        Behavior on height { NumberAnimation { duration: 333 } }
+        Behavior on height { NumberAnimation { duration: 233 } }
 
         color: Qt.darker(Theme.colorForeground, 1.03)
 
@@ -140,6 +141,7 @@ Item {
             onMenuSelected: (index) => {
                 //console.log("SelectorMenu clicked #" + index)
                 currentSelection = index
+                currentPreset.type = index
                 typeChooser.isOpen = false
             }
         }

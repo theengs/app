@@ -32,7 +32,7 @@ Item {
 
     function loadGraph() {
         if (typeof currentDevice === "undefined" || !currentDevice) return
-        console.log("chartProbeRealTime // loadGraph() >> " + currentDevice)
+        //console.log("chartProbeRealTime // loadGraph() >> " + currentDevice)
 
         temp1Data.visible = currentDevice.hasTemperature1
         temp2Data.visible = currentDevice.hasTemperature2
@@ -51,6 +51,8 @@ Item {
 
         axisTemp.min = valueMin
         axisTemp.max = valueMax
+        axisTempF.min = UtilsNumber.tempCelsiusToFahrenheit(valueMin)
+        axisTempF.max = UtilsNumber.tempCelsiusToFahrenheit(valueMax)
 
         legendColor = Qt.rgba(legendColor.r, legendColor.g, legendColor.b, 0.8)
     }
@@ -197,7 +199,12 @@ Item {
         backgroundColor: "transparent"
         animationOptions: ChartView.NoAnimation
 
-        ValueAxis { id: axisTemp; visible: true; gridVisible: false;
+        ValueAxis { id: axisTemp; visible: (settingsManager.appUnits == 0); gridVisible: false;
+                    labelFormat: "%i";
+                    labelsFont.pixelSize: Theme.fontSizeContentSmall-1; labelsColor: legendColor;
+                    color: legendColor;
+                    gridLineColor: Theme.colorSeparator; }
+        ValueAxis { id: axisTempF; visible: (settingsManager.appUnits > 0); gridVisible: false;
                     labelFormat: "%i";
                     labelsFont.pixelSize: Theme.fontSizeContentSmall-1; labelsColor: legendColor;
                     color: legendColor;
@@ -207,6 +214,11 @@ Item {
                        labelsFont.pixelSize: Theme.fontSizeContentSmall-1; labelsColor: legendColor;
                        color: legendColor;
                        gridLineColor: Theme.colorSeparator; }
+
+        LineSeries {
+            id: fakefahrenheit
+            axisY: axisTempF; axisX: axisTime;
+        }
 
         LineSeries {
             id: temp1Data

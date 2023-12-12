@@ -148,22 +148,30 @@ Popup {
                         }
 
                         function setMinMax() {
-                            if (currentSelection === 0) { // before
-                                spinboxMin.value = currentPreset.getTempMin_add() - 6
-                                spinboxMax.value = currentPreset.getTempMin_add() - 2
+                            if (currentPreset.rangeCount === 0) { // first
+                                spinboxMin.from = currentPreset.getTempMin()
+                                spinboxMin.to = currentPreset.getTempMax()
+                                spinboxMin.value = currentPreset.getTempMin_default()
 
-                                spinboxMin.from = 0
-                                spinboxMin.to = currentPreset.getTempMin_add() - 2
-                                spinboxMax.from = 0
+                                spinboxMax.from = currentPreset.getTempMin()
+                                spinboxMax.to = currentPreset.getTempMax()
+                                spinboxMax.value = currentPreset.getTempMax_default()
+                            } else if (currentSelection === 0) { // before
+                                spinboxMin.from = currentPreset.getTempMin()
+                                spinboxMin.to = currentPreset.getTempMin_add()
+                                spinboxMax.from = currentPreset.getTempMin()
                                 spinboxMax.to = currentPreset.getTempMin_add()
-                            } else { // after
-                                spinboxMin.value = currentPreset.getTempMax_add() + 2
-                                spinboxMax.value = currentPreset.getTempMax_add() + 6
 
+                                spinboxMin.value = currentPreset.getTempMin_add() - 6
+                                spinboxMax.value = currentPreset.getTempMin_add() - 3
+                            } else { // after
                                 spinboxMin.from = currentPreset.getTempMax_add()
-                                spinboxMin.to = 200
-                                spinboxMax.from = currentPreset.getTempMax_add() + 2
-                                spinboxMax.to = 200
+                                spinboxMin.to = currentPreset.getTempMax()
+                                spinboxMax.from = currentPreset.getTempMax_add()
+                                spinboxMax.to = currentPreset.getTempMax()
+
+                                spinboxMin.value = currentPreset.getTempMax_add() + 3
+                                spinboxMax.value = currentPreset.getTempMax_add() + 6
                             }
                         }
                     }

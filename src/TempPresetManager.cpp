@@ -186,8 +186,8 @@ bool TempPresetManager::copyPreset(const QString &name, const QString &newName)
             TempPreset *newpreset = new TempPreset(*tp, newName, this);
             if (newpreset)
             {
-                tp->save();
-                tp->saveRanges();
+                newpreset->save();
+                newpreset->saveRanges();
 
                 m_presets.push_back(newpreset);
 
@@ -209,7 +209,7 @@ bool TempPresetManager::removePreset(const QString &name)
     for (auto pp: std::as_const(m_presets))
     {
         TempPreset *tp = qobject_cast<TempPreset*>(pp);
-        if (tp && tp->getName() == name)
+        if (tp && !tp->getReadOnly() && tp->getName() == name)
         {
             // Remove from database
             if (m_dbInternal || m_dbExternal)

@@ -90,8 +90,8 @@ Rectangle {
                 enabled: !currentPreset.readOnly
                 editable: !currentPreset.readOnly
 
-                from: 0
-                to: 200
+                from: modelData.tempMin_min
+                to: modelData.tempMin_max
                 value: modelData.tempMin
                 onValueModified: modelData.tempMin = value
             }
@@ -133,8 +133,8 @@ Rectangle {
                 enabled: !currentPreset.readOnly
                 editable: !currentPreset.readOnly
 
-                from: 0
-                to: 200
+                from: modelData.tempMax_min
+                to: modelData.tempMax_max
                 value: modelData.tempMax
                 onValueModified: modelData.tempMax = value
             }

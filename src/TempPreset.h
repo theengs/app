@@ -69,15 +69,26 @@ class TempRange: public QObject
     Q_PROPERTY(bool tempMaxEnabled READ isTempMaxEnabled WRITE setTempMaxEnabled NOTIFY rangeChanged)
     Q_PROPERTY(bool tempMaxDisabled READ isTempMaxDisabled WRITE setTempMaxDisabled NOTIFY rangeChanged)
 
+    Q_PROPERTY(float tempMin_min READ getTempMinMin NOTIFY rangeLimitsChanged)
+    Q_PROPERTY(float tempMin_max READ getTempMinMax NOTIFY rangeLimitsChanged)
+    Q_PROPERTY(float tempMax_min READ getTempMaxMin NOTIFY rangeLimitsChanged)
+    Q_PROPERTY(float tempMax_max READ getTempMaxMax NOTIFY rangeLimitsChanged)
+
     QString m_name;
     QString m_color;
     float m_tempMin;
     float m_tempMax;
     bool m_tempMax_enabled = false;
 
+    float m_tempMin_min = 0.f;
+    float m_tempMin_max = 100.f;
+    float m_tempMax_min = 0.f;
+    float m_tempMax_max = 100.f;
+
 Q_SIGNALS:
     void nameChanged();
     void rangeChanged();
+    void rangeLimitsChanged();
 
 public:
     TempRange(const QString &name, const float tempMin, const float tempMax,
@@ -102,6 +113,15 @@ public:
     void setTempMaxEnabled(bool d);
     bool isTempMaxDisabled() const { return !m_tempMax_enabled; }
     void setTempMaxDisabled(bool d);
+
+    float getTempMinMin() const { return m_tempMin_min; }
+    float getTempMinMax() const { return m_tempMin_max; }
+    float getTempMaxMin() const { return m_tempMax_min; }
+    float getTempMaxMax() const { return m_tempMax_max; }
+    void setTempMinMin(float f);
+    void setTempMinMax(float f);
+    void setTempMaxMin(float f);
+    void setTempMaxMax(float f);
 };
 
 /* ************************************************************************** */
@@ -135,7 +155,7 @@ Q_SIGNALS:
 public:
     TempPreset(const int id, const int type, const bool ro,
                const QString &name, const QString &ranges, QObject *parent);
-    TempPreset(const TempPreset &p, const QString &name, QObject *parent);
+    TempPreset(const TempPreset &p, const QString &newname, QObject *parent);
     ~TempPreset();
 
     void save();
@@ -147,6 +167,10 @@ public:
                               const float min, const float max, const bool maxEnabled);
     Q_INVOKABLE bool removeRange(const QString &name);
 
+    Q_INVOKABLE float getTempMin() const;
+    Q_INVOKABLE float getTempMax() const;
+    Q_INVOKABLE float getTempMin_default() const;
+    Q_INVOKABLE float getTempMax_default() const;
     Q_INVOKABLE float getTempMin_add() const;
     Q_INVOKABLE float getTempMax_add() const;
 
@@ -157,10 +181,13 @@ public:
     QString getName() const { return m_name; }
     void setName(const QString &n);
 
+    int getPresetRangeFromTemp(float temp) const;
+
     int getRangeCount() const { return m_ranges.size(); }
     float getRangeMin() const;
     float getRangeMax() const;
-    QString getRangeMinMax() const;
+    void updateRangesMinMax() const;
+    QString getRangesMinMax() const;
     QVariant getRanges() const { return QVariant::fromValue(m_ranges); }
 
     QList <QObject *> getRangesInternal() const { return m_ranges; }

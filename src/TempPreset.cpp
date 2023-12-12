@@ -104,6 +104,44 @@ void TempRange::setTempMaxDisabled(bool d)
 }
 
 /* ************************************************************************** */
+
+void TempRange::setTempMinMin(float f)
+{
+    if (m_tempMin_min != f)
+    {
+        m_tempMin_min = f;
+        Q_EMIT rangeLimitsChanged();
+    }
+}
+
+void TempRange::setTempMinMax(float f)
+{
+    if (m_tempMin_max != f)
+    {
+        m_tempMin_max = f;
+        Q_EMIT rangeLimitsChanged();
+    }
+}
+
+void TempRange::setTempMaxMin(float f)
+{
+    if (m_tempMax_min != f)
+    {
+        m_tempMax_min = f;
+        Q_EMIT rangeLimitsChanged();
+    }
+}
+
+void TempRange::setTempMaxMax(float f)
+{
+    if (m_tempMax_max != f)
+    {
+        m_tempMax_max = f;
+        Q_EMIT rangeLimitsChanged();
+    }
+}
+
+/* ************************************************************************** */
 /* ************************************************************************** */
 
 TempPreset::TempPreset(const int id, const int type, const bool ro,
@@ -124,13 +162,13 @@ TempPreset::TempPreset(const int id, const int type, const bool ro,
     }
 }
 
-TempPreset::TempPreset(const TempPreset &p, const QString &name,
+TempPreset::TempPreset(const TempPreset &p, const QString &newname,
                        QObject *parent) : QObject(parent)
 {
     m_id = 0; // need a new ID
     m_readonly = false; // copied preset are not read only
     m_type = p.getType();
-    m_name = name; // need a new name
+    m_name = newname; // need a new name
 
     for (auto r: p.getRangesInternal())
     {
@@ -139,6 +177,8 @@ TempPreset::TempPreset(const TempPreset &p, const QString &name,
         {
             connect(newrange, &TempRange::nameChanged, this, &TempPreset::saveRanges);
             connect(newrange, &TempRange::rangeChanged, this, &TempPreset::saveRanges);
+            connect(newrange, &TempRange::rangeChanged, this, &TempPreset::updateRangesMinMax);
+
             m_ranges.push_back(newrange);
         }
     }
@@ -154,6 +194,27 @@ TempPreset::~TempPreset()
     m_ranges.clear();
 }
 
+/* ************************************************************************** */
+
+void TempPreset::setType(int t)
+{
+    if (m_type != t)
+    {
+        m_type = t;
+        Q_EMIT presetChanged();
+    }
+}
+
+void TempPreset::setName(const QString &n)
+{
+    if (m_name != n)
+    {
+        m_name = n;
+        Q_EMIT presetChanged();
+    }
+}
+
+/* ************************************************************************** */
 /* ************************************************************************** */
 
 void TempPreset::loadRanges(const QString &json)
@@ -178,6 +239,8 @@ void TempPreset::loadRanges(const QString &json)
         {
             connect(r, &TempRange::nameChanged, this, &TempPreset::saveRanges);
             connect(r, &TempRange::rangeChanged, this, &TempPreset::saveRanges);
+            connect(r, &TempRange::rangeChanged, this, &TempPreset::updateRangesMinMax);
+
             m_ranges.push_back(r);
         }
     }
@@ -185,19 +248,21 @@ void TempPreset::loadRanges(const QString &json)
     if (m_ranges.size()) Q_EMIT rangesChanged();
 }
 
+/* ************************************************************************** */
+
 void TempPreset::save()
 {
-    //qDebug() << "TempPreset::save()";
-
     QSqlQuery savePreset;
     if (m_id == 0)
     {
+        //qDebug() << "TempPreset::add()";
         savePreset.prepare("INSERT INTO tempPresets (type, name) VALUES(:type, :name)");
         savePreset.bindValue(":type", m_type);
         savePreset.bindValue(":name", m_name);
     }
     else
     {
+        //qDebug() << "TempPreset::save()";
         savePreset.prepare("REPLACE INTO tempPresets (id, type, name) VALUES(:id, :type, :name)");
         savePreset.bindValue(":id", m_id);
         savePreset.bindValue(":type", m_type);
@@ -214,12 +279,17 @@ void TempPreset::save()
         if (m_id == 0)
         {
             m_id = savePreset.lastInsertId().toInt();
+            //qDebug() << "last inserted id : " << m_id;
         }
     }
 }
 
+/* ************************************************************************** */
+
 void TempPreset::saveRanges()
 {
+    //qDebug() << "TempPreset::saveRanges()";
+
     QJsonArray jsonArray;
     for (auto rr: std::as_const(m_ranges))
     {
@@ -248,6 +318,32 @@ void TempPreset::saveRanges()
         qWarning() << "> saveRanges.exec() ERROR"
                    << saveRanges.lastError().type() << ":" << saveRanges.lastError().text();
     }
+}
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+
+int TempPreset::getPresetRangeFromTemp(float temp) const
+{
+    int capture_range_is = -1;
+    int i = 0;
+
+    for (auto rr: std::as_const(m_ranges))
+    {
+        TempRange *tr = qobject_cast<TempRange*>(rr);
+        if (tr)
+        {
+            if (temp > tr->getTempMin() &&
+                temp < tr->getTempMax())
+            {
+                capture_range_is = i;
+            }
+        }
+
+        i++;
+    }
+
+    return capture_range_is;
 }
 
 /* ************************************************************************** */
@@ -315,11 +411,35 @@ bool TempPreset::removeRange(const QString &name)
 
 /* ************************************************************************** */
 
+float TempPreset::getTempMin() const
+{
+    return 0.f;
+}
+
+float TempPreset::getTempMax() const
+{
+    return 100.f;
+}
+
+float TempPreset::getTempMin_default() const
+{
+    return 40.f;
+}
+
+float TempPreset::getTempMax_default() const
+{
+    return 60.f;
+}
+
 float TempPreset::getTempMin_add() const
 {
-    float min = 40;
+    float min = getTempMin();
 
-    if (!m_ranges.isEmpty())
+    if (m_ranges.isEmpty())
+    {
+        min = getTempMin_default();
+    }
+    else
     {
         TempRange *tr = qobject_cast<TempRange*>(m_ranges.first());
         min = tr->getTempMin();
@@ -330,9 +450,13 @@ float TempPreset::getTempMin_add() const
 
 float TempPreset::getTempMax_add() const
 {
-    float max = 60;
+    float max = getTempMax();
 
-    if (!m_ranges.isEmpty())
+    if (m_ranges.isEmpty())
+    {
+        max = getTempMax_default();
+    }
+    else
     {
         TempRange *tr = qobject_cast<TempRange*>(m_ranges.last());
         if (tr->getTempMax() <= 0 || tr->isTempMaxDisabled()) {
@@ -379,7 +503,44 @@ float TempPreset::getRangeMax() const
     return max;
 }
 
-QString TempPreset::getRangeMinMax() const
+void TempPreset::updateRangesMinMax() const
+{
+    //qDebug() << "TempPreset::updateRangesMinMax()";
+
+    for (int i = 0; i < m_ranges.size(); i++)
+    {
+        TempRange *tr = qobject_cast<TempRange*>(m_ranges.at(i));
+        if (tr)
+        {
+            TempRange *tr_before = (i > 0) ? qobject_cast<TempRange*>(m_ranges.at(i-1)) : nullptr;
+            TempRange *tr_after = (i < m_ranges.size()-1) ? qobject_cast<TempRange*>(m_ranges.at(i+1)) : nullptr;
+
+            if (tr_before)
+            {
+                tr->setTempMinMin(tr_before->getTempMax());
+                tr->setTempMaxMin(tr_before->getTempMax());
+            }
+            else
+            {
+                tr->setTempMinMin(getTempMin());
+                tr->setTempMaxMin(getTempMin());
+            }
+
+            if (tr_after)
+            {
+                tr->setTempMinMax(tr_after->getTempMin());
+                tr->setTempMaxMax(tr_after->getTempMin());
+            }
+            else
+            {
+                tr->setTempMinMax(getTempMax());
+                tr->setTempMaxMax(getTempMax());
+            }
+        }
+    }
+}
+
+QString TempPreset::getRangesMinMax() const
 {
     float min = +999.f;
     float max = -999.f;
@@ -398,25 +559,4 @@ QString TempPreset::getRangeMinMax() const
     return mm;
 }
 
-/* ************************************************************************** */
-
-void TempPreset::setType(int t)
-{
-    if (m_type != t)
-    {
-        m_type = t;
-        Q_EMIT presetChanged();
-    }
-}
-
-void TempPreset::setName(const QString &n)
-{
-    if (m_name != n)
-    {
-        m_name = n;
-        Q_EMIT presetChanged();
-    }
-}
-
-/* ************************************************************************** */
 /* ************************************************************************** */
