@@ -107,36 +107,36 @@ void TempRange::setTempMaxDisabled(bool d)
 
 void TempRange::setTempMinMin(float f)
 {
-    if (m_tempMin_min != f)
+    if (m_tempLimitMin_min != f)
     {
-        m_tempMin_min = f;
+        m_tempLimitMin_min = f;
         Q_EMIT rangeLimitsChanged();
     }
 }
 
 void TempRange::setTempMinMax(float f)
 {
-    if (m_tempMin_max != f)
+    if (m_tempLimitMin_max != f)
     {
-        m_tempMin_max = f;
+        m_tempLimitMin_max = f;
         Q_EMIT rangeLimitsChanged();
     }
 }
 
 void TempRange::setTempMaxMin(float f)
 {
-    if (m_tempMax_min != f)
+    if (m_tempLimitMax_min != f)
     {
-        m_tempMax_min = f;
+        m_tempLimitMax_min = f;
         Q_EMIT rangeLimitsChanged();
     }
 }
 
 void TempRange::setTempMaxMax(float f)
 {
-    if (m_tempMax_max != f)
+    if (m_tempLimitMax_max != f)
     {
-        m_tempMax_max = f;
+        m_tempLimitMax_max = f;
         Q_EMIT rangeLimitsChanged();
     }
 }
@@ -333,10 +333,28 @@ int TempPreset::getPresetRangeFromTemp(float temp) const
         TempRange *tr = qobject_cast<TempRange*>(rr);
         if (tr)
         {
-            if (temp > tr->getTempMin() &&
-                temp < tr->getTempMax())
+            if (temp >= tr->getTempMin())
             {
-                capture_range_is = i;
+                if (tr->isTempMaxEnabled() && temp <= tr->getTempMax())
+                {
+                    //qDebug() << "we are inside range #" << i;
+                    capture_range_is = i;
+                    break;
+                }
+                else if (tr->isTempMaxDisabled() || ((i+1) == m_ranges.size()))
+                {
+                    //qDebug() << "we are in (last) range #" << i;
+                    capture_range_is = i;
+                    break;
+                }
+            }
+            else if (tr->isTempMaxEnabled() &&
+                     temp > tr->getTempMax() &&
+                     ((i+1) == m_ranges.size()))
+            {
+                //qDebug() << "we are above (last) range #" << i;
+                capture_range_is = -2;
+                break;
             }
         }
 
@@ -344,6 +362,75 @@ int TempPreset::getPresetRangeFromTemp(float temp) const
     }
 
     return capture_range_is;
+}
+
+float TempPreset::getPresetRangeTempMin_fromRangeIndex(int index) const
+{
+    float temp = -99.f;
+
+    if (index == -2)
+    {
+        TempRange *tr = qobject_cast<TempRange*>(m_ranges.last());
+        if (tr) temp = tr->getTempMin();
+    }
+    else if (index == -1)
+    {
+        TempRange *tr = qobject_cast<TempRange*>(m_ranges.first());
+        if (tr) temp = tr->getTempMin();
+    }
+    else if (index >= 0 && index < m_ranges.size())
+    {
+        TempRange *tr = qobject_cast<TempRange*>(m_ranges.at(index));
+        if (tr) temp = tr->getTempMin();
+    }
+
+    return temp;
+}
+
+float TempPreset::getPresetRangeTempMax_fromRangeIndex(int index) const
+{
+    float temp = -99.f;
+
+    if (index == -2)
+    {
+        TempRange *tr = qobject_cast<TempRange*>(m_ranges.last());
+        if (tr) temp = tr->getTempMaxLimit();
+    }
+    else if (index == -1)
+    {
+        TempRange *tr = qobject_cast<TempRange*>(m_ranges.first());
+        if (tr) temp = tr->getTempMaxLimit();
+    }
+    else if (index >= 0 && index < m_ranges.size())
+    {
+        TempRange *tr = qobject_cast<TempRange*>(m_ranges.at(index));
+        if (tr) temp = tr->getTempMaxLimit();
+    }
+
+    return temp;
+}
+
+QString TempPreset::getPresetRangeName_fromRangeIndex(int index) const
+{
+    QString name;
+
+    if (index == -2)
+    {
+        TempRange *tr = qobject_cast<TempRange*>(m_ranges.last());
+        if (tr) name = tr->getName();
+    }
+    else if (index == -1)
+    {
+        TempRange *tr = qobject_cast<TempRange*>(m_ranges.first());
+        if (tr) name = tr->getName();
+    }
+    else if (index >= 0 && index < m_ranges.size())
+    {
+        TempRange *tr = qobject_cast<TempRange*>(m_ranges.at(index));
+        if (tr) name = tr->getName();
+    }
+
+    return name;
 }
 
 /* ************************************************************************** */

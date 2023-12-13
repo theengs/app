@@ -45,7 +45,7 @@ class DeviceTheengsProbes: public DeviceTheengs
 
     // rt data
     bool m_capture_started = false;
-    int m_capture_range_was = -1;
+    QVector <int> m_capture_range_was;
     QVector <std::pair<QDateTime, float>> m_rt_probe1;
     QVector <std::pair<QDateTime, float>> m_rt_probe2;
     QVector <std::pair<QDateTime, float>> m_rt_probe3;

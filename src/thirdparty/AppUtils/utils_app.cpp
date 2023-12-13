@@ -501,6 +501,30 @@ bool UtilsApp::getMobileCameraPermission()
 
 /* ************************************************************************** */
 
+bool UtilsApp::checkMobileNotificationPermission()
+{
+#if defined(Q_OS_ANDROID)
+    return UtilsAndroid::getPermission_notification();
+#elif defined(Q_OS_IOS)
+    return false;
+#endif
+
+    return true;
+}
+
+bool UtilsApp::getMobileNotificationPermission()
+{
+#if defined(Q_OS_ANDROID)
+    return UtilsAndroid::getPermission_notification();
+#elif defined(Q_OS_IOS)
+    return false;
+#endif
+
+    return true;
+}
+
+/* ************************************************************************** */
+
 bool UtilsApp::isMobileGpsEnabled()
 {
 #if defined(Q_OS_ANDROID)

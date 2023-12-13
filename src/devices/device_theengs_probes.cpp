@@ -18,6 +18,7 @@
 
 #include "device_theengs_probes.h"
 #include "NotificationManager.h"
+#include "SettingsManager.h"
 #include "TempPresetManager.h"
 #include "TempPreset.h"
 
@@ -241,19 +242,82 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
         {
             NotificationManager *nm = NotificationManager::getInstance();
             TempPresetManager *tpm = TempPresetManager::getInstance();
+
+            TempPreset *tp = nullptr;
             if (nm && tpm)
             {
-                int capture_range_is = -1;
-                //m_capture_range_was = -1;
+                tp = tpm->getPreset(m_preset);
+            }
 
-                TempPreset *tp = tpm->getPreset(m_preset);
-                if (tp)
+            if (tp)
+            {
+                for (int i = 0; i < 6; i++)
                 {
-                    capture_range_is = tp->getPresetRangeFromTemp(m_temperature6);
-                }
-                if (capture_range_is != m_capture_range_was)
-                {
-                    //nm->setNotification("probe range crossed", 0);
+                    float temp = -99.f;
+                    if (i == 0) temp = m_temperature1;
+                    else if (i == 1) temp = m_temperature2;
+                    else if (i == 2) temp = m_temperature3;
+                    else if (i == 3) temp = m_temperature4;
+                    else if (i == 4) temp = m_temperature5;
+                    else if (i == 5) temp = m_temperature6;
+
+                    if (temp > -80)
+                    {
+                        int capture_range_is = tp->getPresetRangeFromTemp(temp);
+
+                        if (capture_range_is != m_capture_range_was[i])
+                        {
+                            QString notif;
+
+                            if (m_capture_range_was[i] == -3)
+                            {
+                                // init
+                            }
+                            else
+                            {
+                                QString namestr = m_deviceName;
+                                if (!m_locationName.isEmpty()) namestr = m_locationName;
+
+                                float min = tp->getPresetRangeTempMin_fromRangeIndex(capture_range_is);
+                                float max = tp->getPresetRangeTempMax_fromRangeIndex(capture_range_is);
+                                QString unitstr = "°C";
+                                if (SettingsManager::getInstance()->getAppUnits() != 0)
+                                {
+                                    min = (1.8f * min) + 32.f;
+                                    max = (1.8f * max) + 32.f;
+                                    unitstr = "°F";
+                                }
+
+                                QString rangestr;
+                                if (min > -80 && max > -80) rangestr =  QString::number(min) + unitstr + " - " + QString::number(max) + unitstr;
+                                else if (min > -80 && max < -80) rangestr =  QString::number(min) + unitstr + " and up";
+
+                                if (capture_range_is == -2) // above last range
+                                {
+                                    notif = namestr + " probe #" + QString::number(i+1) + " is above " + tp->getName()
+                                                    + " last range " + rangestr + " (" + tp->getPresetRangeName_fromRangeIndex(capture_range_is) + ")";
+                                }
+                                else if (capture_range_is == -1) // "below" first range
+                                {
+                                    notif = namestr + " probe #" + QString::number(i+1) + " is below " + tp->getName()
+                                                    + " first range " + rangestr + " (" + tp->getPresetRangeName_fromRangeIndex(capture_range_is) + ")";
+                                }
+                                else // inside range #i
+                                {
+                                    notif = namestr + " probe #" + QString::number(i+1) + " is into " + tp->getName()
+                                                    + " range " + rangestr + " (" + tp->getPresetRangeName_fromRangeIndex(capture_range_is) + ")";
+                                }
+                            }
+
+                            if (!notif.isEmpty())
+                            {
+                                qDebug() << notif;
+                                nm->setNotification("Temperature probe alert", notif, 16);
+                            }
+
+                            m_capture_range_was[i] = capture_range_is;
+                        }
+                    }
                 }
             }
         }
@@ -348,6 +412,11 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
 void DeviceTheengsProbes::startRtCapture(bool start)
 {
     m_capture_started = start;
+
+    // init ranges
+    for (int i = 0; i < 6; i++) {
+        m_capture_range_was.push_back(-3);
+    }
 }
 
 void DeviceTheengsProbes::updateRtGraph(QDateTimeAxis *axis, int minutes,

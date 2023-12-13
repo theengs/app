@@ -63,27 +63,29 @@ class TempRange: public QObject
 
     Q_PROPERTY(QString name READ getName WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QString color READ getColor WRITE setColor NOTIFY rangeChanged)
+
     Q_PROPERTY(float tempMin READ getTempMin WRITE setTempMin NOTIFY rangeChanged)
     Q_PROPERTY(float tempMax READ getTempMax WRITE setTempMax NOTIFY rangeChanged)
     Q_PROPERTY(float tempMaxGraph READ getTempMaxGraph NOTIFY rangeChanged)
     Q_PROPERTY(bool tempMaxEnabled READ isTempMaxEnabled WRITE setTempMaxEnabled NOTIFY rangeChanged)
     Q_PROPERTY(bool tempMaxDisabled READ isTempMaxDisabled WRITE setTempMaxDisabled NOTIFY rangeChanged)
 
-    Q_PROPERTY(float tempMin_min READ getTempMinMin NOTIFY rangeLimitsChanged)
-    Q_PROPERTY(float tempMin_max READ getTempMinMax NOTIFY rangeLimitsChanged)
-    Q_PROPERTY(float tempMax_min READ getTempMaxMin NOTIFY rangeLimitsChanged)
-    Q_PROPERTY(float tempMax_max READ getTempMaxMax NOTIFY rangeLimitsChanged)
+    Q_PROPERTY(float tempLimitMin_min READ getTempMinMin NOTIFY rangeLimitsChanged)
+    Q_PROPERTY(float tempLimitMin_max READ getTempMinMax NOTIFY rangeLimitsChanged)
+    Q_PROPERTY(float tempLimitMax_min READ getTempMaxMin NOTIFY rangeLimitsChanged)
+    Q_PROPERTY(float tempLimitMax_max READ getTempMaxMax NOTIFY rangeLimitsChanged)
 
     QString m_name;
     QString m_color;
+
     float m_tempMin;
     float m_tempMax;
     bool m_tempMax_enabled = false;
 
-    float m_tempMin_min = 0.f;
-    float m_tempMin_max = 100.f;
-    float m_tempMax_min = 0.f;
-    float m_tempMax_max = 100.f;
+    float m_tempLimitMin_min = 0.f;
+    float m_tempLimitMin_max = 100.f;
+    float m_tempLimitMax_min = 0.f;
+    float m_tempLimitMax_max = 100.f;
 
 Q_SIGNALS:
     void nameChanged();
@@ -105,7 +107,8 @@ public:
     float getTempMin() const { return m_tempMin; }
     void setTempMin(float t);
 
-    float getTempMaxGraph() const { return m_tempMax_enabled ? m_tempMax : 100; }
+    float getTempMaxGraph() const { return m_tempMax_enabled ? m_tempMax : m_tempLimitMax_max; }
+    float getTempMaxLimit() const { return m_tempMax_enabled ? m_tempMax : -99.f; }
     float getTempMax() const { return m_tempMax; }
     void setTempMax(float t);
 
@@ -114,10 +117,10 @@ public:
     bool isTempMaxDisabled() const { return !m_tempMax_enabled; }
     void setTempMaxDisabled(bool d);
 
-    float getTempMinMin() const { return m_tempMin_min; }
-    float getTempMinMax() const { return m_tempMin_max; }
-    float getTempMaxMin() const { return m_tempMax_min; }
-    float getTempMaxMax() const { return m_tempMax_max; }
+    float getTempMinMin() const { return m_tempLimitMin_min; }
+    float getTempMinMax() const { return m_tempLimitMin_max; }
+    float getTempMaxMin() const { return m_tempLimitMax_min; }
+    float getTempMaxMax() const { return m_tempLimitMax_max; }
     void setTempMinMin(float f);
     void setTempMinMax(float f);
     void setTempMaxMin(float f);
@@ -182,6 +185,9 @@ public:
     void setName(const QString &n);
 
     int getPresetRangeFromTemp(float temp) const;
+    float getPresetRangeTempMin_fromRangeIndex(int index) const;
+    float getPresetRangeTempMax_fromRangeIndex(int index) const;
+    QString getPresetRangeName_fromRangeIndex(int index) const;
 
     int getRangeCount() const { return m_ranges.size(); }
     float getRangeMin() const;
