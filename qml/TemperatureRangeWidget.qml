@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
+import "qrc:/js/UtilsNumber.js" as UtilsNumber
 import ThemeEngine
 
 Rectangle {
@@ -82,18 +83,21 @@ Rectangle {
 
                 text: qsTr("Minimum")
                 color: Theme.colorSubText
+                font.pixelSize: Theme.componentFontSize
             }
             SpinBoxThemed {
                 Layout.preferredHeight: 34
                 Layout.alignment: Qt.AlignVCenter
 
                 enabled: !currentPreset.readOnly
-                editable: !currentPreset.readOnly
+                editable: false
+                legend: (settingsManager.appUnits === 0) ? "°C" : "°F"
 
-                from: modelData.tempLimitMin_min
-                to: modelData.tempLimitMin_max
-                value: modelData.tempMin
-                onValueModified: modelData.tempMin = value
+                from: UtilsNumber.tempCelsiusOrFahrenheit(modelData.tempLimitMin_min, settingsManager.appUnits).toFixed(0)
+                to: UtilsNumber.tempCelsiusOrFahrenheit(modelData.tempLimitMin_max, settingsManager.appUnits).toFixed(0)
+                value: UtilsNumber.tempCelsiusOrFahrenheit(modelData.tempMin, settingsManager.appUnits)
+                onValueModified: (settingsManager.appUnits === 0) ? modelData.tempMin = value :
+                                                                    modelData.tempMin = UtilsNumber.tempFahrenheitToCelsius(value)
             }
         }
 
@@ -110,6 +114,7 @@ Rectangle {
 
                 text: modelData.tempMaxEnabled ? qsTr("Maximum") : qsTr("No maximum")
                 color: Theme.colorSubText
+                font.pixelSize: Theme.componentFontSize
             }
 
             ButtonWireframe {
@@ -131,12 +136,17 @@ Rectangle {
 
                 visible: modelData.tempMaxEnabled
                 enabled: !currentPreset.readOnly
-                editable: !currentPreset.readOnly
+                editable: false
+                legend: (settingsManager.appUnits === 0) ? "°C" : "°F"
 
-                from: modelData.tempLimitMax_min
-                to: modelData.tempLimitMax_max
-                value: modelData.tempMax
-                onValueModified: modelData.tempMax = value
+                //textFromValue: function(value, locale) { return UtilsNumber.tempCelsiusOrFahrenheit(value, settingsManager.appUnits) }
+                //valueFromText: function(text, locale) { return UtilsNumber.tempCelsiusOrFahrenheit(value, settingsManager.appUnits) }
+
+                from: UtilsNumber.tempCelsiusOrFahrenheit(modelData.tempLimitMax_min, settingsManager.appUnits).toFixed(0)
+                to: UtilsNumber.tempCelsiusOrFahrenheit(modelData.tempLimitMax_max, settingsManager.appUnits).toFixed(0)
+                value: UtilsNumber.tempCelsiusOrFahrenheit(modelData.tempMax, settingsManager.appUnits)
+                onValueModified: (settingsManager.appUnits === 0) ? modelData.tempMax = value :
+                                                                    modelData.tempMax = UtilsNumber.tempFahrenheitToCelsius(value)
             }
         }
 

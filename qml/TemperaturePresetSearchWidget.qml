@@ -47,7 +47,9 @@ SwipeDelegate {
     contentItem: Item {
         RowLayout {
             anchors.left: parent.left
+            anchors.leftMargin: 8
             anchors.right: parent.right
+            anchors.rightMargin: 8
             anchors.verticalCenter: parent.verticalCenter
             spacing: Theme.componentMargin
 
@@ -140,6 +142,16 @@ SwipeDelegate {
             }
 
             ////////
+        }
+
+        ItemTag {
+            anchors.right: parent.right
+            anchors.rightMargin: 8
+            anchors.verticalCenter: parent.verticalCenter
+
+            visible: modelData.readOnly
+            text: qsTr("app preset")
+            color: Qt.darker(Theme.colorForeground, 1.04)
         }
     }
 

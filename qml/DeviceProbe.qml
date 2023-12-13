@@ -58,7 +58,7 @@ Loader {
 
         property alias probeChart: graphLoader.item
 
-        property string cccc: headerUnicolor ? Theme.colorHeaderContent : "white"
+        property string cccc: headerUnicolor ? Qt.lighter(Theme.colorHeaderContent, 1.33) : "white"
 
         ////////
 
@@ -319,6 +319,20 @@ Loader {
                             border.width: 2
                             border.color: Qt.alpha(cccc, 0.33)
 
+                            Rectangle {
+                                anchors.top: parent.top
+                                anchors.topMargin: 2
+                                anchors.left: parent.left
+                                anchors.leftMargin: 2
+                                anchors.bottom: parent.bottom
+                                anchors.bottomMargin: 2
+
+                                width: columnBBQ.psh
+                                radius: 6
+                                opacity: 0.60
+                                color: Theme.colorMaterialBlue
+                            }
+
                             Text {
                                 anchors.left: parent.left
                                 anchors.leftMargin: 8
@@ -380,6 +394,20 @@ Loader {
                             color: Qt.alpha(cccc, 0.1)
                             border.width: 2
                             border.color: Qt.alpha(cccc, 0.33)
+
+                            Rectangle {
+                                anchors.top: parent.top
+                                anchors.topMargin: 2
+                                anchors.left: parent.left
+                                anchors.leftMargin: 2
+                                anchors.bottom: parent.bottom
+                                anchors.bottomMargin: 2
+
+                                width: columnBBQ.psh
+                                radius: 6
+                                opacity: 0.60
+                                color: Theme.colorMaterialDeepPurple
+                            }
 
                             Text {
                                 anchors.left: parent.left
@@ -450,6 +478,20 @@ Loader {
                             border.width: 2
                             border.color: Qt.alpha(cccc, 0.33)
 
+                            Rectangle {
+                                anchors.top: parent.top
+                                anchors.topMargin: 2
+                                anchors.left: parent.left
+                                anchors.leftMargin: 2
+                                anchors.bottom: parent.bottom
+                                anchors.bottomMargin: 2
+
+                                width: columnBBQ.psh
+                                radius: 6
+                                opacity: 0.60
+                                color: Theme.colorMaterialLightGreen
+                            }
+
                             Text {
                                 anchors.left: parent.left
                                 anchors.leftMargin: 8
@@ -511,6 +553,20 @@ Loader {
                             color: Qt.alpha(cccc, 0.1)
                             border.width: 2
                             border.color: Qt.alpha(cccc, 0.33)
+
+                            Rectangle {
+                                anchors.top: parent.top
+                                anchors.topMargin: 2
+                                anchors.left: parent.left
+                                anchors.leftMargin: 2
+                                anchors.bottom: parent.bottom
+                                anchors.bottomMargin: 2
+
+                                width: columnBBQ.psh
+                                radius: 6
+                                opacity: 0.60
+                                color: Theme.colorYellow
+                            }
 
                             Text {
                                 anchors.left: parent.left
@@ -581,6 +637,20 @@ Loader {
                             border.width: 2
                             border.color: Qt.alpha(cccc, 0.33)
 
+                            Rectangle {
+                                anchors.top: parent.top
+                                anchors.topMargin: 2
+                                anchors.left: parent.left
+                                anchors.leftMargin: 2
+                                anchors.bottom: parent.bottom
+                                anchors.bottomMargin: 2
+
+                                width: columnBBQ.psh
+                                radius: 6
+                                opacity: 0.60
+                                color: Theme.colorOrange
+                            }
+
                             Text {
                                 anchors.left: parent.left
                                 anchors.leftMargin: 8
@@ -641,6 +711,20 @@ Loader {
                             color: Qt.alpha(cccc, 0.1)
                             border.width: 2
                             border.color: Qt.alpha(cccc, 0.33)
+
+                            Rectangle {
+                                anchors.top: parent.top
+                                anchors.topMargin: 2
+                                anchors.left: parent.left
+                                anchors.leftMargin: 2
+                                anchors.bottom: parent.bottom
+                                anchors.bottomMargin: 2
+
+                                width: columnBBQ.psh
+                                radius: 6
+                                opacity: 0.60
+                                color: Theme.colorRed
+                            }
 
                             Text {
                                 anchors.left: parent.left

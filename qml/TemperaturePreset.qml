@@ -182,6 +182,59 @@ Item {
             }
 
             ////////
+
+            Rectangle {
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                height: colCont.height + Theme.componentMargin*2
+                radius: Theme.componentRadius
+                color: Theme.colorForeground
+                visible: currentPreset && currentPreset.readOnly
+
+                Column {
+                    id: colCont
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.margins: Theme.componentMargin
+                    spacing: Theme.componentMargin
+
+                    Row {
+                        spacing: Theme.componentMargin
+
+                        IconSvg {
+                            width: 24; height: 24;
+                            anchors.verticalCenter: parent.verticalCenter
+                            source: "qrc:/assets/icons_material/baseline-warning-24px.svg"
+                            color: Theme.colorWarning
+                        }
+
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: qsTr("Safety first")
+                            textFormat: Text.PlainText
+                            font.pixelSize: Theme.fontSizeContent
+                            color: Theme.colorText
+                            wrapMode: Text.WordWrap
+                        }
+                    }
+
+                    Text {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+
+                        text: "The cooking temperatures provided in this app are general recommendations. Variations in equipment, ingredients, and conditions can affect cooking outcomes." + "<br>" +
+                              "Always verify food is cooked to safe temperatures." + "<br>" +
+                              "The application developer is not liable for any cooking results."
+                        textFormat: Text.StyledText
+
+                        color: Theme.colorSubText
+                        wrapMode: Text.WordWrap
+                        font.pixelSize: Theme.componentFontSize
+                    }
+                }
+            }
         }
     }
 

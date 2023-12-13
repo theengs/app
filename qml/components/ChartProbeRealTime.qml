@@ -71,120 +71,6 @@ Item {
 
     ////////////////////////////////////////////////////////////////////////////
 
-    Rectangle {
-        id: dataIndicator
-
-        anchors.top: parent.top
-        anchors.right: parent.right
-        width: dataIndicatorContent.width + 24
-        height: 32
-        z: 2
-
-        radius: 4
-        opacity: 0.8
-        color: Theme.colorForeground
-        border.width: Theme.componentBorderWidth
-        border.color: Theme.colorSeparator
-
-        Row {
-            id: dataIndicatorContent
-            anchors.centerIn: parent
-            spacing: 16
-
-            Rectangle { // #1
-                anchors.verticalCenter: parent.verticalCenter
-                width: 20; height: 20; radius: 20;
-
-                visible: currentDevice.hasTemperature1
-                color: temp1Data.color
-                Text {
-                    anchors.centerIn: parent
-                    text: "1"
-                    color: "white"
-                    font.pixelSize: 15
-                    font.bold: true
-                }
-            }
-
-            Rectangle { // #2
-                anchors.verticalCenter: parent.verticalCenter
-                width: 20; height: 20; radius: 20;
-
-                visible: currentDevice.hasTemperature2
-                color: temp2Data.color
-                Text {
-                    anchors.centerIn: parent
-                    text: "2"
-                    color: "white"
-                    font.pixelSize: 15
-                    font.bold: true
-                }
-            }
-
-            Rectangle { // #3
-                anchors.verticalCenter: parent.verticalCenter
-                width: 20; height: 20; radius: 20;
-
-                visible: currentDevice.hasTemperature3
-                color: temp3Data.color
-                Text {
-                    anchors.centerIn: parent
-                    text: "3"
-                    color: "white"
-                    font.pixelSize: 15
-                    font.bold: true
-                }
-            }
-
-            Rectangle { // #4
-                anchors.verticalCenter: parent.verticalCenter
-                width: 20; height: 20; radius: 20;
-
-                visible: currentDevice.hasTemperature4
-                color: temp4Data.color
-                Text {
-                    anchors.centerIn: parent
-                    text: "4"
-                    color: "white"
-                    font.pixelSize: 15
-                    font.bold: true
-                }
-            }
-
-            Rectangle { // #5
-                anchors.verticalCenter: parent.verticalCenter
-                width: 20; height: 20; radius: 20;
-
-                visible: currentDevice.hasTemperature5
-                color: temp5Data.color
-                Text {
-                    anchors.centerIn: parent
-                    text: "5"
-                    color: "white"
-                    font.pixelSize: 15
-                    font.bold: true
-                }
-            }
-
-            Rectangle { // #6
-                anchors.verticalCenter: parent.verticalCenter
-                width: 20; height: 20; radius: 20;
-
-                visible: currentDevice.hasTemperature6
-                color: temp6Data.color
-                Text {
-                    anchors.centerIn: parent
-                    text: "6"
-                    color: "white"
-                    font.pixelSize: 15
-                    font.bold: true
-                }
-            }
-        }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-
     ChartView {
         id: rtGraph
         anchors.fill: parent
@@ -286,14 +172,7 @@ Item {
             Rectangle {
                 anchors.left: parent.left
                 anchors.right: parent.right
-/*
-                Component.onCompleted: {
-                    console.log("Preset #" + index + " > " + modelData.tempMin + " to " + modelData.tempMaxGraph)
-                    console.log("- plotAreaHeight: " + rtGraph.plotArea.height)
-                    console.log("- x: " + x + " > y: " + y)
-                    console.log("- width: " + width + " > height: " + height)
-                }
-*/
+
                 y: UtilsNumber.mapNumber(Math.min(modelData.tempMaxGraph, valueMax), // value
                                          valueMin, valueMax, // from
                                          rtGraph.plotArea.height, 0) // to
@@ -303,28 +182,6 @@ Item {
                 opacity: 0.33 + ((index) * 0.1)
             }
         }
-/*
-        Rectangle {
-            anchors.left: parent.left
-            anchors.right: parent.right
-
-            Component.onCompleted: {
-                console.log(" CONTOUR ")
-                console.log("- x: " + x + " > y: " + y)
-                console.log("- width: " + width + " > height: " + height)
-            }
-
-            y: UtilsNumber.mapNumber(valueMax, // value
-                                     valueMin, valueMax, // from
-                                     rtGraph.plotArea.height, 0) // to
-            height: ((valueMax - valueMin) / (valueMax - valueMin)) * rtGraph.plotArea.height
-
-            color: "transparent"
-            opacity: 0.33
-            border.width: 2
-            border.color: Theme.colorWarning
-        }
-*/
     }
 
     ////////////////////////////////////////////////////////////////////////////

@@ -79,7 +79,7 @@ Popup {
                     width: parent.width
 
                     text: qsTr("Choose a name and a preset type.")
-                    textFormat: Text.StyledText
+                    textFormat: Text.PlainText
                     font.pixelSize: Theme.fontSizeContent
                     color: Theme.colorSubText
                     wrapMode: Text.WordWrap
@@ -115,7 +115,7 @@ Popup {
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
                         text: qsTr("Invalid name.")
-                        textFormat: Text.StyledText
+                        textFormat: Text.PlainText
                         font.pixelSize: Theme.fontSizeContent
                         color: Theme.colorSubText
                         wrapMode: Text.WordWrap

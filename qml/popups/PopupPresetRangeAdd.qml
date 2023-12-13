@@ -4,6 +4,7 @@ import QtQuick.Controls
 
 import PresetUtils
 import "qrc:/js/UtilsPresets.js" as UtilsPresets
+import "qrc:/js/UtilsNumber.js" as UtilsNumber
 
 import ThemeEngine
 
@@ -82,7 +83,7 @@ Popup {
                     width: parent.width
 
                     text: qsTr("Choose a name and a preset type.")
-                    textFormat: Text.StyledText
+                    textFormat: Text.PlainText
                     font.pixelSize: Theme.fontSizeContent
                     color: Theme.colorSubText
                     wrapMode: Text.WordWrap
@@ -118,7 +119,7 @@ Popup {
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
                         text: qsTr("Invalid name.")
-                        textFormat: Text.StyledText
+                        textFormat: Text.PlainText
                         font.pixelSize: Theme.fontSizeContent
                         color: Theme.colorSubText
                         wrapMode: Text.WordWrap
@@ -149,29 +150,29 @@ Popup {
 
                         function setMinMax() {
                             if (currentPreset.rangeCount === 0) { // first
-                                spinboxMin.from = currentPreset.getTempMin()
-                                spinboxMin.to = currentPreset.getTempMax()
-                                spinboxMin.value = currentPreset.getTempMin_default()
+                                spinboxMin.from = UtilsNumber.tempCelsiusOrFahrenheit(currentPreset.getTempMin(), settingsManager.appUnits)
+                                spinboxMin.to = UtilsNumber.tempCelsiusOrFahrenheit(currentPreset.getTempMax(), settingsManager.appUnits)
+                                spinboxMin.value = UtilsNumber.tempCelsiusOrFahrenheit(currentPreset.getTempMin_default(), settingsManager.appUnits)
 
-                                spinboxMax.from = currentPreset.getTempMin()
-                                spinboxMax.to = currentPreset.getTempMax()
-                                spinboxMax.value = currentPreset.getTempMax_default()
+                                spinboxMax.from = UtilsNumber.tempCelsiusOrFahrenheit(currentPreset.getTempMin(), settingsManager.appUnits)
+                                spinboxMax.to = UtilsNumber.tempCelsiusOrFahrenheit(currentPreset.getTempMax(), settingsManager.appUnits)
+                                spinboxMax.value = UtilsNumber.tempCelsiusOrFahrenheit(currentPreset.getTempMax_default(), settingsManager.appUnits)
                             } else if (currentSelection === 0) { // before
-                                spinboxMin.from = currentPreset.getTempMin()
-                                spinboxMin.to = currentPreset.getTempMin_add()
-                                spinboxMax.from = currentPreset.getTempMin()
-                                spinboxMax.to = currentPreset.getTempMin_add()
+                                spinboxMin.from = UtilsNumber.tempCelsiusOrFahrenheit(currentPreset.getTempMin(), settingsManager.appUnits)
+                                spinboxMin.to = UtilsNumber.tempCelsiusOrFahrenheit(currentPreset.getTempMin_add(), settingsManager.appUnits)
+                                spinboxMax.from = UtilsNumber.tempCelsiusOrFahrenheit(currentPreset.getTempMin(), settingsManager.appUnits)
+                                spinboxMax.to = UtilsNumber.tempCelsiusOrFahrenheit(currentPreset.getTempMin_add(), settingsManager.appUnits)
 
-                                spinboxMin.value = currentPreset.getTempMin_add() - 6
-                                spinboxMax.value = currentPreset.getTempMin_add() - 3
+                                spinboxMin.value = UtilsNumber.tempCelsiusOrFahrenheit(currentPreset.getTempMin_add() - 6, settingsManager.appUnits)
+                                spinboxMax.value = UtilsNumber.tempCelsiusOrFahrenheit(currentPreset.getTempMin_add() - 3, settingsManager.appUnits)
                             } else { // after
-                                spinboxMin.from = currentPreset.getTempMax_add()
-                                spinboxMin.to = currentPreset.getTempMax()
-                                spinboxMax.from = currentPreset.getTempMax_add()
-                                spinboxMax.to = currentPreset.getTempMax()
+                                spinboxMin.from = UtilsNumber.tempCelsiusOrFahrenheit(currentPreset.getTempMax_add(), settingsManager.appUnits)
+                                spinboxMin.to = UtilsNumber.tempCelsiusOrFahrenheit(currentPreset.getTempMax(), settingsManager.appUnits)
+                                spinboxMax.from = UtilsNumber.tempCelsiusOrFahrenheit(currentPreset.getTempMax_add(), settingsManager.appUnits)
+                                spinboxMax.to = UtilsNumber.tempCelsiusOrFahrenheit(currentPreset.getTempMax(), settingsManager.appUnits)
 
-                                spinboxMin.value = currentPreset.getTempMax_add() + 3
-                                spinboxMax.value = currentPreset.getTempMax_add() + 6
+                                spinboxMin.value = UtilsNumber.tempCelsiusOrFahrenheit(currentPreset.getTempMax_add() + 3, settingsManager.appUnits)
+                                spinboxMax.value = UtilsNumber.tempCelsiusOrFahrenheit(currentPreset.getTempMax_add() + 6, settingsManager.appUnits)
                             }
                         }
                     }
@@ -200,8 +201,8 @@ Popup {
                         Layout.alignment: Qt.AlignVCenter
                         Layout.preferredHeight: 36
 
-                        from: 0
-                        to: 200
+                        editable: false
+                        legend: (settingsManager.appUnits == 0) ? "°C" : "°F"
                     }
                 }
 
@@ -231,9 +232,8 @@ Popup {
                         Layout.preferredHeight: 36
 
                         visible: checkboxMax.checked
-
-                        from: 0
-                        to: 200
+                        editable: false
+                        legend: (settingsManager.appUnits == 0) ? "°C" : "°F"
                     }
                 }
             }
@@ -267,8 +267,13 @@ Popup {
 
                     enabled: currentPreset && currentPreset.isRangeNameValid(rangeName.text)
                     onClicked: {
+                        var valuemin = (settingsManager.appUnits === 0) ? spinboxMin.value :
+                                         UtilsNumber.tempFahrenheitToCelsius(spinboxMin.value)
+                        var valuemax = (settingsManager.appUnits === 0) ? spinboxMax.value :
+                                         UtilsNumber.tempFahrenheitToCelsius(spinboxMax.value)
+
                         currentPreset.addRange(rangeName.text, beforeAfterToogle.value,
-                                               spinboxMin.value, spinboxMax.value, checkboxMax.checked)
+                                               valuemin, valuemax, checkboxMax.checked)
                         popupPresetRangeAdd.close()
                     }
                 }

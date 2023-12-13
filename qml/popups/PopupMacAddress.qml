@@ -75,7 +75,7 @@ Popup {
                     width: parent.width
 
                     text: qsTr("The MAC address of the sensor must be set in order for the history synchronization to work.")
-                    textFormat: Text.StyledText
+                    textFormat: Text.PlainText
                     font.pixelSize: Theme.fontSizeContent
                     color: Theme.colorSubText
                     wrapMode: Text.WordWrap
@@ -85,7 +85,7 @@ Popup {
                     width: parent.width
 
                     text: qsTr("Sorry for the inconvenience.")
-                    textFormat: Text.StyledText
+                    textFormat: Text.PlainText
                     font.pixelSize: Theme.fontSizeContent
                     color: Theme.colorSubText
                     wrapMode: Text.WordWrap

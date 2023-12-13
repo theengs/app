@@ -80,7 +80,7 @@ Popup {
                     width: parent.width
 
                     text: qsTr("The new preset will become editable.")
-                    textFormat: Text.StyledText
+                    textFormat: Text.PlainText
                     font.pixelSize: Theme.fontSizeContent
                     color: Theme.colorSubText
                     wrapMode: Text.WordWrap
@@ -116,7 +116,7 @@ Popup {
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
                         text: qsTr("Invalid name.")
-                        textFormat: Text.StyledText
+                        textFormat: Text.PlainText
                         font.pixelSize: Theme.fontSizeContent
                         color: Theme.colorSubText
                         wrapMode: Text.WordWrap
