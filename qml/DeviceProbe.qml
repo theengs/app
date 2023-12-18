@@ -329,20 +329,17 @@ Loader {
 
                                 width: columnBBQ.psh
                                 radius: 6
-                                opacity: 0.60
-                                color: Theme.colorMaterialBlue
-                            }
+                                color: Qt.alpha(Theme.colorMaterialBlue, 0.66)
 
-                            Text {
-                                anchors.left: parent.left
-                                anchors.leftMargin: 8
-                                anchors.verticalCenter: parent.verticalCenter
+                                Text {
+                                    anchors.centerIn: parent
 
-                                text: "#1"
-                                opacity: 0.66
-                                font.pixelSize: columnBBQ.fz2
-                                font.bold: false
-                                color: cccc
+                                    text: "#1"
+                                    color: "white"
+                                    opacity: 0.8
+                                    font.pixelSize: columnBBQ.fz2
+                                    font.bold: false
+                                }
                             }
 
                             Text {
@@ -405,20 +402,17 @@ Loader {
 
                                 width: columnBBQ.psh
                                 radius: 6
-                                opacity: 0.60
-                                color: Theme.colorMaterialDeepPurple
-                            }
+                                color: Qt.alpha(Theme.colorMaterialDeepPurple, 0.66)
 
-                            Text {
-                                anchors.left: parent.left
-                                anchors.leftMargin: 8
-                                anchors.verticalCenter: parent.verticalCenter
+                                Text {
+                                    anchors.centerIn: parent
 
-                                text: "#2"
-                                opacity: 0.66
-                                font.pixelSize: columnBBQ.fz2
-                                font.bold: false
-                                color: cccc
+                                    text: "#2"
+                                    color: "white"
+                                    opacity: 0.8
+                                    font.pixelSize: columnBBQ.fz2
+                                    font.bold: false
+                                }
                             }
 
                             Text {
@@ -488,20 +482,17 @@ Loader {
 
                                 width: columnBBQ.psh
                                 radius: 6
-                                opacity: 0.60
-                                color: Theme.colorMaterialLightGreen
-                            }
+                                color: Qt.alpha(Theme.colorMaterialLightGreen, 0.66)
 
-                            Text {
-                                anchors.left: parent.left
-                                anchors.leftMargin: 8
-                                anchors.verticalCenter: parent.verticalCenter
+                                Text {
+                                    anchors.centerIn: parent
 
-                                text: "#3"
-                                opacity: 0.66
-                                font.pixelSize: columnBBQ.fz2
-                                font.bold: false
-                                color: cccc
+                                    text: "#3"
+                                    color: "white"
+                                    opacity: 0.8
+                                    font.pixelSize: columnBBQ.fz2
+                                    font.bold: false
+                                }
                             }
 
                             Text {
@@ -564,20 +555,17 @@ Loader {
 
                                 width: columnBBQ.psh
                                 radius: 6
-                                opacity: 0.60
-                                color: Theme.colorYellow
-                            }
+                                color: Qt.alpha(Theme.colorYellow, 0.66)
 
-                            Text {
-                                anchors.left: parent.left
-                                anchors.leftMargin: 8
-                                anchors.verticalCenter: parent.verticalCenter
+                                Text {
+                                    anchors.centerIn: parent
 
-                                text: "#4"
-                                opacity: 0.66
-                                font.pixelSize: columnBBQ.fz2
-                                font.bold: false
-                                color: cccc
+                                    text: "#4"
+                                    color: "white"
+                                    opacity: 0.8
+                                    font.pixelSize: columnBBQ.fz2
+                                    font.bold: false
+                                }
                             }
 
                             Text {
@@ -647,20 +635,17 @@ Loader {
 
                                 width: columnBBQ.psh
                                 radius: 6
-                                opacity: 0.60
-                                color: Theme.colorOrange
-                            }
+                                color: Qt.alpha(Theme.colorOrange, 0.66)
 
-                            Text {
-                                anchors.left: parent.left
-                                anchors.leftMargin: 8
-                                anchors.verticalCenter: parent.verticalCenter
+                                Text {
+                                    anchors.centerIn: parent
 
-                                text: "#5"
-                                opacity: 0.66
-                                font.pixelSize: columnBBQ.fz2
-                                font.bold: false
-                                color: cccc
+                                    text: "#5"
+                                    color: "white"
+                                    opacity: 0.8
+                                    font.pixelSize: columnBBQ.fz2
+                                    font.bold: false
+                                }
                             }
 
                             Text {
@@ -722,20 +707,17 @@ Loader {
 
                                 width: columnBBQ.psh
                                 radius: 6
-                                opacity: 0.60
-                                color: Theme.colorRed
-                            }
+                                color: Qt.alpha(Theme.colorRed, 0.66)
 
-                            Text {
-                                anchors.left: parent.left
-                                anchors.leftMargin: 8
-                                anchors.verticalCenter: parent.verticalCenter
+                                Text {
+                                    anchors.centerIn: parent
 
-                                text: "#6"
-                                opacity: 0.66
-                                font.pixelSize: columnBBQ.fz2
-                                font.bold: false
-                                color: cccc
+                                    text: "#6"
+                                    color: "white"
+                                    opacity: 0.8
+                                    font.pixelSize: columnBBQ.fz2
+                                    font.bold: false
+                                }
                             }
 
                             Text {

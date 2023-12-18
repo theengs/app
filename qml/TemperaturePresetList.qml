@@ -86,7 +86,7 @@ Loader {
                             anchors.verticalCenter: parent.verticalCenter
 
                             color: Theme.colorIcon
-                            source: "qrc:/assets/icons_material/baseline-settings-20px.svg"
+                            source: "qrc:/assets/icons_material/duotone-tune-24px.svg"
                         }
 
                         Text {

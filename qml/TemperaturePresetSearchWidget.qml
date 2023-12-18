@@ -9,7 +9,7 @@ SwipeDelegate {
     id: temperaturePresetSearchWidget
 
     implicitWidth: 256
-    implicitHeight: 72
+    implicitHeight: 64
 
     clip: true
     padding: Theme.componentMargin
@@ -62,8 +62,8 @@ SwipeDelegate {
 
                 IconSvg {
                     anchors.centerIn: parent
-                    width: 36
-                    height: 36
+                    width: 32
+                    height: 32
                     smooth: true
                     color: Theme.colorSubText
                     source: UtilsPresets.getPresetIcon(modelData.type)
@@ -84,7 +84,7 @@ SwipeDelegate {
                     text: modelData.name
                     textFormat: Text.PlainText
                     //font.capitalization: Text.Capitalize
-                    font.pixelSize: Theme.fontSizeContentVeryBig
+                    font.pixelSize: Theme.fontSizeContentBig
                     color: Theme.colorText
                     elide: Text.ElideRight
                 }
@@ -99,14 +99,14 @@ SwipeDelegate {
                     Text {
                         visible: (modelData.rangeCount === 0)
                         text: qsTr("No temperature range defined")
-                        font.pixelSize: Theme.fontSizeContent
+                        font.pixelSize: Theme.fontSizeContentSmall
                         color: Theme.colorSubText
                     }
 
                     Text { // count
                         visible: modelData.rangeCount
                         text: qsTr("%1 range(s)").arg(modelData.rangeCount)
-                        font.pixelSize: Theme.fontSizeContent
+                        font.pixelSize: Theme.fontSizeContentSmall
                         color: Theme.colorSubText
                     }
 
@@ -133,7 +133,7 @@ SwipeDelegate {
                                     .arg(tempCelsiusToFahrenheitOrNot(modelData.rangeMin, settingsManager.appUnits))
                             }
                         }
-                        font.pixelSize: Theme.fontSizeContent
+                        font.pixelSize: Theme.fontSizeContentSmall
                         color: Theme.colorSubText
                     }
                 }
@@ -143,7 +143,7 @@ SwipeDelegate {
 
             ////////
         }
-
+/*
         ItemTag {
             anchors.right: parent.right
             anchors.rightMargin: 8
@@ -153,6 +153,7 @@ SwipeDelegate {
             text: qsTr("app preset")
             color: Qt.darker(Theme.colorForeground, 1.04)
         }
+*/
     }
 
     ////////////////////////////////////////////////////////////////////////////

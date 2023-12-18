@@ -68,7 +68,7 @@ Popup {
                 height: 48
                 z: 2
 
-                font.pixelSize: 20
+                font.pixelSize: 18
                 font.bold: false
                 color: Theme.colorText
 
@@ -131,17 +131,17 @@ Popup {
                 anchors.right: parent.right
                 anchors.rightMargin: Theme.componentMarginXL
 
-                height: colCont.height + Theme.componentMargin*2
+                height: colHeader.height + Theme.componentMargin*2
                 radius: Theme.componentRadius
                 color: Theme.colorForeground
 
                 Column {
-                    id: colCont
+                    id: colHeader
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.margins: Theme.componentMargin
-                    spacing: Theme.componentMargin
+                    spacing: Theme.componentMargin - 4
 
                     Row {
                         spacing: Theme.componentMargin
@@ -182,7 +182,7 @@ Popup {
             model: presetsManager.presetsFiltered
             delegate: TemperaturePresetSearchWidget {
                 width: ListView.view.width
-                height: 72
+                height: 64
 
                 onClicked: {
                     popupPresetSelection.selected(modelData.name)
