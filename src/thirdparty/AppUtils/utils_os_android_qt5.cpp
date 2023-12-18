@@ -164,6 +164,18 @@ bool UtilsAndroid::getPermission_camera()
 
 /* ************************************************************************** */
 
+bool UtilsAndroid::checkPermission_notification()
+{
+    return false; // TODO
+}
+
+bool UtilsAndroid::getPermission_notification()
+{
+    return false; // TODO
+}
+
+/* ************************************************************************** */
+
 bool UtilsAndroid::checkPermission_bluetooth()
 {
     return false; // TODO

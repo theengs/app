@@ -41,5 +41,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>Description of Permissions for NSUserNotificationsUsageDescription</string>
 </dict>
 </plist>

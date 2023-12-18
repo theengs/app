@@ -14,6 +14,7 @@ Item {
     function loadScreen() {
         // refresh permissions
         deviceManager.checkBluetoothPermissions()
+        notifButton.validperm = utilsApp.checkMobileNotificationPermission()
 
         // change screen
         appContent.state = "AboutPermissions"
@@ -32,7 +33,10 @@ Item {
         id: refreshPermissions
         interval: 333
         repeat: false
-        onTriggered: deviceManager.checkBluetoothPermissions()
+        onTriggered: {
+            deviceManager.checkBluetoothPermissions()
+            notifButton.validperm = utilsApp.checkMobileNotificationPermission()
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -439,6 +443,72 @@ Item {
 
             ////////
 
+            Item { // Notifications
+                height: 24
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                visible: (utilsApp.getAndroidSdkVersion() >= 13)
+
+                RoundButtonIcon {
+                    id: notifButton
+                    width: 32
+                    height: 32
+                    anchors.left: parent.left
+                    anchors.leftMargin: Theme.componentMargin
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property bool validperm: false
+
+                    source: (validperm) ? "qrc:/assets/icons_material/baseline-check-24px.svg" : "qrc:/assets/icons_material/baseline-close-24px.svg"
+                    iconColor: (validperm) ? "white" : "white"
+                    backgroundColor: (validperm) ? Theme.colorSuccess : Theme.colorSubText
+                    backgroundVisible: true
+
+                    onClicked: {
+                        utilsApp.vibrate(25)
+                        utilsApp.getMobileNotificationPermission()
+                        refreshPermissions.start()
+                    }
+                }
+
+                Text {
+                    height: 16
+                    anchors.left: parent.left
+                    anchors.leftMargin: appHeader.headerPosition
+                    anchors.right: parent.right
+                    anchors.rightMargin: Theme.componentMargin
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    text: qsTr("Notifications")
+                    textFormat: Text.PlainText
+                    wrapMode: Text.WordWrap
+                    font.pixelSize: 17
+                    color: Theme.colorText
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Text { // Bluetooth legend
+                anchors.left: parent.left
+                anchors.leftMargin: appHeader.headerPosition
+                anchors.right: parent.right
+                anchors.rightMargin: 12
+
+                visible: (utilsApp.getAndroidSdkVersion() >= 13)
+
+                text: qsTr("The Android operating system requires permission to send notifications.")
+                textFormat: Text.StyledText
+                wrapMode: Text.WordWrap
+                color: Theme.colorSubText
+                font.pixelSize: Theme.fontSizeContentSmall
+            }
+
+            ////////
+
+            ListSeparatorPadded { height: 16+1 }
+
+            ////////
+
             Item {
                 id: element_infos
                 height: 24
@@ -462,6 +532,7 @@ Item {
                     anchors.leftMargin: appHeader.headerPosition
                     anchors.right: parent.right
                     anchors.rightMargin: Theme.componentMargin
+                    anchors.verticalCenter: parent.verticalCenter
 
                     text: qsTr("Click on the checkmarks to request missing permissions.")
                     textFormat: Text.StyledText

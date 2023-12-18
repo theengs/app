@@ -219,6 +219,7 @@ bool UtilsAndroid::getPermission_notification()
 
     return status;
 }
+
 /* ************************************************************************** */
 
 bool UtilsAndroid::checkPermission_bluetooth()
