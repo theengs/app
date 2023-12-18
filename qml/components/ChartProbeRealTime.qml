@@ -18,18 +18,6 @@ Item {
 
     ////////////////////////////////////////////////////////////////////////////
 
-    Connections {
-        target: currentDevice
-        function onRtGraphUpdated() {
-            //console.log("onRtgraphUpdated")
-            updateGraph()
-        }
-        function onRtGraphCleaned() {
-            //console.log("onRtgraphCleaned")
-            updateGraph()
-        }
-    }
-
     function loadGraph() {
         if (typeof currentDevice === "undefined" || !currentDevice) return
         //console.log("chartProbeRealTime // loadGraph() >> " + currentDevice)
@@ -61,9 +49,8 @@ Item {
         if (typeof currentDevice === "undefined" || !currentDevice) return
         //console.log("chartProbeRealTime // updateGraph() >> " + currentDevice)
 
-        currentDevice.updateRtGraph(axisTime, currentDevice.realtimeWindow,
-                                    temp1Data, temp2Data, temp3Data,
-                                    temp4Data, temp5Data, temp6Data)
+        currentDevice.updateRtGraph(axisTime, temp1Data, temp2Data, temp3Data,
+                                              temp4Data, temp5Data, temp6Data)
     }
 
     function isIndicator() { return false }

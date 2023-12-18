@@ -234,9 +234,6 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
             if (m_capture_started) m_rt_probe6.push_back(std::make_pair(ts, m_temperature6));
         }
 
-        // signal
-        Q_EMIT rtGraphUpdated();
-
         // notification?
         if (m_capture_started)
         {
@@ -320,6 +317,9 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
                     }
                 }
             }
+
+            // signal
+            Q_EMIT rtGraphUpdated();
         }
     }
 
@@ -419,7 +419,7 @@ void DeviceTheengsProbes::startRtCapture(bool start)
     }
 }
 
-void DeviceTheengsProbes::updateRtGraph(QDateTimeAxis *axis, int minutes,
+void DeviceTheengsProbes::updateRtGraph(QDateTimeAxis *axis,
                                         QLineSeries *temp1, QLineSeries *temp2,
                                         QLineSeries *temp3, QLineSeries *temp4,
                                         QLineSeries *temp5, QLineSeries *temp6)
@@ -428,8 +428,10 @@ void DeviceTheengsProbes::updateRtGraph(QDateTimeAxis *axis, int minutes,
     //qDebug() << "min " << QDateTime::currentDateTime().addSecs(-300).toString("hh:mm:ss");
     //qDebug() << "max " << QDateTime::currentDateTime().toString("hh:mm:ss");
 
+    int seconds = m_realtime_window * -60;
+
     axis->setFormat("hh:mm");
-    axis->setMin(QDateTime::currentDateTime().addSecs(-minutes*60));
+    axis->setMin(QDateTime::currentDateTime().addSecs(seconds));
     axis->setMax(QDateTime::currentDateTime());
 
     temp1->clear();

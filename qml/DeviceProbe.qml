@@ -25,6 +25,7 @@ Loader {
 
         // set device
         if (currentDevice !== clickedDevice) currentDevice = clickedDevice
+        if (currentDevice.hasProbesBBQ) currentDevice.startRtCapture(true)
 
         // load screen
         if (!deviceProbe.active) {
@@ -68,15 +69,22 @@ Loader {
             function onSensorsUpdated() { updateHeader() }
             function onCapabilitiesUpdated() { updateHeader() }
             function onStatusUpdated() { updateHeader() }
-            function onDataUpdated() {
-                updateData()
+
+            function onDataUpdated() { updateData() }
+            function onRefreshUpdated() { updateData() }
+            function onHistoryUpdated() { }
+
+            function onRtGraphUpdated() {
+                //console.log("onRtgraphUpdated")
+                if (graphLoader.status === Loader.Ready) {
+                    probeChart.updateGraph()
+                }
             }
-            function onRefreshUpdated() {
-                updateData()
-                updateGraph()
-            }
-            function onHistoryUpdated() {
-                updateGraph()
+            function onRtGraphCleaned() {
+                //console.log("onRtgraphCleaned")
+                if (graphLoader.status === Loader.Ready) {
+                    probeChart.updateGraph()
+                }
             }
         }
 
@@ -126,10 +134,10 @@ Loader {
         function loadDevice() {
             //console.log("DeviceProbe // loadDevice() >> " + currentDevice)
 
+            if (currentDevice.hasProbesBBQ) currentDevice.startRtCapture(true)
+
             graphLoader.source = "" // force graph reload
             loadGraph()
-
-            if (currentDevice.hasProbesBBQ) currentDevice.startRtCapture(true)
 
             currentPreset = presetsManager.getPreset(currentDevice.preset)
             currentInterval = currentDevice.realtimeWindow
@@ -190,7 +198,9 @@ Loader {
         function updateGraph() {
             if (currentDevice.hasProbesTPMS) return
 
-            if (graphLoader.status === Loader.Ready) probeChart.updateGraph()
+            if (graphLoader.status === Loader.Ready) {
+                probeChart.updateGraph()
+            }
         }
 
         ////////
@@ -1291,11 +1301,11 @@ Loader {
 
                                 text: {
                                     if (currentPreset) return currentPreset.name
-                                    return UtilsPresets.getPresetType(0)
+                                    return qsTr("preset")
                                 }
                                 source: {
                                     if (currentPreset) return UtilsPresets.getPresetIcon(currentPreset.type)
-                                    return UtilsPresets.getPresetIcon(0)
+                                    return "qrc:/assets/icons_material/duotone-tune-24px.svg"
                                 }
                                 sourceSize: 20
 
