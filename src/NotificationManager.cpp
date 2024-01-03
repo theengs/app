@@ -91,7 +91,7 @@ void NotificationManager::updateNotificationDesktop()
     }
 }
 
-void NotificationManager::updateNotificationIos()
+void NotificationManager::updateNotificationIOS()
 {
 #if defined(Q_OS_IOS)
     //

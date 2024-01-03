@@ -52,7 +52,7 @@ signals:
 
 private slots:
     void updateNotificationAndroid();
-    void updateNotificationIos();
+    void updateNotificationIOS();
     void updateNotificationDesktop();
 
 private:
