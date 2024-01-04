@@ -475,7 +475,11 @@ bool DeviceManager::requestBluetoothPermissions()
 void DeviceManager::requestBluetoothPermissions_results()
 {
     // evaluate the results
+#if defined(Q_OS_IOS)
+    checkBluetoothPermissions();
+#else
     checkBluetooth();
+#endif
 
     if (m_blePermissions)
     {

@@ -66,6 +66,7 @@ android {
 ios {
     QT      += quick
     LIBS    += -framework UIKit
+    LIBS    += -framework UserNotifications
 
     SOURCES += $${PWD}/utils_os_ios.mm
     HEADERS += $${PWD}/utils_os_ios.h

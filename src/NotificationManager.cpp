@@ -43,7 +43,7 @@ NotificationManager::NotificationManager()
 #if defined(Q_OS_ANDROID)
     connect(this, SIGNAL(notificationChanged()), this, SLOT(updateNotificationAndroid()));
 #elif defined(Q_OS_IOS)
-    connect(this, SIGNAL(notificationChanged()), this, SLOT(updateNotificationIos()));
+    connect(this, SIGNAL(notificationChanged()), this, SLOT(updateNotificationIOS()));
 #else
     connect(this, SIGNAL(notificationChanged()), this, SLOT(updateNotificationDesktop()));
 #endif
@@ -94,7 +94,7 @@ void NotificationManager::updateNotificationDesktop()
 void NotificationManager::updateNotificationIOS()
 {
 #if defined(Q_OS_IOS)
-    //
+    m_iosnotifier.notify(m_title, m_message, m_channel);
 #endif
 }
 

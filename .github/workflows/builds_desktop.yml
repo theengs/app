@@ -43,7 +43,7 @@ jobs:
       # Install dependencies (from package manager)
       - name: Install dependencies (from package manager)
         run: |
-             sudo apt-get install libgl1-mesa-dev libxkbcommon-x11-dev libx11-xcb-dev libzstd-dev -y;
+             sudo apt-get install libgl1-mesa-dev libxkbcommon-x11-dev libx11-xcb-dev libxcb-cursor0 libzstd-dev -y;
              sudo apt-get install cmake ninja-build pkgconf libtool appstream -y;
 
       # Build dependencies (from contribs script)
@@ -57,6 +57,7 @@ jobs:
       - name: Setup env
         run: |
              qmake --version
+             #sudo rm /home/runner/work/${{env.APP_NAME}}/Qt/${{env.QT_VERSION}}/gcc_64/plugins/sqldrivers/libqsqlmimer.so
 
       # Build application
       - name: Build application
