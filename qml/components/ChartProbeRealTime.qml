@@ -45,16 +45,44 @@ Item {
         legendColor = Qt.rgba(legendColor.r, legendColor.g, legendColor.b, 0.8)
     }
 
+    function reloadGraph() {
+        if (typeof currentDevice === "undefined" || !currentDevice) return
+        if (appContent.state !== "DeviceProbe") return
+        //console.log("chartProbeRealTime // reloadGraph() >> " + currentDevice)
+
+        currentDevice.getChartData_probeRT(axisTime,
+                                           temp1Data, temp2Data, temp3Data,
+                                           temp4Data, temp5Data, temp6Data, true)
+    }
+
     function updateGraph() {
         if (typeof currentDevice === "undefined" || !currentDevice) return
+        if (appContent.state !== "DeviceProbe") return
         //console.log("chartProbeRealTime // updateGraph() >> " + currentDevice)
 
-        currentDevice.updateRtGraph(axisTime, temp1Data, temp2Data, temp3Data,
-                                              temp4Data, temp5Data, temp6Data)
+        // update
+        currentDevice.getChartData_probeRT(axisTime,
+                                           temp1Data, temp2Data, temp3Data,
+                                           temp4Data, temp5Data, temp6Data, false)
     }
 
     function isIndicator() { return false }
     function resetIndicator() { }
+
+    ////////////////////////////////////////////////////////////////////////////
+
+    Connections {
+        target: currentDevice
+
+        function onRtGraphUpdated() {
+            //console.log("onRtgraphUpdated")
+            updateGraph()
+        }
+        function onRtGraphCleaned() {
+            //console.log("onRtgraphCleaned")
+            updateGraph()
+        }
+    }
 
     ////////////////////////////////////////////////////////////////////////////
 

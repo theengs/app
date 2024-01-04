@@ -33,7 +33,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
-#include <QDateTime>
+#include <QListIterator>
 #include <QDebug>
 
 /* ************************************************************************** */
@@ -205,36 +205,64 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
 
         QDateTime ts = QDateTime::currentDateTime();
 
-        if (obj.contains("tempc")) {
-            m_temperature1 = obj["tempc"].toDouble();
-            if (m_capture_started) m_rt_probe1.push_back(std::make_pair(ts, m_temperature1));
-        }
-        if (obj.contains("tempc1")) {
-            m_temperature1 = obj["tempc1"].toDouble();
-           if (m_capture_started)  m_rt_probe1.push_back(std::make_pair(ts, m_temperature1));
+        if (obj.contains("tempc") || obj.contains("tempc1")) {
+            if (obj.contains("tempc")) m_temperature1 = obj["tempc"].toDouble();
+            if (obj.contains("tempc1")) m_temperature1 = obj["tempc1"].toDouble();
+
+            if (m_capture_started) {
+                m_rt_probe1.push_back(std::make_pair(ts, m_temperature1));
+                sanetizeRtCapture(1);
+                Q_EMIT rtProbe1Updated();
+            }
         }
         if (obj.contains("tempc2")) {
             m_temperature2 = obj["tempc2"].toDouble();
-            if (m_capture_started) m_rt_probe2.push_back(std::make_pair(ts, m_temperature2));
+            if (m_capture_started) {
+                m_rt_probe2.push_back(std::make_pair(ts, m_temperature2));
+                sanetizeRtCapture(2);
+                Q_EMIT rtProbe2Updated();
+            }
         }
         if (obj.contains("tempc3")) {
             m_temperature3 = obj["tempc3"].toDouble();
-            if (m_capture_started) m_rt_probe3.push_back(std::make_pair(ts, m_temperature3));
+            if (m_capture_started) {
+                m_rt_probe3.push_back(std::make_pair(ts, m_temperature3));
+                sanetizeRtCapture(3);
+                Q_EMIT rtProbe3Updated();
+            }
         }
         if (obj.contains("tempc4")) {
             m_temperature4 = obj["tempc4"].toDouble();
-            if (m_capture_started) m_rt_probe4.push_back(std::make_pair(ts, m_temperature4));
+            if (m_capture_started) {
+                m_rt_probe4.push_back(std::make_pair(ts, m_temperature4));
+                sanetizeRtCapture(4);
+                Q_EMIT rtProbe4Updated();
+            }
         }
         if (obj.contains("tempc5")) {
             m_temperature5 = obj["tempc5"].toDouble();
-            if (m_capture_started) m_rt_probe5.push_back(std::make_pair(ts, m_temperature5));
+            if (m_capture_started) {
+                m_rt_probe5.push_back(std::make_pair(ts, m_temperature5));
+                sanetizeRtCapture(5);
+                Q_EMIT rtProbe5Updated();
+            }
         }
         if (obj.contains("tempc6")) {
             m_temperature6 = obj["tempc6"].toDouble();
-            if (m_capture_started) m_rt_probe6.push_back(std::make_pair(ts, m_temperature6));
+            if (m_capture_started) {
+                m_rt_probe6.push_back(std::make_pair(ts, m_temperature6));
+                sanetizeRtCapture(6);
+                Q_EMIT rtProbe6Updated();
+            }
         }
 
-        // notification?
+        // Update RT graph?
+        if (m_capture_started)
+        {
+            Q_EMIT rtGraphUpdated();
+        }
+
+        // Notification?
         if (m_capture_started)
         {
             NotificationManager *nm = NotificationManager::getInstance();
@@ -317,9 +345,6 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
                     }
                 }
             }
-
-            // signal
-            Q_EMIT rtGraphUpdated();
         }
     }
 
@@ -411,39 +436,106 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
 
 void DeviceTheengsProbes::startRtCapture(bool start)
 {
-    m_capture_started = start;
+    if (m_capture_started != start)
+    {
+        m_capture_started = start;
 
-    // init ranges
-    for (int i = 0; i < 6; i++) {
-        m_capture_range_was.push_back(-3);
+        if (m_capture_started) qDebug() << "DeviceTheengsProbes::startRtCapture()" << getAddress() << getName();
+        else qDebug() << "DeviceTheengsProbes::stopRtCapture()" << getAddress() << getName();
+
+        // init ranges
+        for (int i = 0; i < 6; i++)
+        {
+            m_capture_range_was.push_back(-3);
+        }
     }
 }
 
-void DeviceTheengsProbes::updateRtGraph(QDateTimeAxis *axis,
-                                        QLineSeries *temp1, QLineSeries *temp2,
-                                        QLineSeries *temp3, QLineSeries *temp4,
-                                        QLineSeries *temp5, QLineSeries *temp6)
+void DeviceTheengsProbes::sanetizeRtCapture(int index)
 {
-    //qDebug() << "DeviceTheengsProbes::updateRtGraph()" << getAddress() << getName();
+    QList <std::pair<QDateTime, float>> *rt_probe = nullptr;
+    if (index == 1) rt_probe = &m_rt_probe1;
+    else if (index == 2) rt_probe = &m_rt_probe2;
+    else if (index == 3) rt_probe = &m_rt_probe3;
+    else if (index == 4) rt_probe = &m_rt_probe4;
+    else if (index == 5) rt_probe = &m_rt_probe5;
+    else if (index == 6) rt_probe = &m_rt_probe6;
+
+    QList <std::pair<QDateTime, float>> *rt_san_probe = nullptr;
+    if (index == 1) rt_san_probe = &m_rt_san_probe1;
+    else if (index == 2) rt_san_probe = &m_rt_san_probe2;
+    else if (index == 3) rt_san_probe = &m_rt_san_probe3;
+    else if (index == 4) rt_san_probe = &m_rt_san_probe4;
+    else if (index == 5) rt_san_probe = &m_rt_san_probe5;
+    else if (index == 6) rt_san_probe = &m_rt_san_probe6;
+
+    if (rt_probe->size() < 60 &&
+        rt_probe->first().first.secsTo(QDateTime::currentDateTime()) < 60)
+    {
+        return;
+    }
+
+    std::pair <QDateTime, float> cur = rt_probe->first();
+    float curval = cur.second;
+    int curcnt = 1;
+    int idx = 0;
+    for (auto d: *rt_probe)
+    {
+        if (cur.first.secsTo(d.first) < 60)
+        {
+            curval += d.second;
+            curcnt++;
+            rt_probe->removeFirst();
+        }
+        else
+        {
+            cur.second = curval / static_cast<float>(curcnt);
+            rt_san_probe->push_back(cur);
+            cur = d;
+            curval = cur.second;
+            curcnt = 1;
+        }
+
+        idx++;
+    }
+
+}
+
+void DeviceTheengsProbes::getChartData_probeRT(QDateTimeAxis *axis,
+                                               QLineSeries *temp1, QLineSeries *temp2,
+                                               QLineSeries *temp3, QLineSeries *temp4,
+                                               QLineSeries *temp5, QLineSeries *temp6,
+                                               bool reload)
+{
+    //qDebug() << "DeviceTheengsProbes::getChartData_probeRT()" << getAddress() << getName();
     //qDebug() << "min " << QDateTime::currentDateTime().addSecs(-300).toString("hh:mm:ss");
     //qDebug() << "max " << QDateTime::currentDateTime().toString("hh:mm:ss");
 
-    int seconds = m_realtime_window * -60;
+    if (!m_capture_started) startRtCapture(true);
 
+    int seconds = m_realtime_window * -60;
+    //
+    if (!reload && m_rt_lastupdate.isValid() && m_rt_lastupdate.elapsed() < 500)
+    {
+        return;
+    }
+    else
+    {
+        m_rt_lastupdate.start();
+    }
+
+    //
     axis->setFormat("hh:mm");
     axis->setMin(QDateTime::currentDateTime().addSecs(seconds));
     axis->setMax(QDateTime::currentDateTime());
 
-    temp1->clear();
-    temp2->clear();
-    temp3->clear();
-    temp4->clear();
-    temp5->clear();
-    temp6->clear();
-
+    //
     if (temp1 && hasTemp1())
     {
         temp1->clear();
+        for (auto p: m_rt_san_probe1) {
+            temp1->append(p.first.toMSecsSinceEpoch(), p.second);
+        }
         for (auto p: m_rt_probe1) {
             temp1->append(p.first.toMSecsSinceEpoch(), p.second);
         }
@@ -451,6 +543,9 @@ void DeviceTheengsProbes::updateRtGraph(QDateTimeAxis *axis,
     if (temp2 && hasTemp2())
     {
         temp2->clear();
+        for (auto p: m_rt_san_probe2) {
+            temp1->append(p.first.toMSecsSinceEpoch(), p.second);
+        }
         for (auto p: m_rt_probe2) {
             temp2->append(p.first.toMSecsSinceEpoch(), p.second);
         }
@@ -458,6 +553,9 @@ void DeviceTheengsProbes::updateRtGraph(QDateTimeAxis *axis,
     if (temp3 && hasTemp3())
     {
         temp3->clear();
+        for (auto p: m_rt_san_probe3) {
+            temp3->append(p.first.toMSecsSinceEpoch(), p.second);
+        }
         for (auto p: m_rt_probe3) {
             temp3->append(p.first.toMSecsSinceEpoch(), p.second);
         }
@@ -465,6 +563,9 @@ void DeviceTheengsProbes::updateRtGraph(QDateTimeAxis *axis,
     if (temp4 && hasTemp4())
     {
         temp4->clear();
+        for (auto p: m_rt_san_probe4) {
+            temp4->append(p.first.toMSecsSinceEpoch(), p.second);
+        }
         for (auto p: m_rt_probe4) {
             temp4->append(p.first.toMSecsSinceEpoch(), p.second);
         }
@@ -472,6 +573,9 @@ void DeviceTheengsProbes::updateRtGraph(QDateTimeAxis *axis,
     if (temp5 && hasTemp5())
     {
         temp5->clear();
+        for (auto p: m_rt_san_probe5) {
+            temp5->append(p.first.toMSecsSinceEpoch(), p.second);
+        }
         for (auto p: m_rt_probe5) {
             temp5->append(p.first.toMSecsSinceEpoch(), p.second);
         }
@@ -479,6 +583,9 @@ void DeviceTheengsProbes::updateRtGraph(QDateTimeAxis *axis,
     if (temp6 && hasTemp6())
     {
         temp6->clear();
+        for (auto p: m_rt_san_probe6) {
+            temp6->append(p.first.toMSecsSinceEpoch(), p.second);
+        }
         for (auto p: m_rt_probe6) {
             temp6->append(p.first.toMSecsSinceEpoch(), p.second);
         }

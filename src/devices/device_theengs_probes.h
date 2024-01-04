@@ -24,6 +24,8 @@
 
 #include <QObject>
 #include <QList>
+#include <QDateTime>
+#include <QElapsedTimer>
 
 #include <QBluetoothDeviceInfo>
 #include <QLowEnergyController>
@@ -43,15 +45,24 @@ class DeviceTheengsProbes: public DeviceTheengs
     Q_PROPERTY(QString preset READ getPreset WRITE setPreset NOTIFY presetUpdated)
     Q_PROPERTY(int realtimeWindow READ getRtWindow WRITE setRtWindow NOTIFY rtWindowUpdated)
 
-    // rt data
+    // probe rt data
     bool m_capture_started = false;
-    QVector <int> m_capture_range_was;
-    QVector <std::pair<QDateTime, float>> m_rt_probe1;
-    QVector <std::pair<QDateTime, float>> m_rt_probe2;
-    QVector <std::pair<QDateTime, float>> m_rt_probe3;
-    QVector <std::pair<QDateTime, float>> m_rt_probe4;
-    QVector <std::pair<QDateTime, float>> m_rt_probe5;
-    QVector <std::pair<QDateTime, float>> m_rt_probe6;
+    QList <int> m_capture_range_was;
+
+    QList <std::pair<QDateTime, float>> m_rt_probe1;
+    QList <std::pair<QDateTime, float>> m_rt_probe2;
+    QList <std::pair<QDateTime, float>> m_rt_probe3;
+    QList <std::pair<QDateTime, float>> m_rt_probe4;
+    QList <std::pair<QDateTime, float>> m_rt_probe5;
+    QList <std::pair<QDateTime, float>> m_rt_probe6;
+    QList <std::pair<QDateTime, float>> m_rt_san_probe1;
+    QList <std::pair<QDateTime, float>> m_rt_san_probe2;
+    QList <std::pair<QDateTime, float>> m_rt_san_probe3;
+    QList <std::pair<QDateTime, float>> m_rt_san_probe4;
+    QList <std::pair<QDateTime, float>> m_rt_san_probe5;
+    QList <std::pair<QDateTime, float>> m_rt_san_probe6;
+
+    QElapsedTimer m_rt_lastupdate;
 
     // probe settings
     QString m_preset;
@@ -63,11 +74,20 @@ class DeviceTheengsProbes: public DeviceTheengs
     int getRtWindow() const { return m_realtime_window; }
     void setRtWindow(const int w);
 
+    void sanetizeRtCapture(int index);
+
 signals:
     void presetUpdated();
     void rtGraphCleaned();
     void rtGraphUpdated();
     void rtWindowUpdated();
+
+    void rtProbe1Updated();
+    void rtProbe2Updated();
+    void rtProbe3Updated();
+    void rtProbe4Updated();
+    void rtProbe5Updated();
+    void rtProbe6Updated();
 
 public:
     DeviceTheengsProbes(const QString &deviceAddr, const QString &deviceName,
@@ -84,10 +104,11 @@ public:
 
     // Chart probe realtime
     Q_INVOKABLE void startRtCapture(bool start = true);
-    Q_INVOKABLE void updateRtGraph(QDateTimeAxis *axis,
-                                   QLineSeries *temp1, QLineSeries *temp2,
-                                   QLineSeries *temp3, QLineSeries *temp4,
-                                   QLineSeries *temp5, QLineSeries *temp6);
+    Q_INVOKABLE void getChartData_probeRT(QDateTimeAxis *axis,
+                                          QLineSeries *temp1, QLineSeries *temp2,
+                                          QLineSeries *temp3, QLineSeries *temp4,
+                                          QLineSeries *temp5, QLineSeries *temp6,
+                                          bool reload = false);
 
     // Chart probe AIO
     Q_INVOKABLE void getChartData_probeAIO(int maxDays,

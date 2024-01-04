@@ -73,19 +73,6 @@ Loader {
             function onDataUpdated() { updateData() }
             function onRefreshUpdated() { updateData() }
             function onHistoryUpdated() { }
-
-            function onRtGraphUpdated() {
-                //console.log("onRtgraphUpdated")
-                if (graphLoader.status === Loader.Ready) {
-                    probeChart.updateGraph()
-                }
-            }
-            function onRtGraphCleaned() {
-                //console.log("onRtgraphCleaned")
-                if (graphLoader.status === Loader.Ready) {
-                    probeChart.updateGraph()
-                }
-            }
         }
 
         Connections {
@@ -132,7 +119,7 @@ Loader {
         ////////
 
         function loadDevice() {
-            //console.log("DeviceProbe // loadDevice() >> " + currentDevice)
+            console.log("DeviceProbe // loadDevice() >> " + currentDevice)
 
             if (currentDevice.hasProbesBBQ) currentDevice.startRtCapture(true)
 
@@ -190,17 +177,13 @@ Loader {
                 //graphLoader.source = "ChartProbeDataAio.qml" // disabled
             }
 
-            if (graphLoader.status === Loader.Ready) {
+            if (graphLoader.status === Loader.Ready && graphLoader.asynchronous === false) {
                 probeChart.loadGraph()
                 probeChart.updateGraph()
             }
         }
         function updateGraph() {
-            if (currentDevice.hasProbesTPMS) return
-
-            if (graphLoader.status === Loader.Ready) {
-                probeChart.updateGraph()
-            }
+            // handled internaly
         }
 
         ////////
@@ -1367,9 +1350,10 @@ Loader {
                                     var value = model.get(index).itv
 
                                     currentInterval = value
-                                    if (currentDevice) currentDevice.realtimeWindow = value
-
-                                    probeChart.updateGraph()
+                                    if (currentDevice) {
+                                        currentDevice.realtimeWindow = value
+                                        probeChart.reloadGraph()
+                                    }
                                 }
                             }
                         }
@@ -1437,8 +1421,10 @@ Loader {
                     asynchronous: true
                     onLoaded: {
                         //console.log("graphLoader::onLoaded()")
-                        probeChart.loadGraph()
-                        probeChart.updateGraph()
+                        if (graphLoader.asynchronous) {
+                            probeChart.loadGraph()
+                            probeChart.updateGraph()
+                        }
                     }
                 }
 
