@@ -53,7 +53,7 @@ DeviceTheengsProbes::DeviceTheengsProbes(const QString &deviceAddr, const QStrin
         getSqlTpmsData(12*60);
     } else {
         if (hasSetting("preset")) m_preset = getSetting("preset").toString();
-        if (hasSetting("interval")) m_realtime_window = getSetting("interval").toInt();
+        if (hasSetting("interval")) m_realtime_window = getSetting("interval").toString().toInt();
         //getSqlProbeData(12*60); // disabled
     }
 }
@@ -73,7 +73,7 @@ DeviceTheengsProbes::DeviceTheengsProbes(const QBluetoothDeviceInfo &d,
         getSqlTpmsData(12*60);
     } else {
         if (hasSetting("preset")) m_preset = getSetting("preset").toString();
-        if (hasSetting("interval")) m_realtime_window = getSetting("interval").toInt();
+        if (hasSetting("interval")) m_realtime_window = getSetting("interval").toString().toInt();
         //getSqlProbeData(12*60); // disabled
     }
 }
@@ -469,8 +469,8 @@ void DeviceTheengsProbes::sanetizeRtCapture(int index)
     else if (index == 5) rt_san_probe = &m_rt_san_probe5;
     else if (index == 6) rt_san_probe = &m_rt_san_probe6;
 
-    if (rt_probe->size() < 60 &&
-        rt_probe->first().first.secsTo(QDateTime::currentDateTime()) < 60)
+    if (rt_probe->size() < 300 &&
+        rt_probe->first().first.secsTo(QDateTime::currentDateTime()) < 300)
     {
         return;
     }
@@ -498,7 +498,6 @@ void DeviceTheengsProbes::sanetizeRtCapture(int index)
 
         idx++;
     }
-
 }
 
 void DeviceTheengsProbes::getChartData_probeRT(QDateTimeAxis *axis,
@@ -511,9 +510,12 @@ void DeviceTheengsProbes::getChartData_probeRT(QDateTimeAxis *axis,
     //qDebug() << "min " << QDateTime::currentDateTime().addSecs(-300).toString("hh:mm:ss");
     //qDebug() << "max " << QDateTime::currentDateTime().toString("hh:mm:ss");
 
-    if (!m_capture_started) startRtCapture(true);
+    //if (!m_capture_started) startRtCapture(true);
 
     int seconds = m_realtime_window * -60;
+    axis->setFormat("hh:mm");
+    axis->setMin(QDateTime::currentDateTime().addSecs(seconds));
+    axis->setMax(QDateTime::currentDateTime());
     //
     if (!reload && m_rt_lastupdate.isValid() && m_rt_lastupdate.elapsed() < 500)
     {
@@ -523,11 +525,6 @@ void DeviceTheengsProbes::getChartData_probeRT(QDateTimeAxis *axis,
     {
         m_rt_lastupdate.start();
     }
-
-    //
-    axis->setFormat("hh:mm");
-    axis->setMin(QDateTime::currentDateTime().addSecs(seconds));
-    axis->setMax(QDateTime::currentDateTime());
 
     //
     if (temp1 && hasTemp1())

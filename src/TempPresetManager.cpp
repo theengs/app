@@ -67,10 +67,10 @@ bool TempPresetManager::load()
     // Load APP presets
     {
         TempPreset *t1 = new TempPreset(-1, PresetUtils::PRESET_MEAT, true, "Beef", "", this);
-        t1->addRange("Rare", false, 49, 52, true);
-        t1->addRange("Medium Rare", false, 54, 57, true);
-        t1->addRange("Medium", false, 60, 63, true);
-        t1->addRange("Medium Well", false, 65, 68, true);
+        t1->addRange("Rare", false, 49, 54, true);
+        t1->addRange("Medium Rare", false, 54, 60, true);
+        t1->addRange("Medium", false, 60, 66, true);
+        t1->addRange("Medium Well", false, 66, 71, true);
         t1->addRange("Well Done", false, 71, -1, false);
         m_presets.push_back(t1);
 

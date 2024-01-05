@@ -194,7 +194,7 @@ Item {
                 height: ((Math.min(modelData.tempMaxGraph, valueMax) - modelData.tempMin) / (valueMax - valueMin)) * rtGraph.plotArea.height
 
                 color: Qt.darker(Theme.colorRed, 1)
-                opacity: 0.33 + ((index) * 0.1)
+                opacity: 0.66 - (index * 0.066)
             }
         }
     }

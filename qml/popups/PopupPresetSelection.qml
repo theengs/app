@@ -20,6 +20,10 @@ Popup {
 
     signal selected(var name)
 
+    onAboutToShow: {
+        presetsManager.filter(presetSearchBox.displayText)
+    }
+
     ////////////////////////////////////////////////////////////////////////////
 
     background: Rectangle {
@@ -74,7 +78,7 @@ Popup {
 
                 placeholderText: qsTr("Filter presets")
 
-                onDisplayTextChanged: presetsManager.filter(displayText)
+                onDisplayTextChanged: presetsManager.filter(presetSearchBox.displayText)
 
                 Row {
                     anchors.right: parent.right

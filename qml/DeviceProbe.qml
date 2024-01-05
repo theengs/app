@@ -1391,7 +1391,7 @@ Loader {
                                         anchors.fill: parent
                                         radius: 4
                                         color: Theme.colorRed
-                                        opacity: 0.66 + ((index) * 0.05)
+                                        opacity: 0.66 - (index * 0.066)
                                     }
 
                                     Text {
