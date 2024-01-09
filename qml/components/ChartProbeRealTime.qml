@@ -191,10 +191,16 @@ Item {
                 y: UtilsNumber.mapNumber(Math.min(modelData.tempMaxGraph, valueMax), // value
                                          valueMin, valueMax, // from
                                          rtGraph.plotArea.height, 0) // to
-                height: ((Math.min(modelData.tempMaxGraph, valueMax) - modelData.tempMin) / (valueMax - valueMin)) * rtGraph.plotArea.height
+                height: {
+                    if (modelData.name === "Safe internal temperature" && modelData.tempMin === modelData.tempMax) return 2
+                    return ((Math.min(modelData.tempMaxGraph, valueMax) - modelData.tempMin) / (valueMax - valueMin)) * rtGraph.plotArea.height
+                }
 
-                color: Qt.darker(Theme.colorRed, 1)
-                opacity: 0.66 - (index * 0.066)
+                color: Theme.colorRed
+                opacity: {
+                    if (modelData.name === "Safe internal temperature" && modelData.tempMin === modelData.tempMax) return 1
+                    return 0.66 - (index * 0.066)
+                }
             }
         }
     }

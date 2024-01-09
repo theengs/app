@@ -1391,7 +1391,10 @@ Loader {
                                         anchors.fill: parent
                                         radius: 4
                                         color: Theme.colorRed
-                                        opacity: 0.66 - (index * 0.066)
+                                        opacity: {
+                                            if (modelData.name === "Safe internal temperature" && modelData.tempMin === modelData.tempMax) return 1
+                                            return 0.66 - (index * 0.066)
+                                        }
                                     }
 
                                     Text {

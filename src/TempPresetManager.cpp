@@ -69,22 +69,23 @@ bool TempPresetManager::load()
         TempPreset *t1 = new TempPreset(-1, PresetUtils::PRESET_MEAT, true, "Beef", "", this);
         t1->addRange("Rare", false, 49, 54, true);
         t1->addRange("Medium Rare", false, 54, 60, true);
+        t1->addRange("Safe internal temperature", false, 63, 63, true);
         t1->addRange("Medium", false, 60, 66, true);
         t1->addRange("Medium Well", false, 66, 71, true);
         t1->addRange("Well Done", false, 71, -1, false);
         m_presets.push_back(t1);
 
         TempPreset *t2 = new TempPreset(-2, PresetUtils::PRESET_MEAT, true, "Pork", "", this);
-        t2->addRange("Safe minimum internal temperature", false, 63, 63, true);
+        t2->addRange("Safe internal temperature", false, 63, 63, true);
         t2->addRange("Ground Pork", false, 71, -1, false);
         m_presets.push_back(t2);
 
         TempPreset *t3 = new TempPreset(-3, PresetUtils::PRESET_POULTRY, true, "Chicken", "", this);
-        t3->addRange("Safe minimum internal temperature", false, 74, -1, false);
+        t3->addRange("Safe internal temperature", false, 74, -1, false);
         m_presets.push_back(t3);
 
         TempPreset *t4 = new TempPreset(-4, PresetUtils::PRESET_FISH, true, "Fish", "", this);
-        t4->addRange("Safe minimum internal temperature", false, 63, -1, false);
+        t4->addRange("Safe internal temperature", false, 63, -1, false);
         m_presets.push_back(t4);
     }
 

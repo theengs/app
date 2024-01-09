@@ -469,8 +469,8 @@ void DeviceTheengsProbes::sanetizeRtCapture(int index)
     else if (index == 5) rt_san_probe = &m_rt_san_probe5;
     else if (index == 6) rt_san_probe = &m_rt_san_probe6;
 
-    if (rt_probe->size() < 300 &&
-        rt_probe->first().first.secsTo(QDateTime::currentDateTime()) < 300)
+    if (rt_probe->size() < 600 &&
+        rt_probe->first().first.secsTo(QDateTime::currentDateTime()) < 660)
     {
         return;
     }
