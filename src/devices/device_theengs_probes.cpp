@@ -210,48 +210,48 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
             if (obj.contains("tempc1")) m_temperature1 = obj["tempc1"].toDouble();
 
             if (m_capture_started) {
-                m_rt_probe1.push_back(std::make_pair(ts, m_temperature1));
-                sanetizeRtCapture(1);
+                m_rt_probe[0].push_back(std::make_pair(ts, m_temperature1));
+                sanetizeRtCapture(0);
                 Q_EMIT rtProbe1Updated();
             }
         }
         if (obj.contains("tempc2")) {
             m_temperature2 = obj["tempc2"].toDouble();
             if (m_capture_started) {
-                m_rt_probe2.push_back(std::make_pair(ts, m_temperature2));
-                sanetizeRtCapture(2);
+                m_rt_probe[1].push_back(std::make_pair(ts, m_temperature2));
+                sanetizeRtCapture(1);
                 Q_EMIT rtProbe2Updated();
             }
         }
         if (obj.contains("tempc3")) {
             m_temperature3 = obj["tempc3"].toDouble();
             if (m_capture_started) {
-                m_rt_probe3.push_back(std::make_pair(ts, m_temperature3));
-                sanetizeRtCapture(3);
+                m_rt_probe[2].push_back(std::make_pair(ts, m_temperature3));
+                sanetizeRtCapture(2);
                 Q_EMIT rtProbe3Updated();
             }
         }
         if (obj.contains("tempc4")) {
             m_temperature4 = obj["tempc4"].toDouble();
             if (m_capture_started) {
-                m_rt_probe4.push_back(std::make_pair(ts, m_temperature4));
-                sanetizeRtCapture(4);
+                m_rt_probe[3].push_back(std::make_pair(ts, m_temperature4));
+                sanetizeRtCapture(3);
                 Q_EMIT rtProbe4Updated();
             }
         }
         if (obj.contains("tempc5")) {
             m_temperature5 = obj["tempc5"].toDouble();
             if (m_capture_started) {
-                m_rt_probe5.push_back(std::make_pair(ts, m_temperature5));
-                sanetizeRtCapture(5);
+                m_rt_probe[4].push_back(std::make_pair(ts, m_temperature5));
+                sanetizeRtCapture(4);
                 Q_EMIT rtProbe5Updated();
             }
         }
         if (obj.contains("tempc6")) {
             m_temperature6 = obj["tempc6"].toDouble();
             if (m_capture_started) {
-                m_rt_probe6.push_back(std::make_pair(ts, m_temperature6));
-                sanetizeRtCapture(6);
+                m_rt_probe[5].push_back(std::make_pair(ts, m_temperature6));
+                sanetizeRtCapture(5);
                 Q_EMIT rtProbe6Updated();
             }
         }
@@ -453,50 +453,42 @@ void DeviceTheengsProbes::startRtCapture(bool start)
 
 void DeviceTheengsProbes::sanetizeRtCapture(int index)
 {
-    QList <std::pair<QDateTime, float>> *rt_probe = nullptr;
-    if (index == 1) rt_probe = &m_rt_probe1;
-    else if (index == 2) rt_probe = &m_rt_probe2;
-    else if (index == 3) rt_probe = &m_rt_probe3;
-    else if (index == 4) rt_probe = &m_rt_probe4;
-    else if (index == 5) rt_probe = &m_rt_probe5;
-    else if (index == 6) rt_probe = &m_rt_probe6;
+    if (index < 0 || index > 5) return;
+    if (m_rt_probe[index].size() < 600 &&
+        m_rt_probe[index].first().first.secsTo(QDateTime::currentDateTime()) < 660) return;
 
-    QList <std::pair<QDateTime, float>> *rt_san_probe = nullptr;
-    if (index == 1) rt_san_probe = &m_rt_san_probe1;
-    else if (index == 2) rt_san_probe = &m_rt_san_probe2;
-    else if (index == 3) rt_san_probe = &m_rt_san_probe3;
-    else if (index == 4) rt_san_probe = &m_rt_san_probe4;
-    else if (index == 5) rt_san_probe = &m_rt_san_probe5;
-    else if (index == 6) rt_san_probe = &m_rt_san_probe6;
-
-    if (rt_probe->size() < 600 &&
-        rt_probe->first().first.secsTo(QDateTime::currentDateTime()) < 660)
-    {
-        return;
-    }
-
-    std::pair <QDateTime, float> cur = rt_probe->first();
+    std::pair <QDateTime, float> cur = m_rt_probe[index].first();
     float curval = cur.second;
     int curcnt = 1;
     int idx = 0;
-    for (auto d: *rt_probe)
+
+    for (auto d: m_rt_probe[index])
     {
+        // don't sanetize inside the last 10m window
+        if (d.first.secsTo(QDateTime::currentDateTime()) < 600) break;
+
         if (cur.first.secsTo(d.first) < 60)
         {
             curval += d.second;
             curcnt++;
-            rt_probe->removeFirst();
+            m_rt_probe[index].removeFirst();
         }
         else
         {
             cur.second = curval / static_cast<float>(curcnt);
-            rt_san_probe->push_back(cur);
+            m_rt_san_probe[index].push_back(cur);
             cur = d;
             curval = cur.second;
             curcnt = 1;
         }
 
         idx++;
+    }
+
+    if (curcnt > 1)
+    {
+        cur.second = curval / static_cast<float>(curcnt);
+        m_rt_san_probe[index].push_back(cur);
     }
 }
 
@@ -516,6 +508,7 @@ void DeviceTheengsProbes::getChartData_probeRT(QDateTimeAxis *axis,
     axis->setFormat("hh:mm");
     axis->setMin(QDateTime::currentDateTime().addSecs(seconds));
     axis->setMax(QDateTime::currentDateTime());
+
     //
     if (!reload && m_rt_lastupdate.isValid() && m_rt_lastupdate.elapsed() < 500)
     {
@@ -527,64 +520,24 @@ void DeviceTheengsProbes::getChartData_probeRT(QDateTimeAxis *axis,
     }
 
     //
-    if (temp1 && hasTemp1())
+    int maxprobes = 0;
+    QLineSeries *temp[6] = { nullptr };
+    if (temp1 && hasTemp1()) { maxprobes++; temp[0] = temp1; temp1->clear(); }
+    if (temp2 && hasTemp2()) { maxprobes++; temp[1] = temp2; temp2->clear(); }
+    if (temp3 && hasTemp3()) { maxprobes++; temp[2] = temp3; temp3->clear(); }
+    if (temp4 && hasTemp4()) { maxprobes++; temp[3] = temp4; temp4->clear(); }
+    if (temp5 && hasTemp5()) { maxprobes++; temp[4] = temp5; temp5->clear(); }
+    if (temp6 && hasTemp6()) { maxprobes++; temp[5] = temp6; temp6->clear(); }
+
+    for (int i = 0; i < maxprobes; i++)
     {
-        temp1->clear();
-        for (auto p: m_rt_san_probe1) {
-            temp1->append(p.first.toMSecsSinceEpoch(), p.second);
+        for (auto p: m_rt_san_probe[i]) {
+            if (p.first.secsTo(QDateTime::currentDateTime()) > -seconds) continue;
+            temp[i]->append(p.first.toMSecsSinceEpoch(), p.second);
         }
-        for (auto p: m_rt_probe1) {
-            temp1->append(p.first.toMSecsSinceEpoch(), p.second);
-        }
-    }
-    if (temp2 && hasTemp2())
-    {
-        temp2->clear();
-        for (auto p: m_rt_san_probe2) {
-            temp1->append(p.first.toMSecsSinceEpoch(), p.second);
-        }
-        for (auto p: m_rt_probe2) {
-            temp2->append(p.first.toMSecsSinceEpoch(), p.second);
-        }
-    }
-    if (temp3 && hasTemp3())
-    {
-        temp3->clear();
-        for (auto p: m_rt_san_probe3) {
-            temp3->append(p.first.toMSecsSinceEpoch(), p.second);
-        }
-        for (auto p: m_rt_probe3) {
-            temp3->append(p.first.toMSecsSinceEpoch(), p.second);
-        }
-    }
-    if (temp4 && hasTemp4())
-    {
-        temp4->clear();
-        for (auto p: m_rt_san_probe4) {
-            temp4->append(p.first.toMSecsSinceEpoch(), p.second);
-        }
-        for (auto p: m_rt_probe4) {
-            temp4->append(p.first.toMSecsSinceEpoch(), p.second);
-        }
-    }
-    if (temp5 && hasTemp5())
-    {
-        temp5->clear();
-        for (auto p: m_rt_san_probe5) {
-            temp5->append(p.first.toMSecsSinceEpoch(), p.second);
-        }
-        for (auto p: m_rt_probe5) {
-            temp5->append(p.first.toMSecsSinceEpoch(), p.second);
-        }
-    }
-    if (temp6 && hasTemp6())
-    {
-        temp6->clear();
-        for (auto p: m_rt_san_probe6) {
-            temp6->append(p.first.toMSecsSinceEpoch(), p.second);
-        }
-        for (auto p: m_rt_probe6) {
-            temp6->append(p.first.toMSecsSinceEpoch(), p.second);
+        for (auto p: m_rt_probe[i]) {
+            if (p.first.secsTo(QDateTime::currentDateTime()) > -seconds) continue;
+            temp[i]->append(p.first.toMSecsSinceEpoch(), p.second);
         }
     }
 }

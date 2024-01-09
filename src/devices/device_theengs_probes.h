@@ -49,18 +49,8 @@ class DeviceTheengsProbes: public DeviceTheengs
     bool m_capture_started = false;
     QList <int> m_capture_range_was;
 
-    QList <std::pair<QDateTime, float>> m_rt_probe1;
-    QList <std::pair<QDateTime, float>> m_rt_probe2;
-    QList <std::pair<QDateTime, float>> m_rt_probe3;
-    QList <std::pair<QDateTime, float>> m_rt_probe4;
-    QList <std::pair<QDateTime, float>> m_rt_probe5;
-    QList <std::pair<QDateTime, float>> m_rt_probe6;
-    QList <std::pair<QDateTime, float>> m_rt_san_probe1;
-    QList <std::pair<QDateTime, float>> m_rt_san_probe2;
-    QList <std::pair<QDateTime, float>> m_rt_san_probe3;
-    QList <std::pair<QDateTime, float>> m_rt_san_probe4;
-    QList <std::pair<QDateTime, float>> m_rt_san_probe5;
-    QList <std::pair<QDateTime, float>> m_rt_san_probe6;
+    QList <std::pair<QDateTime, float>> m_rt_probe[6];
+    QList <std::pair<QDateTime, float>> m_rt_san_probe[6];
 
     QElapsedTimer m_rt_lastupdate;
 
