@@ -17,11 +17,8 @@
 */
 
 #include "device_flowercare_tuya.h"
-#include "utils_versionchecker.h"
-#include "thirdparty/RC4/rc4.h"
 
 #include <cstdint>
-#include <cmath>
 
 #include <QBluetoothUuid>
 #include <QLowEnergyService>
@@ -179,7 +176,6 @@ void DeviceFlowerCare_tuya::parseAdvertisementData(const uint16_t adv_mode,
 
         int batt = -99;
         float temp = -99.f;
-        float humi = -99.f;
         int lumi = -99;
         int moist = -99;
         int fert = -99;
@@ -187,16 +183,16 @@ void DeviceFlowerCare_tuya::parseAdvertisementData(const uint16_t adv_mode,
         batt = static_cast<int8_t>(data[6]);
         setBattery(batt);
 
-        humi = static_cast<int16_t>(data[0]);
+        moist = static_cast<int16_t>(data[0]);
         temp = static_cast<int16_t>(data[2] + (data[1] << 8)) / 10.f;
         lumi = static_cast<int16_t>(data[3] + (data[4] << 8) + (data[5] << 16));
         fert = static_cast<int16_t>(data[8] + (data[7] << 8));
 
-        if (areValuesValid(humi, fert, -99.f, -99.f, temp, -99.f, lumi))
+        if (areValuesValid(moist, fert, -99.f, -99.f, temp, -99.f, lumi))
         {
             m_lastUpdate = QDateTime::currentDateTime();
 
-            m_soilMoisture = humi;
+            m_soilMoisture = moist;
             m_soilConductivity = fert;
             m_temperature = temp;
             m_luminosityLux = lumi;
@@ -204,7 +200,7 @@ void DeviceFlowerCare_tuya::parseAdvertisementData(const uint16_t adv_mode,
             if (needsUpdateDb_mini())
             {
                 addDatabaseRecord(m_lastUpdate.toSecsSinceEpoch(),
-                                  humi, fert, -99.f, -99.f,
+                                  moist, fert, -99.f, -99.f,
                                   temp, -99.f, lumi);
             }
 

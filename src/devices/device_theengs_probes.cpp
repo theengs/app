@@ -463,7 +463,6 @@ void DeviceTheengsProbes::sanetizeRtCapture(int index)
     std::pair <QDateTime, float> cur = m_rt_probe[index].first();
     float curval = cur.second;
     int curcnt = 1;
-    int idx = 0;
 
     for (const auto &d: m_rt_probe[index])
     {
@@ -484,8 +483,6 @@ void DeviceTheengsProbes::sanetizeRtCapture(int index)
             curval = cur.second;
             curcnt = 1;
         }
-
-        idx++;
     }
 
     if (curcnt > 1)
