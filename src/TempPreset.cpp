@@ -368,20 +368,26 @@ float TempPreset::getPresetRangeTempMin_fromRangeIndex(int index) const
 {
     float temp = -99.f;
 
-    if (index == -2)
+    if (m_ranges.size() > 0 && m_ranges.size() > index)
     {
-        TempRange *tr = qobject_cast<TempRange*>(m_ranges.last());
-        if (tr) temp = tr->getTempMin();
-    }
-    else if (index == -1)
-    {
-        TempRange *tr = qobject_cast<TempRange*>(m_ranges.first());
-        if (tr) temp = tr->getTempMin();
-    }
-    else if (index >= 0 && index < m_ranges.size())
-    {
-        TempRange *tr = qobject_cast<TempRange*>(m_ranges.at(index));
-        if (tr) temp = tr->getTempMin();
+        if (index == -2)
+        {
+            TempRange *tr = qobject_cast<TempRange*>(m_ranges.last());
+            if (tr) temp = tr->getTempMin();
+        }
+        else if (index == -1)
+        {
+            TempRange *tr = qobject_cast<TempRange*>(m_ranges.first());
+            if (tr) temp = tr->getTempMin();
+        }
+        else if (index >= 0 && index < m_ranges.size())
+        {
+            //if (m_ranges.size() > index)
+            {
+                TempRange *tr = qobject_cast<TempRange*>(m_ranges.at(index));
+                if (tr) temp = tr->getTempMin();
+            }
+        }
     }
 
     return temp;
@@ -391,20 +397,23 @@ float TempPreset::getPresetRangeTempMax_fromRangeIndex(int index) const
 {
     float temp = -99.f;
 
-    if (index == -2)
+    if (m_ranges.size() > 0 && m_ranges.size() > index)
     {
-        TempRange *tr = qobject_cast<TempRange*>(m_ranges.last());
-        if (tr) temp = tr->getTempMaxLimit();
-    }
-    else if (index == -1)
-    {
-        TempRange *tr = qobject_cast<TempRange*>(m_ranges.first());
-        if (tr) temp = tr->getTempMaxLimit();
-    }
-    else if (index >= 0 && index < m_ranges.size())
-    {
-        TempRange *tr = qobject_cast<TempRange*>(m_ranges.at(index));
-        if (tr) temp = tr->getTempMaxLimit();
+        if (index == -2)
+        {
+            TempRange *tr = qobject_cast<TempRange*>(m_ranges.last());
+            if (tr) temp = tr->getTempMaxLimit();
+        }
+        else if (index == -1)
+        {
+            TempRange *tr = qobject_cast<TempRange*>(m_ranges.first());
+            if (tr) temp = tr->getTempMaxLimit();
+        }
+        else if (index >= 0 && index < m_ranges.size())
+        {
+            TempRange *tr = qobject_cast<TempRange*>(m_ranges.at(index));
+            if (tr) temp = tr->getTempMaxLimit();
+        }
     }
 
     return temp;
@@ -414,20 +423,23 @@ QString TempPreset::getPresetRangeName_fromRangeIndex(int index) const
 {
     QString name;
 
-    if (index == -2)
+    if (m_ranges.size() > 0 && m_ranges.size() > index)
     {
-        TempRange *tr = qobject_cast<TempRange*>(m_ranges.last());
-        if (tr) name = tr->getName();
-    }
-    else if (index == -1)
-    {
-        TempRange *tr = qobject_cast<TempRange*>(m_ranges.first());
-        if (tr) name = tr->getName();
-    }
-    else if (index >= 0 && index < m_ranges.size())
-    {
-        TempRange *tr = qobject_cast<TempRange*>(m_ranges.at(index));
-        if (tr) name = tr->getName();
+        if (index == -2)
+        {
+            TempRange *tr = qobject_cast<TempRange*>(m_ranges.last());
+            if (tr) name = tr->getName();
+        }
+        else if (index == -1)
+        {
+            TempRange *tr = qobject_cast<TempRange*>(m_ranges.first());
+            if (tr) name = tr->getName();
+        }
+        else if (index >= 0 && index < m_ranges.size())
+        {
+            TempRange *tr = qobject_cast<TempRange*>(m_ranges.at(index));
+            if (tr) name = tr->getName();
+        }
     }
 
     return name;
