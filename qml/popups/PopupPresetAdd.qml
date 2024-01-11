@@ -136,12 +136,9 @@ Popup {
                 model: ListModel {
                     ListElement { idx:  0; txt: ""; src: "qrc:/assets/icons_fontawesome/question-solid.svg"; }
                     ListElement { idx:  1; txt: ""; src: "qrc:/assets/icons_fontawesome/cow-solid.svg"; }
-                    ListElement { idx:  2; txt: ""; src: "qrc:/assets/icons_fontawesome/fish-fins-solid.svg"; }
-                    ListElement { idx:  3; txt: ""; src: "qrc:/assets/icons_fontawesome/egg-solid.svg"; }
-                    ListElement { idx:  4; txt: ""; src: "qrc:/assets/icons_fontawesome/kiwi-bird-solid.svg"; }
-                    ListElement { idx:  5; txt: ""; src: "qrc:/assets/icons_fontawesome/shrimp-solid.svg"; }
-                    ListElement { idx:  6; txt: ""; src: "qrc:/assets/icons_fontawesome/pepper-hot-solid.svg"; }
-                    ListElement { idx:  7; txt: ""; src: "qrc:/assets/icons_fontawesome/apple-whole-solid.svg"; }
+                    ListElement { idx:  2; txt: ""; src: "qrc:/assets/icons_fontawesome/piggy-bank-solid.svg"; }
+                    ListElement { idx:  3; txt: ""; src: "qrc:/assets/icons_fontawesome/kiwi-bird-solid.svg"; }
+                    ListElement { idx:  4; txt: ""; src: "qrc:/assets/icons_fontawesome/fish-fins-solid.svg"; }
                 }
                 currentSelection: 0
                 onMenuSelected: (index) => {

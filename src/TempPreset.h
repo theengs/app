@@ -42,15 +42,12 @@ public:
     enum PresetType {
         PRESET_UNKNOWN          = 0,
 
-        PRESET_MEAT,
+        PRESET_BEEF,
+        PRESET_PORK,
+        PRESET_CHICKEN,
         PRESET_FISH,
-        PRESET_EGG,
-        PRESET_POULTRY,
-        PRESET_SEAFOOD,
-        PRESET_VEGETABLE,
-        PRESET_FRUIT,
 
-        PRESET_LAST = PRESET_FRUIT,
+        PRESET_LAST = PRESET_FISH,
     };
     Q_ENUM(PresetType)
 };
