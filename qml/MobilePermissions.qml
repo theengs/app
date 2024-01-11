@@ -61,16 +61,16 @@ Item {
             ////////
 
             Item { // Network access
-                height: 24
                 anchors.left: parent.left
                 anchors.right: parent.right
+                height: 24
 
                 RoundButtonIcon {
-                    width: 32
-                    height: 32
                     anchors.left: parent.left
                     anchors.leftMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
+                    width: 32
+                    height: 32
                     z: 1
 
                     property bool validperm: true
@@ -82,12 +82,12 @@ Item {
                 }
 
                 Text {
-                    height: 16
                     anchors.left: parent.left
                     anchors.leftMargin: 64
                     anchors.right: parent.right
                     anchors.rightMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
+                    height: 16
 
                     text: qsTr("Network access")
                     textFormat: Text.PlainText
@@ -467,7 +467,7 @@ Item {
 
                     onClicked: {
                         utilsApp.vibrate(25)
-                        utilsApp.getMobileNotificationPermission()
+                        validperm = utilsApp.getMobileNotificationPermission()
                         refreshPermissions.start()
                     }
                 }
@@ -488,7 +488,7 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                 }
             }
-            Text { // Bluetooth legend
+            Text { // Notifications legend
                 anchors.left: parent.left
                 anchors.leftMargin: appHeader.headerPosition
                 anchors.right: parent.right
@@ -511,16 +511,16 @@ Item {
 
             Item {
                 id: element_infos
-                height: 24
                 anchors.left: parent.left
                 anchors.right: parent.right
+                height: 32
 
                 IconSvg {
-                    width: 32
-                    height: 32
                     anchors.left: parent.left
                     anchors.leftMargin: Theme.componentMargin
                     anchors.verticalCenter: parent.verticalCenter
+                    width: 32
+                    height: 32
 
                     opacity: 0.66
                     color: Theme.colorSubText
@@ -536,6 +536,7 @@ Item {
 
                     text: qsTr("Click on the checkmarks to request missing permissions.")
                     textFormat: Text.StyledText
+                    lineHeight : 0.8
                     wrapMode: Text.WordWrap
                     color: Theme.colorText
                     font.pixelSize: Theme.fontSizeContent
@@ -557,9 +558,9 @@ Item {
             }
 
             ButtonWireframeIcon {
-                height: 36
                 anchors.left: parent.left
                 anchors.leftMargin: appHeader.headerPosition
+                height: 36
 
                 primaryColor: Theme.colorPrimary
                 secondaryColor: Theme.colorBackground

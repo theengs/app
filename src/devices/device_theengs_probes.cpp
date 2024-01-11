@@ -292,6 +292,7 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
 
                         if (capture_range_is != m_capture_range_was[i])
                         {
+                            QString title;
                             QString notif;
 
                             if (m_capture_range_was[i] == -3)
@@ -317,24 +318,26 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
                                 if (min > -80 && max > -80) rangestr =  QString::number(min) + unitstr + " - " + QString::number(max) + unitstr;
                                 else if (min > -80 && max < -80) rangestr =  QString::number(min) + unitstr + " and up";
 
+                                title = namestr + " probe #" + QString::number(i+1) + " alert";
+
                                 if (capture_range_is == -2) // above last range
                                 {
-                                    notif = namestr + " probe #" + QString::number(i+1) + " is above " + tp->getName()
-                                                    + " last range " + rangestr + " (" + tp->getPresetRangeName_fromRangeIndex(capture_range_is) + ")";
+                                    notif = "Above " + tp->getName() + " last range " + rangestr +
+                                            " (" + tp->getPresetRangeName_fromRangeIndex(capture_range_is) + ")";
                                 }
-                                else if (capture_range_is == -1) // "below" first range
+                                else if (capture_range_is == -1) // below first range
                                 {
-                                    notif = namestr + " probe #" + QString::number(i+1) + " is below " + tp->getName()
-                                                    + " first range " + rangestr + " (" + tp->getPresetRangeName_fromRangeIndex(capture_range_is) + ")";
+                                    notif = "Below " + tp->getName() + " first range " + rangestr +
+                                            " (" + tp->getPresetRangeName_fromRangeIndex(capture_range_is) + ")";
                                 }
                                 else // inside range #i
                                 {
-                                    notif = namestr + " probe #" + QString::number(i+1) + " is into " + tp->getName()
-                                                    + " range " + rangestr + " (" + tp->getPresetRangeName_fromRangeIndex(capture_range_is) + ")";
+                                    notif = "Inside " + tp->getName() + " range " + rangestr +
+                                            " (" + tp->getPresetRangeName_fromRangeIndex(capture_range_is) + ")";
                                 }
                             }
 
-                            if (!notif.isEmpty())
+                            if (!title.isEmpty() && !notif.isEmpty())
                             {
                                 qDebug() << notif;
                                 nm->setNotification("Temperature probe alert", notif, 16);
