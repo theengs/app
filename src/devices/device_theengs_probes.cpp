@@ -339,8 +339,7 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
 
                             if (!title.isEmpty() && !notif.isEmpty())
                             {
-                                qDebug() << notif;
-                                nm->setNotification("Temperature probe alert", notif, 16);
+                                nm->setNotification(title, notif, 16);
                             }
 
                             m_capture_range_was[i] = capture_range_is;
