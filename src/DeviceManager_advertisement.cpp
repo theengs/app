@@ -85,10 +85,10 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
                 doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + info.manufacturerData(id).toHex().toStdString();
                 doc["rssi"] = info.rssi();
 
-                TheengsDecoder a;
+                TheengsDecoder dec;
                 ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
 
-                if (a.decodeBLEJson(obj) >= 0)
+                if (dec.decodeBLEJson(obj) >= 0)
                 {
                     obj.remove("manufacturerdata");
 
@@ -97,7 +97,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
                     //qDebug() << "output:" << output.c_str();
 
                     // Do not process devices with random macs or IBEACONS packets
-                    if (doc["type"] == "RMAC" || doc["model_id"] == "IBEACON") continue;
+                    if (doc["type"] == "RMAC" || doc["prmac"] || doc["model_id"] == "IBEACON") continue;
 
                     dd->setTheengsModelId(QString::fromStdString(doc["model"]), QString::fromStdString(doc["model_id"]));
 
@@ -154,8 +154,8 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
                     serializeJson(obj, output);
                     //qDebug() << "output:" << output.c_str();
 
-                     // Do not process devices with random macs
-                    if (doc["type"] == "RMAC") continue;
+                    // Do not process devices with random macs
+                    if (doc["type"] == "RMAC" || doc["prmac"]) continue;
 
                     dd->setTheengsModelId(QString::fromStdString(doc["model"]), QString::fromStdString(doc["model_id"]));
 
@@ -248,6 +248,9 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
                 serializeJson(obj, output);
                 //qDebug() << "(UNKNOWN DEVICE) output (mfd) " << output.c_str();
 
+                // Do not process devices with random macs or IBEACONS packets
+                if (doc["type"] == "RMAC" || doc["prmac"] || doc["model_id"] == "IBEACON") continue;
+
                 SettingsManager *sm = SettingsManager::getInstance();
                 MqttManager *mq = MqttManager::getInstance();
                 if (sm && mq && !mac_qstr_clean.isEmpty())
@@ -292,6 +295,9 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
                 std::string output;
                 serializeJson(obj, output);
                 //qDebug() << "(UNKNOWN DEVICE) output (svd)" << output.c_str();
+
+                // Do not process devices with random macs
+                if (doc["type"] == "RMAC" || doc["prmac"]) continue;
 
                 SettingsManager *sm = SettingsManager::getInstance();
                 MqttManager *mq = MqttManager::getInstance();

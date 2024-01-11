@@ -142,7 +142,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
         if (dec.decodeBLEJson(obj) >= 0)
         {
             // Do not process devices with random macs or IBEACONS packets
-            if (doc["type"] == "RMAC" || doc["model_id"] == "IBEACON") continue;
+            if (doc["type"] == "RMAC" || doc["prmac"] || doc["model_id"] == "IBEACON") continue;
 
             deviceModel = QString::fromStdString(doc["model"]);
             deviceModelID = QString::fromStdString(doc["model_id"]);
@@ -176,7 +176,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
         if (dec.decodeBLEJson(obj) >= 0)
         {
             // Do not process devices with random macs
-            if (doc["type"] == "RMAC") continue;
+            if (doc["type"] == "RMAC" || doc["prmac"]) continue;
 
             deviceModel = QString::fromStdString(doc["model"]);
             deviceModelID = QString::fromStdString(doc["model_id"]);
@@ -185,7 +185,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
             deviceProps = QString::fromStdString(dec.getTheengProperties(deviceModelID.toLatin1()));
 
             // Do not process devices with random macs
-            if (deviceTypes == "RMAC") continue;
+            if (deviceTypes == "RMAC" || doc["prmac"]) continue;
 
             qDebug() << "addDevice() FOUND [svd] :" << deviceModel << deviceModelID << deviceTags << deviceTypes << deviceProps;
             break;
@@ -283,7 +283,7 @@ QString DeviceManager::getDeviceModelIdTheengs_fromAdv(const QBluetoothDeviceInf
             QString deviceTypes = QString::fromStdString(doc["type"]);
 
             // Do not process devices with random macs
-            if (deviceTypes == "RMAC") continue;
+            if (deviceTypes == "RMAC" || doc["prmac"]) continue;
             if (modelId.isEmpty()) continue;
 
             return modelId;
@@ -308,7 +308,7 @@ QString DeviceManager::getDeviceModelIdTheengs_fromAdv(const QBluetoothDeviceInf
             QString deviceTypes = QString::fromStdString(doc["type"]);
 
             // Do not process devices with random macs
-            if (deviceTypes == "RMAC") continue;
+            if (deviceTypes == "RMAC" || doc["prmac"]) continue;
             if (modelId.isEmpty()) continue;
 
             return modelId;
