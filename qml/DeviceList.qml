@@ -368,10 +368,10 @@ Item {
         visible: isDesktop
 
         ButtonWireframe {
-            text: qsTr("temps")
+            text: qsTr("presets")
             fullColor: true
             primaryColor: Theme.colorSecondary
-            onClicked: screenTemperaturePresetList.loadScreen()
+            onClicked: screenPresetsList.loadScreen()
         }
 
         ButtonWireframe {

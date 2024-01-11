@@ -261,8 +261,8 @@ ApplicationWindow {
             screenDeviceGeneric.backAction()
         } else if (appContent.state === "DeviceBrowser") {
             screenDeviceBrowser.backAction()
-        } else if (appContent.state === "TemperaturePresetList") {
-            screenTemperaturePresetList.backAction()
+        } else if (appContent.state === "PresetsList") {
+            screenPresetsList.backAction()
         } else if (appContent.state === "SettingsMqtt") {
             screenSettingsMqtt.backAction()
         } else if (appContent.state === "AboutPermissions") {
@@ -381,7 +381,7 @@ ApplicationWindow {
         }
 
         TemperaturePresetList {
-            id: screenTemperaturePresetList
+            id: screenPresetsList
             anchors.fill: parent
             anchors.bottomMargin: mobileMenu.hhv
         }
@@ -419,7 +419,7 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenDeviceBrowser; visible: false; }
-                PropertyChanges { target: screenTemperaturePresetList; visible: false; }
+                PropertyChanges { target: screenPresetsList; visible: false; }
                 PropertyChanges { target: screenSettingsMqtt; visible: false; }
                 PropertyChanges { target: screenSettings; visible: false; }
                 PropertyChanges { target: screenAbout; visible: false; }
@@ -437,7 +437,7 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenDeviceBrowser; visible: false; }
-                PropertyChanges { target: screenTemperaturePresetList; visible: false; }
+                PropertyChanges { target: screenPresetsList; visible: false; }
                 PropertyChanges { target: screenSettingsMqtt; visible: false; }
                 PropertyChanges { target: screenSettings; visible: false; }
                 PropertyChanges { target: screenAbout; visible: false; }
@@ -455,7 +455,7 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenDeviceBrowser; visible: false; }
-                PropertyChanges { target: screenTemperaturePresetList; visible: false; }
+                PropertyChanges { target: screenPresetsList; visible: false; }
                 PropertyChanges { target: screenSettingsMqtt; visible: false; }
                 PropertyChanges { target: screenSettings; visible: false; }
                 PropertyChanges { target: screenAbout; visible: false; }
@@ -473,7 +473,7 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenDeviceBrowser; visible: false; }
-                PropertyChanges { target: screenTemperaturePresetList; visible: false; }
+                PropertyChanges { target: screenPresetsList; visible: false; }
                 PropertyChanges { target: screenSettingsMqtt; visible: false; }
                 PropertyChanges { target: screenSettings; visible: false; }
                 PropertyChanges { target: screenAbout; visible: false; }
@@ -491,7 +491,7 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenDeviceBrowser; visible: false; }
-                PropertyChanges { target: screenTemperaturePresetList; visible: false; }
+                PropertyChanges { target: screenPresetsList; visible: false; }
                 PropertyChanges { target: screenSettingsMqtt; visible: false; }
                 PropertyChanges { target: screenSettings; visible: false; }
                 PropertyChanges { target: screenAboutPermissions; visible: false; }
@@ -509,7 +509,7 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenDeviceBrowser; visible: false; }
-                PropertyChanges { target: screenTemperaturePresetList; visible: false; }
+                PropertyChanges { target: screenPresetsList; visible: false; }
                 PropertyChanges { target: screenSettingsMqtt; visible: false; }
                 PropertyChanges { target: screenSettings; visible: false; }
                 PropertyChanges { target: screenAbout; visible: false; }
@@ -527,7 +527,7 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceMotionSensor; visible: true; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenDeviceBrowser; visible: false; }
-                PropertyChanges { target: screenTemperaturePresetList; visible: false; }
+                PropertyChanges { target: screenPresetsList; visible: false; }
                 PropertyChanges { target: screenSettingsMqtt; visible: false; }
                 PropertyChanges { target: screenSettings; visible: false; }
                 PropertyChanges { target: screenAbout; visible: false; }
@@ -545,15 +545,15 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: true; }
                 PropertyChanges { target: screenDeviceBrowser; visible: false; }
-                PropertyChanges { target: screenTemperaturePresetList; visible: false; }
+                PropertyChanges { target: screenPresetsList; visible: false; }
                 PropertyChanges { target: screenSettingsMqtt; visible: false; }
                 PropertyChanges { target: screenSettings; visible: false; }
                 PropertyChanges { target: screenAbout; visible: false; }
                 PropertyChanges { target: screenAboutPermissions; visible: false; }
             },
             State {
-                name: "TemperaturePresetList"
-                PropertyChanges { target: appHeader; headerTitle: qsTr("Temperature presets"); }
+                name: "PresetsList"
+                PropertyChanges { target: appHeader; headerTitle: qsTr("Threshold Settings"); }
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; }
@@ -563,7 +563,7 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenDeviceBrowser; visible: false; }
-                PropertyChanges { target: screenTemperaturePresetList; visible: true; }
+                PropertyChanges { target: screenPresetsList; visible: true; }
                 PropertyChanges { target: screenSettingsMqtt; visible: false; }
                 PropertyChanges { target: screenSettings; visible: false; }
                 PropertyChanges { target: screenAbout; visible: false; }
@@ -581,7 +581,7 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenDeviceBrowser; visible: false; }
-                PropertyChanges { target: screenTemperaturePresetList; visible: false; }
+                PropertyChanges { target: screenPresetsList; visible: false; }
                 PropertyChanges { target: screenSettingsMqtt; visible: true; }
                 PropertyChanges { target: screenSettings; visible: false; }
                 PropertyChanges { target: screenAbout; visible: false; }
@@ -599,7 +599,7 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenDeviceBrowser; visible: false; }
-                PropertyChanges { target: screenTemperaturePresetList; visible: false; }
+                PropertyChanges { target: screenPresetsList; visible: false; }
                 PropertyChanges { target: screenSettingsMqtt; visible: false; }
                 PropertyChanges { target: screenSettings; visible: true; }
                 PropertyChanges { target: screenAbout; visible: false; }
@@ -617,7 +617,7 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenDeviceBrowser; visible: false; }
-                PropertyChanges { target: screenTemperaturePresetList; visible: false; }
+                PropertyChanges { target: screenPresetsList; visible: false; }
                 PropertyChanges { target: screenSettingsMqtt; visible: false; }
                 PropertyChanges { target: screenSettings; visible: false; }
                 PropertyChanges { target: screenAbout; visible: true; }
@@ -635,7 +635,7 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenDeviceBrowser; visible: false; }
-                PropertyChanges { target: screenTemperaturePresetList; visible: false; }
+                PropertyChanges { target: screenPresetsList; visible: false; }
                 PropertyChanges { target: screenSettingsMqtt; visible: false; }
                 PropertyChanges { target: screenSettings; visible: false; }
                 PropertyChanges { target: screenAbout; visible: false; }
@@ -653,7 +653,7 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenDeviceBrowser; visible: true; }
-                PropertyChanges { target: screenTemperaturePresetList; visible: false; }
+                PropertyChanges { target: screenPresetsList; visible: false; }
                 PropertyChanges { target: screenSettingsMqtt; visible: false; }
                 PropertyChanges { target: screenSettings; visible: false; }
                 PropertyChanges { target: screenAbout; visible: false; }

@@ -9,7 +9,7 @@ Item {
     anchors.fill: parent
     anchors.margins: 12
 
-    property bool useOpenGL: false
+    property bool useOpenGL: true
     property bool showGraphDots: false
     property color legendColor: Theme.colorSubText
 

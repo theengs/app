@@ -106,23 +106,23 @@ DrawerThemed {
                     }
                 }
 
+                DrawerItem {
+                    highlighted: (appContent.state === "PresetsList")
+
+                    text: qsTr("Threshold Settings")
+                    iconSource: "qrc:/assets/icons_material/duotone-tune-24px.svg"
+
+                    onClicked: {
+                        screenPresetsList.loadScreen()
+                        appDrawer.close()
+                    }
+                }
+
                 ////////
 
                 ListSeparatorPadded { }
 
                 ////////
-
-                DrawerItem {
-                    highlighted: (appContent.state === "Ranges")
-
-                    text: qsTr("Ranges")
-                    iconSource: "qrc:/assets/icons_material/baseline-outdoor_grill-24px.svg"
-
-                    onClicked: {
-                        screenTemperaturePresetList.loadScreen()
-                        appDrawer.close()
-                    }
-                }
 
                 DrawerItem {
                     highlighted: (appContent.state === "SettingsMqtt")

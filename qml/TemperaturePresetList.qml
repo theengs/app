@@ -4,22 +4,22 @@ import QtQuick.Controls
 import ThemeEngine
 
 Loader {
-    id: screenTemperaturePresetList
+    id: screenPresetsList
     anchors.fill: parent
 
     ////////////////////////////////////////////////////////////////////////////
 
     function loadScreen() {
         // load screen
-        screenTemperaturePresetList.active = true
+        screenPresetsList.active = true
 
         // change screen
-        appContent.state = "TemperaturePresetList"
+        appContent.state = "PresetsList"
     }
 
     function backAction() {
-        if (screenTemperaturePresetList.sourceComponent) {
-            screenTemperaturePresetList.item.backAction()
+        if (screenPresetsList.sourceComponent) {
+            screenPresetsList.item.backAction()
         }
     }
 

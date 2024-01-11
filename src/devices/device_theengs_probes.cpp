@@ -465,7 +465,7 @@ void DeviceTheengsProbes::sanetizeRtCapture(int index)
     int curcnt = 1;
     int idx = 0;
 
-    for (auto d: m_rt_probe[index])
+    for (const auto &d: m_rt_probe[index])
     {
         // don't sanetize inside the last 10m window
         if (d.first.secsTo(QDateTime::currentDateTime()) < 600) break;
@@ -534,11 +534,11 @@ void DeviceTheengsProbes::getChartData_probeRT(QDateTimeAxis *axis,
 
     for (int i = 0; i < maxprobes; i++)
     {
-        for (auto p: m_rt_san_probe[i]) {
+        for (const auto &p: m_rt_san_probe[i]) {
             if (p.first.secsTo(QDateTime::currentDateTime()) > -seconds) continue;
             temp[i]->append(p.first.toMSecsSinceEpoch(), p.second);
         }
-        for (auto p: m_rt_probe[i]) {
+        for (const auto &p: m_rt_probe[i]) {
             if (p.first.secsTo(QDateTime::currentDateTime()) > -seconds) continue;
             temp[i]->append(p.first.toMSecsSinceEpoch(), p.second);
         }

@@ -59,7 +59,6 @@ int main(int argc, char *argv[])
     // Arguments parsing ///////////////////////////////////////////////////////
 
     bool start_minimized = false;
-    bool refresh_only = false;
     bool background_service = false;
     for (int i = 1; i < argc; i++)
     {
@@ -71,8 +70,6 @@ int main(int argc, char *argv[])
                 start_minimized = true;
             if (QString::fromLocal8Bit(argv[i]) == "--service")
                 background_service = true;
-            if (QString::fromLocal8Bit(argv[i]) == "--refresh")
-                refresh_only = true;
         }
     }
 

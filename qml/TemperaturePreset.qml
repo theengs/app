@@ -244,7 +244,7 @@ Item {
         id: popupPresetCopy
         onConfirmed: {
             // back to the preset list
-            screenTemperaturePresetList.backAction()
+            screenPresetsList.backAction()
         }
     }
     PopupPresetRangeAdd {
