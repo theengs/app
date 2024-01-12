@@ -149,10 +149,8 @@ void DeviceTheengsGeneric::parseTheengsProps(const QString &json)
         QString prop_key = it.key();
         QJsonObject prop_value = it.value().toObject();
 
-#if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
-#else
+        // Don't include MAC address
         if (prop_key == "mac") continue;
-#endif
 
         QString value_name, value_unit;
         if (prop_value.contains("name")) value_name = prop_value["name"].toString();
