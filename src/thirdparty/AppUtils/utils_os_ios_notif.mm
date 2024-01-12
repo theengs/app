@@ -41,7 +41,7 @@
 
 @implementation NotificationDelegate
 
-- (id) initWithObject:(UtilsIOSNotifications *)localNotification
+-(id)initWithObject:(UtilsIOSNotifications *)localNotification
 {
     self = [super init];
     if (self)
@@ -62,7 +62,7 @@
 }
 
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center
-         didReceiveNotificationResponse:(UNNotificationResponse *)response
+        didReceiveNotificationResponse:(UNNotificationResponse *)response
             withCompletionHandler:(void(^)())completionHandler
 {
     Q_UNUSED(center)
@@ -102,10 +102,10 @@ bool UtilsIOSNotifications::notify(const QString &title, const QString &message,
     UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
     content.title = title.toNSString();
     content.body = message.toNSString();
-    content.sound = [UNNotificationSound defaultSound withAudioVolume:1.0];
+    content.sound = [UNNotificationSound defaultSound]; // withAudioVolume:1.0
 
     // Create trigger time
-    UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:1.0 repeats:NO];
+    UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:0.33 repeats:NO];
 
     // Unique identifier
     NSString *identifierNSString = QString::number(channel).toNSString();
@@ -122,7 +122,6 @@ bool UtilsIOSNotifications::notify(const QString &title, const QString &message,
         if (error)
         {
             NSLog(@"Local Notification failed");
-            return false;
         }
     }];
 
