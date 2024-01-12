@@ -58,7 +58,7 @@
     Q_UNUSED(center)
     long var = [[notification.request.content.userInfo objectForKey:@"ID"] longValue];
 
-    completionHandler(UNNotificationPresentationOptionList | UNNotificationPresentationOptionBanner);
+    completionHandler(UNNotificationPresentationOptionList | UNNotificationPresentationOptionBanner | UNNotificationPresentationOptionSound);
 }
 
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center
