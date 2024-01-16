@@ -36,7 +36,9 @@ class NotificationManager : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString notification READ getNotificationShort WRITE setNotificationShort NOTIFY notificationChanged)
+    Q_PROPERTY(QString notification READ getNotification WRITE setNotificationShort NOTIFY notificationChanged)
+
+    Q_PROPERTY(bool permissionOS READ hasPermissionOS NOTIFY permissionsChanged)
 
     static NotificationManager *instance;
 
@@ -46,6 +48,9 @@ class NotificationManager : public QObject
     QString m_title;
     QString m_message;
     int m_channel = 0;
+
+    bool m_permOS = false;
+    bool hasPermissionOS() const { return m_permOS; }
 
 #if defined(Q_OS_IOS)
     UtilsIOSNotifications m_iosnotifier;
@@ -58,14 +63,17 @@ private slots:
 
 signals:
     void notificationChanged();
+    void permissionsChanged();
 
 public:
     static NotificationManager *getInstance();
 
-    void setNotification(const QString &title, const QString &message, int channel = 0);
+    Q_INVOKABLE bool checkNotificationPermissions();
+    Q_INVOKABLE bool requestNotificationPermissions();
 
+    QString getNotification() const { return m_message; }
+    void setNotification(const QString &title, const QString &message, int channel = 0);
     void setNotificationShort(const QString &message);
-    QString getNotificationShort() const { return m_message; }
 };
 
 /* ************************************************************************** */

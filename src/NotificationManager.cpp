@@ -20,6 +20,7 @@
 #include "SystrayManager.h"
 
 #if defined(Q_OS_ANDROID)
+#include "utils_os_android.h"
 #include <QJniObject>
 #include <QCoreApplication>
 #endif
@@ -40,6 +41,8 @@ NotificationManager *NotificationManager::getInstance()
 
 NotificationManager::NotificationManager()
 {
+    checkNotificationPermissions();
+
 #if defined(Q_OS_ANDROID)
     connect(this, SIGNAL(notificationChanged()), this, SLOT(updateNotificationAndroid()));
 #elif defined(Q_OS_IOS)
@@ -54,7 +57,6 @@ NotificationManager::~NotificationManager()
     //
 }
 
-/* ************************************************************************** */
 /* ************************************************************************** */
 
 void NotificationManager::setNotification(const QString &title, const QString &message, int channel)
@@ -79,7 +81,6 @@ void NotificationManager::setNotificationShort(const QString &message)
     Q_EMIT notificationChanged();
 }
 
-/* ************************************************************************** */
 /* ************************************************************************** */
 
 void NotificationManager::updateNotificationDesktop()
@@ -115,3 +116,45 @@ void NotificationManager::updateNotificationAndroid()
                     javaChannel);
 #endif
 }
+
+/* ************************************************************************** */
+
+bool NotificationManager::checkNotificationPermissions()
+{
+    //qDebug() << "NotificationManager::checkNotificationPermissions()";
+    bool permOS_was = m_permOS;
+
+#if defined(Q_OS_ANDROID)
+    m_permOS = UtilsAndroid::checkPermission_notification();
+#elif defined(Q_OS_IOS)
+    m_permOS = UtilsIOS::checkPermission_notification();
+#endif
+
+    if (permOS_was != m_permOS)
+    {
+        Q_EMIT permissionsChanged();
+    }
+
+    return m_permOS;
+}
+
+bool NotificationManager::requestNotificationPermissions()
+{
+    //qDebug() << "NotificationManager::requestNotificationPermissions()";
+    bool permOS_was = m_permOS;
+
+#if defined(Q_OS_ANDROID)
+    m_permOS = UtilsAndroid::getPermission_notification();
+#elif defined(Q_OS_IOS)
+    m_permOS = UtilsIOS::getPermission_notification();
+#endif
+
+    if (permOS_was != m_permOS)
+    {
+        Q_EMIT permissionsChanged();
+    }
+
+    return m_permOS;
+}
+
+/* ************************************************************************** */

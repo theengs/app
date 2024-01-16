@@ -41,7 +41,7 @@
 
 @implementation NotificationDelegate
 
--(id)initWithObject:(UtilsIOSNotifications *)localNotification
+- (id)initWithObject:(UtilsIOSNotifications *)localNotification
 {
     self = [super init];
     if (self)
@@ -51,7 +51,7 @@
     return self;
 }
 
--(void)userNotificationCenter:(UNUserNotificationCenter *)center
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
         willPresentNotification:(UNNotification *)notification
             withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
@@ -61,7 +61,7 @@
     completionHandler(UNNotificationPresentationOptionList | UNNotificationPresentationOptionBanner | UNNotificationPresentationOptionSound);
 }
 
--(void)userNotificationCenter:(UNUserNotificationCenter *)center
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
         didReceiveNotificationResponse:(UNNotificationResponse *)response
             withCompletionHandler:(void(^)())completionHandler
 {
@@ -76,6 +76,40 @@
 UtilsIOSNotifications::UtilsIOSNotifications()
 {
     m_notifdelegate = [[NotificationDelegate alloc] initWithObject:this];
+}
+
+bool UtilsIOSNotifications::checkPermission_notification()
+{
+    bool status = false;
+
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
+        switch (settings.authorizationStatus) {
+            case UNAuthorizationStatusAuthorized:
+                NSLog(@"Notifications are allowed");
+                break;
+            case UNAuthorizationStatusDenied:
+                NSLog(@"Notifications are denied");
+                break;
+            case UNAuthorizationStatusNotDetermined:
+                NSLog(@"Notification permissions not determined yet");
+                break;
+            case UNAuthorizationStatusProvisional:
+                NSLog(@"Provisional authorization granted");
+                break;
+            default:
+                NSLog(@"Unknown notification authorization status");
+                break;
+        }
+    }];
+
+    return status;
+}
+
+bool UtilsIOSNotifications::getPermission_notification()
+{
+    bool status = false;
+
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [center requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionBadge | UNAuthorizationOptionSound)
         completionHandler:^(BOOL granted, NSError *_Nullable error)
@@ -94,6 +128,8 @@ UtilsIOSNotifications::UtilsIOSNotifications()
             [[UIApplication sharedApplication] registerForRemoteNotifications];
         }
     }];
+
+    return status;
 }
 
 bool UtilsIOSNotifications::notify(const QString &title, const QString &message, const int channel)

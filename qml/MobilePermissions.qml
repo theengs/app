@@ -14,7 +14,7 @@ Item {
     function loadScreen() {
         // refresh permissions
         deviceManager.checkBluetoothPermissions()
-        notifButton.validperm = utilsApp.checkMobileNotificationPermission()
+        notificationManager.checkNotificationPermissions()
 
         // change screen
         appContent.state = "AboutPermissions"
@@ -35,7 +35,7 @@ Item {
         repeat: false
         onTriggered: {
             deviceManager.checkBluetoothPermissions()
-            notifButton.validperm = utilsApp.checkMobileNotificationPermission()
+            notificationManager.checkNotificationPermissions()
         }
     }
 
@@ -67,11 +67,10 @@ Item {
 
                 RoundButtonIcon {
                     anchors.left: parent.left
-                    anchors.leftMargin: 16
+                    anchors.leftMargin: Theme.componentMargin
                     anchors.verticalCenter: parent.verticalCenter
                     width: 32
                     height: 32
-                    z: 1
 
                     property bool validperm: true
 
@@ -83,25 +82,25 @@ Item {
 
                 Text {
                     anchors.left: parent.left
-                    anchors.leftMargin: 64
+                    anchors.leftMargin: appHeader.headerPosition
                     anchors.right: parent.right
-                    anchors.rightMargin: 16
+                    anchors.rightMargin: Theme.componentMargin
                     anchors.verticalCenter: parent.verticalCenter
                     height: 16
 
                     text: qsTr("Network access")
                     textFormat: Text.PlainText
                     wrapMode: Text.WordWrap
-                    font.pixelSize: 18
+                    font.pixelSize: 17
                     color: Theme.colorText
                     verticalAlignment: Text.AlignVCenter
                 }
             }
             Text { // Network access legend
                 anchors.left: parent.left
-                anchors.leftMargin: 64
+                anchors.leftMargin: appHeader.headerPosition
                 anchors.right: parent.right
-                anchors.rightMargin: 16
+                anchors.rightMargin: Theme.componentMargin
 
                 text: qsTr("Network state and Internet permissions are used to connect to MQTT brokers.")
                 textFormat: Text.PlainText
@@ -117,16 +116,16 @@ Item {
             ////////
 
             Item { // Bluetooth control
-                height: 24
                 anchors.left: parent.left
                 anchors.right: parent.right
+                height: 24
 
                 RoundButtonIcon {
-                    width: 32
-                    height: 32
                     anchors.left: parent.left
                     anchors.leftMargin: Theme.componentMargin
                     anchors.verticalCenter: parent.verticalCenter
+                    width: 32
+                    height: 32
 
                     property bool validperm: true
 
@@ -451,14 +450,13 @@ Item {
                 visible: (utilsApp.getAndroidSdkVersion() >= 13)
 
                 RoundButtonIcon {
-                    id: notifButton
                     width: 32
                     height: 32
                     anchors.left: parent.left
                     anchors.leftMargin: Theme.componentMargin
                     anchors.verticalCenter: parent.verticalCenter
 
-                    property bool validperm: false
+                    property bool validperm: notificationManager.permissionOS
 
                     source: (validperm) ? "qrc:/assets/icons_material/baseline-check-24px.svg" : "qrc:/assets/icons_material/baseline-close-24px.svg"
                     iconColor: (validperm) ? "white" : "white"
@@ -467,18 +465,18 @@ Item {
 
                     onClicked: {
                         utilsApp.vibrate(25)
-                        validperm = utilsApp.getMobileNotificationPermission()
+                        utilsApp.getMobileNotificationPermission()
                         refreshPermissions.start()
                     }
                 }
 
                 Text {
-                    height: 16
                     anchors.left: parent.left
                     anchors.leftMargin: appHeader.headerPosition
                     anchors.right: parent.right
                     anchors.rightMargin: Theme.componentMargin
                     anchors.verticalCenter: parent.verticalCenter
+                    height: 16
 
                     text: qsTr("Notifications")
                     textFormat: Text.PlainText

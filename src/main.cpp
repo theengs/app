@@ -171,6 +171,7 @@ int main(int argc, char *argv[])
     engine_context->setContextProperty("systrayManager", st);
     engine_context->setContextProperty("menubarManager", mb);
     engine_context->setContextProperty("mqttManager", mq);
+    engine_context->setContextProperty("notificationManager", nm);
     engine_context->setContextProperty("presetsManager", pm);
     engine_context->setContextProperty("utilsApp", utilsApp);
     engine_context->setContextProperty("utilsLanguage", utilsLanguage);

@@ -24,8 +24,65 @@
 
 #if defined(Q_OS_IOS)
 
+#import <UserNotifications/UserNotifications.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+
+/* ************************************************************************** */
+
+bool UtilsIOS::checkPermission_notification()
+{
+    bool status = false;
+
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
+        switch (settings.authorizationStatus) {
+            case UNAuthorizationStatusAuthorized:
+                NSLog(@"Notifications are allowed");
+                break;
+            case UNAuthorizationStatusDenied:
+                NSLog(@"Notifications are denied");
+                break;
+            case UNAuthorizationStatusNotDetermined:
+                NSLog(@"Notification permissions not determined yet");
+                break;
+            case UNAuthorizationStatusProvisional:
+                NSLog(@"Provisional authorization granted");
+                break;
+            default:
+                NSLog(@"Unknown notification authorization status");
+                break;
+        }
+    }];
+
+    return status;
+}
+
+bool UtilsIOS::getPermission_notification()
+{
+    bool status = false;
+
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    [center requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionBadge | UNAuthorizationOptionSound)
+        completionHandler:^(BOOL granted, NSError *_Nullable error)
+    {
+        if (granted)
+        {
+            NSLog(@"Notification permission granted");
+        }
+
+        if (error)
+        {
+            NSLog(@"Local Notification setup failed");
+        }
+        else
+        {
+            [[UIApplication sharedApplication] registerForRemoteNotifications];
+        }
+    }];
+
+    return status;
+}
 
 /* ************************************************************************** */
 
@@ -40,8 +97,6 @@ void UtilsIOS::screenKeepOn(bool on)
         [[UIApplication sharedApplication] setIdleTimerDisabled: NO];
     }
 }
-
-/* ************************************************************************** */
 
 // For reference:
 //enum ScreenOrientation_iOS {
