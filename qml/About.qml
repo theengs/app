@@ -146,7 +146,7 @@ Item {
 
             ListItem { // description
                 width: parent.width
-                text: qsTr("Efficient, portable and lightweight library for Internet of Things payload decoding.")
+                text: qsTr("Manufacturer agnostic BLE sensors reading application with MQTT integration.")
                 iconSource: "qrc:/assets/icons_material/outline-info-24px.svg"
             }
 

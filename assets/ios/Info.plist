@@ -42,6 +42,6 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>NSUserNotificationsUsageDescription</key>
-	<string>Theengs will sends you notifications on probe alerts.</string>
+	<string>Allow notifications alerts while on the sensor screen.</string>
 </dict>
 </plist>

@@ -76,7 +76,7 @@ bool TempPresetManager::load()
         m_presets.push_back(t1);
 
         TempPreset *t2 = new TempPreset(-2, PresetUtils::PRESET_PORK, true, "Pork", "", this);
-        t2->addRange("Safe internal temperature", false, 63, 63, true);
+        t2->addRange("Safe internal temperature", false, 63, 70, true);
         t2->addRange("Ground Pork", false, 71, -1, false);
         m_presets.push_back(t2);
 
