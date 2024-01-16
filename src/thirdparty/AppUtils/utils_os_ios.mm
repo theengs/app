@@ -32,43 +32,54 @@
 
 bool UtilsIOS::checkPermission_notification()
 {
-    bool status = false;
+    __block BOOL status = false;
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    UNAuthorizationOptions options = (UNAuthorizationOptionAlert | UNAuthorizationOptionBadge | UNAuthorizationOptionSound);
+
     [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
         switch (settings.authorizationStatus) {
             case UNAuthorizationStatusAuthorized:
-                NSLog(@"Notifications are allowed");
+                //NSLog(@"Notifications are allowed");
+                status = true;
                 break;
             case UNAuthorizationStatusDenied:
-                NSLog(@"Notifications are denied");
+                //NSLog(@"Notifications are denied");
                 break;
             case UNAuthorizationStatusNotDetermined:
-                NSLog(@"Notification permissions not determined yet");
+                //NSLog(@"Notification permissions not determined yet");
                 break;
             case UNAuthorizationStatusProvisional:
-                NSLog(@"Provisional authorization granted");
+                //NSLog(@"Provisional authorization granted");
+                status = true;
                 break;
             default:
-                NSLog(@"Unknown notification authorization status");
+                //NSLog(@"Unknown notification authorization status");
                 break;
         }
+
+        dispatch_semaphore_signal(semaphore);
     }];
+
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 
     return status;
 }
 
 bool UtilsIOS::getPermission_notification()
 {
-    bool status = false;
+    __block bool status = false;
 
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-    [center requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionBadge | UNAuthorizationOptionSound)
-        completionHandler:^(BOOL granted, NSError *_Nullable error)
-    {
+    UNAuthorizationOptions options = (UNAuthorizationOptionAlert | UNAuthorizationOptionBadge | UNAuthorizationOptionSound);
+
+    [center requestAuthorizationWithOptions:options
+      completionHandler:^(BOOL granted, NSError *_Nullable error) {
         if (granted)
         {
             NSLog(@"Notification permission granted");
+            status = true;
         }
 
         if (error)

@@ -74,7 +74,8 @@ Rectangle {
                   appContent.state === "DeviceBrowser" ||
                   appContent.state === "SettingsMqtt" ||
                   appContent.state === "Settings" ||
-                  appContent.state === "About")
+                  appContent.state === "About" ||
+                  appContent.state === "AboutPermissions")
 
         MobileMenuItem_horizontal {
             id: menuMainView
@@ -99,6 +100,7 @@ Rectangle {
             colorContent: Theme.colorTabletmenuContent
             colorHighlight: Theme.colorTabletmenuHighlight
 
+            enabled: (deviceManager.bluetooth && deviceManager.bluetoothPermissions)
             highlighted: (appContent.state === "DeviceBrowser")
             onClicked: screenDeviceBrowser.loadScreen()
         }

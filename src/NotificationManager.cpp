@@ -23,6 +23,8 @@
 #include "utils_os_android.h"
 #include <QJniObject>
 #include <QCoreApplication>
+#elif defined(Q_OS_IOS)
+#include "utils_os_ios.h"
 #endif
 
 /* ************************************************************************** */
@@ -41,7 +43,7 @@ NotificationManager *NotificationManager::getInstance()
 
 NotificationManager::NotificationManager()
 {
-    checkNotificationPermissions();
+    //checkNotificationPermissions();
 
 #if defined(Q_OS_ANDROID)
     connect(this, SIGNAL(notificationChanged()), this, SLOT(updateNotificationAndroid()));

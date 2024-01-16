@@ -23,6 +23,9 @@ Loader {
         if (typeof clickedDevice === "undefined" || !clickedDevice) return
         if (!clickedDevice.isProbe) return
 
+        // ask notification permission
+        notificationManager.requestNotificationPermissions()
+
         // set device
         if (currentDevice !== clickedDevice) currentDevice = clickedDevice
         if (currentDevice.hasProbesBBQ) currentDevice.startRtCapture(true)
