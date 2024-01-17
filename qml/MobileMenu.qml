@@ -47,19 +47,19 @@ Rectangle {
     signal deviceSettingsButtonClicked()
 
     function setActiveDeviceData() {
-        menuDeviceData.selected = true
-        menuDeviceHistory.selected = false
-        menuDeviceSettings.selected = false
+        menuDeviceData.highlighted = true
+        menuDeviceHistory.highlighted = false
+        menuDeviceSettings.highlighted = false
     }
     function setActiveDeviceHistory() {
-        menuDeviceData.selected = false
-        menuDeviceHistory.selected = true
-        menuDeviceSettings.selected = false
+        menuDeviceData.highlighted = false
+        menuDeviceHistory.highlighted = true
+        menuDeviceSettings.highlighted = false
     }
     function setActiveDeviceSettings() {
-        menuDeviceData.selected = false
-        menuDeviceHistory.selected = false
-        menuDeviceSettings.selected = true
+        menuDeviceData.highlighted = false
+        menuDeviceHistory.highlighted = false
+        menuDeviceSettings.highlighted = true
     }
 
     ////////////////////////////////////////////////////////////////////////////

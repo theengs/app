@@ -427,7 +427,7 @@ ApplicationWindow {
             },
             State {
                 name: "DevicePlantSensor"
-                PropertyChanges { target: appHeader; title: deviceManager.getDeviceModelTheengs(selectedDevice.deviceModel); }
+                PropertyChanges { target: appHeader; headerTitle: deviceManager.getDeviceModelTheengs(selectedDevice.deviceModel); }
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: true; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; }
