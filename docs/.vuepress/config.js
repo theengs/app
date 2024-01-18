@@ -2,6 +2,7 @@ const commonConfig = require('./public/commonConfig');
 
 module.exports = {
   ...commonConfig,
+  title: 'Theengs BLE App: Vendor agnostic sensor reader',
   themeConfig: {
     repo: 'theengs/app',
     ...commonConfig.themeConfig,
