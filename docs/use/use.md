@@ -1,10 +1,10 @@
 # Use
 
-## Features comparison between OS
-| OS | Real time data | MQTT integration | Running in background | Home Assistant Auto Discovery |
-|:-:|:-:|:-:|:-:|:-:|
-|iOS|☑️|☑️||☑️|
-|Android|☑️|☑️|☑️ *experimental*|☑️|
+## Features comparison between Operating Systems
+| OS | Real time data | BBQ monitoring |MQTT integration | Running in background | Home Assistant Auto Discovery |
+|:-:|:-:|:-:|:-:|:-:|:-:|
+|iOS|☑️|☑️|☑️||☑️|
+|Android|☑️|☑️|☑️|☑️ *experimental*|☑️|
 
 ## Overview
 
@@ -22,6 +22,57 @@ To refresh the sensor data tap "Refresh sensor data" in the hamburger menu.
 Why does Theengs App needs the location permission?
 
 Theengs App requires the location permission to access your device Bluetooth and retrieves sensor data. Theengs is not accessing your location with GPS/GLONASS/BAIDU.
+:::
+
+## Live BBQ monitoring
+
+### Introduction
+Live BBQ Monitoring allows you to track the temperature of your grill in real time, ensuring perfect cooking results. The feature includes different Threshold Settings, a Live Chart, and Notifications for comprehensive monitoring.
+This feature requires staying on the BBQ sensor screen to function effectively.
+
+### Compatible devices
+This feature is compatible with the following devices:
+* Govee H5055
+* Inkbird IBT-2X(S)
+* Inkbird IBT-4X(S/C)
+* Inkbird IBT-6X(S)
+* SOLIS_6
+
+### Threshold settings
+
+Access the threshold settings from the hamburger menu.
+
+![Threshold settings](./../img/Theengs-app-threshold-settings.png)
+
+Select '+' to customize temperature ranges for different meats or cooking stages.
+
+![Threshold settings choice](./../img/Theengs-app-threshold-settings-default.png)
+
+Name your preset for easy identification, e.g., 'Poultry', 'Rare Steak'.
+Enter your desired temperature range. You can modify these presets anytime.
+
+From the BBQ sensor view you can select the presets of your choice.
+
+::: warning Warning
+The cooking temperatures provided in this app are general recommendations. Variations in equipment, ingredients, and conditions can affect cooking outcomes.
+Always verify food is cooked to safe temperatures.
+The application developer is not liable for any cooking results.
+:::
+
+### Live monitoring
+The Live Chart displays live temperature data from your BBQ sensor.
+To view, tap on your BBQ device from the main screen.
+The chart shows temperature changes over time, helping you monitor the cooking process.
+
+![Live monitoring](./../img/Theengs-app-live-monitoring.png)
+
+### Notifications
+Enable notifications when prompted. Your phone must not be in silent or do not disturb mode.
+Set temperature thresholds based on your meal. When the sensor detects temperatures beyond this range, you'll receive an alert.
+
+::: tip Note
+For continuous monitoring and notifications, you must keep the app open on the BBQ sensor screen.
+Update frequency and real-time responsiveness depend on your smartphone’s processing capabilities, not the app. For best results, close unnecessary apps and ensure you are not far from the sensor.
 :::
 
 ## MQTT integration
