@@ -3,36 +3,51 @@ title: Theengs BLE mobile application
 ---
 # Theengs BLE mobile application
 
-**Theengs app** is a multi platforms, multi devices **application** and BLE to MQTT **gateway** that leverages the [Theengs Decoder library](https://github.com/theengs/decoder).
-It retrieves data from a wide range of [BLE sensors](prerequisites/devices) from Xiaomi, Inkbird, Govee, ClearGrass, Qingping, Ruuvi, Switchbot, Thermopro; LYWSD03MMC, CGD1, CGP1W, CGDN1, CGG1, H5055, H5072, H5075, H5102, TH1, TH2, BBQ, CGH1, CGDK2, CGPR1, RuuviTag, WS02, WS08, TPMS, MiScale, LYWSD02, LYWSDCGQ, MiFlora... and enables to read the advertised real time data from these sensors. 
+## 🌟 Local Smart Sensor Integration 🌟
 
-It also translates this information into a readable JSON format and pushes those to an MQTT broker if you need. The Home Assistant MQTT convention is followed so that you can see your add your sensors in a few steps into your favorite controller.
-
-The app uses the bluetooth component of your Phone/Tablet to read the sensor data.
+Theengs App seamlessly reads a wide array of Bluetooth Low Energy (BLE) sensors, gathering real-time data on environmental parameters such as temperature, humidity, moisture, etc. It displays these readings intuitively and enables integration with your Smart Home setup via MQTT. Compatible with platforms like Home Assistant, Theengs App is a vendor-agnostic reader of [your sensors](https://decoder.theengs.io/devices/devices.html).
 
 ![Iot](./img/Theengs-app-home-reduced-1280.png)
 
-**Theengs app** can be used as a standalone solution or as a complementary solution to [OpenMQTTGateway](https://docs.openmqttgateway.com/) and/or [Theengs gateway](https://gateway.theengs.io) if you want a continuously running gateway.
+## 🔥 Elevate Your Grilling Game
 
-The app will retrieve data from BLE sensors from Govee, Xiaomi, Inkbird, QingPing, ThermoBeacon, ClearGrass, Blue Maestro and many more.
+Theengs App now offers a dedicated live monitoring feature for BBQ enthusiasts. Track your cooking with a dynamic chart that displays temperature trends in real time. Set personalized thresholds for different cooking stages and receive instant notifications based on these criteria. Whether you prefer your meat rare, medium, or well-done, Theengs App ensures your grilling is done to perfection.
 
-For more information view the [documentation](https://app.theengs.io/)
+<div style="text-align:center">
 
+![live bbq monitoring](./img/Theengs-app-live.png)
+
+</div>
+
+## 🔒Respecting Your Privacy
+With Theengs App, your data stays local by default. For more details, please refer to our [privacy policy](https://app.theengs.io/use/privacy.html).
+
+## 🏡 Take control with Smart Home Integration
+Theengs App syncs with platforms like Home Assistant via MQTT. Record sensor data on your preferred server - your home, your choice.
+
+## Choose Your Platform and Download Now
+
+<br>
+</br>
 <center><a href="https://apps.apple.com/us/app/theengs-ble/id6443457651?itsct=apps_box_badge&amp;itscg=30200" style="display: inline-block; overflow: hidden; border-radius: 13px; width: 250px; height: 83px;"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1667088000&h=c822551038086181cfac2a32c96cd47e" alt="Download on the App Store" style="border-radius: 13px; width: 250px; height: 83px;"></a></center>
 
 <center><a href='https://play.google.com/store/apps/details?id=com.theengs.app&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' width=300px/></a></center>
 
 ::: tip Note
-Theengs app read data "broadcasted" by the devices and does not connect to them, only the Mi Flora and ThermoBeacon historical data are retrieved through a connection. For the rest of the devices the data is read real time when the device emit it.
+The Theengs app reads data that is 'broadcasted' by devices, operating primarily in a passive mode without direct connections, except for Mi Flora and ThermoBeacon, where historical data is accessed through a connection. For all other devices, the app captures data as it is emitted by the sensors.
+
+BBQ Live monitoring and notifications require the app to be active on the sensor screen.
 :::
 
-Features comparison between OS:
-| OS | Real time data | MQTT integration | Running in background | Home Assistant Auto Discovery |
-|:-:|:-:|:-:|:-:|:-:|
-|iOS|☑️|☑️||☑️|
-|Android|☑️|☑️|☑️ *experimental*|☑️|
+## Features comparison between Operating Systems
+| OS | Real time data | BBQ monitoring |MQTT integration | Running in background | Home Assistant Auto Discovery |
+|:-:|:-:|:-:|:-:|:-:|:-:|
+|iOS|☑️|☑️|☑️||☑️|
+|Android|☑️|☑️|☑️|☑️ *experimental*|☑️|
 
-#### Third party projects used by Theengs app
+**Theengs app** can be used as a standalone solution or as a complementary solution to [OpenMQTTGateway](https://docs.openmqttgateway.com/) and/or [Theengs gateway](https://gateway.theengs.io) if you want a continuously running gateway.
+
+## Third party projects used by Theengs app
 
 * [Qt](https://www.qt.io) ([LGPL 3](https://www.gnu.org/licenses/lgpl-3.0.txt))
 * [QtMqtt](https://www.qt.io) ([GPL 3](https://www.gnu.org/licenses/gpl-3.0.txt))
@@ -53,5 +68,5 @@ All product and company names are trademarks or registered trademarks of their r
 :::
 
 ::: slot footer
-[GPLv3 Licensed](https://github.com/theengs/home/blob/main/LICENSE) | Copyright © 2022-present Theengs
+[GPLv3 Licensed](https://github.com/theengs/home/blob/main/LICENSE) | Copyright © 2024 Theengs
 :::

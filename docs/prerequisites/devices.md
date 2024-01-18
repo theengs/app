@@ -3,7 +3,7 @@ pageClass: table-generated-page
 ---
 # Devices supported
 
-Here is the list of supported devices by the app, more details in the Compatible section of the top nav bar.
+Here is the list of supported devices by the app, more details in the Compatible Devices section of the top nav bar.
 
 |Model_Id|Mobile App|
 |-|-|
@@ -41,6 +41,8 @@ Here is the list of supported devices by the app, more details in the Compatible
 |IBT_4X(S/C)|✅|
 |IBT_6X(S)|✅|
 |JQJCY01YM|✅|
+|K6P|✅|
+|K9|✅|
 |LYWSD02|✅|
 |LYWSD03MMC_ATC/PVVX|✅|
 |MJWSD05MMC_ATC/PVVX|✅|
@@ -57,6 +59,10 @@ Here is the list of supported devices by the app, more details in the Compatible
 |W110150X|✅|
 |THX1(W230150X)|✅|
 |SDLS|✅|
+|SE_MAG|✅|
+|SE_RHT|✅|
+|SE_TEMP|✅|
+|SE_TPROBE|✅|
 |SHT4X|✅|
 |SOLIS_6|✅|
 |T201|✅|
