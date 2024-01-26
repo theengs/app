@@ -25,7 +25,7 @@ With Theengs App, your data stays local by default. For more details, please ref
 ## 🏡 Take control with Smart Home Integration
 Theengs App syncs with platforms like Home Assistant via MQTT. Record sensor data on your preferred server - your home, your choice.
 
-## Choose Your Platform and Download Now
+## 📲 Choose Your Platform and Download Now
 
 <br>
 </br>
@@ -39,7 +39,7 @@ The Theengs app reads data that is 'broadcasted' by devices, operating primarily
 BBQ Live monitoring and notifications require the app to be active on the sensor screen.
 :::
 
-## Features comparison between Operating Systems
+### Features comparison between Operating Systems
 | OS | Real time data | BBQ monitoring |MQTT integration | Running in background | Home Assistant Auto Discovery |
 |:-:|:-:|:-:|:-:|:-:|:-:|
 |iOS|☑️|☑️|☑️||☑️|
@@ -47,17 +47,19 @@ BBQ Live monitoring and notifications require the app to be active on the sensor
 
 **Theengs app** can be used as a standalone solution or as a complementary solution to [OpenMQTTGateway](https://docs.openmqttgateway.com/) and/or [Theengs gateway](https://gateway.theengs.io) if you want a continuously running gateway.
 
-## Third party projects used by Theengs app
+### Third party projects used by Theengs app
 
 * [Qt](https://www.qt.io) ([LGPL 3](https://www.gnu.org/licenses/lgpl-3.0.txt))
 * [QtMqtt](https://www.qt.io) ([GPL 3](https://www.gnu.org/licenses/gpl-3.0.txt))
 * [Arduino Json](https://arduinojson.org/) ([MIT](https://opensource.org/licenses/MIT))
 * [Decoder](https://decoder.theengs.io/) ([GPL 3](https://www.gnu.org/licenses/gpl-3.0.txt))
-* [StatusBar](https://github.com/jpnurmi/statusbar) ([MIT](https://opensource.org/licenses/MIT))
-* [ekkesSHAREexample](https://github.com/ekke/ekkesSHAREexample) ([license](https://github.com/ekke/ekkesSHAREexample/blob/master/LICENSE))
+* [MobileUI](https://github.com/jpnurmi/statusbar) ([MIT](https://opensource.org/licenses/MIT))
+* [MobileSharing](https://github.com/ekke/ekkesSHAREexample) ([license](https://github.com/ekke/ekkesSHAREexample/blob/master/LICENSE))
 * [SingleApplication](https://github.com/itay-grudev/SingleApplication) ([MIT](https://opensource.org/licenses/MIT))
 * RC4 code from Christophe Devine ([GPL 2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt))
-* Graphical resources: [assets/COPYING](assets/COPYING)
+* Graphical resources: [assets/COPYING](https://github.com/theengs/app/blob/development/assets/COPYING)
+
+### Acknowledgements
 
 *App Store and Apple logo are registered trademarks of Apple Inc.*
 
