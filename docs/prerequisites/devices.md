@@ -7,8 +7,11 @@ Here is the list of supported devices by the app, more details in the Compatible
 
 |Model_Id|Mobile App|
 |-|-|
+|ABN03|✅|
+|ABN07|✅|
 |ABTemp|✅|
 |ADHS|✅|
+|ARANET4|✅|
 |TD1in1|✅|
 |TD3in1|✅|
 |TD4in1|✅|
@@ -21,16 +24,19 @@ Here is the list of supported devices by the app, more details in the Compatible
 |CGH1|✅|
 |CGP1W|✅|
 |CGPR1|✅|
-|F525|✅|
+|F525/F51C|✅|
 |H5055|✅|
 |H5072|✅|
 |H5074|✅|
 |H5075|✅|
 |H5106|✅|
+|H5100|✅|
 |H5101|✅|
 |H5102|✅|
+|H5104|✅|
 |H5174|✅|
 |H5177|✅|
+|H5179|✅|
 |HHCCJCY01HHCC|✅|
 |HHCCJCY10|✅|
 |HHCCPOT002|✅|
@@ -40,9 +46,11 @@ Here is the list of supported devices by the app, more details in the Compatible
 |IBT_2X(S)|✅|
 |IBT_4X(S/C)|✅|
 |IBT_6X(S)|✅|
+|ITH-12S|✅|
 |JQJCY01YM|✅|
 |K6P|✅|
 |K9|✅|
+|KSensor|✅|
 |LYWSD02|✅|
 |LYWSD03MMC_ATC/PVVX|✅|
 |MJWSD05MMC_ATC/PVVX|✅|
@@ -57,6 +65,7 @@ Here is the list of supported devices by the app, more details in the Compatible
 |W120150X|✅|
 |W070160X|✅|
 |W110150X|✅|
+|W340001X|✅|
 |THX1(W230150X)|✅|
 |SDLS|✅|
 |SE_MAG|✅|
@@ -64,6 +73,8 @@ Here is the list of supported devices by the app, more details in the Compatible
 |SE_TEMP|✅|
 |SE_TPROBE|✅|
 |SHT4X|✅|
+|SCD4X|✅|
+|SKALE|✅|
 |SOLIS_6|✅|
 |T201|✅|
 |T301|✅|
