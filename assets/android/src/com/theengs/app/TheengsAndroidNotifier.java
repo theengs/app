@@ -80,9 +80,9 @@ public class TheengsAndroidNotifier {
             }
 
             builder.setSmallIcon(R.drawable.ic_stat_logo);
-            builder.setContentIntent(resultPendingIntent);
             builder.setContentTitle(title);
             builder.setContentText(message);
+            builder.setContentIntent(resultPendingIntent);
             builder.setWhen(System.currentTimeMillis());
             builder.setShowWhen(true);
             builder.setDefaults(Notification.DEFAULT_SOUND);

@@ -62,11 +62,13 @@ DeviceManager::DeviceManager(bool daemon)
 {
     m_daemonMode = daemon;
 
-    // Data model init
+    // Data model init (unified)
     m_devices_model = new DeviceModel(this);
     m_devices_filter = new DeviceFilter(this);
     m_devices_filter->setSourceModel(m_devices_model);
     m_devices_filter->setDynamicSortFilter(true);
+
+    // Data model filtering
     SettingsManager *sm = SettingsManager::getInstance();
     if (sm)
     {

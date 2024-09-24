@@ -277,9 +277,9 @@ android {
     OTHER_FILES += $${PWD}/assets/android/src/com/theengs/app/TheengsBootServiceBroadcastReceiver.java \
                    $${PWD}/assets/android/src/com/theengs/app/TheengsAndroidService.java \
                    $${PWD}/assets/android/src/com/theengs/app/TheengsAndroidNotifier.java \
-                   $${PWD}/assets/android/src/com/theengs/utils/QGpsUtils.java \
-                   $${PWD}/assets/android/src/com/theengs/utils/QShareUtils.java \
-                   $${PWD}/assets/android/src/com/theengs/utils/QSharePathResolver.java
+                   $${PWD}/assets/android/src/com/emeric/utils/QGpsUtils.java \
+                   $${PWD}/assets/android/src/com/emeric/utils/QShareUtils.java \
+                   $${PWD}/assets/android/src/com/emeric/utils/QSharePathResolver.java
 
     DISTFILES += $${PWD}/assets/android/AndroidManifest.xml \
                  $${PWD}/assets/android/gradle.properties \

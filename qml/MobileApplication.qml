@@ -35,8 +35,8 @@ ApplicationWindow {
     property int screenPaddingRight: 0
     property int screenPaddingBottom: 0
 
-    onScreenOrientationFullChanged: handleSafeAreas()
-    onVisibilityChanged: handleSafeAreas()
+    onScreenOrientationFullChanged: mobileUI.handleSafeAreas()
+    onVisibilityChanged: mobileUI.handleSafeAreas()
 
     MobileUI {
         id: mobileUI
