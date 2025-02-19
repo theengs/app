@@ -25,7 +25,7 @@ jobs:
   ## Android build #############################################################
   build-android:
     name: "Android CI build"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       # Checkout repository (and submodules)
       - name: Checkout repository (and submodules)
@@ -33,14 +33,14 @@ jobs:
         with:
           submodules: recursive
 
-      # Java environment (already installed in 'ubuntu-20.04')
+      # Java environment (already installed in 'ubuntu-latest')
       - name: Setup Java environment
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      # Android environment (already installed in 'ubuntu-20.04')
+      # Android environment (already installed in 'ubuntu-latest')
       #- name: Setup Android environment
       #  uses: android-actions/setup-android@v3
       #- name: Install Android SDK / NDK / tools
