@@ -10,8 +10,8 @@ Unicode True
 !define COMPANYNAME                  "Florian ROBERT"
 !define DESCRIPTION                  "Theengs app is a multi platforms, multi devices application and BLE to MQTT gateway that leverages the Theengs Decoder library."
 !define VERSIONMAJOR                 1
-!define VERSIONMINOR                 4
-!define VERSIONBUILD                 1
+!define VERSIONMINOR                 5
+!define VERSIONBUILD                 0
 !define INSTALL_DIR_DEFAULT          "$PROGRAMFILES64\${APPNAME}"
 !define MUI_ABORTWARNING
 !define MUI_FINISHPAGE_RUN

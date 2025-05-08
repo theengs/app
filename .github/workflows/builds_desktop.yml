@@ -14,8 +14,8 @@ on:
 
 env:
   APP_NAME: "Theengs"
-  APP_VERSION: "1.4.1"
-  QT_VERSION: "6.6.3"
+  APP_VERSION: "1.5.0"
+  QT_VERSION: "6.7.3"
 
 #-------------------------------------------------------------------------------
 # Workflow jobs
@@ -25,7 +25,7 @@ jobs:
   ## GNU/Linux build ###########################################################
   build-linux:
     name: "Linux CI build"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       # Checkout repository (and submodules)
       - name: Checkout repository (and submodules)

@@ -5,7 +5,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.1.4' // works with Qt 6.5+ // Java 17
+        classpath 'com.android.tools.build:gradle:8.3.0' // works with Qt 6.7+ // Java 17
     }
 }
 
@@ -83,10 +83,12 @@ android {
     defaultConfig {
         resConfig "en"
         minSdkVersion 23
-        targetSdkVersion 35
+        targetSdkVersion 36
         ndk.abiFilters = qtTargetAbiList.split(",")
 
         namespace 'com.theengs.app'
+        versionName "1.5.0"
+        versionCode timestampInt
     }
 
     packagingOptions {

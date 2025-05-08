@@ -1,6 +1,6 @@
 TARGET  = Theengs
 
-VERSION = 1.4.1
+VERSION = 1.5.0
 DEFINES+= APP_NAME=\\\"$$TARGET\\\"
 DEFINES+= APP_VERSION=\\\"$$VERSION\\\"
 
@@ -242,6 +242,9 @@ win32 {
 }
 
 macx {
+    #QMAKE_MACOSX_DEPLOYMENT_TARGET = 11.0
+    #message("QMAKE_MACOSX_DEPLOYMENT_TARGET: $$QMAKE_MACOSX_DEPLOYMENT_TARGET")
+
     # Bundle name
     QMAKE_TARGET_BUNDLE_PREFIX = com.theengs
     QMAKE_BUNDLE = app
@@ -259,9 +262,6 @@ macx {
 
     # Target architecture(s)
     QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
-
-    # Target OS
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.15
 }
 
 android {
@@ -289,7 +289,7 @@ android {
 }
 
 ios {
-    #QMAKE_IOS_DEPLOYMENT_TARGET = 11.0
+    #QMAKE_IOS_DEPLOYMENT_TARGET = 14.0
     #message("QMAKE_IOS_DEPLOYMENT_TARGET: $$QMAKE_IOS_DEPLOYMENT_TARGET")
 
     CONFIG += no_autoqmake

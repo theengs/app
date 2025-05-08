@@ -17,6 +17,14 @@ For more information view the [documentation](https://app.theengs.io/)
 <a href='https://play.google.com/store/apps/details?id=com.theengs.app&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' width=300px/></a>
 </p>
 
+#### Supported platforms
+
+- Linux (Ubuntu 22.04+)
+- macOS 11+
+- Windows 10+
+- Android 8+
+- iOS 14+
+
 #### Third party projects used by Theengs app
 
 * [Qt](https://www.qt.io) ([LGPL 3](https://www.gnu.org/licenses/lgpl-3.0.txt))
