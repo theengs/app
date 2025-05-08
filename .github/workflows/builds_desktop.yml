@@ -38,7 +38,7 @@ jobs:
         uses: jurplel/install-qt-action@v4
         with:
           version: ${{env.QT_VERSION}}
-          modules: qtconnectivity qtwebsockets qtcharts qtshadertools qt5compat
+          modules: qtconnectivity qtwebsockets qtcharts
 
       # Install dependencies (from package manager)
       - name: Install dependencies (from package manager)
@@ -98,7 +98,7 @@ jobs:
         uses: jurplel/install-qt-action@v4
         with:
           version: ${{env.QT_VERSION}}
-          modules: qtconnectivity qtwebsockets qtcharts qtshadertools qt5compat
+          modules: qtconnectivity qtwebsockets qtcharts
 
       # Install dependencies (from package manager)
       - name: Install dependencies (from package manager)
@@ -158,7 +158,7 @@ jobs:
         uses: jurplel/install-qt-action@v4
         with:
           version: ${{env.QT_VERSION}}
-          modules: qtconnectivity qtwebsockets qtcharts qtshadertools qt5compat
+          modules: qtconnectivity qtwebsockets qtcharts
 
       # Install NSIS (already installed in 'windows-2022')
       #- name: Install NSIS

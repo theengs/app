@@ -119,7 +119,9 @@ void DeviceInfos::load(const QJsonObject &obj)
 
     m_model = obj["model"].toString();
     m_manufacturer = obj["manufacturer"].toString();
-    for (const auto &vv: obj["ID"].toArray())
+
+    QJsonArray idArray = obj["ID"].toArray();
+    for (const auto &vv: std::as_const(idArray))
     {
         if (!m_id.isEmpty()) m_id += ", ";
         m_id += vv.toString();
@@ -130,7 +132,8 @@ void DeviceInfos::load(const QJsonObject &obj)
     m_screen = obj["screen"].toString();
     m_ipx = obj["ipx"].toString();
 
-    for (const auto &vv: obj["sensors"].toArray())
+    QJsonArray sensorsArray = obj["sensors"].toArray();
+    for (const auto &vv: std::as_const(sensorsArray))
     {
         QJsonArray vvv = vv.toArray();
         if (vvv.size() == 2)
@@ -142,7 +145,8 @@ void DeviceInfos::load(const QJsonObject &obj)
         }
     }
 
-    for (const auto &vv: obj["capabilities"].toArray())
+    QJsonArray capabilitiesArray = obj["capabilities"].toArray();
+    for (const auto &vv: std::as_const(capabilitiesArray))
     {
         QJsonArray vvv = vv.toArray();
         if (vvv.size() == 2)
@@ -159,6 +163,8 @@ bool DeviceInfos::loadSlow(const QString &name, const QString &model, const QStr
 {
     //qDebug() << "DeviceInfos::loadSlow(" << name << model << modelId << ")";
 
+    Q_UNUSED(modelId)
+
     QFile file(":/devices/devices_sensors.json");
 
     if (file.open(QIODevice::ReadOnly))
@@ -168,7 +174,7 @@ bool DeviceInfos::loadSlow(const QString &name, const QString &model, const QStr
         file.close();
 
         QJsonArray deviceArray = capsObj["devices"].toArray();
-        for (const auto &value: deviceArray)
+        for (const auto &value: std::as_const(deviceArray))
         {
             QJsonObject obj = value.toObject();
             if (name == obj["name_ble"].toString() ||
@@ -180,7 +186,9 @@ bool DeviceInfos::loadSlow(const QString &name, const QString &model, const QStr
 
                 m_model = obj["model"].toString();
                 m_manufacturer = obj["manufacturer"].toString();
-                for (const auto &vv: obj["ID"].toArray())
+
+                QJsonArray idArray = obj["ID"].toArray();
+                for (const auto &vv: std::as_const(idArray))
                 {
                     if (!m_id.isEmpty()) m_id += ", ";
                     m_id += vv.toString();
@@ -191,7 +199,8 @@ bool DeviceInfos::loadSlow(const QString &name, const QString &model, const QStr
                 m_screen = obj["screen"].toString();
                 m_ipx = obj["ipx"].toString();
 
-                for (const auto &vv: obj["sensors"].toArray())
+                QJsonArray sensorsArray = obj["sensors"].toArray();
+                for (const auto &vv: std::as_const(sensorsArray))
                 {
                     QJsonArray vvv = vv.toArray();
                     if (vvv.size() == 2)
@@ -203,7 +212,8 @@ bool DeviceInfos::loadSlow(const QString &name, const QString &model, const QStr
                     }
                 }
 
-                for (const auto &vv: obj["capabilities"].toArray())
+                QJsonArray capabilitiesArray = obj["capabilities"].toArray();
+                for (const auto &vv: std::as_const(capabilitiesArray))
                 {
                     QJsonArray vvv = vv.toArray();
                     if (vvv.size() == 2)
@@ -250,6 +260,8 @@ DeviceInfosLoader::~DeviceInfosLoader()
 DeviceInfos *DeviceInfosLoader::getDeviceInfos(const QString &name, const QString &model, const QString &modelId)
 {
     //qDebug() << "DeviceInfosLoader::getDeviceInfos(" << name << model << modelId << ")";
+
+    Q_UNUSED(modelId)
 
     DeviceInfos *dev = nullptr;
 

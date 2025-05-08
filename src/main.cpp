@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
 #endif
     }
 
-    // GUI application /////////////////////////////////////////////////////////
+    // Hacks ///////////////////////////////////////////////////////////////////
 
 #if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
     // NVIDIA suspend&resume hack
@@ -105,6 +105,13 @@ int main(int argc, char *argv[])
     format.setOption(QSurfaceFormat::ResetNotification);
     QSurfaceFormat::setDefaultFormat(format);
 #endif
+
+#if !defined(Q_OS_ANDROID) && !defined(Q_OS_IOS)
+    // Qt 6.6+ mouse wheel hack
+    qputenv("QT_QUICK_FLICKABLE_WHEEL_DECELERATION", "2500");
+#endif
+
+    // GUI application /////////////////////////////////////////////////////////
 
     SingleApplication app(argc, argv, false);
 
@@ -155,7 +162,7 @@ int main(int argc, char *argv[])
     utilsLanguage->loadLanguage(sm->getAppLanguage());
 
     // ThemeEngine
-    qmlRegisterSingletonType(QUrl("qrc:/qml/ThemeEngine.qml"), "ThemeEngine", 1, 0, "Theme");
+    qmlRegisterSingletonType(QUrl("qrc:/ComponentLibrary/ThemeEngine.qml"), "ComponentLibrary", 1, 0, "Theme");
 
     MobileUI::registerQML();
     DeviceUtils::registerQML();
@@ -164,6 +171,10 @@ int main(int argc, char *argv[])
 
     // Then we start the UI
     QQmlApplicationEngine engine;
+    engine.addImportPath(":/");
+    engine.addImportPath(":/Theengs");
+    engine.addImportPath(":/ComponentLibrary");
+
     QQmlContext *engine_context = engine.rootContext();
 
     engine_context->setContextProperty("deviceManager", dm);
