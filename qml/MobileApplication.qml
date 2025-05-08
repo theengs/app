@@ -35,8 +35,37 @@ ApplicationWindow {
     property int screenPaddingRight: 0
     property int screenPaddingBottom: 0
 
-    onScreenOrientationFullChanged: mobileUI.handleSafeAreas()
-    onVisibilityChanged: mobileUI.handleSafeAreas()
+    Connections {
+        target: Screen
+        function onOrientationChanged() {
+            mobileUI.handleSafeAreas()
+            rotateTimer1.start()
+            rotateTimer2.start()
+            rotateTimer3.start()
+        }
+    }
+
+    Timer {
+        id: rotateTimer1
+        interval: 12
+        running: false
+        repeat: false
+        onTriggered: { mobileUI.handleSafeAreas() }
+    }
+    Timer {
+        id: rotateTimer2
+        interval: 40
+        running: false
+        repeat: false
+        onTriggered: { mobileUI.handleSafeAreas() }
+    }
+    Timer {
+        id: rotateTimer3
+        interval: 128
+        running: false
+        repeat: false
+        onTriggered: { mobileUI.handleSafeAreas() }
+    }
 
     MobileUI {
         id: mobileUI

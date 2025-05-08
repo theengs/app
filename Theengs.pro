@@ -23,7 +23,7 @@ win32 { DEFINES += _USE_MATH_DEFINES }
 android { DEFINES += QT_CONNECTIVITY_PATCHED }
 
 # MobileUI and MobileSharing for mobile OS
-include(src/thirdparty/MobileUI/MobileUI.pri)
+include(thirdparty/MobileUI/MobileUI.pri)
 include(src/thirdparty/MobileSharing/MobileSharing.pri)
 
 # SingleApplication for desktop OS
