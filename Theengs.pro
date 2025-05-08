@@ -40,9 +40,9 @@ include(thirdparty/RC4/RC4.pri)
 
 # Theengs submodule
 ios | macx { DEFINES += NO_MAC_ADDR }
-SOURCES         += $${PWD}/src/thirdparty/TheengsDecoder/src/decoder.cpp
-INCLUDEPATH     += $${PWD}/src/thirdparty/TheengsDecoder/src/
-INCLUDEPATH     += $${PWD}/src/thirdparty/TheengsDecoder/src/arduino_json/src/
+SOURCES         += $${PWD}/thirdparty/TheengsDecoder/src/decoder.cpp
+INCLUDEPATH     += $${PWD}/thirdparty/TheengsDecoder/src/
+INCLUDEPATH     += $${PWD}/thirdparty/TheengsDecoder/src/arduino_json/src/
 
 # Uncomment to enable virtual devices # AND REBUILD
 #DEFINES += DEBUG_FAKE_DEVICES
@@ -130,7 +130,7 @@ HEADERS  += src/SettingsManager.h \
             src/TempPresetManager.h \
             src/TempPreset.h
 
-INCLUDEPATH += src/ src/thirdparty/ thirdparty/
+INCLUDEPATH += src/ thirdparty/
 
 RESOURCES   += qml/qml.qrc \
                qml/components.qrc \

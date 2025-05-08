@@ -1,3 +1,3 @@
-[submodule "src/thirdparty/TheengsDecoder"]
-	path = src/thirdparty/TheengsDecoder
+[submodule "thirdparty/TheengsDecoder"]
+	path = thirdparty/TheengsDecoder
 	url = git@github.com:theengs/decoder.git
