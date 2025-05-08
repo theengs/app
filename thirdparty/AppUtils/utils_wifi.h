@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2020 Emeric Grange
+ * Copyright (c) 2024 Emeric Grange
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,46 +20,56 @@
  * SOFTWARE.
  */
 
-#ifndef UTILS_LANGUAGE_H
-#define UTILS_LANGUAGE_H
+#ifndef UTILS_WIFI_H
+#define UTILS_WIFI_H
 /* ************************************************************************** */
 
 #include <QObject>
-#include <QCoreApplication>
-#include <QQmlApplicationEngine>
-#include <QTranslator>
 #include <QString>
 
 /* ************************************************************************** */
 
-class UtilsLanguage : public QObject
+/*!
+ * \brief The UtilsWiFi class
+ *
+ * Android need the "ACCESS_WIFI_STATE" and "ACCESS_FINE_LOCATION" manifest permission.
+ * iOS need the "NSLocationWhenInUseUsageDescription" plist key and "Wifi Info" capability.
+ */
+class UtilsWiFi: public QObject
 {
     Q_OBJECT
 
-    QString m_appName;
-    QString m_appLanguage;
+    Q_PROPERTY(QString currentSSID READ getCurrentSSID NOTIFY wifiChanged)
+    Q_PROPERTY(bool permissionOS READ hasPermissionOS NOTIFY permissionsChanged)
 
-    QCoreApplication *m_qt_app = nullptr;
-    QQmlApplicationEngine *m_qml_engine = nullptr;
+    QString m_currentSSID;
 
-    QTranslator *m_qtTranslator = nullptr;
-    QTranslator *m_appTranslator = nullptr;
+    bool m_permOS = false;
+
+    void refreshWiFi_internal();
 
     // Singleton
-    static UtilsLanguage *instance;
-    UtilsLanguage();
-    ~UtilsLanguage();
+    static UtilsWiFi *instance;
+    UtilsWiFi();
+    ~UtilsWiFi();
+
+Q_SIGNALS:
+    void wifiChanged();
+    void permissionsChanged();
+
+private slots:
+    void requestLocationPermissions_results();
 
 public:
-    static UtilsLanguage *getInstance();
+    static UtilsWiFi *getInstance();
 
-    void setAppName(const QString &name);
-    void setAppInstance(QCoreApplication *app);
-    void setQmlEngine(QQmlApplicationEngine *engine);
+    Q_INVOKABLE void refreshWiFi();
+    QString getCurrentSSID() { return m_currentSSID; }
 
-    QString getCurrentLanguage() const { return m_appLanguage; }
-    Q_INVOKABLE void loadLanguage(const QString &lng);
+    Q_INVOKABLE bool checkLocationPermissions();
+    Q_INVOKABLE void requestLocationPermissions();
+    bool hasPermissionOS() const { return m_permOS; }
 };
 
 /* ************************************************************************** */
-#endif // UTILS_LANGUAGE_H
+#endif // UTILS_WIFI_H

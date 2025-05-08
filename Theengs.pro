@@ -33,7 +33,7 @@ DEFINES += QAPPLICATION_CLASS=QApplication
 # Various utils
 CONFIG += UTILS_DOCK_ENABLED
 CONFIG += UTILS_NOTIFICATIONS_ENABLED
-include(src/thirdparty/AppUtils/AppUtils.pri)
+include(thirdparty/AppUtils/AppUtils.pri)
 
 # Theengs submodule
 ios | macx { DEFINES += NO_MAC_ADDR }
@@ -129,7 +129,7 @@ HEADERS  += src/SettingsManager.h \
             src/TempPreset.h \
             src/thirdparty/RC4/rc4.h
 
-INCLUDEPATH += src/ src/thirdparty/
+INCLUDEPATH += src/ src/thirdparty/ thirdparty/
 
 RESOURCES   += qml/qml.qrc \
                qml/components.qrc \
