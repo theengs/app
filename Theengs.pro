@@ -35,6 +35,9 @@ CONFIG += UTILS_DOCK_ENABLED
 CONFIG += UTILS_NOTIFICATIONS_ENABLED
 include(thirdparty/AppUtils/AppUtils.pri)
 
+# RC4
+include(thirdparty/RC4/RC4.pri)
+
 # Theengs submodule
 ios | macx { DEFINES += NO_MAC_ADDR }
 SOURCES         += $${PWD}/src/thirdparty/TheengsDecoder/src/decoder.cpp
@@ -85,8 +88,7 @@ SOURCES  += src/main.cpp \
             src/devices/device_theengs_scales.cpp \
             src/devices/device_theengs_thermometers.cpp \
             src/TempPresetManager.cpp \
-            src/TempPreset.cpp \
-            src/thirdparty/RC4/rc4.cpp
+            src/TempPreset.cpp
 
 HEADERS  += src/SettingsManager.h \
             src/DatabaseManager.h \
@@ -126,8 +128,7 @@ HEADERS  += src/SettingsManager.h \
             src/devices/device_theengs_scales.h \
             src/devices/device_theengs_thermometers.h \
             src/TempPresetManager.h \
-            src/TempPreset.h \
-            src/thirdparty/RC4/rc4.h
+            src/TempPreset.h
 
 INCLUDEPATH += src/ src/thirdparty/ thirdparty/
 
