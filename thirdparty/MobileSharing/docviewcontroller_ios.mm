@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (c) 2017 Ekkehard Gentz (ekke)
  * Copyright (c) 2020 Emeric Grange
  *
@@ -21,33 +21,29 @@
  * SOFTWARE.
  */
 
-#ifndef SHARINGUTILS_IOS_H
-#define SHARINGUTILS_IOS_H
-/* ************************************************************************** */
-
-#include "SharingUtils.h"
+#import "docviewcontroller_ios.h"
 
 /* ************************************************************************** */
 
-class IosShareUtils : public PlatformShareUtils
-{
-    Q_OBJECT
-
-public:
-    explicit IosShareUtils(QObject *parent = 0);
-
-    bool checkMimeTypeView(const QString &mimeType);
-    bool checkMimeTypeEdit(const QString &mimeType);
-    void share(const QString &text, const QUrl &url);
-    void sendFile(const QString &filePath, const QString &title, const QString &mimeType, const int &requestId);
-    void viewFile(const QString &filePath, const QString &title, const QString &mimeType, const int &requestId);
-    void editFile(const QString &filePath, const QString &title, const QString &mimeType, const int &requestId);
-
-    void handleDocumentPreviewDone(const int &requestId);
-
-public slots:
-    void handleFileUrlReceived(const QUrl &url);
-};
+@interface DocViewController ()
+@end
+@implementation DocViewController
+#pragma mark -
+#pragma mark View Life Cycle
+- (void)viewDidLoad {
+    [super viewDidLoad];
+}
+#pragma mark -
+#pragma mark Document Interaction Controller Delegate Methods
+- (UIViewController *)documentInteractionControllerViewControllerForPreview: (UIDocumentInteractionController *) controller {
+#pragma unused (controller)
+    return self;
+}
+- (void)documentInteractionControllerDidEndPreview: (UIDocumentInteractionController *) controller {
+#pragma unused (controller)
+    self.mIosShareUtils->handleDocumentPreviewDone(self.requestId);
+    [self removeFromParentViewController];
+}
+@end
 
 /* ************************************************************************** */
-#endif // SHARINGUTILS_IOS_H

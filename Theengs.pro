@@ -24,7 +24,7 @@ android { DEFINES += QT_CONNECTIVITY_PATCHED }
 
 # MobileUI and MobileSharing for mobile OS
 include(thirdparty/MobileUI/MobileUI.pri)
-include(src/thirdparty/MobileSharing/MobileSharing.pri)
+include(thirdparty/MobileSharing/MobileSharing.pri)
 
 # SingleApplication for desktop OS
 include(thirdparty/SingleApplication/SingleApplication.pri)
@@ -277,9 +277,9 @@ android {
     OTHER_FILES += $${PWD}/assets/android/src/com/theengs/app/TheengsBootServiceBroadcastReceiver.java \
                    $${PWD}/assets/android/src/com/theengs/app/TheengsAndroidService.java \
                    $${PWD}/assets/android/src/com/theengs/app/TheengsAndroidNotifier.java \
-                   $${PWD}/assets/android/src/com/emeric/utils/QGpsUtils.java \
-                   $${PWD}/assets/android/src/com/emeric/utils/QShareUtils.java \
-                   $${PWD}/assets/android/src/com/emeric/utils/QSharePathResolver.java
+                   $${PWD}/assets/android/src/io/emeric/utils/QGpsUtils.java \
+                   $${PWD}/assets/android/src/io/emeric/utils/QShareUtils.java \
+                   $${PWD}/assets/android/src/io/emeric/utils/QSharePathResolver.java
 
     DISTFILES += $${PWD}/assets/android/AndroidManifest.xml \
                  $${PWD}/assets/android/gradle.properties \

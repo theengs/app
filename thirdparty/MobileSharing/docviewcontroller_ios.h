@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (c) 2017 Ekkehard Gentz (ekke)
  * Copyright (c) 2020 Emeric Grange
  *
@@ -21,45 +21,23 @@
  * SOFTWARE.
  */
 
-#ifndef SHARINGAPPLICATION_H
-#define SHARINGAPPLICATION_H
+#ifndef DOCVIEWCONTROLLER_IOS_H
+#define DOCVIEWCONTROLLER_IOS_H
 /* ************************************************************************** */
 
-#include <QGuiApplication>
+#import "SharingUtils_ios.h"
 
-class QQmlContext;
-class ShareUtils;
-
-/* ************************************************************************** */
-
-class SharingApplication : public QGuiApplication
-{
-    Q_OBJECT
-
-     ShareUtils *mShareUtils = nullptr;
-     bool mPendingIntentsChecked = false;
-
-     QString mAppDataFilesPath;
-     QString mDocumentsWorkPath;
-
-public:
-    explicit SharingApplication(int &argc, char **argv);
-    ~SharingApplication();
-
-     void registerQML(QQmlContext *context);
-     //Q_INVOKABLE QString filePathDocumentsLocation(const int requestId);
-     //Q_INVOKABLE bool deleteFromDocumentsLocation(const int requestId);
-     //Q_INVOKABLE bool updateFileFromDocumentsLocation(const int requestId);
-
-signals:
-     void noDocumentsWorkLocation();
-
-public slots:
-    void onApplicationStateChanged(Qt::ApplicationState state);
-
-protected:
-    bool event(QEvent *e);
-};
+#import <UIKit/UIKit.h>
 
 /* ************************************************************************** */
-#endif // SHARINGAPPLICATION_H
+
+@interface DocViewController : UIViewController <UIDocumentInteractionControllerDelegate>
+
+@property int requestId;
+
+@property IosShareUtils *mIosShareUtils;
+
+@end
+
+/* ************************************************************************** */
+#endif // DOCVIEWCONTROLLER_IOS_H

@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (c) 2017 Ekkehard Gentz (ekke)
  * Copyright (c) 2020 Emeric Grange
  *
@@ -21,23 +21,35 @@
  * SOFTWARE.
  */
 
-#ifndef DOCVIEWCONTROLLER_IOS_H
-#define DOCVIEWCONTROLLER_IOS_H
+#ifndef SHARINGUTILS_IOS_H
+#define SHARINGUTILS_IOS_H
 /* ************************************************************************** */
 
-#import "SharingUtils_ios.h"
-
-#import <UIKit/UIKit.h>
+#include "SharingUtils.h"
 
 /* ************************************************************************** */
 
-@interface DocViewController : UIViewController <UIDocumentInteractionControllerDelegate>
+class IosShareUtils : public PlatformShareUtils
+{
+    Q_OBJECT
 
-@property int requestId;
+public:
+    explicit IosShareUtils(QObject *parent = 0);
 
-@property IosShareUtils *mIosShareUtils;
+    bool checkMimeTypeView(const QString &mimeType);
+    bool checkMimeTypeEdit(const QString &mimeType);
 
-@end
+    void sendText(const QString &text, const QString &subject, const QUrl &url);
+
+    void sendFile(const QString &filePath, const QString &title, const QString &mimeType, const int &requestId);
+    void viewFile(const QString &filePath, const QString &title, const QString &mimeType, const int &requestId);
+    void editFile(const QString &filePath, const QString &title, const QString &mimeType, const int &requestId);
+
+    void handleDocumentPreviewDone(const int &requestId);
+
+public slots:
+    void handleFileUrlReceived(const QUrl &url);
+};
 
 /* ************************************************************************** */
-#endif // DOCVIEWCONTROLLER_IOS_H
+#endif // SHARINGUTILS_IOS_H

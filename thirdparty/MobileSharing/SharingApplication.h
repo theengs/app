@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (c) 2017 Ekkehard Gentz (ekke)
  * Copyright (c) 2020 Emeric Grange
  *
@@ -21,29 +21,40 @@
  * SOFTWARE.
  */
 
-#import "docviewcontroller_ios.h"
+#ifndef SHARINGAPPLICATION_H
+#define SHARINGAPPLICATION_H
+/* ************************************************************************** */
+
+#include <QGuiApplication>
+
+class QQmlContext;
+class ShareUtils;
 
 /* ************************************************************************** */
 
-@interface DocViewController ()
-@end
-@implementation DocViewController
-#pragma mark -
-#pragma mark View Life Cycle
-- (void)viewDidLoad {
-    [super viewDidLoad];
-}
-#pragma mark -
-#pragma mark Document Interaction Controller Delegate Methods
-- (UIViewController *) documentInteractionControllerViewControllerForPreview: (UIDocumentInteractionController *) controller {
-#pragma unused (controller)
-    return self;
-}
-- (void)documentInteractionControllerDidEndPreview: (UIDocumentInteractionController *) controller {
-#pragma unused (controller)
-    self.mIosShareUtils->handleDocumentPreviewDone(self.requestId);
-    [self removeFromParentViewController];
-}
-@end
+class SharingApplication : public QGuiApplication
+{
+    Q_OBJECT
+
+    ShareUtils *mShareUtils = nullptr;
+    bool mPendingIntentsChecked = false;
+
+    QString mAppDataFilesPath;
+    QString mDocumentsWorkPath;
+
+public:
+    explicit SharingApplication(int &argc, char **argv);
+    ~SharingApplication();
+
+signals:
+    void fileDropped(const QString &filePath);
+
+public slots:
+    void onApplicationStateChanged(Qt::ApplicationState state);
+
+protected:
+    bool event(QEvent *e);
+};
 
 /* ************************************************************************** */
+#endif // SHARINGAPPLICATION_H
