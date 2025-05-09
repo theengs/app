@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 
-import ThemeEngine
+import ComponentLibrary
 
 Popup {
     id: popupPresetSelection
@@ -209,22 +209,20 @@ Popup {
             spacing: Theme.componentMargin
             property var btnSize: singleColumn ? width : ((width-spacing) / 2)
 
-            ButtonWireframe {
+            ButtonSolid {
                 width: parent.btnSize
 
                 text: qsTr("Cancel")
-                primaryColor: Theme.colorSubText
-                secondaryColor: Theme.colorForeground
+                color: Theme.colorGrey
 
                 onClicked: popupPresetSelection.close()
             }
 
-            ButtonWireframe {
+            ButtonSolid {
                 width: parent.btnSize
 
                 text: qsTr("Don't use a preset")
-                primaryColor: Theme.colorSubText
-                secondaryColor: Theme.colorForeground
+                color: Theme.colorSubText
 
                 onClicked: {
                     popupPresetSelection.selected(null)

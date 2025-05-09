@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 
-import ThemeEngine
+import ComponentLibrary
 
 Item {
     id: aboutScreen
@@ -74,25 +74,25 @@ Item {
                     visible: wideWideMode
                     spacing: 16
 
-                    ButtonWireframeIconCentered {
+                    ButtonSolid {
                         width: 160
-                        sourceSize: 28
-                        fullColor: true
-                        primaryColor: (Theme.currentTheme === ThemeEngine.THEME_NIGHT) ? Theme.colorHeader : "#5483EF"
 
                         text: qsTr("WEBSITE")
                         source: "qrc:/assets/icons_material/baseline-insert_link-24px.svg"
+                        sourceSize: 28
+                        color: (Theme.currentTheme === Theme.THEME_NIGHT) ? Theme.colorHeader : "#5483EF"
+
                         onClicked: Qt.openUrlExternally("https://app.theengs.io")
                     }
 
-                    ButtonWireframeIconCentered {
+                    ButtonSolid {
                         width: 160
-                        sourceSize: 22
-                        fullColor: true
-                        primaryColor: (Theme.currentTheme === ThemeEngine.THEME_NIGHT) ? Theme.colorHeader : "#5483EF"
 
                         text: qsTr("SUPPORT")
                         source: "qrc:/assets/icons_material/baseline-support-24px.svg"
+                        sourceSize: 22
+                        color: (Theme.currentTheme === Theme.THEME_NIGHT) ? Theme.colorHeader : "#5483EF"
+
                         onClicked: Qt.openUrlExternally("https://github.com/theengs/app/issues/new")
                     }
                 }
@@ -114,28 +114,27 @@ Item {
                 visible: !wideWideMode
                 spacing: 16
 
-                ButtonWireframeIconCentered {
+                ButtonSolid {
                     width: ((parent.width - 16) / 2)
                     anchors.verticalCenter: parent.verticalCenter
 
-                    sourceSize: 28
-                    fullColor: true
-                    primaryColor: (Theme.currentTheme === ThemeEngine.THEME_NIGHT) ? Theme.colorHeader : "#5483EF"
 
                     text: qsTr("WEBSITE")
                     source: "qrc:/assets/icons_material/baseline-insert_link-24px.svg"
+                    sourceSize: 28
+                    color: (Theme.currentTheme === Theme.THEME_NIGHT) ? Theme.colorHeader : "#5483EF"
+
                     onClicked: Qt.openUrlExternally("https://app.theengs.io")
                 }
-                ButtonWireframeIconCentered {
+                ButtonSolid {
                     width: ((parent.width - 16) / 2)
                     anchors.verticalCenter: parent.verticalCenter
 
-                    sourceSize: 22
-                    fullColor: true
-                    primaryColor: (Theme.currentTheme === ThemeEngine.THEME_NIGHT) ? Theme.colorHeader : "#5483EF"
-
                     text: qsTr("SUPPORT")
                     source: "qrc:/assets/icons_material/baseline-support-24px.svg"
+                    sourceSize: 22
+                    color: (Theme.currentTheme === Theme.THEME_NIGHT) ? Theme.colorHeader : "#5483EF"
+
                     onClicked: Qt.openUrlExternally("https://github.com/theengs/app/issues/new")
                 }
             }
@@ -147,7 +146,7 @@ Item {
             ListItem { // description
                 width: parent.width
                 text: qsTr("Manufacturer agnostic BLE sensors reading application with MQTT integration.")
-                iconSource: "qrc:/assets/icons_material/outline-info-24px.svg"
+                source: "qrc:/assets/icons_material/outline-info-24px.svg"
             }
 
             Item { height: 4; width: 4; } // spacer
@@ -160,8 +159,8 @@ Item {
                 width: parent.width
 
                 text: qsTr("Release notes")
-                iconSource: "qrc:/assets/icons_material/outline-new_releases-24px.svg"
-                iconSize: 24
+                source: "qrc:/assets/icons_material/outline-new_releases-24px.svg"
+                sourceSize: 24
                 indicatorSource: "qrc:/assets/icons_material/duotone-launch-24px.svg"
 
                 onClicked: Qt.openUrlExternally("https://github.com/theengs/app/releases")
@@ -176,8 +175,8 @@ Item {
                 visible: (Qt.platform.os === "android" || Qt.platform.os === "ios")
 
                 text: qsTr("About app permissions")
-                iconSource: "qrc:/assets/icons_material/baseline-flaky-24px.svg"
-                iconSize: 24
+                source: "qrc:/assets/icons_material/baseline-flaky-24px.svg"
+                sourceSize: 24
                 indicatorSource: "qrc:/assets/icons_material/baseline-chevron_right-24px.svg"
 
                 onClicked: screenAboutPermissions.loadScreenFrom("About")

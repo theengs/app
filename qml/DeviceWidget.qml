@@ -1,8 +1,8 @@
-import QtQuick 2.15
+import QtQuick
 
-import ThemeEngine 1.0
-import DeviceUtils 1.0
-import "qrc:/js/UtilsNumber.js" as UtilsNumber
+import ComponentLibrary
+import DeviceUtils
+import "qrc:/ComponentLibrary/UtilsNumber.js" as UtilsNumber
 import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
 
 Item {
@@ -29,7 +29,7 @@ Item {
         function onLimitsUpdated() { updateSensorData() }
     }
     Connections {
-        target: ThemeEngine
+        target: Theme
         function onCurrentThemeChanged() {
             updateSensorSettings()
             updateSensorStatus()
@@ -917,36 +917,36 @@ Item {
 
                 if (primaryValue === "voc") {
                     gaugeLegend.text = qsTr("VOC")
-                    gaugeValue.from = 0
-                    gaugeValue.to = 1500
+                    gaugeValue.valueMin = 0
+                    gaugeValue.valueMax = 1500
                     limitMin = 500
                     limitMax = 1000
                     gaugeValue.value = boxDevice.voc
                 } else if (primaryValue === "hcho") {
                     gaugeLegend.text = qsTr("HCHO")
-                    gaugeValue.from = 0
-                    gaugeValue.to = 1000
+                    gaugeValue.valueMin = 0
+                    gaugeValue.valueMax = 1000
                     limitMin = 250
                     limitMax = 750
                     gaugeValue.value = boxDevice.hcho
                 } else if (primaryValue === "co2") {
                     gaugeLegend.text = boxDevice.haseCo2Sensor ? qsTr("eCO₂") : qsTr("CO₂")
-                    gaugeValue.from = 0
-                    gaugeValue.to = 3000
+                    gaugeValue.valueMin = 0
+                    gaugeValue.valueMax = 3000
                     limitMin = 1000
                     limitMax = 2000
                     gaugeValue.value = boxDevice.co2
                 } else if (primaryValue === "pm25") {
                     gaugeLegend.text = qsTr("PM2.5")
-                    gaugeValue.from = 0
-                    gaugeValue.to = 240
+                    gaugeValue.valueMin = 0
+                    gaugeValue.valueMax = 240
                     limitMin = 60
                     limitMax = 120
                     gaugeValue.value = boxDevice.pm25
                 } else if (primaryValue === "pm10") {
                     gaugeLegend.text = qsTr("PM10")
-                    gaugeValue.from = 0
-                    gaugeValue.to = 500
+                    gaugeValue.valueMin = 0
+                    gaugeValue.valueMax = 500
                     limitMin = 100
                     limitMax = 350
                     gaugeValue.value = boxDevice.pm10
@@ -997,8 +997,8 @@ Item {
                 arcWidth: isPhone ? 8 : (bigAssMode ? 12 : 10)
                 arcSpan: 270
 
-                from: 0
-                to: 1500
+                valueMin: 0
+                valueMax: 1500
                 value: -1
 
                 background: true

@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 
-import ThemeEngine
+import ComponentLibrary
 
 Popup {
     id: popupBackgroundUpdates
@@ -101,11 +101,10 @@ Popup {
 
                     property var btnSize: singleColumn ? width : ((width-spacing*2) / 2)
 
-                    ButtonWireframeIconCentered {
+                    ButtonSolid {
                         width: parent.btnSize
 
-                        fullColor: true
-                        primaryColor: Theme.colorSecondary
+                        color: Theme.colorSecondary
 
                         text: qsTr("About Bluetooth permissions")
                         source: "qrc:/assets/icons_material/baseline-info-24px.svg"
@@ -119,11 +118,10 @@ Popup {
                         }
                     }
 
-                    ButtonWireframeIconCentered {
+                    ButtonSolid {
                         width: (parent.btnSize / 2 - 8)
 
-                        fullColor: true
-                        primaryColor: Theme.colorSubText
+                        color: Theme.colorGrey
 
                         text: qsTr("Cancel")
                         source: "qrc:/assets/icons_material/baseline-close-24px.svg"
@@ -133,11 +131,10 @@ Popup {
                         }
                     }
 
-                    ButtonWireframeIconCentered {
+                    ButtonSolid {
                         width: (parent.btnSize / 2 - 8)
 
-                        fullColor: true
-                        primaryColor: Theme.colorGreen
+                        color: Theme.colorGreen
 
                         text: qsTr("Enable")
                         source: "qrc:/assets/icons_material/baseline-check-24px.svg"
@@ -198,11 +195,10 @@ Popup {
 
                     property var btnSize: singleColumn ? width : ((width-spacing*2) / 2)
 
-                    ButtonWireframeIconCentered {
+                    ButtonSolid {
                         width: parent.btnSize
 
-                        fullColor: true
-                        primaryColor: Theme.colorSecondary
+                        color: Theme.colorSecondary
 
                         text: qsTr("About battery savers")
                         source: "qrc:/assets/icons_material/baseline-info-24px.svg"
@@ -213,11 +209,10 @@ Popup {
                         }
                     }
 
-                    ButtonWireframeIconCentered {
+                    ButtonSolid {
                         width: parent.btnSize
 
-                        fullColor: true
-                        primaryColor: Theme.colorPrimary
+                        color: Theme.colorPrimary
 
                         text: qsTr("Application info panel")
                         source: "qrc:/assets/icons_material/duotone-tune-24px.svg"
@@ -228,11 +223,10 @@ Popup {
                         }
                     }
 
-                    ButtonWireframeIconCentered {
+                    ButtonSolid {
                         width: parent.btnSize
 
-                        fullColor: true
-                        primaryColor: Theme.colorGreen
+                        color: Theme.colorGreen
                         layoutDirection: Qt.RightToLeft
 
                         text: qsTr("I understand")

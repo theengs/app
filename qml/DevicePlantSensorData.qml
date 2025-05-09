@@ -1,8 +1,8 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick
+import QtQuick.Controls
 
-import ThemeEngine 1.0
-import DeviceUtils 1.0
+import ComponentLibrary
+import DeviceUtils
 import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
 
 Item {

@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 
-import ThemeEngine
+import ComponentLibrary
 
 Item {
     id: permissionsScreen
@@ -295,15 +295,15 @@ Item {
                 color: Theme.colorSubText
                 font.pixelSize: Theme.fontSizeContentSmall
             }
-            ButtonWireframeIcon {
+            ButtonWireframe {
                 anchors.left: parent.left
                 anchors.leftMargin: appHeader.headerPosition
                 height: 36
 
                 visible: (Qt.platform.os === "android")
 
-                primaryColor: Theme.colorPrimary
-                secondaryColor: Theme.colorBackground
+                colorHighlight: Theme.colorPrimary
+                colorBackground: Theme.colorBackground
 
                 text: qsTr("Official information")
                 source: "qrc:/assets/icons_material/duotone-launch-24px.svg"
@@ -375,15 +375,15 @@ Item {
                 font.pixelSize: Theme.fontSizeContentSmall
             }
 
-            ButtonWireframeIcon {
+            ButtonWireframe {
                 anchors.left: parent.left
                 anchors.leftMargin: appHeader.headerPosition
                 height: 36
 
                 visible: (Qt.platform.os === "android")
 
-                primaryColor: Theme.colorPrimary
-                secondaryColor: Theme.colorBackground
+                colorHighlight: Theme.colorPrimary
+                colorBackground: Theme.colorBackground
 
                 text: qsTr("Location settings")
                 source: "qrc:/assets/icons_material/duotone-tune-24px.svg"
@@ -593,15 +593,15 @@ Item {
                 font.pixelSize: Theme.fontSizeContentSmall
             }
 
-            ButtonWireframeIcon {
+            ButtonWireframe {
                 anchors.left: parent.left
                 anchors.leftMargin: appHeader.headerPosition
                 height: 36
 
                 visible: (Qt.platform.os === "android")
 
-                primaryColor: Theme.colorPrimary
-                secondaryColor: Theme.colorBackground
+                colorHighlight: Theme.colorPrimary
+                colorBackground: Theme.colorBackground
 
                 text: qsTr("Application info")
                 source: "qrc:/assets/icons_material/duotone-tune-24px.svg"

@@ -1,8 +1,8 @@
 import QtQuick
 import QtCharts
 
-import ThemeEngine
-import "qrc:/js/UtilsNumber.js" as UtilsNumber
+import ComponentLibrary
+import "qrc:/ComponentLibrary/UtilsNumber.js" as UtilsNumber
 
 Item {
     id: chartProbeDataAio

@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 
-import ThemeEngine
+import ComponentLibrary
 
 Item {
     id: itemNoPermissions
@@ -59,14 +59,12 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 spacing: Theme.componentMargin
 
-                ButtonWireframeIcon {
+                ButtonSolid {
                     //width: ((isDesktop || isTablet) && !singleColumn) ? 256 : undefined
 
                     text: qsTr("Request permission(s)")
-                    primaryColor: Theme.colorPrimary
-                    fullColor: true
-                    sourceSize: 24
                     source: "qrc:/assets/icons_material/duotone-touch_app-24px.svg"
+                    sourceSize: 24
 
                     onClicked: {
                         deviceManager.requestBluetoothPermissions()
@@ -204,7 +202,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: Theme.componentMargin
 
-            ButtonWireframeIcon {
+            ButtonWireframe {
                 //width: ((isDesktop || isTablet) && !singleColumn) ? 256 : undefined
 
                 text: qsTr("Official information")

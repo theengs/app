@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 
-import ThemeEngine
+import ComponentLibrary
 
 Item {
     id: settingsScreen
@@ -583,7 +583,7 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                 }
 
-                SpinBoxThemed {
+                SpinBoxThemedMobile {
                     id: spinBox_update_background
                     width: 140
                     height: 36
@@ -681,7 +681,7 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                 }
 
-                SelectorMenu {
+                SelectorMenuColorful {
                     id: row_units
                     anchors.right: parent.right
                     anchors.rightMargin: 16

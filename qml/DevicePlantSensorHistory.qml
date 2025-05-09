@@ -1,6 +1,6 @@
-import QtQuick 2.15
+import QtQuick
 
-import ThemeEngine 1.0
+import ComponentLibrary
 
 Item {
     id: devicePlantSensorHistory
@@ -203,9 +203,10 @@ Item {
                 width: 100
                 height: isPhone ? 32 : 36
 
-                fullColor: (settingsManager.graphHistory === "monthly")
-                primaryColor: Theme.colorPrimary
-                secondaryColor: Theme.colorBackground
+                colorHighlight: (settingsManager.graphHistory === "monthly") ? Theme.colorBackground : Theme.colorPrimary
+                colorBackground: (settingsManager.graphHistory === "monthly") ? Theme.colorPrimary : Theme.colorBackground
+                colorBorder: (settingsManager.graphHistory === "monthly") ? Theme.colorPrimary : Theme.colorComponentBorder
+                colorText: (settingsManager.graphHistory === "monthly") ? "white" : Theme.colorPrimary
 
                 text: qsTr("Month")
                 onClicked: settingsManager.graphHistory = "monthly"
@@ -215,9 +216,10 @@ Item {
                 width: 100
                 height: isPhone ? 32 : 36
 
-                fullColor: (settingsManager.graphHistory === "weekly")
-                primaryColor: Theme.colorPrimary
-                secondaryColor: Theme.colorBackground
+                colorHighlight: (settingsManager.graphHistory === "weekly") ? Theme.colorBackground : Theme.colorPrimary
+                colorBackground: (settingsManager.graphHistory === "weekly") ? Theme.colorPrimary : Theme.colorBackground
+                colorBorder: (settingsManager.graphHistory === "weekly") ? Theme.colorPrimary : Theme.colorComponentBorder
+                colorText: (settingsManager.graphHistory === "weekly") ? "white" : Theme.colorPrimary
 
                 text: qsTr("Week")
                 onClicked: settingsManager.graphHistory = "weekly"
@@ -227,9 +229,10 @@ Item {
                 width: 100
                 height: isPhone ? 32 : 36
 
-                fullColor: (settingsManager.graphHistory === "daily")
-                primaryColor: Theme.colorPrimary
-                secondaryColor: Theme.colorBackground
+                colorHighlight: (settingsManager.graphHistory === "daily") ? Theme.colorBackground : Theme.colorPrimary
+                colorBackground: (settingsManager.graphHistory === "daily") ? Theme.colorPrimary : Theme.colorBackground
+                colorBorder: (settingsManager.graphHistory === "daily") ? Theme.colorPrimary : Theme.colorComponentBorder
+                colorText: (settingsManager.graphHistory === "daily") ? "white" : Theme.colorPrimary
 
                 text: qsTr("Day")
                 onClicked: settingsManager.graphHistory = "daily"
@@ -266,7 +269,7 @@ Item {
         //onHeightChanged: updateSize()
 
         property int columns: 1
-        property var mode: ChartHistory.Span.Weekly
+        property int mode: ChartHistory.Span.Weekly
 
         property int barSelectionIndex: -1
         property int barSelectionDays: -1

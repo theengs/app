@@ -1,10 +1,9 @@
-import QtQuick 2.15
+import QtQuick
+import QtQuick.Effects
 
-//import QtGraphicalEffects 1.15 // Qt5
-import Qt5Compat.GraphicalEffects // Qt6
+import ComponentLibrary
 
-import ThemeEngine 1.0
-import "qrc:/js/UtilsNumber.js" as UtilsNumber
+import "qrc:/ComponentLibrary/UtilsNumber.js" as UtilsNumber
 
 Item {
     id: control
@@ -52,34 +51,22 @@ Item {
         onPressAndHold: control.pressAndHold()
     }
 
-    ////////
-/*
-    Glow {
-        id: bgBlur
-        anchors.fill: bgRect
-        source: bgRect
-
-        cached: true
-        radius: 8
-        samples: 16
-        opacity: 0.33
-        color: Theme.colorSecondary
-    }
-*/
-    DropShadow {
-        anchors.fill: bgRect
-        source: bgRect
-
-        horizontalOffset: 1
-        verticalOffset: 2
-
-        cached: true
-        radius: 8
-        samples: 17
-        color: "#aaa"
-    }
-
     ////////////////////////////////////////////////////////////////////////////
+
+    Rectangle { // background
+        anchors.fill: control
+        radius: width
+
+        color: control.backgroundColor
+
+        layer.enabled: true
+        layer.effect: MultiEffect {
+            autoPaddingEnabled: true
+            shadowEnabled: true
+            shadowColor: "#aaa"
+            shadowVerticalOffset: 4
+        }
+    }
 
     Rectangle { // background
         id: bgRect

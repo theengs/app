@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 
-import ThemeEngine
+import ComponentLibrary
 
 Item {
     id: settingsMqtt
@@ -101,13 +101,12 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 4
 
-                    ButtonWireframe {
+                    ButtonSolid {
                         height: 28
                         anchors.verticalCenter: parent.verticalCenter
 
                         visible: settingsManager.mqtt
-                        fullColor: true
-                        primaryColor: mqttManager.status ? Theme.colorGreen : Theme.colorOrange
+                        color: mqttManager.status ? Theme.colorGreen : Theme.colorOrange
 
                         text: mqttManager.status ? qsTr("Connected") : qsTr("Disconnected")
                     }

@@ -4,9 +4,9 @@ import QtQuick.Controls
 
 import PresetUtils
 import "qrc:/js/UtilsPresets.js" as UtilsPresets
-import "qrc:/js/UtilsNumber.js" as UtilsNumber
+import "qrc:/ComponentLibrary/UtilsNumber.js" as UtilsNumber
 
-import ThemeEngine
+import ComponentLibrary
 
 Popup {
     id: popupPresetRangeAdd
@@ -196,13 +196,13 @@ Popup {
                         color: Theme.colorSubText
                     }
 
-                    SpinBoxThemed {
+                    SpinBoxThemedMobile {
                         id: spinboxMin
                         Layout.alignment: Qt.AlignVCenter
                         Layout.preferredHeight: 36
 
                         editable: false
-                        legend: (settingsManager.appUnits == 0) ? "°C" : "°F"
+                        legend: (settingsManager.appUnits === 0) ? "°C" : "°F"
                     }
                 }
 
@@ -226,7 +226,7 @@ Popup {
                         color: Theme.colorSubText
                     }
 
-                    SpinBoxThemed {
+                    SpinBoxThemedMobile {
                         id: spinboxMax
                         Layout.alignment: Qt.AlignVCenter
                         Layout.preferredHeight: 36
@@ -246,24 +246,22 @@ Popup {
 
                 property var btnSize: singleColumn ? width : ((width-spacing) / 2)
 
-                ButtonWireframe {
+                ButtonSolid {
                     width: parent.btnSize
 
                     text: qsTr("Cancel")
-                    primaryColor: Theme.colorSubText
-                    secondaryColor: Theme.colorForeground
+                    color: Theme.colorGrey
 
                     onClicked: {
                         popupPresetRangeAdd.close()
                     }
                 }
 
-                ButtonWireframe {
+                ButtonSolid {
                     width: parent.btnSize
 
                     text: qsTr("Add range")
-                    primaryColor: Theme.colorPrimary
-                    fullColor: true
+                    color: Theme.colorPrimary
 
                     enabled: currentPreset && currentPreset.isRangeNameValid(rangeName.text)
                     onClicked: {

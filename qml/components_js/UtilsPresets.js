@@ -1,8 +1,8 @@
 // UtilsPresets.js
 // Version 0
 
-.import PresetUtils 1.0 as PresetUtils
-.import ThemeEngine 1.0 as ThemeEngine
+.import PresetUtils as PresetUtils
+.import ComponentLibrary as ThemeEngine
 
 /* ************************************************************************** */
 

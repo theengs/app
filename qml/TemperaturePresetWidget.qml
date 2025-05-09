@@ -3,7 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 import "qrc:/js/UtilsPresets.js" as UtilsPresets
-import ThemeEngine
+import ComponentLibrary
 
 SwipeDelegate {
     id: temperaturePresetWidget

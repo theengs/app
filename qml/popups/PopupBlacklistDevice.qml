@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
-import ThemeEngine
+import ComponentLibrary
 
 Popup {
     id: popupBlacklistDevice
@@ -146,22 +146,20 @@ Popup {
 
                 property var btnSize: singleColumn ? width : ((width-spacing) / 2)
 
-                ButtonWireframe {
+                ButtonSolid {
                     width: parent.btnSize
 
                     text: qsTr("Cancel")
-                    primaryColor: Theme.colorSubText
-                    secondaryColor: Theme.colorForeground
+                    color: Theme.colorGrey
 
                     onClicked: popupBlacklistDevice.close()
                 }
 
-                ButtonWireframe {
+                ButtonSolid {
                     width: parent.btnSize
 
                     text: !deviceIsBlacklisted ? qsTr("Blacklist") : qsTr("Unblacklist")
-                    primaryColor: !deviceIsBlacklisted ? Theme.colorRed : Theme.colorGreen
-                    fullColor: true
+                    color: !deviceIsBlacklisted ? Theme.colorRed : Theme.colorGreen
 
                     onClicked: {
                         if (deviceIsBlacklisted)

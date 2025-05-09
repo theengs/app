@@ -133,9 +133,10 @@ HEADERS  += src/SettingsManager.h \
 INCLUDEPATH += src/ thirdparty/
 
 RESOURCES   += qml/qml.qrc \
-               qml/components.qrc \
                assets/assets.qrc \
                assets/devices.qrc
+
+RESOURCES   += thirdparty/ComponentLibrary/ComponentLibrary.qrc
 
 OTHER_FILES += README.md \
                deploy_linux.sh \

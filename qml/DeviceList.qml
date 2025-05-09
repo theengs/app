@@ -1,7 +1,7 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick
+import QtQuick.Controls
 
-import ThemeEngine 1.0
+import ComponentLibrary
 
 Item {
     id: screenDeviceList
@@ -175,15 +175,14 @@ Item {
                 font.pixelSize: Theme.componentFontSize
             }
 
-            ButtonWireframe {
+            ButtonSolid {
                 id: buttonBluetoothStatus
                 anchors.right: parent.right
                 anchors.rightMargin: 16
                 anchors.verticalCenter: parent.verticalCenter
                 height: 32
 
-                fullColor: true
-                primaryColor: Theme.colorActionbarHighlight
+                color: Theme.colorActionbarHighlight
 
                 text: {
                     if (!deviceManager.bluetoothPermissions) return qsTr("Request")
@@ -367,17 +366,15 @@ Item {
 
         visible: isDesktop
 
-        ButtonWireframe {
+        ButtonSolid {
             text: qsTr("presets")
-            fullColor: true
-            primaryColor: Theme.colorSecondary
+            color: Theme.colorSecondary
             onClicked: screenPresetsList.loadScreen()
         }
 
-        ButtonWireframe {
+        ButtonSolid {
             text: qsTr("devices")
-            fullColor: true
-            primaryColor: Theme.colorSecondary
+            color: Theme.colorSecondary
             onClicked: screenDeviceBrowser.loadScreen()
         }
     }

@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 
-import ThemeEngine 1.0
+import ComponentLibrary
 
 Loader {
     id: devicePlantSensor
@@ -85,7 +85,7 @@ Loader {
         }
 
         Connections {
-            target: ThemeEngine
+            target: Theme
             function onCurrentThemeChanged() {
                 plantSensorData.updateHeader()
                 plantSensorHistory.updateHeader()

@@ -1,8 +1,8 @@
-import QtQuick 2.15
-import QtCharts 2.15
+import QtQuick
+import QtCharts
 
-import ThemeEngine 1.0
-import "qrc:/js/UtilsNumber.js" as UtilsNumber
+import ComponentLibrary
+import "qrc:/ComponentLibrary/UtilsNumber.js" as UtilsNumber
 
 Item {
     id: chartPlantDataAio

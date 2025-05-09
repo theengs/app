@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 
-import ThemeEngine
+import ComponentLibrary
 
 DrawerThemed {
     contentItem: Item {
@@ -85,7 +85,7 @@ DrawerThemed {
                 DrawerItem {
                     highlighted: (appContent.state === "DeviceList")
                     text: qsTr("Sensors")
-                    iconSource: "qrc:/assets/icons_material/duotone-memory-24px.svg"
+                    source: "qrc:/assets/icons_material/duotone-memory-24px.svg"
 
                     onClicked: {
                         appContent.state = "DeviceList"
@@ -98,7 +98,7 @@ DrawerThemed {
                     enabled: (deviceManager.bluetooth && deviceManager.bluetoothPermissions)
 
                     text: qsTr("Device browser")
-                    iconSource: "qrc:/assets/icons_material/duotone-memory-24px.svg"
+                    source: "qrc:/assets/icons_material/duotone-memory-24px.svg"
 
                     onClicked: {
                         screenDeviceBrowser.loadScreen()
@@ -110,7 +110,7 @@ DrawerThemed {
                     highlighted: (appContent.state === "PresetsList")
 
                     text: qsTr("Threshold Settings")
-                    iconSource: "qrc:/assets/icons_material/duotone-tune-24px.svg"
+                    source: "qrc:/assets/icons_material/duotone-tune-24px.svg"
 
                     onClicked: {
                         screenPresetsList.loadScreen()
@@ -127,7 +127,7 @@ DrawerThemed {
                 DrawerItem {
                     highlighted: (appContent.state === "SettingsMqtt")
                     text: qsTr("Integration")
-                    iconSource: "qrc:/assets/icons_material/baseline-tap_and_play_black-24px.svg"
+                    source: "qrc:/assets/icons_material/baseline-tap_and_play_black-24px.svg"
 
                     onClicked: {
                         appContent.state = "SettingsMqtt"
@@ -138,7 +138,7 @@ DrawerThemed {
                 DrawerItem {
                     highlighted: (appContent.state === "Settings")
                     text: qsTr("Settings")
-                    iconSource: "qrc:/assets/icons_material/outline-settings-24px.svg"
+                    source: "qrc:/assets/icons_material/outline-settings-24px.svg"
 
                     onClicked: {
                         appContent.state = "Settings"
@@ -149,7 +149,7 @@ DrawerThemed {
                 DrawerItem {
                     highlighted: (appContent.state === "About" || appContent.state === "AboutPermissions")
                     text: qsTr("About")
-                    iconSource: "qrc:/assets/icons_material/outline-info-24px.svg"
+                    source: "qrc:/assets/icons_material/outline-info-24px.svg"
 
                     onClicked: {
                         appContent.state = "About"
@@ -164,7 +164,7 @@ DrawerThemed {
                 ////////
 
                 DrawerItem {
-                    iconSource: "qrc:/assets/icons_material/baseline-sort-24px.svg"
+                    source: "qrc:/assets/icons_material/baseline-sort-24px.svg"
                     text: {
                         var txt = qsTr("Order by:") + " "
                         if (settingsManager.orderBy === "model") {
@@ -206,7 +206,7 @@ DrawerThemed {
                 DrawerButton {
                     text: qsTr("Refresh sensor data")
 
-                    iconSource: "qrc:/assets/icons_material/baseline-autorenew-24px.svg"
+                    source: "qrc:/assets/icons_material/baseline-autorenew-24px.svg"
                     iconAnimation: deviceManager.updating ? "rotate" : "fade"
                     iconAnimated: (deviceManager.updating || deviceManager.listening)
 
@@ -229,7 +229,7 @@ DrawerThemed {
                 DrawerButton {
                     text: qsTr("Search for new sensors")
 
-                    iconSource: "qrc:/assets/icons_material/baseline-search-24px.svg"
+                    source: "qrc:/assets/icons_material/baseline-search-24px.svg"
                     iconAnimation: "fade"
                     iconAnimated: deviceManager.scanning
 

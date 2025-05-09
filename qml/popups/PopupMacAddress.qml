@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 
-import ThemeEngine
+import ComponentLibrary
 
 Popup {
     id: popupMacAddress
@@ -147,12 +147,11 @@ Popup {
 
                 property var btnSize: singleColumn ? width : ((width-spacing) / 2)
 
-                ButtonWireframe {
+                ButtonSolid {
                     width: parent.btnSize
 
                     text: qsTr("Cancel")
-                    primaryColor: Theme.colorSubText
-                    secondaryColor: Theme.colorForeground
+                    color: Theme.colorGrey
 
                     onClicked: {
                         textInputMacAddr.focus = false
@@ -160,12 +159,11 @@ Popup {
                     }
                 }
 
-                ButtonWireframe {
+                ButtonSolid {
                     width: parent.btnSize
 
                     text: qsTr("Set MAC")
-                    primaryColor: Theme.colorPrimary
-                    fullColor: true
+                    color: Theme.colorPrimary
 
                     onClicked: {
                         if (selectedDevice) {

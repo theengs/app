@@ -29,8 +29,6 @@
         <file>TemperaturePresetSearchWidget.qml</file>
         <file>TemperaturePreset.qml</file>
         <file>TemperatureRangeWidget.qml</file>
-        <file>ThemeEngine.qml</file>
-        <file>WindowGeometrySaver.qml</file>
 
         <file alias="PopupBackgroundUpdates.qml">popups/PopupBackgroundUpdates.qml</file>
         <file alias="PopupBlacklistDevice.qml">popups/PopupBlacklistDevice.qml</file>
@@ -70,5 +68,10 @@
         <file alias="ItemNoDeviceNearby.qml">components/ItemNoDeviceNearby.qml</file>
         <file alias="RoundButtonIconShadow.qml">components/RoundButtonIconShadow.qml</file>
         <file alias="TextInputThemed.qml">components/TextInputThemed.qml</file>
+    </qresource>
+    <qresource prefix="/js">
+        <file alias="UtilsDeviceSensors.js">components_js/UtilsDeviceSensors.js</file>
+        <file alias="UtilsDeviceTheengs.js">components_js/UtilsDeviceTheengs.js</file>
+        <file alias="UtilsPresets.js">components_js/UtilsPresets.js</file>
     </qresource>
 </RCC>

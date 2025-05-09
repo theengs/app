@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 
-import ThemeEngine
+import ComponentLibrary
 
 Popup {
     id: popupPresetRangeDelete
@@ -71,22 +71,20 @@ Popup {
 
                 property var btnSize: singleColumn ? width : ((width-spacing) / 2)
 
-                ButtonWireframe {
+                ButtonSolid {
                     width: parent.btnSize
 
                     text: qsTr("Cancel")
-                    primaryColor: Theme.colorSubText
-                    secondaryColor: Theme.colorForeground
+                    color: Theme.colorGrey
 
                     onClicked: popupPresetRangeDelete.close()
                 }
 
-                ButtonWireframe {
+                ButtonSolid {
                     width: parent.btnSize
 
                     text: qsTr("Delete")
-                    primaryColor: Theme.colorRed
-                    fullColor: true
+                    color: Theme.colorRed
 
                     onClicked: {
                         popupPresetRangeDelete.confirmed()

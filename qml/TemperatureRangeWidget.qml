@@ -2,8 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
-import "qrc:/js/UtilsNumber.js" as UtilsNumber
-import ThemeEngine
+import "qrc:/ComponentLibrary/UtilsNumber.js" as UtilsNumber
+import ComponentLibrary
 
 Rectangle {
     id: temperatureRangeWidget
@@ -85,7 +85,7 @@ Rectangle {
                 color: Theme.colorSubText
                 font.pixelSize: Theme.componentFontSize
             }
-            SpinBoxThemed {
+            SpinBoxThemedMobile {
                 Layout.preferredHeight: 34
                 Layout.alignment: Qt.AlignVCenter
 
@@ -117,7 +117,7 @@ Rectangle {
                 font.pixelSize: Theme.componentFontSize
             }
 
-            ButtonWireframe {
+            ButtonSolid {
                 Layout.preferredHeight: 34
                 Layout.alignment: Qt.AlignVCenter
 
@@ -130,7 +130,7 @@ Rectangle {
                 }
             }
 
-            SpinBoxThemed {
+            SpinBoxThemedMobile {
                 Layout.preferredHeight: 34
                 Layout.alignment: Qt.AlignVCenter
 
@@ -159,7 +159,7 @@ Rectangle {
 
             visible: !currentPreset.readOnly
 
-            ButtonWireframeIcon {
+            ButtonSolid {
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 height: 34

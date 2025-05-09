@@ -4,7 +4,7 @@ import QtQuick.Controls
 import PresetUtils
 import "qrc:/js/UtilsPresets.js" as UtilsPresets
 
-import ThemeEngine
+import ComponentLibrary
 
 Popup {
     id: popupPresetCopy
@@ -132,24 +132,22 @@ Popup {
 
                 property var btnSize: singleColumn ? width : ((width-spacing) / 2)
 
-                ButtonWireframe {
+                ButtonSolid {
                     width: parent.btnSize
 
                     text: qsTr("Cancel")
-                    primaryColor: Theme.colorSubText
-                    secondaryColor: Theme.colorForeground
+                    color: Theme.colorGrey
 
                     onClicked: {
                         popupPresetCopy.close()
                     }
                 }
 
-                ButtonWireframe {
+                ButtonSolid {
                     width: parent.btnSize
 
                     text: qsTr("Copy preset")
-                    primaryColor: Theme.colorPrimary
-                    fullColor: true
+                    color: Theme.colorPrimary
 
                     enabled: presetsManager.isPresetNameValid(presetName.text)
                     onClicked: {

@@ -2,9 +2,9 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
-import Qt5Compat.GraphicalEffects
+import ComponentLibrary
+
 import "qrc:/js/UtilsPresets.js" as UtilsPresets
-import ThemeEngine
 
 Item {
     id: temperaturePreset
@@ -91,7 +91,7 @@ Item {
             anchors.bottom: parent.bottom
             height: 48
 
-            ItemTag {
+            TagClear {
                 anchors.verticalCenter: parent.verticalCenter
                 visible: currentPreset && currentPreset.readOnly
 

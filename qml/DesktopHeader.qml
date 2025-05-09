@@ -1,6 +1,6 @@
 import QtQuick
 
-import ThemeEngine
+import ComponentLibrary
 
 Rectangle {
     id: appHeader
@@ -48,24 +48,24 @@ Rectangle {
     signal aboutButtonClicked()
 
     function setActiveDeviceData() {
-        menuDeviceData.selected = true
-        menuDeviceHistory.selected = false
-        menuDeviceSettings.selected = false
+        menuDeviceData.highlighted = true
+        menuDeviceHistory.highlighted = false
+        menuDeviceSettings.highlighted = false
     }
     function setActiveDeviceHistory() {
-        menuDeviceData.selected = false
-        menuDeviceHistory.selected = true
-        menuDeviceSettings.selected = false
+        menuDeviceData.highlighted = false
+        menuDeviceHistory.highlighted = true
+        menuDeviceSettings.highlighted = false
     }
     function setActiveDevicePlant() {
-        menuDeviceData.selected = false
-        menuDeviceHistory.selected = false
-        menuDeviceSettings.selected = false
+        menuDeviceData.highlighted = false
+        menuDeviceHistory.highlighted = false
+        menuDeviceSettings.highlighted = false
     }
     function setActiveDeviceSettings() {
-        menuDeviceData.selected = false
-        menuDeviceHistory.selected = false
-        menuDeviceSettings.selected = true
+        menuDeviceData.highlighted = false
+        menuDeviceHistory.highlighted = false
+        menuDeviceSettings.highlighted = true
     }
 
     function setActiveMenu() {
@@ -581,7 +581,7 @@ Rectangle {
                 colorContent: Theme.colorHeaderContent
                 colorHighlight: Theme.colorHeaderHighlight
 
-                selected: (appContent.state === "DeviceList")
+                highlighted: (appContent.state === "DeviceList")
                 onClicked: plantsButtonClicked()
             }
             DesktopHeaderItem {
@@ -593,7 +593,7 @@ Rectangle {
                 colorContent: Theme.colorHeaderContent
                 colorHighlight: Theme.colorHeaderHighlight
 
-                selected: (appContent.state === "SettingsMqtt")
+                highlighted: (appContent.state === "SettingsMqtt")
                 onClicked: settingsMqttButtonClicked()
             }
             DesktopHeaderItem {
@@ -605,7 +605,7 @@ Rectangle {
                 colorContent: Theme.colorHeaderContent
                 colorHighlight: Theme.colorHeaderHighlight
 
-                selected: (appContent.state === "Settings")
+                highlighted: (appContent.state === "Settings")
                 onClicked: settingsButtonClicked()
             }
             DesktopHeaderItem {
@@ -617,7 +617,7 @@ Rectangle {
                 colorContent: Theme.colorHeaderContent
                 colorHighlight: Theme.colorHeaderHighlight
 
-                selected: (appContent.state === "About")
+                highlighted: (appContent.state === "About")
                 onClicked: aboutButtonClicked()
             }
         }

@@ -1,7 +1,7 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick
+import QtQuick.Controls
 
-import ThemeEngine 1.0
+import ComponentLibrary
 
 Popup {
     id: actionMenu
@@ -44,7 +44,7 @@ Popup {
 
         ////////
 
-        ActionMenuItem {
+        ActionMenuItem_button {
             id: actionUpdate
 
             index: 0
@@ -60,7 +60,7 @@ Popup {
             }
         }
 
-        ActionMenuItem {
+        ActionMenuItem_button {
             id: actionRealtime
 
             index: 1
@@ -84,7 +84,7 @@ Popup {
             visible: (deviceManager.bluetooth && (selectedDevice && selectedDevice.hasHistory))
         }
 
-        ActionMenuItem {
+        ActionMenuItem_button {
             id: actionHistoryRefresh
 
             index: 2
@@ -100,7 +100,7 @@ Popup {
             }
         }
 
-        ActionMenuItem {
+        ActionMenuItem_button {
             id: actionHistoryClear
 
             index: 3
@@ -124,7 +124,7 @@ Popup {
             visible: (actionUpdate.visible || actionHistoryRefresh.visible) && (actionLed.visible || actionWatering.visible || actionGraphMode.visible)
         }
 
-        ActionMenuItem {
+        ActionMenuItem_button {
             id: actionLed
 
             index: 5
@@ -140,7 +140,7 @@ Popup {
             }
         }
 
-        ActionMenuItem {
+        ActionMenuItem_button {
             id: actionWatering
 
             index: 6
@@ -156,7 +156,7 @@ Popup {
             }
         }
 
-        ActionMenuItem {
+        ActionMenuItem_button {
             id: actionGraphMode
 
             index: 7
@@ -173,7 +173,7 @@ Popup {
             }
         }
 
-        ActionMenuItem {
+        ActionMenuItem_button {
             id: actionCalibrate
 
             index: 8
@@ -189,7 +189,7 @@ Popup {
             }
         }
 
-        ActionMenuItem {
+        ActionMenuItem_button {
             id: actionMacAddress
 
             index: 9

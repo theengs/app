@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Window
 
-import ThemeEngine
+import ComponentLibrary
 import MobileUI
 
 ApplicationWindow {
@@ -164,7 +164,7 @@ ApplicationWindow {
     // Events handling /////////////////////////////////////////////////////////
 
     Connections {
-        target: ThemeEngine
+        target: Theme
         function onCurrentThemeChanged() {
             mobileUI.statusbarTheme = Theme.themeStatusbar
         }
