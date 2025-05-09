@@ -101,7 +101,7 @@ Popup {
 
                         visible: presetSearchBox.text.length
                         highlightMode: "color"
-                        source: "qrc:/assets/icons_material/baseline-backspace-24px.svg"
+                        source: "qrc:/IconLibrary/material-symbols/backspace-fill.svg"
 
                         onClicked: presetSearchBox.text = ""
                     }
@@ -111,7 +111,7 @@ Popup {
                         height: 24
                         anchors.verticalCenter: parent.verticalCenter
 
-                        source: "qrc:/assets/icons_material/baseline-search-24px.svg"
+                        source: "qrc:/IconLibrary/material-symbols/search.svg"
                         color: Theme.colorText
                     }
                 }
@@ -153,7 +153,7 @@ Popup {
                         IconSvg {
                             width: 24; height: 24;
                             anchors.verticalCenter: parent.verticalCenter
-                            source: "qrc:/assets/icons_material/baseline-warning-24px.svg"
+                            source: "qrc:/IconLibrary/material-symbols/warning.svg"
                             color: Theme.colorWarning
                         }
 

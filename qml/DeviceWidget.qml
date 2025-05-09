@@ -120,15 +120,15 @@ Item {
         // Image
         if (!boxDevice.isDataToday()) {
             if (boxDevice.status === DeviceUtils.DEVICE_QUEUED) {
-                imageStatus.source = "qrc:/assets/icons_material/duotone-settings_bluetooth-24px.svg"
+                imageStatus.source = "qrc:/IconLibrary/material-icons/duotone/settings_bluetooth.svg"
             } else if (boxDevice.status === DeviceUtils.DEVICE_CONNECTING) {
-                imageStatus.source = "qrc:/assets/icons_material/duotone-bluetooth_searching-24px.svg"
+                imageStatus.source = "qrc:/IconLibrary/material-icons/duotone/bluetooth_searching.svg"
             } else if (boxDevice.status === DeviceUtils.DEVICE_CONNECTED) {
-                imageStatus.source = "qrc:/assets/icons_material/duotone-bluetooth_connected-24px.svg"
+                imageStatus.source = "qrc:/IconLibrary/material-icons/duotone/bluetooth_connected.svg"
             } else if (boxDevice.status >= DeviceUtils.DEVICE_WORKING) {
-                imageStatus.source = "qrc:/assets/icons_material/duotone-bluetooth_connected-24px.svg"
+                imageStatus.source = "qrc:/IconLibrary/material-icons/duotone/bluetooth_connected.svg"
             } else {
-                imageStatus.source = "qrc:/assets/icons_material/baseline-bluetooth_disabled-24px.svg"
+                imageStatus.source = "qrc:/IconLibrary/material-symbols/bluetooth_disabled.svg"
             }
         }
     }
@@ -162,12 +162,12 @@ Item {
                 if (boxDevice.deviceName === "ropot" || boxDevice.deviceName === "Parrot pot")
                     imageDevice.source = "qrc:/assets/icons_custom/pot_flower-24px.svg"
                 else
-                    imageDevice.source = "qrc:/assets/icons_material/outline-local_florist-24px.svg"
+                    imageDevice.source = "qrc:/IconLibrary/material-symbols/sensors/local_florist.svg"
             } else {
                 if (boxDevice.deviceName === "ropot" || boxDevice.deviceName === "Parrot pot")
                     imageDevice.source = "qrc:/assets/icons_custom/pot_empty-24px.svg"
                 else
-                    imageDevice.source = "qrc:/assets/icons_material/outline-settings_remote-24px.svg"
+                    imageDevice.source = "qrc:/IconLibrary/material-symbols/hardware/settings_remote.svg"
             }
         }
     }
@@ -431,7 +431,7 @@ Item {
 
                 visible: singleColumnMode
                 color: boxDevice.hasData ? Theme.colorHighContrast : Theme.colorSubText
-                source: "qrc:/assets/icons_material/baseline-chevron_right-24px.svg"
+                source: "qrc:/IconLibrary/material-symbols/chevron_right.svg"
             }
         }
 

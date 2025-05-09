@@ -249,7 +249,7 @@ Loader {
                     anchors.verticalCenterOffset: -(appHeader.headerHeight / 2)
 
                     visible: !currentDevice.hasData
-                    source: "qrc:/assets/icons_material/baseline-bluetooth_disabled-24px.svg"
+                    source: "qrc:/IconLibrary/material-symbols/bluetooth_disabled.svg"
                     color: cccc
                 }
 
@@ -796,7 +796,7 @@ Loader {
                                 width: 48; height: 48;
                                 anchors.centerIn: parent
                                 visible: (currentDevice.temperature1 <= -80)
-                                source: "qrc:/assets/icons_material/baseline-bluetooth_disabled-24px.svg"
+                                source: "qrc:/IconLibrary/material-symbols/bluetooth_disabled.svg"
                                 color: cccc
                             }
 
@@ -869,7 +869,7 @@ Loader {
                                 width: 48; height: 48;
                                 anchors.centerIn: parent
                                 visible: (currentDevice.temperature2 <= -80)
-                                source: "qrc:/assets/icons_material/baseline-bluetooth_disabled-24px.svg"
+                                source: "qrc:/IconLibrary/material-symbols/bluetooth_disabled.svg"
                                 color: cccc
                             }
 
@@ -946,7 +946,7 @@ Loader {
                                 width: 48; height: 48;
                                 anchors.centerIn: parent
                                 visible: (currentDevice.temperature3 <= -80)
-                                source: "qrc:/assets/icons_material/baseline-bluetooth_disabled-24px.svg"
+                                source: "qrc:/IconLibrary/material-symbols/bluetooth_disabled.svg"
                                 color: cccc
                             }
 
@@ -1019,7 +1019,7 @@ Loader {
                                 width: 48; height: 48;
                                 anchors.centerIn: parent
                                 visible: (currentDevice.temperature4 <= -80)
-                                source: "qrc:/assets/icons_material/baseline-bluetooth_disabled-24px.svg"
+                                source: "qrc:/IconLibrary/material-symbols/bluetooth_disabled.svg"
                                 color: cccc
                             }
 
@@ -1112,7 +1112,7 @@ Loader {
                         height: 24
                         anchors.verticalCenter: parent.verticalCenter
 
-                        source: "qrc:/assets/icons_material/duotone-schedule-24px.svg"
+                        source: "qrc:/IconLibrary/material-icons/duotone/schedule.svg"
                         color: cccc
                     }
                     Text {
@@ -1146,7 +1146,7 @@ Loader {
                         height: 20
                         anchors.verticalCenter: parent.verticalCenter
 
-                        source: "qrc:/assets/icons_material/duotone-edit-24px.svg"
+                        source: "qrc:/IconLibrary/material-icons/duotone/edit.svg"
                         color: cccc
 
                         opacity: (isMobile || !textInputLocation.text || textInputLocation.focus || textInputLocationArea.containsMouse) ? 0.9 : 0
@@ -1190,7 +1190,7 @@ Loader {
                         height: 24
                         anchors.verticalCenter: parent.verticalCenter
 
-                        source: "qrc:/assets/icons_material/duotone-pin_drop-24px.svg"
+                        source: "qrc:/IconLibrary/material-icons/duotone/pin_drop.svg"
                         color: cccc
                     }
                 }
@@ -1291,7 +1291,7 @@ Loader {
                                 }
                                 source: {
                                     if (currentPreset) return UtilsPresets.getPresetIcon(currentPreset.type)
-                                    return "qrc:/assets/icons_material/duotone-tune-24px.svg"
+                                    return "qrc:/IconLibrary/material-icons/duotone/tune.svg"
                                 }
                                 sourceSize: 20
 

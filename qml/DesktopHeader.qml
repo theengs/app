@@ -102,7 +102,7 @@ Rectangle {
         anchors.leftMargin: 12
         anchors.verticalCenter: parent.verticalCenter
 
-        hoverEnabled: (buttonBack.source !== "qrc:/assets/icons_material/duotone-memory-24px.svg")
+        hoverEnabled: (buttonBack.source !== "qrc:/IconLibrary/material-icons/duotone/memory.svg")
         onEntered: { buttonBackBg.opacity = 0.5; }
         onExited: { buttonBackBg.opacity = 0; buttonBack.width = 28; }
 
@@ -110,7 +110,7 @@ Rectangle {
         onReleased: buttonBack.width = 28
         onClicked: backButtonClicked()
 
-        enabled: (buttonBack.source !== "qrc:/assets/icons_material/duotone-memory-24px.svg" || wideMode)
+        enabled: (buttonBack.source !== "qrc:/IconLibrary/material-icons/duotone/memory.svg" || wideMode)
         visible: enabled
 
         Rectangle {
@@ -130,7 +130,7 @@ Rectangle {
             anchors.centerIn: parent
 
             asynchronous: true
-            source: "qrc:/assets/icons_material/duotone-memory-24px.svg"
+            source: "qrc:/IconLibrary/material-icons/duotone/memory.svg"
             color: Theme.colorHeaderContent
         }
     }
@@ -171,7 +171,7 @@ Rectangle {
 
             visible: (appContent.state === "DeviceThermometer")
 
-            source: (settingsManager.graphThermometer === "lines") ? "qrc:/assets/icons_material/duotone-insert_chart-24px.svg" : "qrc:/assets/icons_material/baseline-timeline-24px.svg";
+            source: (settingsManager.graphThermometer === "lines") ? "qrc:/IconLibrary/material-icons/duotone/insert_chart.svg" : "qrc:/IconLibrary/material-symbols/timeline.svg";
             tooltipText: qsTr("Switch graph")
             iconColor: Theme.colorHeaderContent
             textColor: Theme.colorHeaderContent
@@ -193,7 +193,7 @@ Rectangle {
                       (selectedDevice && selectedDevice.hasWaterTank) &&
                       (appContent.state === "DevicePlantSensor"))
 
-            source: "qrc:/assets/icons_material/duotone-local_drink-24px.svg"
+            source: "qrc:/IconLibrary/material-icons/duotone/local_drink.svg"
             tooltipText: qsTr("Watering")
             iconColor: Theme.colorHeaderContent
             textColor: Theme.colorHeaderContent
@@ -216,7 +216,7 @@ Rectangle {
                        appContent.state === "DeviceMotionSensor" ||
                        appContent.state === "DeviceGeneric"))
 
-            source: "qrc:/assets/icons_material/baseline-pin-24px.svg"
+            source: "qrc:/IconLibrary/material-symbols/pin.svg"
             tooltipText: qsTr("Set MAC address")
             iconColor: Theme.colorHeaderContent
             textColor: Theme.colorHeaderContent
@@ -235,7 +235,7 @@ Rectangle {
                        appContent.state === "DeviceThermometer" ||
                        appContent.state === "DeviceEnvironmental"))
 
-            source: "qrc:/assets/icons_material/duotone-model_training-24px.svg"
+            source: "qrc:/IconLibrary/material-icons/duotone/model_training.svg"
             tooltipText: qsTr("Calibrate")
             iconColor: Theme.colorHeaderContent
             textColor: Theme.colorHeaderContent
@@ -254,7 +254,7 @@ Rectangle {
                        appContent.state === "DeviceThermometer" ||
                        appContent.state === "DeviceEnvironmental"))
 
-            source: "qrc:/assets/icons_material/duotone-restart_alt-24px.svg"
+            source: "qrc:/IconLibrary/material-icons/duotone/restart_alt.svg"
             tooltipText: qsTr("Reboot")
             iconColor: Theme.colorHeaderContent
             textColor: Theme.colorHeaderContent
@@ -273,7 +273,7 @@ Rectangle {
                        appContent.state === "DeviceThermometer" ||
                        appContent.state === "DeviceEnvironmental"))
 
-            source: "qrc:/assets/icons_material/duotone-emoji_objects-24px.svg"
+            source: "qrc:/IconLibrary/material-icons/duotone/emoji_objects.svg"
             tooltipText: qsTr("Blink LED")
             iconColor: Theme.colorHeaderContent
             textColor: Theme.colorHeaderContent
@@ -309,7 +309,7 @@ Rectangle {
                        appContent.state === "DeviceThermometer" ||
                        appContent.state === "DeviceEnvironmental"))
 
-            source: "qrc:/assets/icons_material/duotone-date_range-24px.svg"
+            source: "qrc:/IconLibrary/material-icons/duotone/date_range.svg"
             tooltipText: qsTr("Synchronize history")
             iconColor: Theme.colorHeaderContent
             textColor: Theme.colorHeaderContent
@@ -324,7 +324,7 @@ Rectangle {
 
             visible: buttonRefreshHistory.visible
 
-            source: "qrc:/assets/icons_material/duotone-date_clear-24px.svg"
+            source: "qrc:/IconLibrary/material-icons/duotone/date_clear.svg"
             tooltipText: qsTr("Clear history")
             iconColor: Theme.colorHeaderContent
             textColor: Theme.colorHeaderContent
@@ -356,7 +356,7 @@ Rectangle {
                        appContent.state === "DeviceThermometer" ||
                        appContent.state === "DeviceEnvironmental"))
 
-            source: "qrc:/assets/icons_material/duotone-update-24px.svg"
+            source: "qrc:/IconLibrary/material-icons/duotone/update.svg"
             tooltipText: qsTr("Real time data")
             iconColor: Theme.colorHeaderContent
             textColor: Theme.colorHeaderContent
@@ -375,7 +375,7 @@ Rectangle {
                        appContent.state === "DeviceThermometer" ||
                        appContent.state === "DeviceEnvironmental"))
 
-            source: "qrc:/assets/icons_material/baseline-refresh-24px.svg"
+            source: "qrc:/IconLibrary/material-symbols/refresh.svg"
             tooltipText: qsTr("Refresh sensor")
             iconColor: Theme.colorHeaderContent
             textColor: Theme.colorHeaderContent
@@ -415,7 +415,7 @@ Rectangle {
                 width: headerHeight
                 height: headerHeight
 
-                source: "qrc:/assets/icons_material/duotone-insert_chart-24px.svg"
+                source: "qrc:/IconLibrary/material-icons/duotone/insert_chart.svg"
                 colorContent: Theme.colorHeaderContent
                 colorHighlight: Theme.colorHeaderHighlight
 
@@ -426,7 +426,7 @@ Rectangle {
                 width: headerHeight
                 height: headerHeight
 
-                source: "qrc:/assets/icons_material/duotone-date_range-24px.svg"
+                source: "qrc:/IconLibrary/material-icons/duotone/date_range.svg"
                 colorContent: Theme.colorHeaderContent
                 colorHighlight: Theme.colorHeaderHighlight
 
@@ -437,7 +437,7 @@ Rectangle {
                 width: headerHeight
                 height: headerHeight
 
-                source: "qrc:/assets/icons_material/duotone-memory-24px.svg"
+                source: "qrc:/IconLibrary/material-icons/duotone/memory.svg"
                 colorContent: Theme.colorHeaderContent
                 colorHighlight: Theme.colorHeaderHighlight
 
@@ -455,7 +455,7 @@ Rectangle {
             visible: (appContent.state === "DeviceList")
             enabled: visible
 
-            source: "qrc:/assets/icons_material/baseline-filter_list-24px.svg"
+            source: "qrc:/IconLibrary/material-symbols/filter_list.svg"
             iconColor: Theme.colorHeaderContent
             textColor: Theme.colorHeaderContent
             backgroundColor: Theme.colorHeaderHighlight
@@ -517,7 +517,7 @@ Rectangle {
 
             text: qsTr("Search for new sensors")
             tooltipText: text
-            source: "qrc:/assets/icons_material/baseline-search-24px.svg"
+            source: "qrc:/IconLibrary/material-symbols/search.svg"
             iconColor: Theme.colorHeaderContent
             textColor: Theme.colorHeaderContent
             backgroundColor: Theme.colorHeaderHighlight
@@ -537,7 +537,7 @@ Rectangle {
 
             text: qsTr("Refresh sensor data")
             tooltipText: text
-            source: "qrc:/assets/icons_material/baseline-autorenew-24px.svg"
+            source: "qrc:/IconLibrary/material-symbols/autorenew.svg"
             iconColor: Theme.colorHeaderContent
             textColor: Theme.colorHeaderContent
             backgroundColor: Theme.colorHeaderHighlight
@@ -577,7 +577,7 @@ Rectangle {
                 width: headerHeight
                 height: headerHeight
 
-                source: "qrc:/assets/icons_material/duotone-memory-24px.svg"
+                source: "qrc:/IconLibrary/material-icons/duotone/memory.svg"
                 colorContent: Theme.colorHeaderContent
                 colorHighlight: Theme.colorHeaderHighlight
 
@@ -589,7 +589,7 @@ Rectangle {
                 width: headerHeight
                 height: headerHeight
 
-                source: "qrc:/assets/icons_material/duotone-tap_and_play_black-24px.svg"
+                source: "qrc:/IconLibrary/material-icons/duotone/tap_and_play_black.svg"
                 colorContent: Theme.colorHeaderContent
                 colorHighlight: Theme.colorHeaderHighlight
 
@@ -601,7 +601,7 @@ Rectangle {
                 width: headerHeight
                 height: headerHeight
 
-                source: "qrc:/assets/icons_material/baseline-settings-20px.svg"
+                source: "qrc:/IconLibrary/material-symbols/settings.svg"
                 colorContent: Theme.colorHeaderContent
                 colorHighlight: Theme.colorHeaderHighlight
 
@@ -613,7 +613,7 @@ Rectangle {
                 width: headerHeight
                 height: headerHeight
 
-                source: "qrc:/assets/menus/menu_infos.svg"
+                source: "qrc:/IconLibrary/material-symbols/info.svg"
                 colorContent: Theme.colorHeaderContent
                 colorHighlight: Theme.colorHeaderHighlight
 

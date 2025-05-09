@@ -49,7 +49,7 @@ Popup {
 
             index: 0
             text: qsTr("Update data")
-            source: "qrc:/assets/icons_material/baseline-refresh-24px.svg"
+            source: "qrc:/IconLibrary/material-symbols/refresh.svg"
             layoutDirection: actionMenu.layoutDirection
             visible: (deviceManager.bluetooth && (selectedDevice && selectedDevice.hasBluetoothConnection))
 
@@ -65,7 +65,7 @@ Popup {
 
             index: 1
             text: qsTr("Real time data")
-            source: "qrc:/assets/icons_material/duotone-update-24px.svg"
+            source: "qrc:/IconLibrary/material-icons/duotone/update.svg"
             layoutDirection: actionMenu.layoutDirection
             visible: (deviceManager.bluetooth && (selectedDevice && selectedDevice.hasRealTime))
 
@@ -89,7 +89,7 @@ Popup {
 
             index: 2
             text: qsTr("Update history")
-            source: "qrc:/assets/icons_material/duotone-date_range-24px.svg"
+            source: "qrc:/IconLibrary/material-icons/duotone/date_range.svg"
             layoutDirection: actionMenu.layoutDirection
             visible: (deviceManager.bluetooth && (selectedDevice && selectedDevice.hasHistory))
 
@@ -105,7 +105,7 @@ Popup {
 
             index: 3
             text: qsTr("Clear history")
-            source: "qrc:/assets/icons_material/duotone-date_clear-24px.svg"
+            source: "qrc:/IconLibrary/material-icons/duotone/date_clear.svg"
             layoutDirection: actionMenu.layoutDirection
             visible: (deviceManager.bluetooth && (selectedDevice && selectedDevice.hasHistory))
 
@@ -129,7 +129,7 @@ Popup {
 
             index: 5
             text: qsTr("Blink LED")
-            source: "qrc:/assets/icons_material/duotone-emoji_objects-24px.svg"
+            source: "qrc:/IconLibrary/material-icons/duotone/emoji_objects.svg"
             layoutDirection: actionMenu.layoutDirection
             visible: (deviceManager.bluetooth && (selectedDevice && selectedDevice.hasLED))
 
@@ -145,7 +145,7 @@ Popup {
 
             index: 6
             text: qsTr("Watering")
-            source: "qrc:/assets/icons_material/duotone-local_drink-24px.svg"
+            source: "qrc:/IconLibrary/material-icons/duotone/local_drink.svg"
             layoutDirection: actionMenu.layoutDirection
             visible: (deviceManager.bluetooth && (selectedDevice && selectedDevice.hasWaterTank))
 
@@ -161,7 +161,7 @@ Popup {
 
             index: 7
             text: qsTr("Switch graph")
-            source: (settingsManager.graphThermometer === "minmax") ? "qrc:/assets/icons_material/duotone-insert_chart-24px.svg" : "qrc:/assets/icons_material/baseline-timeline-24px.svg"
+            source: (settingsManager.graphThermometer === "minmax") ? "qrc:/IconLibrary/material-icons/duotone/insert_chart.svg" : "qrc:/IconLibrary/material-symbols/timeline.svg"
             layoutDirection: actionMenu.layoutDirection
             visible: (appContent.state === "DeviceThermometer")
 
@@ -178,7 +178,7 @@ Popup {
 
             index: 8
             text: qsTr("Calibrate sensor")
-            source: "qrc:/assets/icons_material/duotone-model_training-24px.svg"
+            source: "qrc:/IconLibrary/material-icons/duotone/model_training.svg"
             layoutDirection: actionMenu.layoutDirection
             visible: (deviceManager.bluetooth && (selectedDevice && selectedDevice.hasCalibration))
 
@@ -194,7 +194,7 @@ Popup {
 
             index: 9
             text: qsTr("Set MAC address")
-            source: "qrc:/assets/icons_material/baseline-pin-24px.svg"
+            source: "qrc:/IconLibrary/material-symbols/pin.svg"
             layoutDirection: actionMenu.layoutDirection
             visible: (selectedDevice && (Qt.platform.os === "osx" || Qt.platform.os === "ios"))
 

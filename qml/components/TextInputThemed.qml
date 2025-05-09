@@ -59,7 +59,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         width: 24; height: 24;
 
-        source: "qrc:/assets/icons_material/duotone-edit-24px.svg"
+        source: "qrc:/IconLibrary/material-icons/duotone/edit.svg"
         color: Theme.colorSubText
 
         opacity: !readOnly && (isMobile || !textInput.text || textInput.focus || textInput.containsMouse) ? 0.9 : 0

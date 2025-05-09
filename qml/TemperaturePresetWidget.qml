@@ -193,7 +193,7 @@ SwipeDelegate {
 
                 IconSvg {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    source: "qrc:/assets/icons_material/baseline-delete-24px.svg"
+                    source: "qrc:/IconLibrary/material-symbols/delete.svg"
                     color: "white"
                 }
                 Text {

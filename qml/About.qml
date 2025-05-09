@@ -78,7 +78,7 @@ Item {
                         width: 160
 
                         text: qsTr("WEBSITE")
-                        source: "qrc:/assets/icons_material/baseline-insert_link-24px.svg"
+                        source: "qrc:/IconLibrary/material-symbols/link.svg"
                         sourceSize: 28
                         color: (Theme.currentTheme === Theme.THEME_NIGHT) ? Theme.colorHeader : "#5483EF"
 
@@ -89,7 +89,7 @@ Item {
                         width: 160
 
                         text: qsTr("SUPPORT")
-                        source: "qrc:/assets/icons_material/baseline-support-24px.svg"
+                        source: "qrc:/IconLibrary/material-symbols/support.svg"
                         sourceSize: 22
                         color: (Theme.currentTheme === Theme.THEME_NIGHT) ? Theme.colorHeader : "#5483EF"
 
@@ -120,7 +120,7 @@ Item {
 
 
                     text: qsTr("WEBSITE")
-                    source: "qrc:/assets/icons_material/baseline-insert_link-24px.svg"
+                    source: "qrc:/IconLibrary/material-symbols/link.svg"
                     sourceSize: 28
                     color: (Theme.currentTheme === Theme.THEME_NIGHT) ? Theme.colorHeader : "#5483EF"
 
@@ -131,7 +131,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
 
                     text: qsTr("SUPPORT")
-                    source: "qrc:/assets/icons_material/baseline-support-24px.svg"
+                    source: "qrc:/IconLibrary/material-symbols/support.svg"
                     sourceSize: 22
                     color: (Theme.currentTheme === Theme.THEME_NIGHT) ? Theme.colorHeader : "#5483EF"
 
@@ -146,7 +146,7 @@ Item {
             ListItem { // description
                 width: parent.width
                 text: qsTr("Manufacturer agnostic BLE sensors reading application with MQTT integration.")
-                source: "qrc:/assets/icons_material/outline-info-24px.svg"
+                source: "qrc:/IconLibrary/material-symbols/info.svg"
             }
 
             Item { height: 4; width: 4; } // spacer
@@ -159,9 +159,9 @@ Item {
                 width: parent.width
 
                 text: qsTr("Release notes")
-                source: "qrc:/assets/icons_material/outline-new_releases-24px.svg"
+                source: "qrc:/IconLibrary/material-symbols/new_releases.svg"
                 sourceSize: 24
-                indicatorSource: "qrc:/assets/icons_material/duotone-launch-24px.svg"
+                indicatorSource: "qrc:/IconLibrary/material-icons/duotone/launch.svg"
 
                 onClicked: Qt.openUrlExternally("https://github.com/theengs/app/releases")
             }
@@ -175,9 +175,9 @@ Item {
                 visible: (Qt.platform.os === "android" || Qt.platform.os === "ios")
 
                 text: qsTr("About app permissions")
-                source: "qrc:/assets/icons_material/baseline-flaky-24px.svg"
+                source: "qrc:/IconLibrary/material-symbols/flaky.svg"
                 sourceSize: 24
-                indicatorSource: "qrc:/assets/icons_material/baseline-chevron_right-24px.svg"
+                indicatorSource: "qrc:/IconLibrary/material-symbols/chevron_right.svg"
 
                 onClicked: screenAboutPermissions.loadScreenFrom("About")
             }
@@ -203,7 +203,7 @@ Item {
                     anchors.leftMargin: 4
                     anchors.verticalCenter: dependenciesText.verticalCenter
 
-                    source: "qrc:/assets/icons_material/baseline-settings-20px.svg"
+                    source: "qrc:/IconLibrary/material-symbols/settings.svg"
                     color: Theme.colorSubText
                 }
 

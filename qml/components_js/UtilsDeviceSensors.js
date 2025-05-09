@@ -66,48 +66,48 @@ function getDeviceIcon(device, devicePlanted) {
             if (deviceName === "ropot" || deviceName === "Parrot pot")
                 src = "qrc:/assets/icons_custom/pot_flower-24px.svg"
             else
-                src = "qrc:/assets/icons_material/outline-local_florist-24px.svg"
+                src = "qrc:/IconLibrary/material-symbols/sensors/local_florist.svg"
         } else {
             if (deviceName === "ropot" || deviceName === "Parrot pot")
                 src = "qrc:/assets/icons_custom/pot_empty-24px.svg"
             else
-                src = "qrc:/assets/icons_material/outline-settings_remote-24px.svg"
+                src = "qrc:/IconLibrary/material-symbols/hardware/settings_remote.svg"
         }
     } else if (device.isThermometer) {
         if (deviceName === "ThermoBeacon" ||
             deviceName === "MJ_HT_V1" ||
             deviceName === "ClearGrass Temp & RH" || deviceName === "Qingping Temp & RH M" ||
             deviceName === "Qingping Temp RH Lite") {
-            src = "qrc:/assets/icons_material/baseline-trip_origin-24px.svg"
+            src = "qrc:/IconLibrary/material-symbols/trip_origin.svg"
         } else if (deviceName === "LYWSD02" ||
                    deviceName === "MHO-C303") {
-            src = "qrc:/assets/icons_material/baseline-crop_16_9-24px.svg"
+            src = "qrc:/IconLibrary/material-symbols/crop_16_9.svg"
         } else if (deviceName === "LYWSD03MMC" ||
                    deviceName === "MHO-C401" ||
                    deviceName === "XMWSDJO4MMC") {
-            src = "qrc:/assets/icons_material/baseline-crop_square-24px.svg"
+            src = "qrc:/IconLibrary/material-symbols/crop_square.svg"
         } else if (deviceName === "Qingping Alarm Clock" ||
                    deviceName === "Qingping Temp RH Barometer") {
-            src = "qrc:/assets/icons_material/duotone-timer-24px.svg"
+            src = "qrc:/IconLibrary/material-icons/duotone/timer.svg"
         } else {
-            src = "qrc:/assets/icons_material/outline-settings_remote-24px.svg"
+            src = "qrc:/IconLibrary/material-symbols/hardware/settings_remote.svg"
         }
     } else if (device.isEnvironmentalSensor) {
         if (deviceName === "GeigerCounter") {
             src = "qrc:/assets/icons_custom/nuclear_icon.svg"
         } else {
-            src = "qrc:/assets/icons_material/outline-settings_remote-24px.svg"
+            src = "qrc:/IconLibrary/material-symbols/hardware/settings_remote.svg"
         }
     } else if (device.isLight) {
-        src = "qrc:/assets/icons_material/lightbulb_FILL0_wght400_GRAD0_opsz48.svg"
+        src = "qrc:/IconLibrary/material-symbols/hardware/lightbulb.svg"
     } else if (device.isBeacon) {
-        src = "qrc:/assets/icons_material/baseline-sensors-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/sensors/sensors.svg"
     } else if (device.isRemote) {
-        src = "qrc:/assets/icons_material/baseline-remote_tv-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/hardware/nest_remote.svg"
     } else if (device.isPGP) {
-        src = "qrc:/assets/icons_material/baseline-pgp-24px.svg"
+        src = "qrc:/assets/icons_custom/pgp.svg"
     } else {
-        src = "qrc:/assets/icons_material/outline-settings_remote-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/hardware/settings_remote.svg"
     }
 
     return src
@@ -117,11 +117,11 @@ function getDeviceIconTheengs(device, devicePlanted) {
     var src = ""
 
     if (device.isProbe) {
-        src = "qrc:/assets/icons_material/baseline-settings_input_component-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/media/settings_input_component.svg"
     } else if (device.isScale) {
         src = "qrc:/assets/icons_material/baseline-monitor_weight-24px.svg"
     } else if (device.isMotionSensor) {
-        src = "qrc:/assets/icons_material/baseline-sensors-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/sensors/sensors.svg"
     } else {
         src = getDeviceIcon(device, devicePlanted)
     }
@@ -183,23 +183,23 @@ function getDeviceBatteryIcon(batteryLevel) {
     var src = ""
 
     if (batteryLevel > 95) {
-        src = "qrc:/assets/icons_material/baseline-battery_full-24px.svg";
+        src = "qrc:/IconLibrary/material-icons/duotone/battery_full.svg";
     } else if (batteryLevel > 85) {
-        src = "qrc:/assets/icons_material/baseline-battery_90-24px.svg";
+        src = "qrc:/IconLibrary/material-icons/duotone/battery_90.svg";
     } else if (batteryLevel > 75) {
-        src = "qrc:/assets/icons_material/baseline-battery_80-24px.svg";
+        src = "qrc:/IconLibrary/material-icons/duotone/battery_80.svg";
     } else if (batteryLevel > 55) {
-        src = "qrc:/assets/icons_material/baseline-battery_60-24px.svg";
+        src = "qrc:/IconLibrary/material-icons/duotone/battery_60.svg";
     } else if (batteryLevel > 45) {
-        src = "qrc:/assets/icons_material/baseline-battery_50-24px.svg";
+        src = "qrc:/IconLibrary/material-icons/duotone/battery_50.svg";
     } else if (batteryLevel > 25) {
-        src = "qrc:/assets/icons_material/baseline-battery_30-24px.svg";
+        src = "qrc:/IconLibrary/material-icons/duotone/battery_30.svg";
     } else if (batteryLevel > 15) {
-        src = "qrc:/assets/icons_material/baseline-battery_20-24px.svg";
+        src = "qrc:/IconLibrary/material-icons/duotone/battery_20.svg";
     } else if (batteryLevel > 1) {
-        src = "qrc:/assets/icons_material/baseline-battery_10-24px.svg";
+        src = "qrc:/IconLibrary/material-icons/duotone/battery_10.svg";
     } else if (batteryLevel >= 0) {
-        src = "qrc:/assets/icons_material/baseline-battery_unknown-24px.svg";
+        src = "qrc:/IconLibrary/material-icons/duotone/battery_unknown.svg";
     }
 
     return src
@@ -254,27 +254,27 @@ function getDeviceCapabilityIcon(capabilityId) {
     var src = ""
 
     if (capabilityId === DeviceUtils.DeviceUtils.DEVICE_REALTIME) {
-        src = "qrc:/assets/icons_material/duotone-update-24px.svg"
+        src = "qrc:/IconLibrary/material-icons/duotone/update.svg"
     } else if (capabilityId === DeviceUtils.DeviceUtils.DEVICE_HISTORY) {
-        src = "qrc:/assets/icons_custom/duotone-date_all-24px.svg"
+        src = "qrc:/IconLibrary/material-icons/duotone/date_all.svg"
     } else if (capabilityId === DeviceUtils.DeviceUtils.DEVICE_BATTERY) {
-        src = "qrc:/assets/icons_material/baseline-battery_full-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/battery_full.svg"
     } else if (capabilityId === DeviceUtils.DeviceUtils.DEVICE_CLOCK) {
-        src = "qrc:/assets/icons_material/duotone-timer-24px.svg"
+        src = "qrc:/IconLibrary/material-icons/duotone/timer.svg"
     } else if (capabilityId === DeviceUtils.DeviceUtils.DEVICE_LED_STATUS) {
-        src = "qrc:/assets/icons_material/duotone-emoji_objects-24px.svg"
+        src = "qrc:/IconLibrary/material-icons/duotone/emoji_objects.svg"
     } else if (capabilityId === DeviceUtils.DeviceUtils.DEVICE_LED_RGB) {
-        src = "qrc:/assets/icons_material/duotone-emoji_objects-24px.svg"
+        src = "qrc:/IconLibrary/material-icons/duotone/emoji_objects.svg"
     } else if (capabilityId === DeviceUtils.DeviceUtils.DEVICE_BUTTONS) {
-        src = "qrc:/assets/icons_material/duotone-touch_app-24px.svg"
+        src = "qrc:/IconLibrary/material-icons/duotone/touch_app.svg"
     } else if (capabilityId === DeviceUtils.DeviceUtils.DEVICE_LAST_MOVE) {
-        src = "qrc:/assets/icons_material/duotone-pin_drop-24px.svg"
+        src = "qrc:/IconLibrary/material-icons/duotone/pin_drop.svg"
     } else if (capabilityId === DeviceUtils.DeviceUtils.DEVICE_WATER_TANK) {
-        src = "qrc:/assets/icons_material/duotone-local_drink-24px.svg"
+        src = "qrc:/IconLibrary/material-icons/duotone/local_drink.svg"
     } else if (capabilityId === DeviceUtils.DeviceUtils.DEVICE_CALIBRATION) {
-        src = "qrc:/assets/icons_material/duotone-model_training-24px.svg"
+        src = "qrc:/IconLibrary/material-icons/duotone/model_training.svg"
     } else if (capabilityId === DeviceUtils.DeviceUtils.DEVICE_REBOOT) {
-        src = "qrc:/assets/icons_material/duotone-restart_alt-24px.svg"
+        src = "qrc:/IconLibrary/material-icons/duotone/restart_alt.svg"
     }
 
     return src
@@ -346,55 +346,55 @@ function getDeviceSensorIcon(sensorId) {
     var src = ""
 
     if (sensorId === DeviceUtils.DeviceUtils.SENSOR_SOIL_MOISTURE) {
-        src = "qrc:/assets/icons_material/duotone-water_mid-24px.svg"
+        src = "qrc:/IconLibrary/material-icons/duotone/water_mid.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_SOIL_CONDUCTIVITY) {
-        src = "qrc:/assets/icons_material/baseline-tonality-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/sensors/tonality.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_SOIL_TEMPERATURE) {
-        src = "qrc:/assets/icons_material/baseline-ac_unit-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/sensors/ac_unit.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_SOIL_PH) {
-        src = "qrc:/assets/icons_material/baseline-tonality-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/sensors/tonality.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_TEMPERATURE) {
-        src = "qrc:/assets/icons_material/baseline-ac_unit-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/sensors/ac_unit.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_HUMIDITY) {
-        src = "qrc:/assets/icons_material/duotone-water_full-24px.svg"
+        src = "qrc:/IconLibrary/material-icons/duotone/water_full.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_PRESSURE) {
-        src = "qrc:/assets/icons_material/duotone-speed-24px.svg"
+        src = "qrc:/IconLibrary/material-icons/duotone/speed.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_LUMINOSITY) {
-        src = "qrc:/assets/icons_material/duotone-wb_sunny-24px.svg"
+        src = "qrc:/IconLibrary/material-icons/duotone/wb_sunny.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_UV) {
-        src = "qrc:/assets/icons_material/duotone-wb_sunny-24px.svg"
+        src = "qrc:/IconLibrary/material-icons/duotone/wb_sunny.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_SOUND) {
-        src = "qrc:/assets/icons_material/duotone-mic-24px.svg"
+        src = "qrc:/IconLibrary/material-icons/duotone/mic.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_WATER_LEVEL) {
-        src = "qrc:/assets/icons_material/duotone-local_drink-24px.svg"
+        src = "qrc:/IconLibrary/material-icons/duotone/local_drink.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_WIND_DIRECTION) {
-        src = "qrc:/assets/icons_material/baseline-near_me-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/location/near_me.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_WIND_SPEED) {
-        src = "qrc:/assets/icons_material/baseline-air-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/sensors/air.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_PM1) {
-        src = "qrc:/assets/icons_material/baseline-air-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/sensors/air.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_PM25) {
-        src = "qrc:/assets/icons_material/baseline-air-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/sensors/air.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_PM10) {
-        src = "qrc:/assets/icons_material/baseline-air-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/sensors/air.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_O2) {
-        src = "qrc:/assets/icons_material/baseline-air-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/sensors/air.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_O3) {
-        src = "qrc:/assets/icons_material/baseline-air-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/sensors/air.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_CO) {
-        src = "qrc:/assets/icons_material/baseline-air-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/sensors/air.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_CO2) {
-        src = "qrc:/assets/icons_material/baseline-air-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/sensors/air.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_eCO2) {
-        src = "qrc:/assets/icons_material/baseline-air-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/sensors/air.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_NO2) {
-        src = "qrc:/assets/icons_material/baseline-air-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/sensors/air.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_SO2) {
-        src = "qrc:/assets/icons_material/baseline-air-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/sensors/air.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_VOC) {
-        src = "qrc:/assets/icons_material/baseline-air-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/sensors/air.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_HCHO) {
-        src = "qrc:/assets/icons_material/baseline-air-24px.svg"
+        src = "qrc:/IconLibrary/material-symbols/sensors/air.svg"
     } else if (sensorId === DeviceUtils.DeviceUtils.SENSOR_GEIGER) {
         src = "qrc:/assets/icons_custom/nuclear_icon.svg"
     }

@@ -109,7 +109,7 @@ Item {
                     anchors.left: parent.left
                     anchors.leftMargin: 8
 
-                    source: "qrc:/assets/icons_material/outline-info-24px.svg"
+                    source: "qrc:/IconLibrary/material-symbols/info.svg"
                     color: Theme.colorIcon
                 }
 
@@ -210,7 +210,7 @@ Item {
                     anchors.leftMargin: 8
                     anchors.verticalCenter: parent.verticalCenter
 
-                    source: "qrc:/assets/icons_material/outline-info-24px.svg"
+                    source: "qrc:/IconLibrary/material-symbols/info.svg"
                     color: Theme.colorIcon
                 }
 
@@ -314,7 +314,7 @@ Item {
 
                     IconSvg {
                         anchors.centerIn: parent
-                        source: "qrc:/assets/icons_material/duotone-devices-24px.svg"
+                        source: "qrc:/IconLibrary/material-icons/duotone/devices.svg"
                         color: Theme.colorIcon
                     }
                 }

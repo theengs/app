@@ -138,6 +138,8 @@ RESOURCES   += qml/qml.qrc \
 
 RESOURCES   += thirdparty/ComponentLibrary/ComponentLibrary.qrc
 
+RESOURCES   += thirdparty/IconLibrary/IconLibrary.qrc
+
 OTHER_FILES += README.md \
                deploy_linux.sh \
                deploy_macos.sh \

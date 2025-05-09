@@ -234,7 +234,7 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
 
                         color: Theme.colorSubText
-                        source: "qrc:/assets/icons_material/baseline-storage-24px.svg"
+                        source: "qrc:/IconLibrary/material-symbols/storage.svg"
                     }
                 }
 
@@ -262,7 +262,7 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
 
                         color: Theme.colorSubText
-                        source: "qrc:/assets/icons_material/baseline-pin-24px.svg"
+                        source: "qrc:/IconLibrary/material-symbols/pin.svg"
                     }
                 }
 
@@ -289,7 +289,7 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
 
                         color: Theme.colorSubText
-                        source: "qrc:/assets/icons_material/duotone-manage_accounts-24px.svg"
+                        source: "qrc:/IconLibrary/material-icons/duotone/manage_accounts.svg"
                     }
                 }
 
@@ -317,7 +317,7 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
 
                         color: Theme.colorSubText
-                        source: "qrc:/assets/icons_material/baseline-password-24px.svg"
+                        source: "qrc:/IconLibrary/material-symbols/password.svg"
                     }
                 }
             }
@@ -374,7 +374,7 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
 
                         color: Theme.colorSubText
-                        source: "qrc:/assets/icons_material/duotone-format_size-24px.svg"
+                        source: "qrc:/IconLibrary/material-icons/duotone/format_size.svg"
                     }
                 }
 
@@ -401,7 +401,7 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
 
                         color: Theme.colorSubText
-                        source: "qrc:/assets/icons_material/duotone-format_size-24px.svg"
+                        source: "qrc:/IconLibrary/material-icons/duotone/format_size.svg"
                     }
                 }
             }

@@ -108,9 +108,9 @@ Rectangle {
                 height: (headerHeight / 2)
 
                 source: {
-                    if (leftMenuMode === "drawer") return "qrc:/assets/icons_material/baseline-menu-24px.svg"
-                    if (leftMenuMode === "close") return "qrc:/assets/icons_material/baseline-close-24px.svg"
-                    return "qrc:/assets/icons_material/baseline-arrow_back-24px.svg"
+                    if (leftMenuMode === "drawer") return "qrc:/IconLibrary/material-symbols/menu.svg"
+                    if (leftMenuMode === "close") return "qrc:/IconLibrary/material-symbols/close.svg"
+                    return "qrc:/IconLibrary/material-symbols/arrow_back.svg"
                 }
                 color: Theme.colorHeaderContent
             }
@@ -156,13 +156,13 @@ Rectangle {
 
                     source: {
                         if (deviceManager.scanning)
-                            return "qrc:/assets/icons_material/baseline-search-24px.svg"
+                            return "qrc:/IconLibrary/material-symbols/search.svg"
                         else if (deviceManager.syncing)
-                            return "qrc:/assets/icons_custom/duotone-date_all-24px.svg"
+                            return "qrc:/assets/icons_custom/duotone-date_all.svg"
                         else if (deviceManager.listening)
-                            return "qrc:/assets/icons_material/baseline-autorenew-24px.svg"
+                            return "qrc:/IconLibrary/material-symbols/autorenew.svg"
                         else
-                            return "qrc:/assets/icons_material/baseline-autorenew-24px.svg"
+                            return "qrc:/IconLibrary/material-symbols/autorenew.svg"
                     }
                     color: Theme.colorHeaderContent
                     opacity: 0
@@ -220,7 +220,7 @@ Rectangle {
                     height: (headerHeight / 2)
                     anchors.centerIn: parent
 
-                    source: "qrc:/assets/icons_material/baseline-more_vert-24px.svg"
+                    source: "qrc:/IconLibrary/material-symbols/more_vert.svg"
                     color: Theme.colorHeaderContent
                 }
             }

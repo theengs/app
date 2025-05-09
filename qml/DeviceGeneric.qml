@@ -212,7 +212,7 @@ Loader {
                             height: 24
                             anchors.verticalCenter: parent.verticalCenter
 
-                            source: "qrc:/assets/icons_material/duotone-pin_drop-24px.svg"
+                            source: "qrc:/IconLibrary/material-icons/duotone/pin_drop.svg"
                             color: cccc
                         }
                         TextInput {
@@ -251,7 +251,7 @@ Loader {
                             anchors.verticalCenter: parent.verticalCenter
                             width: 20; height: 20;
 
-                            source: "qrc:/assets/icons_material/duotone-edit-24px.svg"
+                            source: "qrc:/IconLibrary/material-icons/duotone/edit.svg"
                             color: cccc
 
                             opacity: (isMobile || !textInputLocation.text || textInputLocation.focus || textInputLocationArea.containsMouse) ? 0.9 : 0
@@ -272,7 +272,7 @@ Loader {
                             height: 24
                             anchors.verticalCenter: parent.verticalCenter
 
-                            source: "qrc:/assets/icons_material/duotone-schedule-24px.svg"
+                            source: "qrc:/IconLibrary/material-icons/duotone/schedule.svg"
                             color: cccc
                         }
                         Text {

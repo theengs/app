@@ -95,7 +95,7 @@ Item {
         sourceComponent: IconSvg {
             width: 20; height: 20;
             color: Theme.colorSubText
-            source: "qrc:/assets/icons_material/baseline-bluetooth_disabled-24px.svg"
+            source: "qrc:/IconLibrary/material-symbols/bluetooth_disabled.svg"
         }
     }
 

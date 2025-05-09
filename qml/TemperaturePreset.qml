@@ -203,7 +203,7 @@ Item {
                         IconSvg {
                             width: 24; height: 24;
                             anchors.verticalCenter: parent.verticalCenter
-                            source: "qrc:/assets/icons_material/baseline-warning-24px.svg"
+                            source: "qrc:/IconLibrary/material-symbols/warning.svg"
                             color: Theme.colorWarning
                         }
 
@@ -259,7 +259,7 @@ Item {
             width: 56
             height: 56
 
-            source: "qrc:/assets/icons_material/duotone-library_copy-24px.svg"
+            source: "qrc:/IconLibrary/material-icons/duotone/library_copy.svg"
             iconColor: "white"
             background: true
             backgroundColor: Theme.colorPrimary
@@ -275,7 +275,7 @@ Item {
 
             visible: currentPreset && !currentPreset.readOnly
 
-            source: "qrc:/assets/icons_material/baseline-add-24px.svg"
+            source: "qrc:/IconLibrary/material-symbols/add.svg"
             iconColor: "white"
             background: true
             backgroundColor: Theme.colorPrimary

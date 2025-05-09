@@ -34,7 +34,7 @@ Item {
                     width: parent.width*0.8
                     height: width
 
-                    source: "qrc:/assets/icons_material/outline-lock-24px.svg"
+                    source: "qrc:/IconLibrary/material-symbols/lock.svg"
                     fillMode: Image.PreserveAspectFit
                     color: Theme.colorSubText
                     opacity: 0.9
@@ -63,7 +63,7 @@ Item {
                     //width: ((isDesktop || isTablet) && !singleColumn) ? 256 : undefined
 
                     text: qsTr("Request permission(s)")
-                    source: "qrc:/assets/icons_material/duotone-touch_app-24px.svg"
+                    source: "qrc:/IconLibrary/material-icons/duotone/touch_app.svg"
                     sourceSize: 24
 
                     onClicked: {
@@ -89,7 +89,7 @@ Item {
                 Layout.preferredHeight: 20
                 Layout.alignment: Qt.AlignVCenter
 
-                source: "qrc:/assets/icons_material/baseline-warning-24px.svg"
+                source: "qrc:/IconLibrary/material-symbols/warning.svg"
                 color: Theme.colorWarning
             }
             Text {
@@ -119,7 +119,7 @@ Item {
                 Layout.preferredHeight: 20
                 Layout.alignment: Qt.AlignVCenter
 
-                source: "qrc:/assets/icons_material/baseline-warning-24px.svg"
+                source: "qrc:/IconLibrary/material-symbols/warning.svg"
                 color: Theme.colorWarning
             }
             Text {
@@ -149,7 +149,7 @@ Item {
                 Layout.preferredHeight: 20
                 Layout.alignment: Qt.AlignVCenter
 
-                source: "qrc:/assets/icons_material/baseline-warning-24px.svg"
+                source: "qrc:/IconLibrary/material-symbols/warning.svg"
                 color: Theme.colorSubText
             }
 
@@ -180,7 +180,7 @@ Item {
                 Layout.preferredHeight: 20
                 Layout.alignment: Qt.AlignVCenter
 
-                source: "qrc:/assets/icons_material/baseline-info-24px.svg"
+                source: "qrc:/IconLibrary/material-symbols/info.svg"
                 color: Theme.colorSubText
             }
             Text {
@@ -208,7 +208,7 @@ Item {
                 text: qsTr("Official information")
                 primaryColor: Theme.colorSubText
                 sourceSize: 20
-                source: "qrc:/assets/icons_material/duotone-launch-24px.svg"
+                source: "qrc:/IconLibrary/material-icons/duotone/launch.svg"
 
                 onClicked: {
                     if (Qt.platform.os === "android") {

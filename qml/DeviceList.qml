@@ -248,7 +248,7 @@ Item {
                     height: 36
                     anchors.verticalCenter: parent.verticalCenter
 
-                    source: "qrc:/assets/icons_material/baseline-backspace-24px.svg"
+                    source: "qrc:/IconLibrary/material-symbols/backspace-fill.svg"
                     rotation: 180
                     iconColor: Theme.colorActionbarContent
                     backgroundColor: Theme.colorActionbarHighlight
@@ -283,7 +283,7 @@ Item {
                     onClicked: confirmDeleteDevice.open()
 
                     text: qsTr("Delete")
-                    source: "qrc:/assets/icons_material/baseline-delete-24px.svg"
+                    source: "qrc:/IconLibrary/material-symbols/delete.svg"
                 }
 
                 ButtonCompactable {
@@ -298,7 +298,7 @@ Item {
                     onClicked: screenDeviceList.updateSelectedDevice()
 
                     text: qsTr("Refresh")
-                    source: "qrc:/assets/icons_material/baseline-refresh-24px.svg"
+                    source: "qrc:/IconLibrary/material-symbols/refresh.svg"
                 }
             }
         }

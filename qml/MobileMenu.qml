@@ -82,7 +82,7 @@ Rectangle {
             height: mobileMenu.hhh
 
             text: qsTr("Sensors")
-            source: "qrc:/assets/icons_material/duotone-memory-24px.svg"
+            source: "qrc:/IconLibrary/material-icons/duotone/memory.svg"
             sourceSize: mobileMenu.hhi
             colorContent: Theme.colorTabletmenuContent
             colorHighlight: Theme.colorTabletmenuHighlight
@@ -95,7 +95,7 @@ Rectangle {
             height: mobileMenu.hhh
 
             text: qsTr("Device browser")
-            source: "qrc:/assets/icons_material/baseline-radar-24px.svg"
+            source: "qrc:/IconLibrary/material-symbols/sensors/radar.svg"
             sourceSize: mobileMenu.hhi
             colorContent: Theme.colorTabletmenuContent
             colorHighlight: Theme.colorTabletmenuHighlight
@@ -109,7 +109,7 @@ Rectangle {
             height: mobileMenu.hhh
 
             text: qsTr("Mqtt Integration")
-            source: "qrc:/assets/icons_material/duotone-tap_and_play_black-24px.svg"
+            source: "qrc:/IconLibrary/material-icons/duotone/tap_and_play_black.svg"
             sourceSize: mobileMenu.hhi
             colorContent: Theme.colorTabletmenuContent
             colorHighlight: Theme.colorTabletmenuHighlight
@@ -122,7 +122,7 @@ Rectangle {
             height: mobileMenu.hhh
 
             text: qsTr("Settings")
-            source: "qrc:/assets/icons_material/baseline-settings-20px.svg"
+            source: "qrc:/IconLibrary/material-symbols/settings.svg"
             sourceSize: mobileMenu.hhi
             colorContent: Theme.colorTabletmenuContent
             colorHighlight: Theme.colorTabletmenuHighlight
@@ -135,7 +135,7 @@ Rectangle {
             height: mobileMenu.hhh
 
             text: qsTr("About")
-            source: "qrc:/assets/icons_material/outline-info-24px.svg"
+            source: "qrc:/IconLibrary/material-symbols/info.svg"
             sourceSize: mobileMenu.hhi
             colorContent: Theme.colorTabletmenuContent
             colorHighlight: Theme.colorTabletmenuHighlight
@@ -160,7 +160,7 @@ Rectangle {
             height: mobileMenu.hhh
 
             text: qsTr("Data")
-            source: "qrc:/assets/icons_material/duotone-insert_chart-24px.svg"
+            source: "qrc:/IconLibrary/material-icons/duotone/insert_chart.svg"
             sourceSize: mobileMenu.hhi
 
             colorContent: Theme.colorTabletmenuContent
@@ -174,7 +174,7 @@ Rectangle {
             height: mobileMenu.hhh
 
             text: qsTr("History")
-            source: "qrc:/assets/icons_material/duotone-date_range-24px.svg"
+            source: "qrc:/IconLibrary/material-icons/duotone/date_range.svg"
             sourceSize: mobileMenu.hhi
 
             colorContent: Theme.colorTabletmenuContent
@@ -188,7 +188,7 @@ Rectangle {
             height: mobileMenu.hhh
 
             text: qsTr("Settings")
-            source: "qrc:/assets/icons_material/duotone-memory-24px.svg"
+            source: "qrc:/IconLibrary/material-icons/duotone/memory.svg"
             sourceSize: mobileMenu.hhi
 
             colorContent: Theme.colorTabletmenuContent

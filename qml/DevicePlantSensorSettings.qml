@@ -168,7 +168,7 @@ Item {
                                     anchors.leftMargin: 6
                                     anchors.verticalCenter: parent.verticalCenter
 
-                                    source: "qrc:/assets/icons_material/baseline-new_releases-24px.svg"
+                                    source: "qrc:/IconLibrary/material-symbols/new_releases.svg"
                                     color: Theme.colorSubText
                                     visible: !currentDevice.deviceFirmwareUpToDate
                                 }

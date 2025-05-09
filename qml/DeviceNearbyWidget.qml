@@ -71,8 +71,8 @@ Rectangle {
             visible: deviceSupported
             enabled: true
 
-            source: deviceBlacklisted ? "qrc:/assets/icons_material/outline-remove_circle-24px.svg"
-                                      : "qrc:/assets/icons_material/outline-add_circle-24px.svg"
+            source: deviceBlacklisted ? "qrc:/IconLibrary/material-symbols/remove_circle.svg"
+                                      : "qrc:/IconLibrary/material-symbols/add_circle.svg"
             color: {
                 if (ma.hovered) return Theme.colorPrimary
                 if (deviceBlacklisted) return Theme.colorRed

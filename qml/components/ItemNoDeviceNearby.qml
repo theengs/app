@@ -18,7 +18,7 @@ Rectangle {
         width: parent.width*0.8
         height: width
 
-        source: "qrc:/assets/icons_material/baseline-radar-24px.svg"
+        source: "qrc:/IconLibrary/material-symbols/sensors/radar.svg"
         fillMode: Image.PreserveAspectFit
         color: Theme.colorSubText
         opacity: 0.9

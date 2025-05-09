@@ -108,7 +108,7 @@ Popup {
                     IconSvg {
                         width: 24; height: 24;
                         anchors.verticalCenter: parent.verticalCenter
-                        source: "qrc:/assets/icons_material/baseline-warning-24px.svg"
+                        source: "qrc:/IconLibrary/material-symbols/warning.svg"
                         color: Theme.colorWarning
                     }
 

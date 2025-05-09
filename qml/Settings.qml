@@ -56,7 +56,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
 
                     color: Theme.colorIcon
-                    source: "qrc:/assets/icons_material/baseline-settings-20px.svg"
+                    source: "qrc:/IconLibrary/material-symbols/settings.svg"
                 }
 
                 Text {
@@ -94,7 +94,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
 
                     color: Theme.colorIcon
-                    source: "qrc:/assets/icons_material/duotone-style-24px.svg"
+                    source: "qrc:/IconLibrary/material-icons/duotone/style.svg"
                 }
 
                 Text {
@@ -220,7 +220,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
 
                     color: Theme.colorIcon
-                    source: "qrc:/assets/icons_material/duotone-brightness_4-24px.svg"
+                    source: "qrc:/IconLibrary/material-icons/duotone/brightness_4.svg"
                 }
 
                 Text {
@@ -298,7 +298,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
 
                     color: Theme.colorIcon
-                    source: "qrc:/assets/icons_material/baseline-bluetooth-24px.svg"
+                    source: "qrc:/IconLibrary/material-symbols/bluetooth.svg"
                 }
 
                 Text {
@@ -339,7 +339,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
 
                     color: Theme.colorIcon
-                    source: "qrc:/assets/icons_material/duotone-settings_bluetooth-24px.svg"
+                    source: "qrc:/IconLibrary/material-icons/duotone/settings_bluetooth.svg"
                 }
 
                 Text {
@@ -408,7 +408,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
 
                     color: Theme.colorIcon
-                    source: "qrc:/assets/icons_material/duotone-tap_and_play_black-24px.svg"
+                    source: "qrc:/IconLibrary/material-icons/duotone/tap_and_play_black.svg"
                 }
 
                 Text {
@@ -464,7 +464,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
 
                     color: Theme.colorIcon
-                    source: "qrc:/assets/icons_material/baseline-autorenew-24px.svg"
+                    source: "qrc:/IconLibrary/material-symbols/autorenew.svg"
                 }
 
                 Text {
@@ -563,7 +563,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
 
                     color: Theme.colorIcon
-                    source: "qrc:/assets/icons_material/duotone-timer-24px.svg"
+                    source: "qrc:/IconLibrary/material-icons/duotone/timer.svg"
                 }
 
                 Text {
@@ -661,7 +661,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
 
                     color: Theme.colorIcon
-                    source: "qrc:/assets/icons_material/baseline-ac_unit-24px.svg"
+                    source: "qrc:/IconLibrary/material-symbols/sensors/ac_unit.svg"
                 }
 
                 Text {

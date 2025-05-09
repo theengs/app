@@ -224,7 +224,7 @@ Loader {
                     anchors.verticalCenterOffset: -(appHeader.height / 3)
 
                     visible: !currentDevice.hasData
-                    source: "qrc:/assets/icons_material/baseline-bluetooth_disabled-24px.svg"
+                    source: "qrc:/IconLibrary/material-symbols/bluetooth_disabled.svg"
                     color: cccc
                 }
 
@@ -382,7 +382,7 @@ Loader {
                         height: 24
                         anchors.verticalCenter: parent.verticalCenter
 
-                        source: "qrc:/assets/icons_material/duotone-schedule-24px.svg"
+                        source: "qrc:/IconLibrary/material-icons/duotone/schedule.svg"
                         color: cccc
                     }
                     Text {
@@ -416,7 +416,7 @@ Loader {
                         height: 20
                         anchors.verticalCenter: parent.verticalCenter
 
-                        source: "qrc:/assets/icons_material/duotone-edit-24px.svg"
+                        source: "qrc:/IconLibrary/material-icons/duotone/edit.svg"
                         color: cccc
 
                         opacity: (isMobile || !textInputLocation.text || textInputLocation.focus || textInputLocationArea.containsMouse) ? 0.9 : 0
@@ -460,7 +460,7 @@ Loader {
                         height: 24
                         anchors.verticalCenter: parent.verticalCenter
 
-                        source: "qrc:/assets/icons_material/duotone-pin_drop-24px.svg"
+                        source: "qrc:/IconLibrary/material-icons/duotone/pin_drop.svg"
                         color: cccc
                     }
                 }

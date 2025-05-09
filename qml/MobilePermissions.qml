@@ -74,7 +74,7 @@ Item {
 
                     property bool validperm: true
 
-                    source: (validperm) ? "qrc:/assets/icons_material/baseline-check-24px.svg" : "qrc:/assets/icons_material/baseline-close-24px.svg"
+                    source: (validperm) ? "qrc:/IconLibrary/material-symbols/check.svg" : "qrc:/IconLibrary/material-symbols/close.svg"
                     iconColor: (validperm) ? "white" : "white"
                     backgroundColor: (validperm) ? Theme.colorSuccess : Theme.colorSubText
                     backgroundVisible: true
@@ -131,7 +131,7 @@ Item {
 
                     property bool validperm: true
 
-                    source: (validperm) ? "qrc:/assets/icons_material/baseline-check-24px.svg" : "qrc:/assets/icons_material/baseline-close-24px.svg"
+                    source: (validperm) ? "qrc:/IconLibrary/material-symbols/check.svg" : "qrc:/IconLibrary/material-symbols/close.svg"
                     iconColor: (validperm) ? "white" : "white"
                     backgroundColor: (validperm) ? Theme.colorSuccess : Theme.colorSubText
                     backgroundVisible: true
@@ -188,7 +188,7 @@ Item {
 
                     property bool validperm: deviceManager.permissionOS
 
-                    source: (validperm) ? "qrc:/assets/icons_material/baseline-check-24px.svg" : "qrc:/assets/icons_material/baseline-close-24px.svg"
+                    source: (validperm) ? "qrc:/IconLibrary/material-symbols/check.svg" : "qrc:/IconLibrary/material-symbols/close.svg"
                     iconColor: (validperm) ? "white" : "white"
                     backgroundColor: (validperm) ? Theme.colorSuccess : Theme.colorSubText
                     backgroundVisible: true
@@ -252,7 +252,7 @@ Item {
 
                     property bool validperm: deviceManager.permissionLocationBLE
 
-                    source: (validperm) ? "qrc:/assets/icons_material/baseline-check-24px.svg" : "qrc:/assets/icons_material/baseline-close-24px.svg"
+                    source: (validperm) ? "qrc:/IconLibrary/material-symbols/check.svg" : "qrc:/IconLibrary/material-symbols/close.svg"
                     iconColor: (validperm) ? "white" : "white"
                     backgroundColor: (validperm) ? Theme.colorSuccess : Theme.colorSubText
                     backgroundVisible: true
@@ -306,7 +306,7 @@ Item {
                 colorBackground: Theme.colorBackground
 
                 text: qsTr("Official information")
-                source: "qrc:/assets/icons_material/duotone-launch-24px.svg"
+                source: "qrc:/IconLibrary/material-icons/duotone/launch.svg"
                 sourceSize: 20
 
                 onClicked: {
@@ -333,7 +333,7 @@ Item {
 
                     property bool validperm: deviceManager.permissionLocationGPS
 
-                    source: (validperm) ? "qrc:/assets/icons_material/baseline-check-24px.svg" : "qrc:/assets/icons_material/baseline-close-24px.svg"
+                    source: (validperm) ? "qrc:/IconLibrary/material-symbols/check.svg" : "qrc:/IconLibrary/material-symbols/close.svg"
                     iconColor: (validperm) ? "white" : "white"
                     backgroundColor: (validperm) ? Theme.colorSuccess : Theme.colorWarning
                     backgroundVisible: true
@@ -386,7 +386,7 @@ Item {
                 colorBackground: Theme.colorBackground
 
                 text: qsTr("Location settings")
-                source: "qrc:/assets/icons_material/duotone-tune-24px.svg"
+                source: "qrc:/IconLibrary/material-icons/duotone/tune.svg"
                 sourceSize: 20
 
                 onClicked: utilsApp.openAndroidLocationSettings()
@@ -414,7 +414,7 @@ Item {
 
                     property bool validperm: deviceManager.permissionLocationBackground
 
-                    source: (validperm) ? "qrc:/assets/icons_material/baseline-check-24px.svg" : "qrc:/assets/icons_material/baseline-close-24px.svg"
+                    source: (validperm) ? "qrc:/IconLibrary/material-symbols/check.svg" : "qrc:/IconLibrary/material-symbols/close.svg"
                     iconColor: (validperm) ? "white" : "white"
                     backgroundColor: (validperm) ? Theme.colorSuccess : Theme.colorSubText
                     backgroundVisible: true
@@ -479,7 +479,7 @@ Item {
 
                     property bool validperm: notificationManager.permissionOS
 
-                    source: (validperm) ? "qrc:/assets/icons_material/baseline-check-24px.svg" : "qrc:/assets/icons_material/baseline-close-24px.svg"
+                    source: (validperm) ? "qrc:/IconLibrary/material-symbols/check.svg" : "qrc:/IconLibrary/material-symbols/close.svg"
                     iconColor: (validperm) ? "white" : "white"
                     backgroundColor: (validperm) ? Theme.colorSuccess : Theme.colorSubText
                     backgroundVisible: true
@@ -543,7 +543,7 @@ Item {
 
                     opacity: 0.66
                     color: Theme.colorSubText
-                    source: "qrc:/assets/icons_material/baseline-info-24px.svg"
+                    source: "qrc:/IconLibrary/material-symbols/info.svg"
                 }
 
                 Text {
@@ -604,7 +604,7 @@ Item {
                 colorBackground: Theme.colorBackground
 
                 text: qsTr("Application info")
-                source: "qrc:/assets/icons_material/duotone-tune-24px.svg"
+                source: "qrc:/IconLibrary/material-icons/duotone/tune.svg"
                 sourceSize: 20
 
                 onClicked: utilsApp.openAndroidAppInfo("com.theengs.app")
