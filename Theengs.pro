@@ -86,7 +86,9 @@ SOURCES  += src/main.cpp \
             src/devices/device_theengs_thermometers.cpp \
             src/TempPresetManager.cpp \
             src/TempPreset.cpp \
-            src/rc4/rc4.cpp
+            src/rc4/rc4.cpp \
+            src/blufi/BluFiFrame.cpp
+
 
 HEADERS  += src/SettingsManager.h \
             src/DatabaseManager.h \
@@ -127,7 +129,9 @@ HEADERS  += src/SettingsManager.h \
             src/devices/device_theengs_thermometers.h \
             src/TempPresetManager.h \
             src/TempPreset.h \
-            src/rc4/rc4.h
+            src/rc4/rc4.h \
+            src/blufi/BluFiFrame.h \
+            src/blufi/BluFiUtils.h
 
 INCLUDEPATH += src/ thirdparty/
 
