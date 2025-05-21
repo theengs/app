@@ -10,12 +10,13 @@ INCLUDEPATH += $${PWD}
 
 android {
     QT += core-private
+
     SOURCES += $${PWD}/SharingUtils_android.cpp
     HEADERS += $${PWD}/SharingUtils_android.h
 
     # Add this line to the dependencies {} section of 'build.gradle' file:
-    #implementation 'androidx.appcompat:appcompat:1.1.0'
-    #implementation 'androidx.core:core:1.1.0'
+    #implementation 'androidx.appcompat:appcompat:1.6.1'
+    #implementation 'androidx.core:core:1.6.1'
 
     # And this line in 'gradle.properties' file:
     #android.useAndroidX=true
