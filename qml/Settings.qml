@@ -426,7 +426,7 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                 }
 
-                ButtonExperimental {
+                ButtonWireframe {
                     anchors.right: parent.right
                     anchors.rightMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
@@ -435,8 +435,9 @@ Item {
                     visible: (Qt.platform.os === "android")
 
                     text: qsTr("experimental")
-                    primaryColor: Theme.colorRed
-                    borderColor: Theme.colorRed
+                    colorHighlight: Theme.colorRed
+                    colorBorder: Theme.colorRed
+                    colorText: Theme.colorRed
 
                     onClicked: popupBackgroundUpdates.open()
                 }

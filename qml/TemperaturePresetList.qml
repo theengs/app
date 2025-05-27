@@ -121,7 +121,7 @@ Loader {
                     id: popupPresetAdd
                 }
 
-                RoundButtonIconShadow { // add
+                ButtonFab { // add
                     anchors.right: parent.right
                     anchors.rightMargin: 24
                     anchors.bottom: parent.bottom
@@ -131,9 +131,7 @@ Loader {
                     height: 56
 
                     source: "qrc:/IconLibrary/material-symbols/add.svg"
-                    iconColor: "white"
-                    background: true
-                    backgroundColor: Theme.colorPrimary
+                    colorBackground: Theme.colorPrimary
 
                     onClicked: {
                         popupPresetAdd.open()

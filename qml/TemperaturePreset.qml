@@ -255,30 +255,26 @@ Item {
         anchors.bottomMargin: (Qt.platform.os === "android" && screenOrientation === Qt.PortraitOrientation) ? 12 : 24
         spacing: 24
 
-        RoundButtonIconShadow { // copy
+        ButtonFab { // copy
             width: 56
             height: 56
 
             source: "qrc:/IconLibrary/material-icons/duotone/library_copy.svg"
-            iconColor: "white"
-            background: true
-            backgroundColor: Theme.colorPrimary
+            colorBackground: Theme.colorPrimary
 
             onClicked: {
                 popupPresetCopy.open()
             }
         }
 
-        RoundButtonIconShadow { // add
+        ButtonFab { // add
             width: 56
             height: 56
 
             visible: currentPreset && !currentPreset.readOnly
 
             source: "qrc:/IconLibrary/material-symbols/add.svg"
-            iconColor: "white"
-            background: true
-            backgroundColor: Theme.colorPrimary
+            colorBackground: Theme.colorPrimary
 
             onClicked: {
                 popupPresetRangeAdd.open()

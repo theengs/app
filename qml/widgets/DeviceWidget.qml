@@ -13,9 +13,9 @@ Item {
     property var boxDevice: pointer
     property bool hasHygro: boxDevice.isPlantSensor
 
-    property bool wideAssMode: (width >= 380) || (isPhone && width >= 360) || (isTablet && width >= 480)
-    property bool bigAssMode: false
-    property bool singleColumnMode: true
+    property bool wideMode: ((width >= 380) || (isTablet && width >= 480))
+    property bool hugeMode: (!isHdpi || (isTablet && width >= 480))
+    property bool listMode: false
 
     Connections {
         target: boxDevice
@@ -141,7 +141,7 @@ Item {
             textTitle.text = boxDevice.deviceName
         }
         // Location
-        textLocation.font.pixelSize = bigAssMode ? 20 : 18
+        textLocation.font.pixelSize = hugeMode ? 20 : 18
         if (boxDevice.deviceLocationName) {
             textLocation.visible = true
             textLocation.text = boxDevice.deviceLocationName
@@ -194,26 +194,26 @@ Item {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
 
-        visible: singleColumnMode
+        visible: listMode
         color: Theme.colorSeparator
     }
 
     Rectangle {
         id: deviceWidgetRectangleSeparator
         anchors.fill: deviceWidgetRectangle
-        anchors.leftMargin: singleColumnMode ? -12 : 0
-        anchors.rightMargin: singleColumnMode ? -12 : 0
-        anchors.topMargin: singleColumnMode ? -6 : 0
-        anchors.bottomMargin: singleColumnMode ? -6 : 0
+        anchors.leftMargin: listMode ? -12 : 0
+        anchors.rightMargin: listMode ? -12 : 0
+        anchors.topMargin: listMode ? -6 : 0
+        anchors.bottomMargin: listMode ? -6 : 0
 
         radius: 4
         border.width: 2
-        border.color: singleColumnMode ? "transparent" : Theme.colorSeparator
+        border.color: listMode ? "transparent" : Theme.colorSeparator
 
         color: boxDevice.selected ? Theme.colorSeparator : Theme.colorDeviceWidget
         Behavior on color { ColorAnimation { duration: 133 } }
 
-        opacity: boxDevice.selected ? 0.5 : (singleColumnMode ? 0 : 1)
+        opacity: boxDevice.selected ? 0.5 : (listMode ? 0 : 1)
         Behavior on opacity { OpacityAnimator { duration: 133 } }
     }
 
@@ -303,24 +303,24 @@ Item {
         Row {
             id: rowLeft
             anchors.top: parent.top
-            anchors.topMargin: bigAssMode ? 16 : 8
+            anchors.topMargin: hugeMode ? 16 : 8
             anchors.left: parent.left
-            anchors.leftMargin: bigAssMode ? (singleColumnMode ? 4 : 16) : (singleColumnMode ? 6 : 14)
+            anchors.leftMargin: hugeMode ? (listMode ? 4 : 16) : (listMode ? 6 : 14)
             anchors.right: (rowRight.width > 0) ? rowRight.left : imageStatus.left
-            anchors.rightMargin: singleColumnMode ? 0 : 8
+            anchors.rightMargin: listMode ? 0 : 8
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: bigAssMode ? 16 : 8
+            anchors.bottomMargin: hugeMode ? 16 : 8
 
-            spacing: bigAssMode ? (singleColumnMode ? 20 : 12) : (singleColumnMode ? 24 : 10)
+            spacing: hugeMode ? (listMode ? 20 : 12) : (listMode ? 24 : 10)
 
             IconSvg {
                 id: imageDevice
-                width: bigAssMode ? 32 : 24
-                height: bigAssMode ? 32 : 24
+                width: hugeMode ? 32 : 24
+                height: hugeMode ? 32 : 24
                 anchors.verticalCenter: parent.verticalCenter
 
                 color: Theme.colorHighContrast
-                visible: (wideAssMode || bigAssMode)
+                visible: (wideMode || hugeMode)
                 fillMode: Image.PreserveAspectFit
                 asynchronous: true
             }
@@ -334,7 +334,7 @@ Item {
 
                     textFormat: Text.PlainText
                     color: Theme.colorText
-                    font.pixelSize: bigAssMode ? 22 : 20
+                    font.pixelSize: hugeMode ? 22 : 20
                     //font.capitalization: Font.Capitalize
                     verticalAlignment: Text.AlignVCenter
                     elide: Text.ElideRight
@@ -346,7 +346,7 @@ Item {
 
                     textFormat: Text.PlainText
                     color: Theme.colorSubText
-                    font.pixelSize: bigAssMode ? 20 : 18
+                    font.pixelSize: hugeMode ? 20 : 18
                     //font.capitalization: Font.Capitalize
                     verticalAlignment: Text.AlignVCenter
                     elide: Text.ElideRight
@@ -354,14 +354,14 @@ Item {
 
                 Row {
                     id: row
-                    height: bigAssMode ? 26 : 22
+                    height: hugeMode ? 26 : 22
                     anchors.left: parent.left
                     spacing: 8
 
                     IconSvg {
                         id: imageBattery
-                        width: bigAssMode ? 30 : 28
-                        height: bigAssMode ? 32 : 30
+                        width: hugeMode ? 30 : 28
+                        height: hugeMode ? 32 : 30
                         anchors.verticalCenter: parent.verticalCenter
 
                         visible: (boxDevice.hasBattery && boxDevice.deviceBattery >= 0)
@@ -377,7 +377,7 @@ Item {
 
                         textFormat: Text.PlainText
                         color: Theme.colorGreen
-                        font.pixelSize: bigAssMode ? 16 : 15
+                        font.pixelSize: hugeMode ? 16 : 15
 
                         SequentialAnimation on opacity {
                             id: opa
@@ -401,11 +401,11 @@ Item {
         Row {
             id: rowRight
             anchors.top: parent.top
-            anchors.topMargin: bigAssMode ? 16 : 8
+            anchors.topMargin: hugeMode ? 16 : 8
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: bigAssMode ? 16 : 8
+            anchors.bottomMargin: hugeMode ? 16 : 8
             anchors.right: parent.right
-            anchors.rightMargin: singleColumnMode ? (wideAssMode ? 0 : -4) : (bigAssMode ? 14 : 10)
+            anchors.rightMargin: listMode ? (wideMode ? 0 : -4) : (hugeMode ? 14 : 10)
 
             spacing: 8
 
@@ -429,7 +429,7 @@ Item {
                 height: 32
                 anchors.verticalCenter: parent.verticalCenter
 
-                visible: singleColumnMode
+                visible: listMode
                 color: boxDevice.hasData ? Theme.colorHighContrast : Theme.colorSubText
                 source: "qrc:/IconLibrary/material-symbols/chevron_right.svg"
             }
@@ -442,7 +442,7 @@ Item {
             width: 32
             height: 32
             anchors.right: parent.right
-            anchors.rightMargin: singleColumnMode ? 56 : 36
+            anchors.rightMargin: listMode ? 56 : 36
             anchors.verticalCenter: parent.verticalCenter
 
             visible: !boxDevice.hasDataToday
@@ -474,8 +474,8 @@ Item {
 
             spacing: 8
 
-            property int sensorWidth: isPhone ? 8 : (bigAssMode ? 12 : 10)
-            property int sensorRadius: bigAssMode ? 3 : 2
+            property int sensorWidth: isPhone ? 8 : (hugeMode ? 12 : 10)
+            property int sensorRadius: hugeMode ? 3 : 2
 
             function initData() {
                 //
@@ -629,7 +629,7 @@ Item {
                 textFormat: Text.PlainText
                 color: Theme.colorText
                 font.letterSpacing: -1.4
-                font.pixelSize: bigAssMode ? 28 : 24
+                font.pixelSize: hugeMode ? 28 : 24
             }
             Text {
                 id: unit
@@ -638,7 +638,7 @@ Item {
                 textFormat: Text.PlainText
                 color: Theme.colorSubText
                 font.letterSpacing: -1.4
-                font.pixelSize: bigAssMode ? 24 : 20
+                font.pixelSize: hugeMode ? 24 : 20
             }
         }
     }
@@ -661,8 +661,8 @@ Item {
                 } else if (boxDevice.isEnvironmentalSensor) {
                     //
                 } else if (boxDevice.isScale) {
-                    textOne.font.pixelSize = bigAssMode ? 26 : 24
-                    textTwo.font.pixelSize = bigAssMode ? 22 : 20
+                    textOne.font.pixelSize = hugeMode ? 26 : 24
+                    textTwo.font.pixelSize = hugeMode ? 22 : 20
 
                     textOne.text = (settingsManager.tempUnit === 'C') ? boxDevice.weight.toFixed(1) + " " + qsTr("kg") : (boxDevice.weight * 2.20462).toFixed(1) + " " + qsTr("lb")
                     if (boxDevice.impedance > 0) {
@@ -672,8 +672,8 @@ Item {
                         textTwo.visible = false
                     }
                 } else if (boxDevice.isMotionSensor) {
-                    textOne.font.pixelSize = bigAssMode ? 26 : 24
-                    textTwo.font.pixelSize = bigAssMode ? 22 : 20
+                    textOne.font.pixelSize = hugeMode ? 26 : 24
+                    textTwo.font.pixelSize = hugeMode ? 22 : 20
 
                     if (boxDevice.hasMotion) {
                         if (boxDevice.motion) textOne.text = qsTr("presence")
@@ -700,7 +700,7 @@ Item {
                 textFormat: Text.PlainText
                 color: Theme.colorText
                 font.letterSpacing: -1.4
-                font.pixelSize: bigAssMode ? 32 : 28
+                font.pixelSize: hugeMode ? 32 : 28
             }
 
             Text {
@@ -709,7 +709,7 @@ Item {
 
                 textFormat: Text.PlainText
                 color: Theme.colorSubText
-                font.pixelSize: bigAssMode ? 26 : 22
+                font.pixelSize: hugeMode ? 26 : 22
             }
         }
     }
@@ -994,7 +994,7 @@ Item {
                 id: gaugeValue
                 anchors.fill: parent
 
-                arcWidth: isPhone ? 8 : (bigAssMode ? 12 : 10)
+                arcWidth: isPhone ? 8 : (hugeMode ? 12 : 10)
                 arcSpan: 270
 
                 valueMin: 0
@@ -1006,4 +1006,6 @@ Item {
             }
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////
 }

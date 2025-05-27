@@ -21,7 +21,9 @@
 #include "SettingsManager.h"
 #include "MqttManager.h"
 
+#if defined(Q_OS_ANDROID)
 #include "utils_app.h"
+#endif
 
 #include "device.h"
 #include "device_theengs.h"
@@ -858,6 +860,7 @@ void DeviceManager::scanDevices_start()
 {
     //qDebug() << "DeviceManager::scanDevices_start()";
 
+    // scan
     if (hasBluetooth())
     {
         if (!m_discoveryAgent)
