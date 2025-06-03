@@ -47,21 +47,21 @@ ApplicationWindow {
 
     Timer {
         id: rotateTimer1
-        interval: 12
+        interval: 24
         running: false
         repeat: false
         onTriggered: { mobileUI.handleSafeAreas() }
     }
     Timer {
         id: rotateTimer2
-        interval: 40
+        interval: 128
         running: false
         repeat: false
         onTriggered: { mobileUI.handleSafeAreas() }
     }
     Timer {
         id: rotateTimer3
-        interval: 128
+        interval: 333
         running: false
         repeat: false
         onTriggered: { mobileUI.handleSafeAreas() }
@@ -337,6 +337,7 @@ ApplicationWindow {
     // QML /////////////////////////////////////////////////////////////////////
 
     property var selectedDevice: null
+    property var selectedGateway: null
 
     PopupCalibration {
         id: popupCalibration
@@ -729,7 +730,7 @@ ApplicationWindow {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    // Exit ////////////////////////////////////////////////////////////////////
 
     Timer {
         id: exitTimer

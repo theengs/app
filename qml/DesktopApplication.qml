@@ -16,8 +16,6 @@ ApplicationWindow {
     property bool isTablet: false
     property bool isHdpi: (utilsScreen.screenDpi >= 128 || utilsScreen.screenPar >= 2.0)
 
-    property var selectedDevice: null
-
     // Desktop stuff ///////////////////////////////////////////////////////////
 
     minimumWidth: isHdpi ? 400 : 480
@@ -230,15 +228,6 @@ ApplicationWindow {
          }
     }
 
-    onClosing: (close) => {
-        //console.log("onClosing(" + close + ")")
-
-        if (settingsManager.systray || Qt.platform.os === "osx") {
-            close.accepted = false
-            appWindow.hide()
-        }
-    }
-
     // User generated events handling //////////////////////////////////////////
 
     function backAction() {
@@ -363,6 +352,9 @@ ApplicationWindow {
     property bool wideWideMode: (width >= 640)
 
     // QML /////////////////////////////////////////////////////////////////////
+
+    property var selectedDevice: null
+    property var selectedGateway: null
 
     PopupCalibration {
         id: popupCalibration
@@ -670,5 +662,41 @@ ApplicationWindow {
         ]
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+
     //DebugWidget { }
+
+    // Exit ////////////////////////////////////////////////////////////////////
+
+    Timer {
+        id: disconnectTimer
+        interval: 33
+        running: false
+        repeat: true
+        onTriggered: {
+            if (!deviceManager.areDevicesConnected()) {
+                appWindow.close()
+            }
+        }
+    }
+    onClosing: (close) => {
+        //console.log("onClosing(" + close + ")")
+
+        //
+        if (settingsManager.systray || Qt.platform.os === "osx") {
+            close.accepted = false
+            appWindow.hide()
+            return
+        }
+
+        // If BLE devices are still connected, disconnect them first
+        if (deviceManager.areDevicesConnected()) {
+            deviceManager.disconnectDevices()
+            disconnectTimer.start()
+            close.accepted = false
+            return
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
 }

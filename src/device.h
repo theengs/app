@@ -308,6 +308,9 @@ public:
     int getAction() const { return m_ble_action; }
     int getStatus() const { return m_ble_status; }
     bool isBusy() const;                //!< Is currently doing/trying something?
+    bool isDisconnecting() const;       //!< Is disconnecting
+    bool isConnecting() const;          //!< Is connecting
+    bool isConnected() const;           //!< Is currently connected
     bool isWorking() const;             //!< Is currently working?
     bool isUpdating() const;            //!< Is currently being updated?
     bool isErrored() const;             //!< Has emitted a BLE error
@@ -353,6 +356,7 @@ public:
 
     // Start actions
     Q_INVOKABLE void actionConnect();
+    Q_INVOKABLE void actionDisconnect();
     Q_INVOKABLE void actionScan();
     Q_INVOKABLE void actionScanWithValues();
     Q_INVOKABLE void actionClearData();

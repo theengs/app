@@ -42,10 +42,11 @@ class DeviceManager: public QObject
 {
     Q_OBJECT
 
+    ////////
+
     Q_PROPERTY(bool hasDevices READ areDevicesAvailable NOTIFY devicesListUpdated)
     Q_PROPERTY(int deviceCount READ getDeviceCount NOTIFY devicesListUpdated)
     Q_PROPERTY(DeviceFilter *devicesList READ getDevicesFiltered NOTIFY devicesListUpdated)
-
     Q_PROPERTY(DeviceFilter *devicesNearby READ getDevicesNearby NOTIFY devicesNearbyUpdated)
 
     ////////
@@ -68,6 +69,8 @@ class DeviceManager: public QObject
 
     Q_PROPERTY(int bluetoothHostMode READ getBluetoothHostMode NOTIFY hostModeChanged)
 
+    ////
+
     static const int ble_scanning_duration = 60;
     static const int ble_listening_duration = 0;
     static const int ble_listening_duration_nearby = 0;
@@ -77,6 +80,8 @@ class DeviceManager: public QObject
     bool m_dbExternal = false;  //!< do we have a remote MySQL database?
 
     bool m_daemonMode = false;  //!< did we start without UI?
+
+    ////
 
     bool m_bleAdapter = false;      //!< do we have a BLE adapter?
     bool m_bleEnabled = false;      //!< is the BLE adapter enabled?
@@ -93,13 +98,17 @@ class DeviceManager: public QObject
 
     QList <QObject *> m_bluetoothAdapters;
 
-    QList <QString> m_devices_blacklist;
+    ////
 
     DeviceModel *m_devices_nearby_model = nullptr;
     DeviceFilter *m_devices_nearby_filter = nullptr;
 
     DeviceModel *m_devices_model = nullptr;
     DeviceFilter *m_devices_filter = nullptr;
+
+    ////
+
+    QList <QString> m_devices_blacklist;
 
     QList <QObject *> m_devices_updating_queue;
     QList <QObject *> m_devices_updating;
@@ -173,21 +182,29 @@ private slots:
     void bluetoothPermissionsChanged();
 
     // QBluetoothDeviceDiscoveryAgent related
-    void addNearbyBleDevice(const QBluetoothDeviceInfo &info);
-    void updateNearbyBleDevice(const QBluetoothDeviceInfo &info, QBluetoothDeviceInfo::Fields updatedFields);
-    void addBleDevice(const QBluetoothDeviceInfo &info);
-    void updateBleDevice(const QBluetoothDeviceInfo &info, QBluetoothDeviceInfo::Fields updatedFields);
-    void updateBleDevice_simple(const QBluetoothDeviceInfo &info);
     void deviceDiscoveryError(QBluetoothDeviceDiscoveryAgent::Error);
     void deviceDiscoveryErrorIOS();
     void deviceDiscoveryFinished();
     void deviceDiscoveryStopped();
+
+    //
+    void addNearbyBleDevice(const QBluetoothDeviceInfo &info);
+    void updateNearbyBleDevice(const QBluetoothDeviceInfo &info, QBluetoothDeviceInfo::Fields updatedFields);
+
+    void addBleDevice(const QBluetoothDeviceInfo &info);
+
+    void bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoothDeviceInfo::Fields updatedFields);
+    void bleDevice_discovered(const QBluetoothDeviceInfo &info);
 
 public:
     DeviceManager(bool daemon = false);
     ~DeviceManager();
 
     bool isDaemon() const { return m_daemonMode; }
+
+    Q_INVOKABLE bool areDevicesConnected() const;
+    Q_INVOKABLE void disconnectDevices() const;
+    Q_INVOKABLE void disconnectAndExit() const;
 
     // Adapters management
     Q_INVOKABLE bool areAdaptersAvailable() const { return m_bluetoothAdapters.size(); }
@@ -210,11 +227,11 @@ public:
     Q_INVOKABLE void scanDevices_start();
     Q_INVOKABLE void scanDevices_stop();
 
-    Q_INVOKABLE void refreshDevices_background();   //!< Refresh devices on the Android background service
-    Q_INVOKABLE void refreshDevices_listen();       //!< Refresh devices with data >xh old (as they appear nearby)
-
     Q_INVOKABLE void listenDevices_start();
     Q_INVOKABLE void listenDevices_stop();
+
+    Q_INVOKABLE void refreshDevices_background();   //!< Refresh devices on the Android background service
+    Q_INVOKABLE void refreshDevices_listen();       //!< Refresh devices with data >xh old (as they appear nearby)
 
     Q_INVOKABLE void refreshDevices_check();        //!< Refresh devices with data >xh old (if necessary)
     Q_INVOKABLE void refreshDevices_start();        //!< Refresh every device

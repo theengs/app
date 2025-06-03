@@ -220,6 +220,18 @@ void Device::actionConnect()
     }
 }
 
+void Device::actionDisconnect()
+{
+    //qDebug() << "Device::actionDisconnect()" << getAddress() << getName();
+
+    if (!isBusy())
+    {
+        m_ble_action = DeviceUtils::ACTION_IDLE;
+        actionStarted();
+        deviceDisconnect();
+    }
+}
+
 /* ************************************************************************** */
 
 void Device::actionScan()
@@ -688,6 +700,21 @@ bool Device::getSqlDeviceInfos()
 bool Device::isErrored() const
 {
     return (getLastErrorInt() >= 0 && getLastErrorInt() <= 5);
+}
+
+bool Device::isDisconnecting() const
+{
+    return (m_ble_status == DeviceUtils::DEVICE_DISCONNECTING);
+}
+
+bool Device::isConnecting() const
+{
+    return (m_ble_status >= DeviceUtils::DEVICE_CONNECTING);
+}
+
+bool Device::isConnected() const
+{
+    return (m_ble_status >= DeviceUtils::DEVICE_CONNECTED);
 }
 
 bool Device::isBusy() const

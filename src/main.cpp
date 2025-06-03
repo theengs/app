@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
 
     // GUI application /////////////////////////////////////////////////////////
 
-    SingleApplication app(argc, argv, false);
+    SingleApplication app(argc, argv, true);
 
     // Application name
     app.setApplicationName("Theengs");

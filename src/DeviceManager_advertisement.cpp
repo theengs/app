@@ -31,15 +31,19 @@
 
 /* ************************************************************************** */
 
-void DeviceManager::updateBleDevice_simple(const QBluetoothDeviceInfo &info)
+void DeviceManager::bleDevice_discovered(const QBluetoothDeviceInfo &info)
 {
-    updateBleDevice(info, QBluetoothDeviceInfo::Field::None);
+    //qDebug() << "bleDevice_discovered() " << info.name() << info.address(); // << info.deviceUuid();
+    bleDevice_updated(info, QBluetoothDeviceInfo::Field::None);
 }
 
-void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
+/* ************************************************************************** */
+
+void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info,
                                     QBluetoothDeviceInfo::Fields updatedFields)
 {
-    //qDebug() << "updateBleDevice() " << info.name() << info.address(); // << info.deviceUuid() // << " updatedFields: " << updatedFields
+    //qDebug() << "bleDevice_updated() " << info.name() << info.address(); // << info.deviceUuid() // << " updatedFields: " << updatedFields
+
     bool status = false;
 
     Q_UNUSED(updatedFields) // We don't use QBluetoothDeviceInfo::Fields, it's unreliable
@@ -52,7 +56,28 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
     if (m_devices_blacklist.contains(info.address().toString())) return; // device is blacklisted
     if (m_devices_blacklist.contains(info.deviceUuid().toString())) return; // device is blacklisted
 
-    for (auto d: std::as_const(m_devices_model->m_devices)) // KNOWN DEVICES ////////
+    /// KNOWN GATEWAYS /////////////////////////////////////////////////////////
+
+    for (auto d: std::as_const(m_gateways_model->m_devices))
+    {
+        Device *dd = qobject_cast<Device *>(d);
+
+#if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
+        if (dd && dd->getAddress() == info.deviceUuid().toString())
+#else
+        if (dd && dd->getAddress() == info.address().toString())
+#endif
+        {
+            dd->setName(info.name());
+            dd->setRssi(info.rssi());
+
+            break;
+        }
+    }
+
+    /// KNOWN DEVICES //////////////////////////////////////////////////////////
+
+    for (auto d: std::as_const(m_devices_model->m_devices))
     {
         Device *dd = qobject_cast<Device*>(d);
 
@@ -188,7 +213,7 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
                 if (!dd->isEnabled()) return;
                 if (!dd->hasBluetoothConnection()) return;
 
-                //qDebug() << "adding from updateBleDevice()";
+                //qDebug() << "adding from bleDevice_updated()";
                 //qDebug() << "last upd" << dd->getLastUpdateInt() << dd->needsUpdateRt();
                 //qDebug() << "last err" << dd->getLastErrorInt() << dd->isErrored();
 
@@ -318,7 +343,14 @@ void DeviceManager::updateBleDevice(const QBluetoothDeviceInfo &info,
         }
     }
 
-    if (m_scanning) // Dynamic scanning ////////////////////////////////////////
+    /// Dynamic scanning ///////////////////////////////////////////////////////
+
+    if (info.name().startsWith("OMG_"))
+    {
+        //qDebug() << "addBleGateway(" << info.name() << ") FROM DYNAMIC SCANNING";
+        addBleGateway(info);
+    }
+    if (m_scanning)
     {
         //qDebug() << "addBleDevice(" << info.name() << ") FROM DYNAMIC SCANNING";
         addBleDevice(info);
