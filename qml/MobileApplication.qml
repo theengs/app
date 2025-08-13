@@ -44,6 +44,10 @@ ApplicationWindow {
             rotateTimer3.start()
         }
     }
+    Connections {
+        target: Theme
+        function onCurrentThemeChanged() { mobileUI.handleSafeAreas() }
+    }
 
     Timer {
         id: rotateTimer1
@@ -72,10 +76,12 @@ ApplicationWindow {
 
         statusbarColor: "transparent"
         statusbarTheme: Theme.themeStatusbar
+
         navbarColor: {
             if (appContent.state === "Tutorial") return Theme.colorHeader
             return Theme.colorBackground
         }
+        navbarTheme: Theme.themeStatusbar
 
         Component.onCompleted: handleSafeAreas()
 
@@ -84,6 +90,8 @@ ApplicationWindow {
             // safe areas are only taken into account when using maximized geometry / full screen mode
 
             mobileUI.refreshUI() // hack
+
+            mobileUI.statusbarTheme = Theme.themeStatusbar // hack
 
             if (appWindow.visibility === Window.FullScreen ||
                 appWindow.flags & Qt.MaximizeUsingFullscreenGeometryHint) {
@@ -767,6 +775,29 @@ ApplicationWindow {
             textFormat: Text.PlainText
             font.pixelSize: Theme.fontSizeContent
             color: Theme.colorText
+        }
+    }
+
+    Timer {
+        id: disconnectTimer
+        interval: 33
+        running: false
+        repeat: true
+        onTriggered: {
+            if (!deviceManager.areDevicesConnected()) {
+                appWindow.close()
+            }
+        }
+    }
+    onClosing: (close) => {
+        //console.log("onClosing(" + close + ")")
+
+        // If BLE devices are still connected, disconnect them first
+        if (deviceManager.areDevicesConnected()) {
+            deviceManager.disconnectDevices()
+            disconnectTimer.start()
+            close.accepted = false
+            return
         }
     }
 

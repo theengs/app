@@ -133,6 +133,18 @@ DrawerThemed {
                         appContent.state = "SettingsMqtt"
                         appDrawer.close()
                     }
+
+                    ItemBadge {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 16
+                        height: 16
+
+                        visible: mqttManager.status
+                        color: Theme.colorGreen
+                        text: ""
+                    }
                 }
 
                 DrawerItem {
@@ -227,7 +239,7 @@ DrawerThemed {
                 ////////
 
                 DrawerButton {
-                    text: qsTr("Search for new sensors")
+                    text: qsTr("Add sensors")
 
                     source: "qrc:/IconLibrary/material-symbols/search.svg"
                     iconAnimation: "fade"

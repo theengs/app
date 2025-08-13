@@ -171,9 +171,9 @@ Popup {
                         anchors.left: parent.left
                         anchors.right: parent.right
 
-                        text: "The cooking temperatures provided in this app are general recommendations. Variations in equipment, ingredients, and conditions can affect cooking outcomes." + "<br>" +
-                              "Always verify food is cooked to safe temperatures." + "<br>" +
-                              "The application developer is not liable for any cooking results."
+                        text: qsTr("The cooking temperatures provided in this app are general recommendations. Variations in equipment, ingredients, and conditions can affect cooking outcomes.") + "<br>" +
+                              qsTr("Always verify food is cooked to safe temperatures.") + "<br>" +
+                              qsTr("The application developer is not liable for any cooking results.")
                         textFormat: Text.StyledText
 
                         color: Theme.colorSubText

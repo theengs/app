@@ -94,7 +94,7 @@ Popup {
                     font.bold: false
                     color: Theme.colorText
 
-                    placeholderText: "Preset name"
+                    placeholderText: qsTr("Preset name")
                 }
 
                 Row {

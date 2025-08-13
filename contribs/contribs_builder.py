@@ -198,20 +198,23 @@ if len(targets_selected):
     if "linux" in targets_selected: TARGETS.append(["linux", "x86_64", "gcc_64"])
     if "linux_x86_64" in targets_selected: TARGETS.append(["linux", "x86_64", "gcc_64"])
     if "linux_arm64" in targets_selected: TARGETS.append(["linux", "arm64", "gcc_arm64"])
+
     if "macos" in targets_selected: TARGETS.append(["macOS", "unified", "macOS"])
     if "macos_x86_64" in targets_selected: TARGETS.append(["macOS", "x86_64", "macOS"])
     if "macos_arm64" in targets_selected: TARGETS.append(["macOS", "arm64", "macOS"])
+
     if "msvc2019" in targets_selected:
         MSVC_GEN_VER = "Visual Studio 16 2019"
         TARGETS.append(["windows", "x86_64", "msvc2019_64"])
     if "msvc2022" in targets_selected:
         MSVC_GEN_VER = "Visual Studio 17 2022"
-        TARGETS.append(["windows", "x86_64", "msvc2019_64"])
+        TARGETS.append(["windows", "x86_64", "msvc2022_64"])
 
     if "android_armv8" in targets_selected: TARGETS.append(["android", "armv8", "android_arm64_v8a"])
     if "android_armv7" in targets_selected: TARGETS.append(["android", "armv7", "android_armv7"])
     if "android_x86_64" in targets_selected: TARGETS.append(["android", "x86_64", "android_x86_64"])
     if "android_x86" in targets_selected: TARGETS.append(["android", "x86", "android_x86"])
+
     if "ios" in targets_selected: TARGETS.append(["iOS", "unified", "iOS"])
     if "ios_armv7" in targets_selected: TARGETS.append(["iOS", "armv7", "iOS"])
     if "ios_armv8" in targets_selected: TARGETS.append(["iOS", "armv8", "iOS"])
@@ -230,12 +233,12 @@ if len(TARGETS) == 0:
         TARGETS.append(["iOS", "unified", "iOS"])
 
     if OS_HOST == "Windows":
-        if "17.0" in os.getenv('VisualStudioVersion', ''):
-            MSVC_GEN_VER = "Visual Studio 17 2022"
-            TARGETS.append(["windows", "x86_64", "msvc2019_64"])
-        else: # if "16.0" in os.getenv('VisualStudioVersion', ''):
+        if "16.0" in os.getenv('VisualStudioVersion', ''):
             MSVC_GEN_VER = "Visual Studio 16 2019"
             TARGETS.append(["windows", "x86_64", "msvc2019_64"])
+        else: # if "17.0" in os.getenv('VisualStudioVersion', ''):
+            MSVC_GEN_VER = "Visual Studio 17 2022"
+            TARGETS.append(["windows", "x86_64", "msvc2022_64"])
 
     if ANDROID_NDK_ROOT: # Android cross compilation
         TARGETS.append(["android", "armv8", "android_arm64_v8a"])
@@ -331,6 +334,7 @@ for TARGET in TARGETS:
         QT_CONF_MODULE_cmd = qt6_bin_dir + "qt-configure-module.bat"
         CMAKE_qt_cmd = [qt6_bin_dir + "qt-cmake.bat"]
         #VCVARS_cwd = "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/"
+        #VCVARS_cwd = "C:/Program Files (x86)/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/"
         #VCVARS_cmd = VCVARS_cwd + "vcvarsall.bat"
         #subprocess.check_call([VCVARS_cmd, "x86_amd64"], cwd=VCVARS_cwd)
     else:
