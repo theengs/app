@@ -21,6 +21,7 @@
 /* ************************************************************************** */
 
 #include "DeviceFilter.h"
+#include "devices/device_theengs_gateway.h"
 
 #include <QObject>
 #include <QVariant>
@@ -48,6 +49,15 @@ class DeviceManager: public QObject
     Q_PROPERTY(int deviceCount READ getDeviceCount NOTIFY devicesListUpdated)
     Q_PROPERTY(DeviceFilter *devicesList READ getDevicesFiltered NOTIFY devicesListUpdated)
     Q_PROPERTY(DeviceFilter *devicesNearby READ getDevicesNearby NOTIFY devicesNearbyUpdated)
+
+    ////////
+
+    Q_PROPERTY(bool hasGateways READ areGatewaysAvailable NOTIFY gatewayListUpdated)
+    Q_PROPERTY(int gatewayCount READ getGatewayCount NOTIFY gatewayListUpdated)
+    Q_PROPERTY(DeviceFilter *gatewaysList READ getGatewaysFiltered NOTIFY gatewayListUpdated)
+    //Q_PROPERTY(DeviceFilter *gatewaysNearby READ getGatewaysNearby NOTIFY gatewayNearbyUpdated)
+
+    Q_PROPERTY(DeviceGateway *gatewaySelected READ getGatewaySelected NOTIFY gatewaySelectedUpdated)
 
     ////////
 
@@ -105,6 +115,15 @@ class DeviceManager: public QObject
 
     DeviceModel *m_devices_model = nullptr;
     DeviceFilter *m_devices_filter = nullptr;
+
+    //DeviceModel *m_gateways_nearby_model = nullptr;
+    //DeviceFilter *m_gateways_nearby_filter = nullptr;
+
+    DeviceModel *m_gateways_model = nullptr;
+    DeviceFilter *m_gateways_filter = nullptr;
+
+    DeviceGateway *m_gateway_selected = nullptr;
+    DeviceGateway *getGatewaySelected() { return m_gateway_selected; }
 
     ////
 
@@ -165,6 +184,10 @@ Q_SIGNALS:
 
     void adaptersListUpdated();
 
+    void gatewayListUpdated();
+    void gatewayNearbyUpdated();
+    void gatewaySelectedUpdated();
+
     void devicesListUpdated();
     void devicesNearbyUpdated();
     void devicesBlacklistUpdated();
@@ -192,6 +215,7 @@ private slots:
     void updateNearbyBleDevice(const QBluetoothDeviceInfo &info, QBluetoothDeviceInfo::Fields updatedFields);
 
     void addBleDevice(const QBluetoothDeviceInfo &info);
+    void addBleGateway(const QBluetoothDeviceInfo &info);
 
     void bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoothDeviceInfo::Fields updatedFields);
     void bleDevice_discovered(const QBluetoothDeviceInfo &info);
@@ -255,8 +279,19 @@ public:
     Q_INVOKABLE void whitelistBleDevice(const QString &addr);
     Q_INVOKABLE bool isBleDeviceBlacklisted(const QString &addr);
 
+    // Gateway list management
+
+    Q_INVOKABLE void selectGateway(const QString &address);
+    Q_INVOKABLE void selectGateway_fromwifi(const QString &address);
+    Q_INVOKABLE void deselectGateway();
+
+    int getGatewayCount() const { return m_gateways_model->getDeviceCount(); }
+    DeviceFilter *getGatewaysFiltered() const { return m_gateways_filter; }
+    //DeviceFilter *getGatewaysNearby() const { return m_gateways_nearby_filter; }
+
     // Devices list management
     Q_INVOKABLE bool areDevicesAvailable() const { return m_devices_model->hasDevices(); }
+    Q_INVOKABLE bool areGatewaysAvailable() const { return m_gateways_model->hasDevices(); }
     Q_INVOKABLE void disconnectDevices();
 
     int getDeviceCount() const { return m_devices_model->getDeviceCount(); }

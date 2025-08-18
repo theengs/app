@@ -306,43 +306,106 @@ Item {
 
     ////////////////////////////////////////////////////////////////////////////
 
-    GridView {
-        id: devicesView
+    Flickable {
+        anchors.fill: parent
 
-        anchors.top: rowbar.bottom
-        anchors.topMargin: singleColumn ? 0 : 8
-        anchors.left: screenDeviceList.left
-        anchors.leftMargin: 6
-        anchors.right: screenDeviceList.right
-        anchors.rightMargin: 6
-        anchors.bottom: screenDeviceList.bottom
-        anchors.bottomMargin: singleColumn ? 0 : 8
-
-        property bool bigWidget: (!isHdpi || (isTablet && width >= 480))
-
-        property int cellWidthTarget: {
-            if (singleColumn) return devicesView.width
-            if (isTablet) return (bigWidget ? 350 : 280)
-            return (bigWidget ? 440 : 320)
-        }
-        property int cellColumnsTarget: Math.trunc(devicesView.width / cellWidthTarget)
-
-        cellWidth: (devicesView.width / cellColumnsTarget)
-        cellHeight: (bigWidget ? 144 : 100)
-
+        contentWidth: -1
+        contentHeight: devicesView.height
+/*
         ScrollBar.vertical: ScrollBar {
-            visible: false
             anchors.right: parent.right
-            anchors.rightMargin: -6
+            anchors.rightMargin: -halfmargin
             policy: ScrollBar.AsNeeded
+            visible: false
+        }
+*/
+        Component.onCompleted: {
+            if (isMobile) {
+                maximumFlickVelocity *= 1.5
+            }
         }
 
-        model: deviceManager.devicesList
-        delegate: DeviceWidget {
-            width: devicesView.cellWidth
-            height: devicesView.cellHeight
-            bigAssMode: devicesView.bigWidget
-            singleColumnMode: (singleColumn || devicesView.cellColumnsTarget === 1)
+        Column {
+            id: devicesView
+            anchors.left: parent.left
+            anchors.leftMargin: halfmargin
+            anchors.right: parent.right
+            anchors.rightMargin: halfmargin
+
+            topPadding: listWidget ? 16 : 16
+            bottomPadding: listWidget ? 1 : halfmargin
+            spacing: listWidget ? 0 : halfmargin
+
+            ////////
+
+            property int halfmargin: (Theme.componentMargin / 2)
+
+            property bool bigWidget: (!isHdpi || (isTablet && width >= 480))
+            property bool listWidget: (cellColumnsTarget === 1)
+
+            property int cellWidthTarget: {
+                if (singleColumn) return devicesView.width
+                if (isTablet) return (bigWidget ? 350 : 280)
+                return (bigWidget ? 440 : 320)
+            }
+            property int cellColumnsTarget: Math.trunc(devicesView.width / cellWidthTarget)
+
+            property int cellWidth: (devicesView.width / cellColumnsTarget)
+            property int cellHeight: (bigWidget ? 144 : 100)
+
+            ////////
+
+            ListTitle {
+                anchors.leftMargin: devicesView.listWidget ? -devicesView.halfmargin : devicesView.halfmargin
+                anchors.rightMargin: devicesView.listWidget ? -devicesView.halfmargin : devicesView.halfmargin
+                visible: deviceManager.deviceCount
+
+                text: qsTr("Sensor(s)", "", deviceManager.deviceCount)
+                textSize: Theme.fontSizeContentVeryBig
+            }
+
+            Flow {
+                id: sensorsView
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                Repeater {
+                    model: deviceManager.devicesList
+                    delegate: DeviceWidget {
+                        width: devicesView.cellWidth
+                        height: devicesView.cellHeight
+                        listMode: devicesView.listWidget
+                    }
+                }
+            }
+
+            ////////
+
+            ListTitle {
+                anchors.leftMargin: devicesView.listWidget ? -devicesView.halfmargin : devicesView.halfmargin
+                anchors.rightMargin: devicesView.listWidget ? -devicesView.halfmargin : devicesView.halfmargin
+                visible: deviceManager.gatewayCount
+
+                text: qsTr("Gateway(s)", "", deviceManager.gatewayCount)
+                textSize: Theme.fontSizeContentVeryBig
+            }
+
+            Flow {
+                id: gatewaysView
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                Repeater {
+                    model: deviceManager.gatewaysList
+                    delegate: GatewayWidget {
+                        width: devicesView.cellWidth
+                        height: devicesView.cellHeight
+                        listMode: devicesView.listWidget
+                    }
+                }
+            }
+
+            ////////
         }
     }
 

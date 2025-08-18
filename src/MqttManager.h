@@ -29,6 +29,61 @@
 
 /* ************************************************************************** */
 
+class Broker: public QObject
+{
+    Q_OBJECT
+
+    Q_PROPERTY(int type READ getType CONSTANT)
+
+    Q_PROPERTY(QString name READ getName CONSTANT)
+    Q_PROPERTY(QString host READ getHost CONSTANT)
+    Q_PROPERTY(int port READ getPort CONSTANT)
+    Q_PROPERTY(QString username READ getUsername CONSTANT)
+    Q_PROPERTY(QString password READ getPassword CONSTANT)
+    Q_PROPERTY(QString topicA READ getTopicA CONSTANT)
+    Q_PROPERTY(QString topicB READ getTopicB CONSTANT)
+
+    int m_type = 0; // 1: my broker // 2: preset // 3: discovery
+    QString m_name;
+    QString m_host;
+    int m_port = 0;
+    QString m_username;
+    QString m_password;
+    QString m_topicA = "home";
+    QString m_topicB = "";
+
+    QString getName() const { return m_name; }
+    QString getHost() const { return m_host; }
+    int getPort() const { return m_port; }
+    QString getUsername() const { return m_username; }
+    QString getPassword() const { return m_password; }
+    QString getTopicA() const { return m_topicA; }
+    QString getTopicB() const { return m_topicB; }
+
+public:
+    Broker(int type, QString name,
+           QString host, int port,
+           QObject *parent) : QObject(parent) {
+        m_type = type; m_name = name;
+        m_host = host; m_port = port;
+    }
+    Broker(int type, QString name,
+           QString host, int port,
+           QString user, QString pwd,
+           QString topicA, QString topicB,
+           QObject *parent) : QObject(parent) {
+        m_type = type; m_name = name;
+        m_host = host; m_port = port;
+        m_username = user; m_password = pwd;
+        m_topicA = topicA; m_topicB = topicB;
+    }
+    ~Broker() = default;
+
+    int getType() const { return m_type; }
+};
+
+/* ************************************************************************** */
+
 /*!
  * \brief The MqttManager class
  */
@@ -38,10 +93,16 @@ class MqttManager: public QObject
 
     Q_PROPERTY(bool status READ getStatus NOTIFY statusChanged)
 
+    Q_PROPERTY(QString log READ getLog NOTIFY logChanged) // DEBUG
+
+    Q_PROPERTY(QVariant brokersAvailable READ getBrokersAvailable NOTIFY brokersUpdated)
+
     QMqttClient *m_mqttclient = nullptr;
 
     QString m_mqttLog; // DEBUG
-    Q_PROPERTY(QString log READ getLog NOTIFY logChanged) // DEBUG
+
+    QList <Broker *> m_brokersAvailable;
+    QVariant getBrokersAvailable() const { return QVariant::fromValue(m_brokersAvailable); }
 
     static MqttManager *instance;
 
@@ -49,6 +110,7 @@ class MqttManager: public QObject
     ~MqttManager();
 
 Q_SIGNALS:
+    void brokersUpdated();
     void statusChanged();
     void logChanged();
     void connected();

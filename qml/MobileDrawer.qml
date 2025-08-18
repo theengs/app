@@ -84,7 +84,7 @@ DrawerThemed {
 
                 DrawerItem {
                     highlighted: (appContent.state === "DeviceList")
-                    text: qsTr("Sensors")
+                    text: qsTr("Sensors / Gateways")
                     source: "qrc:/IconLibrary/material-icons/duotone/memory.svg"
 
                     onClicked: {
@@ -254,6 +254,32 @@ DrawerThemed {
                             deviceManager.scanDevices_start()
                         }
                         appDrawer.close()
+                    }
+                }
+
+                DrawerButton {
+                    text: qsTr("Add gateways")
+
+                    source: "qrc:/IconLibrary/material-symbols/search.svg"
+                    iconAnimation: "fade"
+                    iconAnimated: deviceManager.scanning
+
+                    enabled: (deviceManager.bluetooth)
+
+                    onClicked: {
+                        if (deviceManager.gatewayCount) {
+                            screenGatewayList.loadScreen()
+                            appDrawer.close()
+                        }
+                    }
+
+                    ItemBadge {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        visible: deviceManager.gatewayCount
+                        text: deviceManager.gatewayCount
                     }
                 }
 

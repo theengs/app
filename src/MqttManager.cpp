@@ -38,12 +38,25 @@ MqttManager *MqttManager::getInstance()
 
 MqttManager::MqttManager()
 {
-    //
+    // broker presets:
+
+    Broker *p1 = new Broker(2, "HomeAssistant", "homeassistant.local", 1883, this); m_brokersAvailable.push_back(p1);
+    //Broker *p1ssl = new Broker(2, "HomeAssistant", "homeassistant.local", 8883, this); m_brokersAvailable.push_back(p1ssl);
+
+    Broker *p2 = new Broker(2, "OpenHAB", "openhab.local", 1883, this); m_brokersAvailable.push_back(p2);
+    //Broker *p2ssl = new Broker(2, "OpenHAB", "openhab.local", 8883, this); m_brokersAvailable.push_back(p2ssl);
+
+    Broker *p3 = new Broker(2, "NodeRed", "nodered.local", 1883, this); m_brokersAvailable.push_back(p3);
+    //Broker *p3ssl = new Broker(2, "NodeRed", "nodered.local", 8883, this); m_brokersAvailable.push_back(p3ssl);
+
+    Broker *p4 = new Broker(2, "Jeedom", "jeedom.local", 1883, this); m_brokersAvailable.push_back(p4);
+    //Broker *p4ssl = new Broker(2, "Jeedom", "jeedom.local", 8883, this); m_brokersAvailable.push_back(p4ssl);
 }
 
 MqttManager::~MqttManager()
 {
-    //
+    qDeleteAll(m_brokersAvailable);
+    m_brokersAvailable.clear();
 }
 
 /* ************************************************************************** */
@@ -221,6 +234,26 @@ void MqttManager::brokerConnected()
         QByteArray v("v" + QString::fromLatin1(APP_VERSION).toUtf8());
 
         m_mqttclient->publish(t, v);
+
+        // current broker preset
+        {
+            Broker *mine = new Broker(1, "Current broker",
+                                      sm->getMqttHost(), sm->getMqttPort(),
+                                      sm->getMqttUser(), sm->getMqttPassword(),
+                                      sm->getMqttTopicA(), sm->getMqttTopicB(),
+                                      this);
+
+            if (m_brokersAvailable.first()->getType() == 1)
+            {
+                Broker *previous = qobject_cast<Broker *>(m_brokersAvailable.first());
+                m_brokersAvailable.removeFirst();
+                delete previous;
+            }
+
+            m_brokersAvailable.push_front(mine);
+
+            Q_EMIT brokersUpdated();
+        }
     }
 }
 

@@ -10,6 +10,8 @@
         <file>About.qml</file>
         <file>SettingsMqtt.qml</file>
         <file>Settings.qml</file>
+        <file>GatewayList.qml</file>
+        <file>GatewayDevice.qml</file>
         <file>DeviceList.qml</file>
         <file>DeviceBrowser.qml</file>
         <file>DevicePlantSensor.qml</file>
@@ -25,6 +27,10 @@
         <file>TemperaturePresetList.qml</file>
         <file>TemperaturePreset.qml</file>
 
+        <file alias="GatewayDeviceOnboarding.qml">onboarding/GatewayDeviceOnboarding.qml</file>
+        <file alias="GatewayDeviceWifi.qml">onboarding/GatewayDeviceWifi.qml</file>
+        <file alias="GatewayDeviceMqtt.qml">onboarding/GatewayDeviceMqtt.qml</file>
+
         <file alias="AirQualityIndicator.qml">charts/AirQualityIndicator.qml</file>
         <file alias="ChartEnvironmentalVoc.qml">charts/ChartEnvironmentalVoc.qml</file>
         <file alias="ChartHistory.qml">charts/ChartHistory.qml</file>
@@ -38,6 +44,7 @@
         <file alias="IndicatorsSolid.qml">charts/IndicatorsSolid.qml</file>
 
         <file alias="ActionMenuFixed.qml">components/ActionMenuFixed.qml</file>
+        <file alias="TextInputThemed.qml">components/TextInputThemed.qml</file>
         <file alias="ItemBannerSync.qml">components/ItemBannerSync.qml</file>
         <file alias="ItemEnvBox.qml">components/ItemEnvBox.qml</file>
         <file alias="ItemWeatherBox.qml">components/ItemWeatherBox.qml</file>
@@ -49,13 +56,14 @@
         <file alias="ItemNoData.qml">components/ItemNoData.qml</file>
         <file alias="ItemNoDevice.qml">components/ItemNoDevice.qml</file>
         <file alias="ItemNoDeviceNearby.qml">components/ItemNoDeviceNearby.qml</file>
-        <file alias="TextInputThemed.qml">components/TextInputThemed.qml</file>
+        <file alias="ItemNoGateway.qml">components/ItemNoGateway.qml</file>
 
         <file alias="PopupBackgroundUpdates.qml">popups/PopupBackgroundUpdates.qml</file>
         <file alias="PopupBlacklistDevice.qml">popups/PopupBlacklistDevice.qml</file>
         <file alias="PopupCalibration.qml">popups/PopupCalibration.qml</file>
         <file alias="PopupDeleteData.qml">popups/PopupDeleteData.qml</file>
         <file alias="PopupDeleteDevice.qml">popups/PopupDeleteDevice.qml</file>
+        <file alias="PopupGatewayConfirm.qml">popups/PopupGatewayConfirm.qml</file>
         <file alias="PopupMacAddress.qml">popups/PopupMacAddress.qml</file>
         <file alias="PopupPresetAdd.qml">popups/PopupPresetAdd.qml</file>
         <file alias="PopupPresetCopy.qml">popups/PopupPresetCopy.qml</file>
@@ -67,6 +75,7 @@
         <file alias="DebugWidget.qml">widgets/DebugWidget.qml</file>
         <file alias="DeviceWidget.qml">widgets/DeviceWidget.qml</file>
         <file alias="DeviceNearbyWidget.qml">widgets/DeviceNearbyWidget.qml</file>
+        <file alias="GatewayWidget.qml">widgets/GatewayWidget.qml</file>
         <file alias="TemperaturePresetWidget.qml">widgets/TemperaturePresetWidget.qml</file>
         <file alias="TemperaturePresetSearchWidget.qml">widgets/TemperaturePresetSearchWidget.qml</file>
         <file alias="TemperatureRangeWidget.qml">widgets/TemperatureRangeWidget.qml</file>

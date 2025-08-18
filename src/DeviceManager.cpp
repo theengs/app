@@ -27,6 +27,7 @@
 
 #include "device.h"
 #include "device_theengs.h"
+#include "devices/device_theengs_gateway.h"
 #include "devices/device_flowercare.h"
 #include "devices/device_ropot.h"
 #include "devices/device_hygrotemp_cgd1.h"
@@ -72,6 +73,11 @@ DeviceManager::DeviceManager(bool daemon)
     m_devices_filter = new DeviceFilter(this);
     m_devices_filter->setSourceModel(m_devices_model);
     m_devices_filter->setDynamicSortFilter(true);
+
+    m_gateways_model = new DeviceModel(this);
+    m_gateways_filter = new DeviceFilter(this);
+    m_gateways_filter->setSourceModel(m_gateways_model);
+    m_gateways_filter->setDynamicSortFilter(true);
 
     // Data model filtering
     SettingsManager *sm = SettingsManager::getInstance();
@@ -178,6 +184,9 @@ DeviceManager::~DeviceManager()
 
     delete m_devices_filter;
     delete m_devices_model;
+
+    delete m_gateways_filter;
+    delete m_gateways_model;
 }
 
 /* ************************************************************************** */
@@ -691,6 +700,8 @@ void DeviceManager::checkBluetoothIOS()
     if (m_discoveryAgent)
     {
         disconnect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
+                   this, &DeviceManager::addBleGateway);
+        disconnect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
                    this, &DeviceManager::addBleDevice);
         disconnect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
                    this, &DeviceManager::bleDevice_discovered);
@@ -949,11 +960,14 @@ void DeviceManager::scanDevices_start()
                         this, &DeviceManager::deviceDiscoveryStopped, Qt::UniqueConnection);
 
                 connect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
+                        this, &DeviceManager::addBleGateway, Qt::UniqueConnection);
+                connect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
                         this, &DeviceManager::addBleDevice, Qt::UniqueConnection);
                 connect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceUpdated,
                         this, &DeviceManager::bleDevice_updated, Qt::UniqueConnection);
 
                 // clean up device lists?
+                if (m_gateways_model) m_gateways_model->clearDevices();
                 if (m_devices_model) m_devices_model->clearDevices();
 
                 // start scanning
@@ -987,6 +1001,8 @@ void DeviceManager::scanDevices_stop()
     {
         if (m_discoveryAgent->isActive())
         {
+            disconnect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
+                       this, &DeviceManager::addBleGateway);
             disconnect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
                        this, &DeviceManager::addBleDevice);
             disconnect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceUpdated,
@@ -1034,6 +1050,8 @@ void DeviceManager::listenDevices_start()
             disconnect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceUpdated,
                        this, &DeviceManager::updateNearbyBleDevice);
 
+            disconnect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
+                       this, &DeviceManager::addBleGateway);
             disconnect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
                        this, &DeviceManager::addBleDevice);
             disconnect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::finished,
@@ -1614,10 +1632,88 @@ bool DeviceManager::isBleDeviceBlacklisted(const QString &addr)
 
 /* ************************************************************************** */
 
+void DeviceManager::addBleGateway(const QBluetoothDeviceInfo &info)
+{
+    // Various sanity checks
+    {
+        if (info.rssi() >= 0) return; // we probably just hit the device cache
+        if (m_devices_blacklist.contains(info.address().toString())) return; // device is blacklisted
+        if (m_devices_blacklist.contains(info.deviceUuid().toString())) return; // device is blacklisted
+        if ((info.coreConfigurations() & QBluetoothDeviceInfo::LowEnergyCoreConfiguration) == false) return; // not a BLE device
+
+        for (auto ed: std::as_const(m_gateways_model->m_devices)) // device is already in the UI
+        {
+            Device *edd = qobject_cast<Device *>(ed);
+            if (edd && (edd->getAddress() == info.address().toString() ||
+                        edd->getAddress() == info.deviceUuid().toString()))
+            {
+                Q_EMIT gatewayListUpdated();
+                return;
+            }
+        }
+    }
+
+    qDebug() << "DeviceManager::addBleGateway()" << " > NAME" << info.name() << " > RSSI" << info.rssi();
+
+    Device *d = nullptr;
+
+    // Create the device
+    if (info.name().startsWith("OMG_"))
+    {
+        d = new DeviceGateway(info, this);
+        d->setRssi(info.rssi());
+    }
+
+    if (d)
+    {
+        // Add it to the database?
+        if (m_dbInternal || m_dbExternal)
+        {
+            // if
+            QSqlQuery queryGateway;
+            queryGateway.prepare("SELECT deviceName FROM gateways WHERE deviceAddr = :deviceAddr");
+            queryGateway.bindValue(":deviceAddr", d->getAddress());
+            queryGateway.exec();
+
+            // then
+            if (queryGateway.last() == false)
+            {
+                qDebug() << "+ Adding gateway: " << d->getName() << "/" << d->getAddress() << "to local database";
+/*
+                QSqlQuery addGateway;
+                addGateway.prepare("INSERT INTO gateways (deviceAddr, deviceModel, deviceName) VALUES (:deviceAddr, :deviceModel, :deviceName)");
+                addGateway.bindValue(":deviceAddr", d->getAddress());
+                addGateway.bindValue(":deviceModel", d->getModel());
+                addGateway.bindValue(":deviceName", d->getName());
+
+                if (addGateway.exec() == false)
+                {
+                    qWarning() << "> addGateway.exec() ERROR"
+                               << addGateway.lastError().type() << ":" << addGateway.lastError().text();
+                }
+*/
+            }
+        }
+
+        // Connect and handle update
+        // NO
+
+        // Add it to the UI
+        m_gateways_model->addDevice(d);
+
+        Q_EMIT gatewayListUpdated();
+        qDebug() << "DeviceBLE added (from BLE discovery): " << d->getName() << "/" << d->getAddress();
+    }
+    else
+    {
+        //qDebug() << "Unsupported device: " << info.name() << "/" << info.address();
+    }
+}
+
+/* ************************************************************************** */
+
 void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
 {
-    qDebug() << "DeviceManager::addBleDevice()" << " > NAME" << info.name() << " > RSSI" << info.rssi();
-
     SettingsManager *sm = SettingsManager::getInstance();
     MqttManager *mqtt = MqttManager::getInstance();
 
@@ -1780,6 +1876,11 @@ void DeviceManager::disconnectDevices()
 {
     //qDebug() << "DeviceManager::disconnectDevices()";
 
+    for (auto d: std::as_const(m_gateways_model->m_devices))
+    {
+        Device *dd = qobject_cast<Device*>(d);
+        dd->deviceDisconnect();
+    }
     for (auto d: std::as_const(m_devices_model->m_devices))
     {
         Device *dd = qobject_cast<Device*>(d);

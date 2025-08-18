@@ -347,6 +347,28 @@ void DatabaseManager::createDatabase()
         }
     }
 
+    if (!tableExists("gateways"))
+    {
+        qDebug() << "+ Adding 'gateways' table to local database";
+
+        QSqlQuery createGateways;
+        createGateways.prepare("CREATE TABLE gateways (" \
+                               "deviceAddr VARCHAR(38) PRIMARY KEY," \
+                               "deviceAddrMAC VARCHAR(17)," \
+                               "deviceName VARCHAR(255)," \
+                               "deviceModel VARCHAR(255)," \
+                               "isOnboarded BOOLEAN DEFAULT FALSE," \
+                               "password VARCHAR(64)," \
+                               "settings VARCHAR(255)" \
+                               ");");
+
+        if (createGateways.exec() == false)
+        {
+            qWarning() << "> createGateways.exec() ERROR"
+                       << createGateways.lastError().type() << ":" << createGateways.lastError().text();
+        }
+    }
+
     if (!tableExists("devices"))
     {
         qDebug() << "+ Adding 'devices' table to local database";

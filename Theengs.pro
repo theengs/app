@@ -56,6 +56,7 @@ SOURCES  += src/main.cpp \
             src/MqttManager.cpp \
             src/DeviceManager.cpp \
             src/DeviceManager_advertisement.cpp \
+            src/DeviceManager_gateway.cpp \
             src/DeviceManager_nearby.cpp \
             src/DeviceManager_theengs.cpp \
             src/DeviceFilter.cpp \
@@ -78,6 +79,7 @@ SOURCES  += src/main.cpp \
             src/devices/device_thermobeacon.cpp \
             src/devices/device_jqjcy01ym.cpp \
             src/device_theengs.cpp \
+            src/devices/device_theengs_gateway.cpp \
             src/devices/device_theengs_generic.cpp \
             src/devices/device_theengs_beacons.cpp \
             src/devices/device_theengs_motionsensors.cpp \
@@ -121,6 +123,7 @@ HEADERS  += src/SettingsManager.h \
             src/devices/device_thermobeacon.h \
             src/devices/device_jqjcy01ym.h \
             src/device_theengs.h \
+            src/devices/device_theengs_gateway.h \
             src/devices/device_theengs_generic.h \
             src/devices/device_theengs_beacons.h \
             src/devices/device_theengs_motionsensors.h \

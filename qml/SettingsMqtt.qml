@@ -207,7 +207,7 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 16
 
-                rows: singleColumn ? 4 : 2
+                rows: 4
                 columns: singleColumn ? 1 : 2
                 spacing: 12
 
@@ -349,7 +349,7 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 16
 
-                rows: singleColumn ? 2 : 1
+                rows: 2
                 columns: singleColumn ? 1 : 2
                 spacing: 12
 

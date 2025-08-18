@@ -165,6 +165,17 @@ public:
         ACTION_SCAN = 64,                 //!< Scan for services and their characteristics
         ACTION_SCAN_WITH_VALUES,          //!< Scan for services and their characteristics and associated values
 
+        ACTION_THEENGS = 128,             //!< Theengs actions
+        ACTION_THEENGS_ONBOARDING,
+        ACTION_THEENGS_WIFI_UPDATE,
+
+        ACTION_BLUFI = 200,               //!< Espressif BluFi actions
+        ACTION_BLUFI_WIFI_GET_STATUS,
+        ACTION_BLUFI_WIFI_GET_LIST,
+        ACTION_BLUFI_WIFI_SET_CREDENTIALS,
+        ACTION_BLUFI_WIFI_CONNECT,
+        ACTION_BLUFI_WIFI_DISCONNECT,
+
         ACTION_REBOOT = 256,
         ACTION_SHUTDOWN,
     };

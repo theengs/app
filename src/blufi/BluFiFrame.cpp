@@ -311,7 +311,22 @@ void BluFiFrame::printParsedData()
 
     if (frametype == BluFiUtils::DATA_FRAME && framesubtype == BluFiUtils::SUBTYPE_WIFI_LIST)
     {
-        qDebug() << "> WIFI_LIST >" << m_data;
+        qDebug() << "> WIFI_LIST >" << m_data.size() << m_data;
+
+        int pos = 0;
+        while (pos < m_data.size())
+        {
+            int length = m_data.at(pos);
+            pos++;
+
+            int rssi = m_data.at(pos);
+            pos++;
+
+            QString ssid = m_data.mid(pos, length-1);
+            pos += length-1;
+
+            qDebug() << " > WIFI (sz" << length << ") SSID" << ssid << "/ RSSI" << rssi;
+        }
     }
 
     if (frametype == BluFiUtils::DATA_FRAME && framesubtype == BluFiUtils::SUBTYPE_WIFI_CONNECTION_STATE)
