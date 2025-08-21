@@ -51,6 +51,7 @@
         <file alias="ItemLoadData.qml">components/ItemLoadData.qml</file>
         <file alias="ItemBroker.qml">components/ItemBroker.qml</file>
         <file alias="ItemNetwork.qml">components/ItemNetwork.qml</file>
+        <file alias="ItemNetworkInfo.qml">components/ItemNetworkInfo.qml</file>
         <file alias="ItemNoBluetooth.qml">components/ItemNoBluetooth.qml</file>
         <file alias="ItemNoPermissions.qml">components/ItemNoPermissions.qml</file>
         <file alias="ItemNoData.qml">components/ItemNoData.qml</file>

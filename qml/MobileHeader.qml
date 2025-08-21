@@ -143,7 +143,22 @@ Rectangle {
             spacing: 4
             visible: true
 
-            Item { // right indicators
+            Item { // gateway indicator
+                width: parent.height
+                height: width
+                anchors.verticalCenter: parent.verticalCenter
+                visible: (appContent.state === "GatewayDevice")
+
+                Rectangle {
+                    id: gatewayIndicator
+                    width: 20; height: 20; radius: 20;
+                    anchors.centerIn: parent
+                    color: Theme.colorGreen
+                    visible: (screenGatewayDevice.currentGateway && screenGatewayDevice.currentGateway.connected)
+                }
+            }
+
+            Item { // right indicator
                 width: parent.height
                 height: width
                 anchors.verticalCenter: parent.verticalCenter

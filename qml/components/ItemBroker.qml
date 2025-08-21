@@ -52,14 +52,17 @@ T.Button {
     contentItem: RowLayout {
         spacing: 16
 
-        IconSvg {
+        Image {
             Layout.preferredWidth: 32
             Layout.preferredHeight: 32
-
+            sourceSize: Qt.size(64, 64)
             source: {
-                return "qrc:/IconLibrary/material-symbols/signal_wifi_0_bar.svg"
+                if (broker.name == "HomeAssistant") return "qrc:/assets/logos/HomeAssistant.svg"
+                if (broker.name == "OpenHAB") return "qrc:/assets/logos/OpenHAB.svg"
+                if (broker.name == "NodeRED") return "qrc:/assets/logos/NodeRED.svg"
+                if (broker.name == "Jeedom") return "qrc:/assets/logos/Jeedom.svg"
+                return "qrc:/assets/logos/mqtt.svg"
             }
-            color: Theme.colorIcon
         }
 
         Column {

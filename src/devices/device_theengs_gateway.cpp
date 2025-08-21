@@ -54,8 +54,8 @@ DeviceGateway::DeviceGateway(const QString &deviceAddr, const QString &deviceNam
     //setName(deviceName);
 }
 
-DeviceGateway::DeviceGateway(const QBluetoothDeviceInfo &d, QObject *parent):
-    Device(d, parent)
+DeviceGateway::DeviceGateway(const QBluetoothDeviceInfo &info, QObject *parent):
+    Device(info, parent)
 {
     m_deviceType = DeviceUtils::DEVICE_THEENGS_GATEWAY;
     m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
@@ -67,11 +67,26 @@ DeviceGateway::DeviceGateway(const QBluetoothDeviceInfo &d, QObject *parent):
         DeviceGateway::getSqlDeviceInfos();
     }
 
-    // fake presets
-    Network *n1 = new Network("test1", -48, true, this); m_networksAvailable.push_back(n1);
-    Network *n2 = new Network("test2", -72, true, this); m_networksAvailable.push_back(n2);
+    // Set RSSI
+    setRssi(info.rssi());
 
-    // ?
+    // Set gateway status
+    const QList<quint16> &manufacturerIds = info.manufacturerIds();
+    for (const auto adv_id: manufacturerIds)
+    {
+        qDebug() << info.name() << info.address() << Qt::hex
+                 << "ID" << adv_id
+                 << "manufacturer data" << Qt::dec << info.manufacturerData(adv_id).size() << Qt::hex
+                 << "bytes:" << info.manufacturerData(adv_id).toHex();
+
+        parseAdvertisementData(DeviceUtils::BLE_ADV_MANUFACTURERDATA, adv_id, info.manufacturerData(adv_id));
+    }
+
+    // fake presets
+    //Network *n1 = new Network("test1", -48, true, this); m_networksAvailable.push_back(n1);
+    //Network *n2 = new Network("test2", -72, true, this); m_networksAvailable.push_back(n2);
+
+    // timeout?
     //connect(&m_setupTimer, &QTimer::timeout, this, &DeviceGateway::timeoutSequence_internal, Qt::UniqueConnection);
     //setName(d.name());
 }
@@ -249,11 +264,10 @@ bool DeviceGateway::getSqlDeviceInfos()
             {
                 m_deviceModel = getInfos.value(0).toString();
                 m_deviceAddressMAC = getInfos.value(1).toString();
+                //m_onboardingStatus = getInfos.value(2).toInt();
+                //m_password = getInfos.value(3).toString();
 
-                m_deviceModel = getInfos.value(0).toString();
-                m_deviceAddressMAC = getInfos.value(1).toString();
-
-                QString settings = getInfos.value(11).toString();
+                QString settings = getInfos.value(4).toString();
                 QJsonDocument doc = QJsonDocument::fromJson(settings.toUtf8());
                 if (!doc.isNull() && doc.isObject())
                 {
@@ -474,35 +488,16 @@ void DeviceGateway::bleReadNotify(const QLowEnergyCharacteristic &c, const QByte
                 framesubtype == BluFiUtils::SUBTYPE_WIFI_CONNECTION_STATE)
             {
                 QByteArray data = f.getData();
-                if (data.size() >= 2) checkWiFi(data.at(1));
+                if (data.size() >= 2) checkWiFi_state(data.at(1));
             }
             if (frametype == BluFiUtils::DATA_FRAME &&
                 framesubtype == BluFiUtils::SUBTYPE_WIFI_LIST)
             {
                 QByteArray data = f.getData();
-                if (data.size() >= 2)
-                {
-                    qDeleteAll(m_networksAvailable);
-                    m_networksAvailable.clear();
+                if (data.size() >= 2) checkWiFi_list(data);
 
-                    int pos = 0;
-                    while (pos < data.size())
-                    {
-                        int length = data.at(pos);
-                        pos++;
-
-                        int rssi = data.at(pos);
-                        pos++;
-
-                        QString ssid = data.mid(pos, length-1);
-                        pos += length-1;
-
-                        Network *nw = new Network(ssid, rssi, false, this);
-                        m_networksAvailable.push_back(nw);
-                    }
-
-                    Q_EMIT networksUpdated();
-                }
+                m_networksRefreshing = false;
+                Q_EMIT networksUpdated();
             }
         }
     }
@@ -549,7 +544,8 @@ void DeviceGateway::parseAdvertisementData(const uint16_t adv_mode,
             {
                 m_onboardingStatus = status;
                 Q_EMIT onboardedUpdated();
-                qDebug() << "DeviceGateway::parseAdvertisementData()  >> " << m_onboardingStatus;
+
+                qDebug() << "DeviceGateway::parseAdvertisementData() onboarding status >> " << m_onboardingStatus;
             }
         }
     }
@@ -623,6 +619,9 @@ void DeviceGateway::getWifiList()
 
         m_serviceBluFi->writeCharacteristic(m_charWrite, f.toByeArray(),
                                             QLowEnergyService::WriteWithResponse);
+
+        m_networksRefreshing = true;
+        Q_EMIT networksUpdated();
     }
 }
 
@@ -906,9 +905,43 @@ void DeviceGateway::finishSequence_internal()
 
 /* ************************************************************************** */
 
-bool DeviceGateway::checkWiFi(uint8_t status)
+bool DeviceGateway::checkWiFi_list(const QByteArray &data)
 {
-    qDebug() << "DeviceBLE::checkWiFi(" << status << ")" << getAddress() << getName();
+    qDebug() << "DeviceBLE::checkWiFi_list()" << getAddress() << getName();
+
+    // available networks from the device
+
+    if (data.size() >= 2)
+    {
+        qDeleteAll(m_networksAvailable);
+        m_networksAvailable.clear();
+
+        int pos = 0;
+        while (pos < data.size())
+        {
+            int length = data.at(pos);
+            pos++;
+
+            int rssi = data.at(pos);
+            pos++;
+
+            QString ssid = data.mid(pos, length-1);
+            pos += length-1;
+
+            Network *nw = new Network(ssid, rssi, false, this);
+            m_networksAvailable.push_back(nw);
+        }
+
+        Q_EMIT networksUpdated();
+        return true;
+    }
+
+    return false;
+}
+
+bool DeviceGateway::checkWiFi_state(const uint8_t status)
+{
+    qDebug() << "DeviceBLE::checkWiFi_state(" << status << ")" << getAddress() << getName();
 
     // connection state of the STA device
 

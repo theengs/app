@@ -11,8 +11,8 @@ Item {
     implicitWidth: 640
     implicitHeight: 128
 
-    enabled: (boxDevice.rssi < 0 || boxDevice.connected)
-    opacity: (boxDevice.rssi < 0 || boxDevice.connected) ? 1 : 0.66
+    enabled: (boxDevice.available || boxDevice.connected)
+    opacity: (boxDevice.available || boxDevice.connected) ? 1 : 0.66
 
     property var boxDevice: pointer
 
@@ -131,8 +131,6 @@ Item {
         anchors.fill: parent
         anchors.margins: 6
 
-        opacity: boxDevice.deviceEnabled ? 1 : 0.66
-
         MouseArea {
             anchors.fill: parent
             acceptedButtons: Qt.LeftButton | Qt.MiddleButton
@@ -184,7 +182,7 @@ Item {
                 source: boxDevice.onboarded ?
                             "qrc:/IconLibrary/material-symbols/build_circle-fill.svg" :
                             "qrc:/IconLibrary/material-symbols/build_circle.svg"
-                color: Theme.colorHighContrast
+                color: boxDevice.onboarded ? Theme.colorGreen : Theme.colorHighContrast
                 visible: (wideMode || hugeMode)
                 fillMode: Image.PreserveAspectFit
                 asynchronous: true
@@ -325,12 +323,12 @@ Item {
                 color: Theme.colorIcon
 
                 source: {
-                    if (boxDevice.status === DeviceUtils.DEVICE_CONNECTED) {
+                    if (boxDevice.status >= DeviceUtils.DEVICE_CONNECTED) {
                         return "qrc:/IconLibrary/material-symbols/bluetooth_connected.svg"
-                    } else if (boxDevice.status < DeviceUtils.DEVICE_CONNECTED) {
+                    } else if (boxDevice.available) { // (boxDevice.status === DeviceUtils.DEVICE_AVAILABLE) {
                         return "qrc:/IconLibrary/material-symbols/bluetooth.svg"
                     }
-                    return "qrc:/IconLibrary/material-symbols/bluetooth_disabled.svg"
+                    return "" // "qrc:/IconLibrary/material-symbols/bluetooth_disabled.svg"
                 }
             }
 

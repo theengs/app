@@ -187,6 +187,7 @@ Loader {
                                 if (currentGateway.working) return "qrc:/IconLibrary/material-symbols/bluetooth.svg"
                                 if (currentGateway.connected) return "qrc:/IconLibrary/material-symbols/bluetooth_connected.svg"
                                 if (currentGateway.available) return "qrc:/IconLibrary/material-symbols/settings_bluetooth.svg"
+                                return ""
                             }
                             color: {
                                 if (!currentGateway) return Theme.colorGrey
@@ -202,8 +203,6 @@ Loader {
                                 if (deviceManager.bluetooth && currentGateway) {
                                     if (currentGateway.status < 3)
                                         currentGateway.actionConnect()
-                                    else
-                                        currentGateway.actionDisconnect()
                                 }
                             }
                         }
@@ -213,13 +212,10 @@ Loader {
 
                             text: {
                                 if (!currentGateway) return ""
-
                                 if (currentGateway.onboardingStatus === 0) return qsTr("Awaiting onboarding")
                                 if (currentGateway.onboardingStatus === 1) return qsTr("Onboarding")
                                 if (currentGateway.onboardingStatus === 2) return qsTr("Offline")
-
                                 return currentGateway.onboardingStatus
-                                return qsTr("?")
                             }
                             leftIcon: {
                                 if (!currentGateway) return ""
@@ -228,6 +224,7 @@ Loader {
                                 if (currentGateway.working) return "qrc:/IconLibrary/material-symbols/bluetooth.svg"
                                 if (currentGateway.connected) return "qrc:/IconLibrary/material-symbols/bluetooth_connected.svg"
                                 if (currentGateway.available) return "qrc:/IconLibrary/material-symbols/settings_bluetooth.svg"
+                                return ""
                             }
                             color: Theme.colorGreen
 
@@ -305,6 +302,8 @@ Loader {
                         color: Theme.colorGreen
 
                         onClicked: {
+                            currentGateway.getWifiNetworks()
+
                             gatewayOnboarding.loadSubScreen()
                         }
                     }

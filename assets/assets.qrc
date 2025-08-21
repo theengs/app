@@ -1,10 +1,14 @@
 <RCC>
     <qresource prefix="/assets">
-        <file>logos/github.svg</file>
-        <file>logos/mqtt.svg</file>
         <file>logos/logo.png</file>
         <file>logos/logo.svg</file>
         <file>logos/logo-greyscale.svg</file>
+
+        <file>logos/mqtt.svg</file>
+        <file>logos/HomeAssistant.svg</file>
+        <file>logos/OpenHAB.svg</file>
+        <file>logos/NodeRED.svg</file>
+        <file>logos/Jeedom.svg</file>
 
         <file>menus/menu_back.svg</file>
         <file>menus/menu_close.svg</file>

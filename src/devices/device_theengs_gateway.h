@@ -226,6 +226,7 @@ class DeviceGateway: public Device
     Q_PROPERTY(int wifiStatus READ getWifiStatus NOTIFY sequenceUpdated)
     Q_PROPERTY(bool wifiErrored READ isWifiErrored NOTIFY sequenceUpdated)
 
+    Q_PROPERTY(bool networksRefreshing READ getNetworksRefreshing NOTIFY networksUpdated)
     Q_PROPERTY(QVariant networksAvailable READ getNetworksAvailable NOTIFY networksUpdated)
 
     bool isBleConnected() { return m_setupSession.ble_connected; }
@@ -250,12 +251,16 @@ class DeviceGateway: public Device
     int m_onboardingStatus = 0;
     int getOnboardingStatus() const { return m_onboardingStatus; }
 
+    QString m_password;
+
     GatewaySetupSession m_setupSession;
     QTimer m_setupTimer;
 
     QString m_mac_ble;
     QString m_mac_wifi;
 
+    bool m_networksRefreshing = false;
+    bool getNetworksRefreshing() const { return m_networksRefreshing; }
     QList <Network *> m_networksAvailable;
     QVariant getNetworksAvailable() const { return QVariant::fromValue(m_networksAvailable); }
 
@@ -312,7 +317,8 @@ private slots:
     void setWifiConnect();
     void setWifiDisconnect();
 
-    bool checkWiFi(uint8_t status);
+    bool checkWiFi_state(const uint8_t status);
+    bool checkWiFi_list(const QByteArray &data);
 
     void retrySequence_internal();
     void abortSequence_internal();
@@ -324,7 +330,7 @@ public slots:
 
 public:
     DeviceGateway(const QString &deviceAddr, const QString &deviceName, QObject *parent = nullptr);
-    DeviceGateway(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
+    DeviceGateway(const QBluetoothDeviceInfo &info, QObject *parent = nullptr);
     ~DeviceGateway();
 
     static QString bleMac_from_wifiMac(const QString &wifi_mac); // remove ?
@@ -342,7 +348,7 @@ public:
     Q_INVOKABLE void startOnboarding();
     Q_INVOKABLE void retrySequence();
 
-    Q_INVOKABLE void getWifiNetworks();
+    Q_INVOKABLE void getWifiNetworks(); // 5s delay
     Q_INVOKABLE void setWifiCreds();
     Q_INVOKABLE void setWifiDisc();
     Q_INVOKABLE void setWifiConn();

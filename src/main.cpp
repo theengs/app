@@ -30,6 +30,7 @@
 #include "utils_app.h"
 #include "utils_screen.h"
 #include "utils_language.h"
+#include "utils_wifi.h"
 #if defined(Q_OS_MACOS)
 #include "utils_os_macos_dock.h"
 #endif
@@ -153,6 +154,7 @@ int main(int argc, char *argv[])
     // Init generic utils
     UtilsApp *utilsApp = UtilsApp::getInstance();
     UtilsScreen *utilsScreen = UtilsScreen::getInstance();
+    UtilsWiFi *utilsWifi = UtilsWiFi::getInstance();
     UtilsLanguage *utilsLanguage = UtilsLanguage::getInstance();
     if (!utilsScreen || !utilsApp || !utilsLanguage)
     {
@@ -187,8 +189,9 @@ int main(int argc, char *argv[])
     engine_context->setContextProperty("notificationManager", nm);
     engine_context->setContextProperty("presetsManager", pm);
     engine_context->setContextProperty("utilsApp", utilsApp);
-    engine_context->setContextProperty("utilsLanguage", utilsLanguage);
+    engine_context->setContextProperty("utilsWifi", utilsWifi);
     engine_context->setContextProperty("utilsScreen", utilsScreen);
+    engine_context->setContextProperty("utilsLanguage", utilsLanguage);
     engine_context->setContextProperty("startMinimized", (start_minimized || sm->getMinimized()));
 
     // Load the main view

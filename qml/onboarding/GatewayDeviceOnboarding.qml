@@ -21,7 +21,9 @@ Item {
     function backAction() {
         console.log("gatewayOnboarding.backAction()")
 
-        // TODO // textfields
+        currentGateway.actionDisconnect()
+
+        // TODO // clear textfields
 
         appContent.state = "GatewayDevice"
         deviceGateway.state = ""
@@ -396,18 +398,51 @@ Item {
                             verticalAlignment: Text.AlignBottom
                         }
 
+                        Connections {
+                            target: selectedGateway
+                            function onNetworksUpdated() {
+                                utilsWifi.refreshWiFi()
+                            }
+                        }
+
                         Repeater {
                             model: selectedGateway.networksAvailable
+                            //onCountChanged: utilsWifi.refreshWiFi()
 
                             ItemNetwork {
                                 width: parent.width
 
                                 name: modelData.ssid
                                 open: modelData.open
+                                connected: (modelData.ssid === utilsWifi.currentSSID)
                                 strength: modelData.strength
 
                                 selected: (networks.selected === name)
                                 onClicked: networks.selectNetwork(name)
+                            }
+                        }
+                        ItemNetworkInfo {
+                            width: parent.width
+
+                            empty: (selectedGateway.networksAvailable.length === 0)
+                            scanning: currentGateway.networksRefreshing
+                            visible: (empty || scanning)
+                        }
+
+                        ButtonClear {
+                            anchors.right: parent.right
+                            anchors.rightMargin: 0
+
+                            visible: currentGateway.connected && !currentGateway.networksRefreshing
+
+                            animation: "rotate"
+                            animationRunning: currentGateway.networksRefreshing
+                            color: Theme.colorBlue
+                            source: "qrc:/IconLibrary/material-symbols/autorenew.svg"
+
+                            onClicked: {
+                                if (deviceManager.bluetooth && currentGateway)
+                                    currentGateway.getWifiNetworks()
                             }
                         }
                     }

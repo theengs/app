@@ -17,13 +17,9 @@ T.Button {
     leftPadding: 12
     rightPadding: 12
 
-    property bool selected: false
-
     // network
-    property string name: ""
-    property bool open: false
-    property bool connected: false
-    property int strength: 0
+    property bool scanning: false
+    property bool empty: false
 
     // colors
     property color colorContent: Theme.colorComponentText
@@ -35,7 +31,7 @@ T.Button {
         implicitWidth: 512
         implicitHeight: Theme.componentHeight
 
-        color: network.selected ? network.colorHighlight : "transparent"
+        color: "transparent"
 
         RippleThemed {
             anchors.fill: parent
@@ -56,43 +52,33 @@ T.Button {
         Text {
             Layout.fillWidth: true
 
-            text: network.name
+            text: {
+                if (network.scanning) return "Scanning..."
+                if (network.empty) return "No network available"
+                return ""
+            }
             color: Theme.colorText
             font.bold: true
         }
 
-        TagClear {
-            Layout.preferredWidth: 16
-            Layout.preferredHeight: 16
-
-            visible: network.connected
-
-            text: qsTr("connected")
-            color: Theme.colorGreen
-        }
-
         IconSvg {
-            Layout.preferredWidth: 16
-            Layout.preferredHeight: 16
+            Layout.preferredWidth: 24
+            Layout.preferredHeight: 24
 
-            visible: !network.open
-
-            source: "qrc:/IconLibrary/material-symbols/lock-fill.svg"
+            source: network.scanning ? "qrc:/IconLibrary/material-symbols/autorenew.svg"
+                                      : "qrc:/IconLibrary/material-symbols/signal_wifi_off.svg"
             color: Theme.colorIcon
-        }
 
-        IconSvg {
-            Layout.preferredWidth: 20
-            Layout.preferredHeight: 20
+            NumberAnimation on rotation {
+                running: network.scanning
+                alwaysRunToEnd: true
+                loops: Animation.Infinite
 
-            source: {
-                if (network.strength === 4) return "qrc:/IconLibrary/material-symbols/signal_wifi_4_bar.svg"
-                if (network.strength === 3) return "qrc:/IconLibrary/material-symbols/signal_wifi_3_bar.svg"
-                if (network.strength === 2) return "qrc:/IconLibrary/material-symbols/signal_wifi_2_bar.svg"
-                if (network.strength === 1) return "qrc:/IconLibrary/material-symbols/signal_wifi_1_bar.svg"
-                return "qrc:/IconLibrary/material-symbols/signal_wifi_0_bar.svg"
+                duration: 1500
+                from: 0
+                to: 360
+                easing.type: Easing.Linear
             }
-            color: Theme.colorIcon
         }
     }
 

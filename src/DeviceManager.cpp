@@ -1661,7 +1661,10 @@ void DeviceManager::addBleGateway(const QBluetoothDeviceInfo &info)
     if (info.name().startsWith("OMG_"))
     {
         d = new DeviceGateway(info, this);
-        d->setRssi(info.rssi());
+    }
+    else
+    {
+        //qDebug() << "Unsupported device: " << info.name() << "/" << info.address();
     }
 
     if (d)
@@ -1695,18 +1698,11 @@ void DeviceManager::addBleGateway(const QBluetoothDeviceInfo &info)
             }
         }
 
-        // Connect and handle update
-        // NO
-
         // Add it to the UI
         m_gateways_model->addDevice(d);
 
         Q_EMIT gatewayListUpdated();
         qDebug() << "DeviceBLE added (from BLE discovery): " << d->getName() << "/" << d->getAddress();
-    }
-    else
-    {
-        //qDebug() << "Unsupported device: " << info.name() << "/" << info.address();
     }
 }
 
