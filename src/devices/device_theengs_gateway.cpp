@@ -455,7 +455,7 @@ void DeviceGateway::serviceDetailsDiscovered_blufi(QLowEnergyService::ServiceSta
 
 void DeviceGateway::bleWriteDone(const QLowEnergyCharacteristic &c, const QByteArray &value)
 {
-    qDebug() << "DeviceGateway::bleWriteDone(" << m_deviceAddress << ")";
+    qDebug() << "DeviceGateway::bleWriteDone(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
     qDebug() << "DATA: 0x" << value.toHex();
 }
 
@@ -752,7 +752,7 @@ void DeviceGateway::setMqttCredentials(const QString &host, const int port,
 
 void DeviceGateway::startOnboarding()
 {
-    if (!isBusy())
+    if (!isWorking())
     {
         qDebug() << "DeviceBLE::startOnboarding()" << getAddress() << getName();
 
@@ -803,7 +803,7 @@ void DeviceGateway::setWifiConn()
 
 void DeviceGateway::startWifiUpdate()
 {
-    if (!isBusy())
+    if (!isWorking())
     {
         qDebug() << "DeviceBLE::startWifiUpdate()" << getAddress() << getName();
 
@@ -821,7 +821,7 @@ void DeviceGateway::startWifiUpdate()
 
 void DeviceGateway::retrySequence()
 {
-    if (!isBusy())
+    if (!isWorking())
     {
         qDebug() << "DeviceBLE::retrySequence()" << getAddress() << getName();
 
@@ -852,7 +852,7 @@ void DeviceGateway::retrySequence_internal()
 {
     qDebug() << "DeviceBLE::retrySequence_internal()";
 
-    if (!isBusy())
+    if (!isWorking())
     {
         m_setupSession.retrySequence();
         m_setupTimer.start(m_setupSession.s_timout_duration);
