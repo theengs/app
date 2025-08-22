@@ -245,18 +245,6 @@ Loader {
                             //Layout.preferredWidth: 1
                             Layout.fillWidth: true
 
-                            text: "get networks"
-                            color: Theme.colorBlue
-
-                            onClicked: {
-                                if (deviceManager.bluetooth && currentGateway)
-                                    currentGateway.getWifiNetworks()
-                            }
-                        }
-                        ButtonSolid {
-                            //Layout.preferredWidth: 1
-                            Layout.fillWidth: true
-
                             text: "connect"
                             color: Theme.colorBlue
 
@@ -275,6 +263,31 @@ Loader {
                             onClicked: {
                                 if (deviceManager.bluetooth && currentGateway)
                                     currentGateway.setWifiDisc()
+                            }
+                        }
+
+                        ButtonSolid {
+                            //Layout.preferredWidth: 1
+                            Layout.fillWidth: true
+
+                            text: "status"
+                            color: Theme.colorBlue
+
+                            onClicked: {
+                                if (deviceManager.bluetooth && currentGateway)
+                                    currentGateway.actionStatus()
+                            }
+                        }
+                        ButtonSolid {
+                            //Layout.preferredWidth: 1
+                            Layout.fillWidth: true
+
+                            text: "networks"
+                            color: Theme.colorBlue
+
+                            onClicked: {
+                                if (deviceManager.bluetooth && currentGateway)
+                                    currentGateway.actionWifiScan()
                             }
                         }
                     }

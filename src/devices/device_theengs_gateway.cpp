@@ -718,6 +718,16 @@ void DeviceGateway::setCustomData()
 
 /* ************************************************************************** */
 
+void DeviceGateway::setGatewayCredentials(const QString &password)
+{
+    qDebug() << "DeviceGateway::setGatewayCredentials()";
+
+    if (m_setupSession.gateway_pass != password)
+    {
+        m_setupSession.gateway_pass = password;
+    }
+}
+
 void DeviceGateway::setWifiCredentials(const QString &ssid, const QString &password)
 {
     qDebug() << "DeviceGateway::setCredentials()";
@@ -1077,14 +1087,10 @@ void DeviceGateway::actionMqttSet()
 
         QString customdata;
         customdata += "{";
-        customdata += "\"mqtt_server\": \"" + m_setupSession.mqtt_server + "\"";
-        customdata += "\"mqtt_port\": \"" + QString::number(m_setupSession.mqtt_port) + "\"";
-        customdata += "\"mqtt_user\": \"" + m_setupSession.mqtt_user + "\",";
-        customdata += "\"mqtt_pass\": \"" + m_setupSession.mqtt_pass + "\",";
-        customdata += "\"mqtt_topic\": \"" + m_setupSession.mqtt_topicA + "\",";
-        customdata += "\"gateway_name\": \"" + m_setupSession.mqtt_topicB + "\",";
-        customdata += "\"mqtt_secure\": \"" + QString("false") + "\",";
-        customdata += "\"mqtt_validate\": \"" + QString("false") + "\",";
+        customdata += "\"mqtt_server\":\"" + m_setupSession.mqtt_server + "\",";
+        customdata += "\"mqtt_port\":\"" + QString::number(m_setupSession.mqtt_port) + "\",";
+        customdata += "\"mqtt_user\":\"" + m_setupSession.mqtt_user + "\",";
+        customdata += "\"mqtt_pass\":\"" + m_setupSession.mqtt_pass + "\"";
         customdata += "}";
 
         QByteArray cd(customdata.toLatin1());
@@ -1092,6 +1098,33 @@ void DeviceGateway::actionMqttSet()
 
         //f.printDetails();
         //f.printParsedData();
+
+        m_serviceBluFi->writeCharacteristic(m_charWrite, f.toByeArray(),
+                                            QLowEnergyService::WriteWithResponse);
+    }
+}
+
+/* ************************************************************************** */
+
+void DeviceGateway::actionPasswordSet()
+{
+    qDebug() << "DeviceGateway::actionPasswordSet()" << getAddress() << getName();
+
+    if (m_serviceBluFi)
+    {
+        BluFiFrame f;
+        f.setFrameType(BluFiUtils::DATA_FRAME, BluFiUtils::SUBTYPE_CUSTOM_DATA);
+        f.setFrameCtrl(false, false, BluFiUtils::DIRECTION_OUTPUT, false, false);
+        f.setSequenceNumber(m_setupSession.blufi_seq_nb++);
+
+        QString customdata;
+        customdata += "{";
+        customdata += "\"target\":\"MQTTtoSYS\",";
+        customdata += "\"gw_pass\":\"" + m_setupSession.gateway_pass + "\"";
+        customdata += "}";
+
+        QByteArray cd(customdata.toLatin1());
+        f.setData(cd);
 
         m_serviceBluFi->writeCharacteristic(m_charWrite, f.toByeArray(),
                                             QLowEnergyService::WriteWithResponse);
@@ -1113,8 +1146,8 @@ void DeviceGateway::actionRestart()
 
         QString customdata;
         customdata += "{";
-        customdata += "\"target\": \"MQTTtoSYS\",";
-        customdata += "\"cmd\": \"restart\",";
+        customdata += "\"target\":\"MQTTtoSYS\",";
+        customdata += "\"cmd\":\"restart\"";
         //customdata += "\"gw_pass\": \"12345678\",";
         customdata += "}";
 
@@ -1141,8 +1174,36 @@ void DeviceGateway::actionErase()
 
         QString customdata;
         customdata += "{";
-        customdata += "\"target\": \"MQTTtoSYS\",";
-        customdata += "\"cmd\": \"erase\",";
+        customdata += "\"target\":\"MQTTtoSYS\",";
+        customdata += "\"cmd\":\"erase\"";
+        //customdata += "\"gw_pass\": \"12345678\",";
+        customdata += "}";
+
+        QByteArray cd(customdata.toLatin1());
+        f.setData(cd);
+
+        m_serviceBluFi->writeCharacteristic(m_charWrite, f.toByeArray(),
+                                            QLowEnergyService::WriteWithResponse);
+    }
+}
+
+/* ************************************************************************** */
+
+void DeviceGateway::actionStatus()
+{
+    qDebug() << "DeviceGateway::actionStatus()" << getAddress() << getName();
+
+    if (m_serviceBluFi)
+    {
+        BluFiFrame f;
+        f.setFrameType(BluFiUtils::DATA_FRAME, BluFiUtils::SUBTYPE_CUSTOM_DATA);
+        f.setFrameCtrl(false, false, BluFiUtils::DIRECTION_OUTPUT, false, false);
+        f.setSequenceNumber(m_setupSession.blufi_seq_nb++);
+
+        QString customdata;
+        customdata += "{";
+        customdata += "\"target\":\"MQTTtoSYS\",";
+        customdata += "\"cmd\":\"status\"";
         //customdata += "\"gw_pass\": \"12345678\",";
         customdata += "}";
 

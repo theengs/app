@@ -325,6 +325,9 @@ Item {
                                 //tf_gateway_name.text
                                 //tf_gateway_pwd.text
 
+                                currentGateway.setGatewayCredentials(tf_gateway_pwd.text)
+                                currentGateway.actionPasswordSet()
+
                                 swipeview.currentIndex++
                             }
                         }

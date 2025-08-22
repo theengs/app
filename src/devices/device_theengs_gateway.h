@@ -339,8 +339,8 @@ public:
 
     void setName(const QString &name);
 
+    Q_INVOKABLE void setGatewayCredentials(const QString &password);
     Q_INVOKABLE void setWifiCredentials(const QString &ssid, const QString &password);
-
     Q_INVOKABLE void setMqttCredentials(const QString &host, const int port,
                                         const QString &user, const QString &password,
                                         const QString &topicA, const QString &topicB);
@@ -363,8 +363,10 @@ public:
     Q_INVOKABLE void actionWifiSet();
     Q_INVOKABLE void actionWifiConn();
     Q_INVOKABLE void actionMqttSet();
+    Q_INVOKABLE void actionPasswordSet();
     Q_INVOKABLE void actionRestart();
     Q_INVOKABLE void actionErase();
+    Q_INVOKABLE void actionStatus();
 };
 
 /* ************************************************************************** */

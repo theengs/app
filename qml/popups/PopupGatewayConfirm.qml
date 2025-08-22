@@ -99,6 +99,12 @@ Popup {
                     color: Theme.colorPrimary
 
                     onClicked: {
+                        if (popupGatewayConfirm.mode === "erase") {
+                            currentGateway.actionErase()
+                        } else if (popupGatewayConfirm.mode === "reboot") {
+                            currentGateway.actionRestart()
+                        }
+
                         popupGatewayConfirm.confirmed()
                         popupGatewayConfirm.close()
                     }
