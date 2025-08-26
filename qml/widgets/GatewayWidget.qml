@@ -6,7 +6,7 @@ import "qrc:/ComponentLibrary/UtilsNumber.js" as UtilsNumber
 import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
 
 Item {
-    id: deviceWidget
+    id: gatewayWidget
 
     implicitWidth: 640
     implicitHeight: 128
@@ -105,7 +105,7 @@ Item {
     }
 
     Rectangle {
-        anchors.fill: deviceWidgetRectangle
+        anchors.fill: gatewayWidgetRectangle
 
         anchors.leftMargin: listMode ? -12 : 0
         anchors.rightMargin: listMode ? -12 : 0
@@ -116,7 +116,7 @@ Item {
         border.width: 2
         border.color: listMode ? "transparent" : Theme.colorSeparator
 
-        color: boxDevice.selected ? Theme.colorSeparator : Theme.colorDeviceWidget
+        color: boxDevice.selected ? Theme.colorSeparator : Theme.colorgatewayWidget
         Behavior on color { ColorAnimation { duration: 133 } }
 
         opacity: boxDevice.selected ? 0.5 : (listMode ? 0 : 1)
@@ -126,7 +126,7 @@ Item {
     ////////////////////////////////////////////////////////////////////////////
 
     Item {
-        id: deviceWidgetRectangle
+        id: gatewayWidgetRectangle
 
         anchors.fill: parent
         anchors.margins: 6
@@ -260,7 +260,7 @@ Item {
                             PropertyAnimation { to: 1; duration: 750; }
                         }
                     }
-
+/*
                     Rectangle {
                         id: barbg
                         anchors.verticalCenter: parent.verticalCenter
@@ -295,6 +295,48 @@ Item {
                             }
                         }
                     }
+*/
+                    ProgressChip {
+                        height: 28
+                        progress: Math.abs(boxDevice.rssiMean)
+
+                        // signal_wifi_0_bar.svg // wifi_channel-fill.svg
+                        leftIcon: "qrc:/IconLibrary/material-symbols/bluetooth.svg"
+                        color: {
+                            if (Math.abs(boxDevice.rssiMean) < 65) return Theme.colorGreen
+                            if (Math.abs(boxDevice.rssiMean) < 85) return Theme.colorOrange
+                            if (Math.abs(boxDevice.rssiMean) < 100) return Theme.colorRed
+                            return Theme.colorRed
+                        }
+                    }
+
+                    ButtonChip {
+                        height: 28
+                        text: qsTr("wifi")
+
+                        leftIcon: {
+                            if (boxDevice && boxDevice.onboardingStatus >= 3) return "qrc:/IconLibrary/material-symbols/signal_wifi_4_bar.svg"
+                            return "qrc:/IconLibrary/material-symbols/signal_wifi_off.svg"
+                        }
+                        color: {
+                            if (boxDevice && boxDevice.onboardingStatus >= 3) return Theme.colorGreen
+                            return Theme.colorGrey
+                        }
+                    }
+
+                    ButtonChip {
+                        height: 28
+                        text: qsTr("broker")
+
+                        leftIcon: {
+                            if (boxDevice && boxDevice.onboardingStatus >= 4) return "qrc:/IconLibrary/material-symbols/wifi_tethering.svg"
+                            return "qrc:/IconLibrary/material-symbols/wifi_tethering_off.svg"
+                        }
+                        color: {
+                            if (boxDevice && boxDevice.onboardingStatus >= 4) return Theme.colorBlue
+                            return Theme.colorGrey
+                        }
+                    }
                 }
             }
         }
@@ -310,9 +352,8 @@ Item {
             anchors.bottomMargin: hugeMode ? 16 : 8
             anchors.right: parent.right
             anchors.rightMargin: listMode ? (wideMode ? 0 : -4) : (hugeMode ? 14 : 10)
-
             spacing: 8
-
+/*
             IconSvg {
                 id: imageStatus
                 anchors.verticalCenter: parent.verticalCenter
@@ -331,7 +372,7 @@ Item {
                     return "" // "qrc:/IconLibrary/material-symbols/bluetooth_disabled.svg"
                 }
             }
-
+*/
             IconSvg {
                 id: imageForward
                 anchors.verticalCenter: parent.verticalCenter

@@ -62,9 +62,7 @@ T.Button {
         }
 
         TagClear {
-            Layout.preferredWidth: 16
-            Layout.preferredHeight: 16
-
+            Layout.preferredHeight: 20
             visible: network.connected
 
             text: qsTr("connected")
@@ -74,7 +72,6 @@ T.Button {
         IconSvg {
             Layout.preferredWidth: 16
             Layout.preferredHeight: 16
-
             visible: !network.open
 
             source: "qrc:/IconLibrary/material-symbols/lock-fill.svg"

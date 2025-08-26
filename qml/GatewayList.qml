@@ -176,7 +176,7 @@ Item {
         property int cellColumnsTarget: Math.trunc(gatewaysView.width / cellWidthTarget)
 
         cellWidth: (gatewaysView.width / cellColumnsTarget)
-        cellHeight: (bigWidget ? 144 : 100)
+        cellHeight: (bigWidget ? 144 : 128)
 
         ScrollBar.vertical: ScrollBar {
             visible: false

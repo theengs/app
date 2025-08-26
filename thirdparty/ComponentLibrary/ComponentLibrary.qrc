@@ -55,6 +55,7 @@
         <file alias="RoundButtonText.qml">deprecated/RoundButtonText.qml</file>
         <file alias="SwitchThemedMobile.qml">deprecated/SwitchThemedMobile.qml</file>
 
+        <file alias="ProgressChip.qml">generic/ProgressChip.qml</file>
         <file alias="ButtonChip.qml">generic/ButtonChip.qml</file>
         <file alias="ButtonFab.qml">generic/ButtonFab.qml</file>
         <file alias="ButtonFabExtended.qml">generic/ButtonFabExtended.qml</file>

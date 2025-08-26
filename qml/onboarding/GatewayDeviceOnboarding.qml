@@ -388,6 +388,46 @@ Item {
                             cb_wifi_showpwd.checked = false
                         }
 
+                        RowLayout {
+                            id: wifiWarning
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+
+                            height: Theme.componentHeight
+                            spacing: Theme.componentMargin
+                            visible: (isMobile && utilsWifi.currentSSID.length === 0)
+
+                            Timer {
+                                interval: 1000
+                                running: (isMobile && appContent.state === "GatewayDevice" && deviceGateway.state === "onboarding")
+                                repeat: true
+                                onTriggered: {
+                                    utilsWifi.refreshWiFi()
+                                    //wifiWarning.visible = (utilsWifi.currentSSID.length === 0)
+                                }
+                            }
+
+                            IconSvg {
+                                Layout.preferredWidth: 20
+                                Layout.preferredHeight: 20
+                                source: "qrc:/IconLibrary/material-symbols/warning.svg"
+                                color: Theme.colorWarning
+                            }
+
+                            //Text { text: utilsWifi.currentSSID + " " +  utilsWifi.currentSSID.length }
+
+                            Text {
+                                Layout.fillWidth: true
+
+                                text: qsTr("Your device is not connected to a WiFi network...")
+                                textFormat: Text.PlainText
+                                wrapMode: Text.WordWrap
+                                color: Theme.colorSubText
+                                font.pixelSize: Theme.fontSizeContentBig
+                                verticalAlignment: Text.AlignBottom
+                            }
+                        }
+
                         Text {
                             height: Theme.componentHeight
                             anchors.left: parent.left
