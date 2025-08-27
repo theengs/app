@@ -116,7 +116,7 @@ Item {
         border.width: 2
         border.color: listMode ? "transparent" : Theme.colorSeparator
 
-        color: boxDevice.selected ? Theme.colorSeparator : Theme.colorgatewayWidget
+        color: boxDevice.selected ? Theme.colorSeparator : Theme.colorDeviceWidget
         Behavior on color { ColorAnimation { duration: 133 } }
 
         opacity: boxDevice.selected ? 0.5 : (listMode ? 0 : 1)
@@ -298,16 +298,16 @@ Item {
 */
                     ProgressChip {
                         height: 28
-                        progress: Math.abs(boxDevice.rssiMean)
-
-                        // signal_wifi_0_bar.svg // wifi_channel-fill.svg
-                        leftIcon: "qrc:/IconLibrary/material-symbols/bluetooth.svg"
+                        progress: (100 - Math.abs(boxDevice.rssiMean))
                         color: {
                             if (Math.abs(boxDevice.rssiMean) < 65) return Theme.colorGreen
                             if (Math.abs(boxDevice.rssiMean) < 85) return Theme.colorOrange
                             if (Math.abs(boxDevice.rssiMean) < 100) return Theme.colorRed
                             return Theme.colorRed
                         }
+                        leftIcon: "qrc:/IconLibrary/material-symbols/bluetooth.svg"
+                        // signal_wifi_0_bar.svg // wifi_channel-fill.svg
+                        //Text { text: Math.abs(boxDevice.rssiMean) }
                     }
 
                     ButtonChip {

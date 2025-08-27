@@ -799,11 +799,7 @@ ApplicationWindow {
         ]
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-
     //DebugWidget { }
-
-    // Gateway notification ////////////////////////////////////////////////////
 
     // Mobile menu /////////////////////////////////////////////////////////////
 
@@ -823,6 +819,34 @@ ApplicationWindow {
         color: {
             if (appContent.state === "Tutorial") return Theme.colorHeader
             return Theme.colorBackground
+        }
+    }
+
+    // Gateway notification ////////////////////////////////////////////////////
+
+    Connections {
+        target: deviceManager
+        function onGatewayListUpdated() { gatewayTimer.start() }
+    }
+    Timer {
+        id: gatewayTimer
+        interval: 5000
+        running: false
+        repeat: false
+    }
+    BannerButton {
+        id: gatewayNotification
+
+        visible: (appContent.state !== "GatewayList")
+        opacity: gatewayTimer.running ? 1 : 0
+        Behavior on opacity { OpacityAnimator { duration: 233 } }
+
+        text: qsTr("A new gateway is available!")
+        textButton: qsTr("Show")
+        source: "qrc:/IconLibrary/material-symbols/add_circle.svg"
+
+        onClicked: {
+            screenGatewayList.loadScreen()
         }
     }
 

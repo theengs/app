@@ -1647,7 +1647,7 @@ void DeviceManager::addBleGateway(const QBluetoothDeviceInfo &info)
             if (edd && (edd->getAddress() == info.address().toString() ||
                         edd->getAddress() == info.deviceUuid().toString()))
             {
-                Q_EMIT gatewayListUpdated();
+                //Q_EMIT gatewayListUpdated();
                 return;
             }
         }

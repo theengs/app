@@ -44,6 +44,7 @@
         <file alias="IndicatorsSolid.qml">charts/IndicatorsSolid.qml</file>
 
         <file alias="ActionMenuFixed.qml">components/ActionMenuFixed.qml</file>
+        <file alias="BannerButton.qml">components/BannerButton.qml</file>
         <file alias="TextInputThemed.qml">components/TextInputThemed.qml</file>
         <file alias="ItemBannerSync.qml">components/ItemBannerSync.qml</file>
         <file alias="ItemEnvBox.qml">components/ItemEnvBox.qml</file>
