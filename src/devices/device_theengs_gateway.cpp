@@ -35,6 +35,7 @@
 #include <QDebug>
 
 /* ************************************************************************** */
+/* ************************************************************************** */
 
 DeviceGateway::DeviceGateway(const QString &deviceAddr, const QString &deviceName, QObject *parent):
     Device(deviceAddr, deviceName, parent)
@@ -49,10 +50,14 @@ DeviceGateway::DeviceGateway(const QString &deviceAddr, const QString &deviceNam
         DeviceGateway::getSqlDeviceInfos();
     }
 
-    // ?
-    //connect(&m_setupTimer, &QTimer::timeout, this, &DeviceGateway::timeoutSequence_internal, Qt::UniqueConnection);
+    // Set device name?
     //setName(deviceName);
+
+    // timeout?
+    //connect(&m_setupTimer, &QTimer::timeout, this, &DeviceGateway::timeoutSequence_internal, Qt::UniqueConnection);
 }
+
+/* ************************************************************************** */
 
 DeviceGateway::DeviceGateway(const QBluetoothDeviceInfo &info, QObject *parent):
     Device(info, parent)
@@ -67,7 +72,8 @@ DeviceGateway::DeviceGateway(const QBluetoothDeviceInfo &info, QObject *parent):
         DeviceGateway::getSqlDeviceInfos();
     }
 
-    // Set RSSI
+    // Set device name and RSSI
+    setName(info.name());
     setRssi(info.rssi());
 
     // Set gateway status
@@ -82,22 +88,67 @@ DeviceGateway::DeviceGateway(const QBluetoothDeviceInfo &info, QObject *parent):
         parseAdvertisementData(DeviceUtils::BLE_ADV_MANUFACTURERDATA, adv_id, info.manufacturerData(adv_id));
     }
 
-    // fake presets
+    // DEBUG // fake presets
     //Network *n1 = new Network("test1", -48, true, this); m_networksAvailable.push_back(n1);
     //Network *n2 = new Network("test2", -72, true, this); m_networksAvailable.push_back(n2);
 
     // timeout?
     //connect(&m_setupTimer, &QTimer::timeout, this, &DeviceGateway::timeoutSequence_internal, Qt::UniqueConnection);
-    //setName(d.name());
 }
+
+/* ************************************************************************** */
 
 DeviceGateway::~DeviceGateway()
 {
+    delete m_serviceBluFi;
+
     qDeleteAll(m_networksAvailable);
     m_networksAvailable.clear();
-
-    delete m_serviceBluFi;
 }
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+
+bool DeviceGateway::getSqlDeviceInfos()
+{
+    qDebug() << "DeviceGateway::getSqlDeviceInfos(" << m_deviceAddress << ")";
+    bool status = false;
+
+    if (m_dbInternal || m_dbExternal)
+    {
+        QSqlQuery getInfos;
+        getInfos.prepare("SELECT " \
+                         "deviceModel, deviceAddrMAC," \
+                         "isOnboarded, password," \
+                         "settings " \
+                         "FROM gateways WHERE deviceAddr = :deviceAddr");
+        getInfos.bindValue(":deviceAddr", getAddress());
+        if (getInfos.exec())
+        {
+            while (getInfos.next())
+            {
+                m_deviceModel = getInfos.value(0).toString();
+                m_deviceAddressMAC = getInfos.value(1).toString();
+                //m_onboardingStatus = getInfos.value(2).toInt();
+                //m_password = getInfos.value(3).toString();
+
+                QString settings = getInfos.value(4).toString();
+                QJsonDocument doc = QJsonDocument::fromJson(settings.toUtf8());
+                if (!doc.isNull() && doc.isObject())
+                {
+                    m_additionalSettings = doc.object();
+                }
+
+                status = true;
+                Q_EMIT settingsUpdated();
+            }
+        }
+    }
+
+    return status;
+}
+
+/* ************************************************************************** */
 
 void DeviceGateway::setName(const QString &name)
 {
@@ -134,7 +185,6 @@ void DeviceGateway::setName(const QString &name)
 */
 }
 
-/* ************************************************************************** */
 /* ************************************************************************** */
 
 QString DeviceGateway::bleMac_from_wifiMac(const QString &wifi_mac_input)
@@ -183,7 +233,14 @@ void DeviceGateway::deviceConnected()
 {
     qDebug() << "DeviceGateway::deviceConnected(" << m_deviceAddress << ")";
     Device::deviceConnected();
+
+    //if (onboarding)
+    {
+        actionWifiScan();
+    }
 }
+
+/* ************************************************************************** */
 
 void DeviceGateway::deviceDisconnected()
 {
@@ -209,6 +266,8 @@ void DeviceGateway::deviceDisconnected()
         }
     }
 }
+
+/* ************************************************************************** */
 
 void DeviceGateway::deviceErrored(QLowEnergyController::Error error)
 {
@@ -240,47 +299,6 @@ void DeviceGateway::deviceErrored(QLowEnergyController::Error error)
             }
         }
     }
-}
-
-/* ************************************************************************** */
-
-bool DeviceGateway::getSqlDeviceInfos()
-{
-    qDebug() << "DeviceGateway::getSqlDeviceInfos(" << m_deviceAddress << ")";
-    bool status = false;
-
-    if (m_dbInternal || m_dbExternal)
-    {
-        QSqlQuery getInfos;
-        getInfos.prepare("SELECT " \
-                           "deviceModel, deviceAddrMAC," \
-                           "isOnboarded, password," \
-                           "settings " \
-                         "FROM gateways WHERE deviceAddr = :deviceAddr");
-        getInfos.bindValue(":deviceAddr", getAddress());
-        if (getInfos.exec())
-        {
-            while (getInfos.next())
-            {
-                m_deviceModel = getInfos.value(0).toString();
-                m_deviceAddressMAC = getInfos.value(1).toString();
-                //m_onboardingStatus = getInfos.value(2).toInt();
-                //m_password = getInfos.value(3).toString();
-
-                QString settings = getInfos.value(4).toString();
-                QJsonDocument doc = QJsonDocument::fromJson(settings.toUtf8());
-                if (!doc.isNull() && doc.isObject())
-                {
-                    m_additionalSettings = doc.object();
-                }
-
-                status = true;
-                Q_EMIT settingsUpdated();
-            }
-        }
-    }
-
-    return status;
 }
 
 /* ************************************************************************** */
@@ -481,17 +499,27 @@ void DeviceGateway::bleReadNotify(const QLowEnergyCharacteristic &c, const QByte
         uint8_t framesubtype = 0;
         f.getFrameType(frametype, framesubtype);
 
-        //if (m_ble_action == DeviceUtils::ACTION_THEENGS_ONBOARDING ||
-        //    m_ble_action == DeviceUtils::ACTION_THEENGS_WIFI_UPDATE)
+        // handle the response
+
+        if (frametype == BluFiUtils::CTRL_FRAME)
         {
-            if (frametype == BluFiUtils::DATA_FRAME &&
-                framesubtype == BluFiUtils::SUBTYPE_WIFI_CONNECTION_STATE)
+            if (framesubtype == BluFiUtils::SUBTYPE_ACK)
+            {
+                //
+            }
+            else
+            {
+                qWarning() << "UNKNOWN (CTRL) FRAME SUBTYPE:" << framesubtype;
+            }
+        }
+        else if (frametype == BluFiUtils::DATA_FRAME)
+        {
+            if (framesubtype == BluFiUtils::SUBTYPE_WIFI_CONNECTION_STATE)
             {
                 QByteArray data = f.getData();
                 if (data.size() >= 2) checkWiFi_state(data.at(1));
             }
-            if (frametype == BluFiUtils::DATA_FRAME &&
-                framesubtype == BluFiUtils::SUBTYPE_WIFI_LIST)
+            else if (framesubtype == BluFiUtils::SUBTYPE_WIFI_LIST)
             {
                 QByteArray data = f.getData();
                 if (data.size() >= 2) checkWiFi_list(data);
@@ -499,6 +527,22 @@ void DeviceGateway::bleReadNotify(const QLowEnergyCharacteristic &c, const QByte
                 m_networksRefreshing = false;
                 Q_EMIT networksUpdated();
             }
+            else if (framesubtype == BluFiUtils::SUBTYPE_CUSTOM_DATA)
+            {
+                //
+            }
+            else if (framesubtype == BluFiUtils::SUBTYPE_ERROR)
+            {
+                //
+            }
+            else
+            {
+                qWarning() << "UNKNOWN (DATA) FRAME SUBTYPE:" << framesubtype;
+            }
+        }
+        else
+        {
+            qWarning() << "WRONG FRAME TYPE:" << frametype;
         }
     }
 }
@@ -615,7 +659,7 @@ void DeviceGateway::getWifiList()
         f.setFrameCtrl(false, false, BluFiUtils::DIRECTION_OUTPUT, true, false);
         f.setSequenceNumber(m_setupSession.blufi_seq_nb++);
 
-        f.printDetails();
+        //f.printDetails();
 
         m_serviceBluFi->writeCharacteristic(m_charWrite, f.toByeArray(),
                                             QLowEnergyService::WriteWithResponse);
@@ -718,6 +762,165 @@ void DeviceGateway::setCustomData()
 
 /* ************************************************************************** */
 
+void DeviceGateway::setCustomData_getStatus()
+{
+    qDebug() << "DeviceGateway::setCustomData_getStatus()" << getAddress() << getName();
+
+    if (m_serviceBluFi)
+    {
+        BluFiFrame f;
+        f.setFrameType(BluFiUtils::DATA_FRAME, BluFiUtils::SUBTYPE_CUSTOM_DATA);
+        f.setFrameCtrl(false, false, BluFiUtils::DIRECTION_OUTPUT, false, false);
+        f.setSequenceNumber(m_setupSession.blufi_seq_nb++);
+
+        QString customdata;
+        customdata += "{";
+        customdata += "\"target\":\"MQTTtoSYS\",";
+        customdata += "\"cmd\":\"status\"";
+        //customdata += "\"gw_pass\": \"12345678\",";
+        customdata += "}";
+
+        QByteArray cd(customdata.toLatin1());
+        f.setData(cd);
+
+        m_serviceBluFi->writeCharacteristic(m_charWrite, f.toByeArray(),
+                                            QLowEnergyService::WriteWithResponse);
+    }
+}
+
+/* ************************************************************************** */
+
+void DeviceGateway::setCustomData_setMqtt()
+{
+    qDebug() << "DeviceGateway::setCustomData_setMqtt()" << getAddress() << getName();
+
+    if (m_serviceBluFi)
+    {
+        BluFiFrame f;
+        f.setFrameType(BluFiUtils::DATA_FRAME, BluFiUtils::SUBTYPE_CUSTOM_DATA);
+        f.setFrameCtrl(false, false, BluFiUtils::DIRECTION_OUTPUT, false, false);
+        f.setSequenceNumber(m_setupSession.blufi_seq_nb++);
+
+        QString customdata;
+        customdata += "{";
+        customdata += "\"mqtt_server\":\"" + m_setupSession.mqtt_server + "\",";
+        customdata += "\"mqtt_port\":\"" + QString::number(m_setupSession.mqtt_port) + "\",";
+        customdata += "\"mqtt_user\":\"" + m_setupSession.mqtt_user + "\",";
+        customdata += "\"mqtt_pass\":\"" + m_setupSession.mqtt_pass + "\"";
+        customdata += "}";
+        //qDebug() << customdata << " / size:" << customdata.size();
+
+        QByteArray cd(customdata.toLatin1());
+        f.setData(cd);
+
+        f.printDetails();
+        f.printParsedData();
+
+        m_serviceBluFi->writeCharacteristic(m_charWrite, f.toByeArray(),
+                                            QLowEnergyService::WriteWithResponse);
+/*
+        {
+            "mqtt_topic": "topic/",
+            "discovery_prefix": "prefix",
+            "gateway_name": "name"
+        }
+        QString customdata;
+        customdata += "{";
+        customdata += "\"mqtt_topic\":\"" + m_setupSession.mqtt_topicA + "\",";
+        customdata += "\"discovery_prefix\":\"" + m_setupSession.mqtt_topicB + "\",";
+        customdata += "\"gateway_name\":\"" + m_setupSession.mqtt_topicB + "\",";
+        customdata += "}";
+        qDebug() << customdata << " / size:" << customdata.size();
+*/
+    }
+}
+
+/* ************************************************************************** */
+
+void DeviceGateway::setCustomData_setPassword()
+{
+    qDebug() << "DeviceGateway::setCustomData_setPassword()" << getAddress() << getName();
+
+    if (m_serviceBluFi)
+    {
+        BluFiFrame f;
+        f.setFrameType(BluFiUtils::DATA_FRAME, BluFiUtils::SUBTYPE_CUSTOM_DATA);
+        f.setFrameCtrl(false, false, BluFiUtils::DIRECTION_OUTPUT, false, false);
+        f.setSequenceNumber(m_setupSession.blufi_seq_nb++);
+
+        QString customdata;
+        customdata += "{";
+        customdata += "\"target\":\"MQTTtoSYS\",";
+        customdata += "\"gw_pass\":\"" + m_setupSession.gateway_pass + "\"";
+        customdata += "}";
+
+        QByteArray cd(customdata.toLatin1());
+        f.setData(cd);
+
+        m_serviceBluFi->writeCharacteristic(m_charWrite, f.toByeArray(),
+                                            QLowEnergyService::WriteWithResponse);
+    }
+}
+
+/* ************************************************************************** */
+
+void DeviceGateway::setCustomData_erase()
+{
+    qDebug() << "DeviceGateway::setCustomData_erase()" << getAddress() << getName();
+
+    if (m_serviceBluFi)
+    {
+        BluFiFrame f;
+        f.setFrameType(BluFiUtils::DATA_FRAME, BluFiUtils::SUBTYPE_CUSTOM_DATA);
+        f.setFrameCtrl(false, false, BluFiUtils::DIRECTION_OUTPUT, false, false);
+        f.setSequenceNumber(m_setupSession.blufi_seq_nb++);
+
+        QString customdata;
+        customdata += "{";
+        customdata += "\"target\":\"MQTTtoSYS\",";
+        customdata += "\"cmd\":\"erase\"";
+        //customdata += "\"gw_pass\": \"12345678\",";
+        customdata += "}";
+
+        QByteArray cd(customdata.toLatin1());
+        f.setData(cd);
+
+        m_serviceBluFi->writeCharacteristic(m_charWrite, f.toByeArray(),
+                                            QLowEnergyService::WriteWithResponse);
+    }
+}
+
+/* ************************************************************************** */
+
+void DeviceGateway::setCustomData_restart()
+{
+    qDebug() << "DeviceGateway::setCustomData_restart()" << getAddress() << getName();
+
+    if (m_serviceBluFi)
+    {
+        BluFiFrame f;
+        f.setFrameType(BluFiUtils::DATA_FRAME, BluFiUtils::SUBTYPE_CUSTOM_DATA);
+        f.setFrameCtrl(false, false, BluFiUtils::DIRECTION_OUTPUT, false, false);
+        f.setSequenceNumber(m_setupSession.blufi_seq_nb++);
+
+        QString customdata;
+        customdata += "{";
+        customdata += "\"target\":\"MQTTtoSYS\",";
+        customdata += "\"cmd\":\"restart\"";
+        //customdata += "\"gw_pass\": \"12345678\",";
+        customdata += "}";
+
+        QByteArray cd(customdata.toLatin1());
+        f.setData(cd);
+
+        m_serviceBluFi->writeCharacteristic(m_charWrite, f.toByeArray(),
+                                            QLowEnergyService::WriteWithResponse);
+    }
+}
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+
 void DeviceGateway::setGatewayCredentials(const QString &password)
 {
     qDebug() << "DeviceGateway::setGatewayCredentials()";
@@ -760,6 +963,8 @@ void DeviceGateway::setMqttCredentials(const QString &host, const int port,
     }
 }
 
+/* ************************************************************************** */
+
 void DeviceGateway::startOnboarding()
 {
     if (!isWorking())
@@ -775,39 +980,6 @@ void DeviceGateway::startOnboarding()
 
         m_setupTimer.start(m_setupSession.s_timout_duration);
         deviceConnect();
-    }
-}
-
-void DeviceGateway::getWifiNetworks()
-{
-    if (isConnected())
-    {
-        qDebug() << "DeviceBLE::getWifiNetworks()" << getAddress() << getName();
-        getWifiList();
-    }
-}
-void DeviceGateway::setWifiCreds()
-{
-    if (isConnected())
-    {
-        qDebug() << "DeviceBLE::setWifiCredentials()" << getAddress() << getName();
-        setWifiCredentials();
-    }
-}
-void DeviceGateway::setWifiDisc()
-{
-    if (isConnected())
-    {
-        qDebug() << "DeviceBLE::setWifiDisc()" << getAddress() << getName();
-        setWifiDisconnect();
-    }
-}
-void DeviceGateway::setWifiConn()
-{
-    if (isConnected())
-    {
-        qDebug() << "DeviceBLE::setWifiConn()" << getAddress() << getName();
-        setWifiConnect();
     }
 }
 
@@ -913,6 +1085,7 @@ void DeviceGateway::finishSequence_internal()
     deviceDisconnect();
 }
 
+/* ************************************************************************** */
 /* ************************************************************************** */
 
 bool DeviceGateway::checkWiFi_list(const QByteArray &data)
@@ -1033,44 +1206,105 @@ void DeviceGateway::gatewayCreationResponse(const QString &context, bool created
 }
 
 /* ************************************************************************** */
+/* ************************************************************************** */
 
-void DeviceGateway::actionWifiScan()
+void DeviceGateway::actionPasswordSet()
 {
-    qDebug() << "DeviceGateway::actionWifiScan()" << getAddress() << getName();
-
-    if (m_ble_action != DeviceUtils::ACTION_BLUFI_WIFI_GET_LIST)
+    if (m_ble_status == DeviceUtils::DEVICE_CONNECTED)
     {
-        m_ble_action = DeviceUtils::ACTION_BLUFI_WIFI_GET_LIST;
-        Q_EMIT statusUpdated();
+        qDebug() << "DeviceStodeus::actionPasswordSet()" << getAddress() << getName();
+        actionStarted(DeviceUtils::ACTION_BLUFI_CUSTOM_SET_PASSWORD);
+        setCustomData_setPassword();
     }
-
-    if (m_ble_status >= DeviceUtils::DEVICE_CONNECTED)
+    else if ((m_ble_status <= DeviceUtils::DEVICE_AVAILABLE))
     {
-        //
+        qDebug() << "DeviceStodeus::actionPasswordSet()" << getAddress() << getName();
+        actionStarted(DeviceUtils::ACTION_BLUFI_CUSTOM_SET_PASSWORD);
+        deviceConnect();
     }
     else
     {
+        qWarning() << "DeviceStodeus::actionPasswordSet() BLE status: " << m_ble_status;
+    }
+}
+
+void DeviceGateway::actionWifiScan()
+{
+    if (m_ble_status == DeviceUtils::DEVICE_CONNECTED)
+    {
+        qDebug() << "DeviceStodeus::actionWifiScan()" << getAddress() << getName();
+        actionStarted(DeviceUtils::ACTION_BLUFI_WIFI_GET_LIST);
+        getWifiList();
+    }
+    else if ((m_ble_status <= DeviceUtils::DEVICE_AVAILABLE))
+    {
+        qDebug() << "DeviceStodeus::actionWifiScan()" << getAddress() << getName();
+        actionStarted(DeviceUtils::ACTION_BLUFI_WIFI_GET_LIST);
         deviceConnect();
+    }
+    else
+    {
+        qWarning() << "DeviceStodeus::actionWifiScan() BLE status: " << m_ble_status;
     }
 }
 
 void DeviceGateway::actionWifiSet()
 {
-    qDebug() << "DeviceGateway::actionWifiSet()" << getAddress() << getName();
-
-    if (m_serviceBluFi)
+    if (m_ble_status == DeviceUtils::DEVICE_CONNECTED)
     {
-        //
+        qDebug() << "DeviceStodeus::actionWifiSet()" << getAddress() << getName();
+        actionStarted(DeviceUtils::ACTION_BLUFI_WIFI_SET_CREDENTIALS);
+        setWifiCredentials();
+    }
+    else if ((m_ble_status <= DeviceUtils::DEVICE_AVAILABLE))
+    {
+        qDebug() << "DeviceStodeus::actionWifiSet()" << getAddress() << getName();
+        actionStarted(DeviceUtils::ACTION_BLUFI_WIFI_SET_CREDENTIALS);
+        deviceConnect();
+    }
+    else
+    {
+        qWarning() << "DeviceStodeus::actionWifiSet() BLE status: " << m_ble_status;
     }
 }
 
-void DeviceGateway::actionWifiConn()
+void DeviceGateway::actionWifiConnect()
 {
-    qDebug() << "DeviceGateway::actionWifiConn()" << getAddress() << getName();
-
-    if (m_serviceBluFi)
+    if (m_ble_status == DeviceUtils::DEVICE_CONNECTED)
     {
-        //
+        qDebug() << "DeviceStodeus::actionWifiConnect()" << getAddress() << getName();
+        actionStarted(DeviceUtils::ACTION_BLUFI_WIFI_CONNECT);
+        setWifiConnect();
+    }
+    else if ((m_ble_status <= DeviceUtils::DEVICE_AVAILABLE))
+    {
+        qDebug() << "DeviceStodeus::actionWifiConnect()" << getAddress() << getName();
+        actionStarted(DeviceUtils::ACTION_BLUFI_WIFI_CONNECT);
+        deviceConnect();
+    }
+    else
+    {
+        qWarning() << "DeviceStodeus::actionWifiConnect() BLE status: " << m_ble_status;
+    }
+}
+
+void DeviceGateway::actionWifiDisconnect()
+{
+    if (m_ble_status == DeviceUtils::DEVICE_CONNECTED)
+    {
+        qDebug() << "DeviceStodeus::actionWifiDisconnect()" << getAddress() << getName();
+        actionStarted(DeviceUtils::ACTION_BLUFI_WIFI_DISCONNECT);
+        setWifiDisconnect();
+    }
+    else if ((m_ble_status <= DeviceUtils::DEVICE_AVAILABLE))
+    {
+        qDebug() << "DeviceStodeus::actionWifiDisconnect()" << getAddress() << getName();
+        actionStarted(DeviceUtils::ACTION_BLUFI_WIFI_DISCONNECT);
+        deviceConnect();
+    }
+    else
+    {
+        qWarning() << "DeviceStodeus::actionWifiDisconnect() BLE status: " << m_ble_status;
     }
 }
 
@@ -1078,112 +1312,21 @@ void DeviceGateway::actionWifiConn()
 
 void DeviceGateway::actionMqttSet()
 {
-    if (m_serviceBluFi)
+    if (m_ble_status == DeviceUtils::DEVICE_CONNECTED)
     {
-        BluFiFrame f;
-        f.setFrameType(BluFiUtils::DATA_FRAME, BluFiUtils::SUBTYPE_CUSTOM_DATA);
-        f.setFrameCtrl(false, false, BluFiUtils::DIRECTION_OUTPUT, false, false);
-        f.setSequenceNumber(m_setupSession.blufi_seq_nb++);
-
-        QString customdata;
-        customdata += "{";
-        customdata += "\"mqtt_server\":\"" + m_setupSession.mqtt_server + "\",";
-        customdata += "\"mqtt_port\":\"" + QString::number(m_setupSession.mqtt_port) + "\",";
-        customdata += "\"mqtt_user\":\"" + m_setupSession.mqtt_user + "\",";
-        customdata += "\"mqtt_pass\":\"" + m_setupSession.mqtt_pass + "\"";
-        customdata += "}";
-
-        QByteArray cd(customdata.toLatin1());
-        f.setData(cd);
-
-        //f.printDetails();
-        //f.printParsedData();
-
-        m_serviceBluFi->writeCharacteristic(m_charWrite, f.toByeArray(),
-                                            QLowEnergyService::WriteWithResponse);
+        qDebug() << "DeviceStodeus::actionMqttSet()" << getAddress() << getName();
+        actionStarted(DeviceUtils::ACTION_BLUFI_CUSTOM_SET_MQTT);
+        setCustomData_setMqtt();
     }
-}
-
-/* ************************************************************************** */
-
-void DeviceGateway::actionPasswordSet()
-{
-    qDebug() << "DeviceGateway::actionPasswordSet()" << getAddress() << getName();
-
-    if (m_serviceBluFi)
+    else if ((m_ble_status <= DeviceUtils::DEVICE_AVAILABLE))
     {
-        BluFiFrame f;
-        f.setFrameType(BluFiUtils::DATA_FRAME, BluFiUtils::SUBTYPE_CUSTOM_DATA);
-        f.setFrameCtrl(false, false, BluFiUtils::DIRECTION_OUTPUT, false, false);
-        f.setSequenceNumber(m_setupSession.blufi_seq_nb++);
-
-        QString customdata;
-        customdata += "{";
-        customdata += "\"target\":\"MQTTtoSYS\",";
-        customdata += "\"gw_pass\":\"" + m_setupSession.gateway_pass + "\"";
-        customdata += "}";
-
-        QByteArray cd(customdata.toLatin1());
-        f.setData(cd);
-
-        m_serviceBluFi->writeCharacteristic(m_charWrite, f.toByeArray(),
-                                            QLowEnergyService::WriteWithResponse);
+        qDebug() << "DeviceStodeus::actionMqttSet()" << getAddress() << getName();
+        actionStarted(DeviceUtils::ACTION_BLUFI_CUSTOM_SET_MQTT);
+        deviceConnect();
     }
-}
-
-/* ************************************************************************** */
-
-void DeviceGateway::actionRestart()
-{
-    qDebug() << "DeviceGateway::actionRestart()" << getAddress() << getName();
-
-    if (m_serviceBluFi)
+    else
     {
-        BluFiFrame f;
-        f.setFrameType(BluFiUtils::DATA_FRAME, BluFiUtils::SUBTYPE_CUSTOM_DATA);
-        f.setFrameCtrl(false, false, BluFiUtils::DIRECTION_OUTPUT, false, false);
-        f.setSequenceNumber(m_setupSession.blufi_seq_nb++);
-
-        QString customdata;
-        customdata += "{";
-        customdata += "\"target\":\"MQTTtoSYS\",";
-        customdata += "\"cmd\":\"restart\"";
-        //customdata += "\"gw_pass\": \"12345678\",";
-        customdata += "}";
-
-        QByteArray cd(customdata.toLatin1());
-        f.setData(cd);
-
-        m_serviceBluFi->writeCharacteristic(m_charWrite, f.toByeArray(),
-                                            QLowEnergyService::WriteWithResponse);
-    }
-}
-
-/* ************************************************************************** */
-
-void DeviceGateway::actionErase()
-{
-    qDebug() << "DeviceGateway::actionErase()" << getAddress() << getName();
-
-    if (m_serviceBluFi)
-    {
-        BluFiFrame f;
-        f.setFrameType(BluFiUtils::DATA_FRAME, BluFiUtils::SUBTYPE_CUSTOM_DATA);
-        f.setFrameCtrl(false, false, BluFiUtils::DIRECTION_OUTPUT, false, false);
-        f.setSequenceNumber(m_setupSession.blufi_seq_nb++);
-
-        QString customdata;
-        customdata += "{";
-        customdata += "\"target\":\"MQTTtoSYS\",";
-        customdata += "\"cmd\":\"erase\"";
-        //customdata += "\"gw_pass\": \"12345678\",";
-        customdata += "}";
-
-        QByteArray cd(customdata.toLatin1());
-        f.setData(cd);
-
-        m_serviceBluFi->writeCharacteristic(m_charWrite, f.toByeArray(),
-                                            QLowEnergyService::WriteWithResponse);
+        qWarning() << "DeviceStodeus::actionMqttSet() BLE status: " << m_ble_status;
     }
 }
 
@@ -1191,28 +1334,67 @@ void DeviceGateway::actionErase()
 
 void DeviceGateway::actionStatus()
 {
-    qDebug() << "DeviceGateway::actionStatus()" << getAddress() << getName();
-
-    if (m_serviceBluFi)
+    if (m_ble_status == DeviceUtils::DEVICE_CONNECTED)
     {
-        BluFiFrame f;
-        f.setFrameType(BluFiUtils::DATA_FRAME, BluFiUtils::SUBTYPE_CUSTOM_DATA);
-        f.setFrameCtrl(false, false, BluFiUtils::DIRECTION_OUTPUT, false, false);
-        f.setSequenceNumber(m_setupSession.blufi_seq_nb++);
-
-        QString customdata;
-        customdata += "{";
-        customdata += "\"target\":\"MQTTtoSYS\",";
-        customdata += "\"cmd\":\"status\"";
-        //customdata += "\"gw_pass\": \"12345678\",";
-        customdata += "}";
-
-        QByteArray cd(customdata.toLatin1());
-        f.setData(cd);
-
-        m_serviceBluFi->writeCharacteristic(m_charWrite, f.toByeArray(),
-                                            QLowEnergyService::WriteWithResponse);
+        qDebug() << "DeviceStodeus::actionStatus()" << getAddress() << getName();
+        actionStarted(DeviceUtils::ACTION_BLUFI_CUSTOM_GET_STATUS);
+        setCustomData_getStatus();
+    }
+    else if ((m_ble_status <= DeviceUtils::DEVICE_AVAILABLE))
+    {
+        qDebug() << "DeviceStodeus::actionStatus()" << getAddress() << getName();
+        actionStarted(DeviceUtils::ACTION_BLUFI_CUSTOM_GET_STATUS);
+        deviceConnect();
+    }
+    else
+    {
+        qWarning() << "DeviceStodeus::actionStatus() BLE status: " << m_ble_status;
     }
 }
 
+/* ************************************************************************** */
+
+void DeviceGateway::actionErase()
+{
+    if (m_ble_status == DeviceUtils::DEVICE_CONNECTED)
+    {
+        qDebug() << "DeviceStodeus::actionErase()" << getAddress() << getName();
+        actionStarted(DeviceUtils::ACTION_BLUFI_CUSTOM_ERASE);
+        setCustomData_erase();
+    }
+    else if ((m_ble_status <= DeviceUtils::DEVICE_AVAILABLE))
+    {
+        qDebug() << "DeviceStodeus::actionErase()" << getAddress() << getName();
+        actionStarted(DeviceUtils::ACTION_BLUFI_CUSTOM_ERASE);
+        deviceConnect();
+    }
+    else
+    {
+        qWarning() << "DeviceStodeus::actionErase() BLE status: " << m_ble_status;
+    }
+}
+
+/* ************************************************************************** */
+
+void DeviceGateway::actionRestart()
+{
+    if (m_ble_status == DeviceUtils::DEVICE_CONNECTED)
+    {
+        qDebug() << "DeviceStodeus::actionRestart()" << getAddress() << getName();
+        actionStarted(DeviceUtils::ACTION_BLUFI_CUSTOM_RESTART);
+        setCustomData_restart();
+    }
+    else if ((m_ble_status <= DeviceUtils::DEVICE_AVAILABLE))
+    {
+        qDebug() << "DeviceStodeus::actionRestart()" << getAddress() << getName();
+        actionStarted(DeviceUtils::ACTION_BLUFI_CUSTOM_RESTART);
+        deviceConnect();
+    }
+    else
+    {
+        qWarning() << "DeviceStodeus::actionRestart() BLE status: " << m_ble_status;
+    }
+}
+
+/* ************************************************************************** */
 /* ************************************************************************** */

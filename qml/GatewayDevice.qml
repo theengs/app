@@ -250,7 +250,7 @@ Loader {
 
                             onClicked: {
                                 if (deviceManager.bluetooth && currentGateway)
-                                    currentGateway.setWifiConn()
+                                    currentGateway.actionWifiConnect()
                             }
                         }
                         ButtonSolid {
@@ -262,7 +262,7 @@ Loader {
 
                             onClicked: {
                                 if (deviceManager.bluetooth && currentGateway)
-                                    currentGateway.setWifiDisc()
+                                    currentGateway.actionWifiDisconnect()
                             }
                         }
 
@@ -315,8 +315,6 @@ Loader {
                         color: Theme.colorGreen
 
                         onClicked: {
-                            currentGateway.getWifiNetworks()
-
                             gatewayOnboarding.loadSubScreen()
                         }
                     }

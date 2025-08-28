@@ -14,6 +14,8 @@ Item {
     function loadSubScreen() {
         console.log("deviceGateway // loadSubScreen(onboarding) >> " + currentGateway)
 
+        //currentGateway.actionWifiScan()
+
         deviceGateway.state = "onboarding"
         reset()
     }
@@ -71,8 +73,8 @@ Item {
             contentItem.highlightMoveDuration = 0
         }
 
-        property int contentSz: singleColumn ? (swipeview.width - 2*24) :
-                                               Math.min(((swipeview.width - 2*24) / 2), 512) - 4
+        property int contentSz: singleColumn ? (swipeview.width - 2*24)
+                                             : Math.min(((swipeview.width - 2*24) / 2), 512) - 4
 
         ////////////////////////////////////////////////////////////////////////
 
@@ -326,7 +328,7 @@ Item {
                                 //tf_gateway_pwd.text
 
                                 currentGateway.setGatewayCredentials(tf_gateway_pwd.text)
-                                currentGateway.actionPasswordSet()
+                                //currentGateway.actionPasswordSet()
 
                                 swipeview.currentIndex++
                             }
@@ -664,8 +666,8 @@ Item {
                                 //tf_wifi_pwd.text
 
                                 currentGateway.setWifiCredentials(tf_wifi_ssid.text, tf_wifi_pwd.text)
-                                currentGateway.setWifiCreds()
-                                currentGateway.setWifiConn()
+                                currentGateway.actionWifiSet()
+                                currentGateway.actionWifiConnect()
 
                                 swipeview.currentIndex++
                             }

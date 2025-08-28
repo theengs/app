@@ -140,7 +140,7 @@ public:
         DEVICE_OFFLINE              =  0, //!< Not connected
         DEVICE_AVAILABLE            =  1, //!< Available for connection
 
-        DEVICE_QUEUED               =  4, //!< In the update queue, not started
+        DEVICE_QUEUED               =  4, //!< In the update queue, not started // remove?
 
         DEVICE_DISCONNECTING        =  8, //!< Trying to disconnect the device
         DEVICE_CONNECTING           =  9, //!< Trying to connect the device
@@ -161,7 +161,7 @@ public:
         ACTION_CONNECT,
         ACTION_RECONNECT,
         ACTION_DISCONNECT,
-        ACTION_DISCONNECT_FORNOW,
+        ACTION_DISCONNECT_FORNOW,           //!< Disconnect for now, won't prevent reconnection
 
         ACTION_SCAN,                        //!< Scan for services and their characteristics
         ACTION_SCAN_WITH_VALUES,            //!< Scan for services and their characteristics (and associated values)
@@ -173,9 +173,9 @@ public:
 
         // Sensor specific actions
 
-        ACTION_UPDATE = 16,                    //!< Read sensor latest data
-        ACTION_UPDATE_REALTIME,           //!< Stay connected and read sensor data
-        ACTION_UPDATE_HISTORY,            //!< Sync sensor history
+        ACTION_UPDATE = 16,                 //!< Read sensor latest data
+        ACTION_UPDATE_REALTIME,             //!< Stay connected and read sensor data
+        ACTION_UPDATE_HISTORY,              //!< Sync sensor history
 
         ACTION_LED_BLINK,
         ACTION_CLEAR_HISTORY,
@@ -184,16 +184,23 @@ public:
 
         // App specific actions
 
-        ACTION_THEENGS = 128,             //!< Theengs actions
-        ACTION_THEENGS_ONBOARDING,
-        ACTION_THEENGS_WIFI_UPDATE,
+        ACTION_THEENGS = 128,               //!< Theengs actions
+        ACTION_THEENGS_ONBOARDING, // remove?
+        ACTION_THEENGS_WIFI_UPDATE, // remove?
 
-        ACTION_BLUFI = 200,               //!< Espressif BluFi actions
+        ACTION_BLUFI = 256,                 //!< Espressif BluFi actions
         ACTION_BLUFI_WIFI_GET_STATUS,
         ACTION_BLUFI_WIFI_GET_LIST,
         ACTION_BLUFI_WIFI_SET_CREDENTIALS,
         ACTION_BLUFI_WIFI_CONNECT,
         ACTION_BLUFI_WIFI_DISCONNECT,
+
+        ACTION_BLUFI_CUSTOM_GET_STATUS,
+        ACTION_BLUFI_CUSTOM_SET_PASSWORD,
+        ACTION_BLUFI_CUSTOM_SET_WIFI, // not implemented
+        ACTION_BLUFI_CUSTOM_SET_MQTT,
+        ACTION_BLUFI_CUSTOM_ERASE,
+        ACTION_BLUFI_CUSTOM_RESTART,
     };
     Q_ENUM(DeviceActions)
 };

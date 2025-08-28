@@ -391,7 +391,13 @@ public:
     Q_INVOKABLE bool hasSetting(const QString &key) const;
     Q_INVOKABLE QVariant getSetting(const QString &key) const;
     Q_INVOKABLE bool setSetting(const QString &key, QVariant value);
-
+/*
+    // BLE lifecycle
+    virtual void deviceConnect();
+    virtual void deviceReconnect();
+    virtual void deviceDisconnect();
+    virtual void deviceDisconnectForNow();
+*/
     // BLE advertisement
     virtual void parseAdvertisementData(const uint16_t adv_mode, const uint16_t adv_id, const QByteArray &data);
 

@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Layouts
 import QtQuick.Controls
 
 import ComponentLibrary
@@ -49,7 +50,7 @@ Popup {
 
             ////////
 
-            Text {
+            Text { // title
                 width: parent.width
 
                 text: (popupGatewayConfirm.mode === "erase") ?
@@ -62,17 +63,60 @@ Popup {
                 wrapMode: Text.WordWrap
             }
 
-            Text {
-                id: textErase
+            Column {
                 width: parent.width
+                spacing: Theme.componentMargin
 
-                text: (popupGatewayConfirm.mode === "erase") ?
-                          qsTr("erase erase erase erase erase erase erase erase erase ") :
-                          qsTr("reboot reboot reboot reboot reboot reboot reboot reboot ")
-                textFormat: Text.PlainText
-                font.pixelSize: Theme.fontSizeContent
-                color: Theme.colorSubText
-                wrapMode: Text.WordWrap
+                Text { // textErase1
+                    width: parent.width
+
+                    visible: (popupGatewayConfirm.mode === "erase")
+
+                    text: qsTr("erase erase erase erase erase erase erase erase erase")
+                    textFormat: Text.PlainText
+                    font.pixelSize: Theme.fontSizeContent
+                    color: Theme.colorSubText
+                    wrapMode: Text.WordWrap
+                }
+
+                RowLayout { // textErase2
+                    width: parent.width
+                    spacing: Theme.componentMargin
+
+                    visible: (popupGatewayConfirm.mode === "erase")
+
+                    IconSvg {
+                        Layout.preferredWidth: 20
+                        Layout.preferredHeight: 20
+                        Layout.alignment: Qt.AlignVCenter
+
+                        source: "qrc:/IconLibrary/material-symbols/warning.svg"
+                        color: Theme.colorWarning
+                    }
+                    Text {
+                        Layout.fillWidth: singleColumn
+                        Layout.alignment: Qt.AlignVCenter
+
+                        text: qsTr("This will <b>erase</b> every settings.")
+                        textFormat: Text.StyledText
+                        font.pixelSize: Theme.fontSizeContent
+                        color: Theme.colorSubText
+                        wrapMode: Text.WordWrap
+                        horizontalAlignment: singleColumn ? Text.AlignJustify : Text.AlignHCenter
+                    }
+                }
+
+                Text { // textReboot
+                    width: parent.width
+
+                    visible: (popupGatewayConfirm.mode === "reboot")
+
+                    text: qsTr("reboot reboot reboot reboot reboot reboot reboot reboot")
+                    textFormat: Text.PlainText
+                    font.pixelSize: Theme.fontSizeContent
+                    color: Theme.colorSubText
+                    wrapMode: Text.WordWrap
+                }
             }
 
             ////////

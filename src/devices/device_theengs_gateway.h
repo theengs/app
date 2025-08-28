@@ -36,12 +36,12 @@
 
 enum GatewayState {
     WAITING_ONBOARDING = 0,
-    ONBOARDING,
-    OFFLINE,
-    NTWK_CONNECTED,
-    BROKER_CONNECTED,
-    PROCESSING,
-    NTWK_DISCONNECTED,
+    ONBOARDING, // 1
+    OFFLINE, // 2
+    NTWK_CONNECTED, // 3
+    BROKER_CONNECTED, // 4
+    PROCESSING, // 5
+    NTWK_DISCONNECTED, // 6
     BROKER_DISCONNECTED,
     LOCAL_OTA_IN_PROGRESS,
     REMOTE_OTA_IN_PROGRESS,
@@ -310,12 +310,16 @@ private slots:
     void getVersion();
     void getWifiState();
     void getWifiList();
-
-    void setCustomData();
-
     void setWifiCredentials();
     void setWifiConnect();
     void setWifiDisconnect();
+
+    void setCustomData();
+    void setCustomData_getStatus();
+    void setCustomData_setPassword();
+    void setCustomData_setMqtt();
+    void setCustomData_restart();
+    void setCustomData_erase();
 
     bool checkWiFi_state(const uint8_t status);
     bool checkWiFi_list(const QByteArray &data);
@@ -333,7 +337,7 @@ public:
     DeviceGateway(const QBluetoothDeviceInfo &info, QObject *parent = nullptr);
     ~DeviceGateway();
 
-    static QString bleMac_from_wifiMac(const QString &wifi_mac); // remove ?
+    static QString bleMac_from_wifiMac(const QString &wifi_mac); // remove?
 
     void parseAdvertisementData(const uint16_t adv_mode, const uint16_t adv_id, const QByteArray &value);
 
@@ -345,28 +349,27 @@ public:
                                         const QString &user, const QString &password,
                                         const QString &topicA, const QString &topicB);
 
-    Q_INVOKABLE void startOnboarding();
-    Q_INVOKABLE void retrySequence();
+    Q_INVOKABLE void startOnboarding(); // remove?
+    Q_INVOKABLE void retrySequence(); // remove?
+    Q_INVOKABLE void createGateway(); // remove?
 
-    Q_INVOKABLE void getWifiNetworks(); // 5s delay
-    Q_INVOKABLE void setWifiCreds();
-    Q_INVOKABLE void setWifiDisc();
-    Q_INVOKABLE void setWifiConn();
-
+    //Q_INVOKABLE void startPasswordUpdate();
     Q_INVOKABLE void startWifiUpdate();
     //Q_INVOKABLE void startMqttUpdate();
     //Q_INVOKABLE void startSettingsUpdate();
 
-    Q_INVOKABLE void createGateway();
+    Q_INVOKABLE void actionPasswordSet();
 
     Q_INVOKABLE void actionWifiScan();
     Q_INVOKABLE void actionWifiSet();
-    Q_INVOKABLE void actionWifiConn();
+    Q_INVOKABLE void actionWifiConnect();
+    Q_INVOKABLE void actionWifiDisconnect();
+
     Q_INVOKABLE void actionMqttSet();
-    Q_INVOKABLE void actionPasswordSet();
-    Q_INVOKABLE void actionRestart();
-    Q_INVOKABLE void actionErase();
+
     Q_INVOKABLE void actionStatus();
+    Q_INVOKABLE void actionErase();
+    Q_INVOKABLE void actionRestart();
 };
 
 /* ************************************************************************** */

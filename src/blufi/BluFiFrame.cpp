@@ -325,7 +325,7 @@ void BluFiFrame::printParsedData()
             QString ssid = m_data.mid(pos, length-1);
             pos += length-1;
 
-            qDebug() << " > WIFI (sz" << length << ") SSID" << ssid << "/ RSSI" << rssi;
+            qDebug() << " > WIFI / data sz" << length << "/ SSID" << ssid << "/ RSSI" << rssi;
         }
     }
 
