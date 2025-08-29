@@ -51,6 +51,9 @@ print(str(softwares))
 ## DEPENDENCIES ################################################################
 # These software dependencies are needed for this script to run!
 
+## Qt module(s)
+# qtwebsocket
+
 ## linux:
 # python3 cmake ninja libtool automake m4
 

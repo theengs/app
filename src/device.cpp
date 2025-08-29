@@ -223,10 +223,10 @@ void Device::deviceConnect()
 
 void Device::deviceDisconnect()
 {
-    qDebug() << "Device::deviceDisconnect()" << getAddress() << getName();
-
     if (m_bleController && m_bleController->state() != QLowEnergyController::UnconnectedState)
     {
+        qDebug() << "Device::deviceDisconnect()" << getAddress() << getName();
+
         if (m_ble_status >= DeviceUtils::DEVICE_CONNECTED)
         {
             m_ble_status = DeviceUtils::DEVICE_DISCONNECTING;

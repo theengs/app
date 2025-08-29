@@ -179,9 +179,8 @@ Item {
                 height: hugeMode ? 32 : 24
                 anchors.verticalCenter: parent.verticalCenter
 
-                source: boxDevice.onboarded ?
-                            "qrc:/IconLibrary/material-symbols/build_circle-fill.svg" :
-                            "qrc:/IconLibrary/material-symbols/build_circle.svg"
+                source: boxDevice.onboarded ? "qrc:/IconLibrary/material-symbols/build_circle-fill.svg"
+                                            : "qrc:/IconLibrary/material-symbols/build_circle.svg"
                 color: boxDevice.onboarded ? Theme.colorGreen : Theme.colorHighContrast
                 visible: (wideMode || hugeMode)
                 fillMode: Image.PreserveAspectFit
@@ -234,69 +233,14 @@ Item {
                 }
 
                 Row {
-                    id: row
-                    height: hugeMode ? 26 : 22
                     anchors.left: parent.left
+                    height: 32
                     spacing: 8
 
-                    Text {
-                        id: textStatus
-                        anchors.verticalCenter: parent.verticalCenter
+                    //visible: boxDevice.available
 
-                        textFormat: Text.PlainText
-                        color: Theme.colorGreen
-                        font.pixelSize: hugeMode ? 16 : 15
-
-                        SequentialAnimation on opacity {
-                            id: opa
-                            loops: Animation.Infinite
-                            alwaysRunToEnd: true
-                            running: (visible &&
-                                      boxDevice.status !== DeviceUtils.DEVICE_OFFLINE &&
-                                      boxDevice.status !== DeviceUtils.DEVICE_QUEUED &&
-                                      boxDevice.status !== DeviceUtils.DEVICE_CONNECTED)
-
-                            PropertyAnimation { to: 0.33; duration: 750; }
-                            PropertyAnimation { to: 1; duration: 750; }
-                        }
-                    }
-/*
-                    Rectangle {
-                        id: barbg
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        width: 128
-                        height: 16
-                        radius: 3
-                        color: Theme.colorSeparator
-
-                        Rectangle {
-                            anchors.top: parent.top
-                            anchors.left: parent.left
-                            anchors.bottom: parent.bottom
-                            width: parent.width * Math.abs(boxDevice.rssi / 100)
-                            radius: 3
-                            color: {
-                                if (Math.abs(boxDevice.rssi) < 65) return Theme.colorGreen
-                                if (Math.abs(boxDevice.rssi) < 85) return Theme.colorOrange
-                                if (Math.abs(boxDevice.rssi) < 100) return Theme.colorRed
-                                return Theme.colorRed
-                            }
-
-                            Text {
-                                anchors.left: parent.left
-                                anchors.leftMargin: 4
-                                anchors.verticalCenter: parent.verticalCenter
-
-                                text: qsTr("-%1 dB").arg(Math.abs(boxDevice.rssi))
-                                textFormat: Text.PlainText
-                                font.pixelSize: Theme.fontSizeContentVerySmall
-                                color: "white"
-                            }
-                        }
-                    }
-*/
                     ProgressChip {
+                        anchors.verticalCenter: parent.verticalCenter
                         height: 28
                         progress: (100 - Math.abs(boxDevice.rssiMean))
                         color: {
@@ -311,6 +255,7 @@ Item {
                     }
 
                     ButtonChip {
+                        anchors.verticalCenter: parent.verticalCenter
                         height: 28
                         text: qsTr("wifi")
 
@@ -325,6 +270,7 @@ Item {
                     }
 
                     ButtonChip {
+                        anchors.verticalCenter: parent.verticalCenter
                         height: 28
                         text: qsTr("broker")
 
@@ -379,7 +325,7 @@ Item {
                 width: 32
                 height: 32
 
-                visible: listMode
+                visible: listMode && boxDevice.available
                 color: boxDevice.hasData ? Theme.colorHighContrast : Theme.colorSubText
                 source: "qrc:/IconLibrary/material-symbols/chevron_right.svg"
             }

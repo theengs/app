@@ -33,7 +33,6 @@ Loader {
         // load screen
         deviceGateway.active = true
         deviceGateway.item.loadDevice()
-        appContent.state = "GatewayDevice"
     }
 
     function backAction() {
@@ -59,6 +58,11 @@ Loader {
 
             appContent.state = "GatewayDevice"
             deviceGateway.state = ""
+
+            // start onboarding?
+            if (!currentGateway.onboarded) {
+                gatewayOnboarding.loadSubScreen()
+            }
         }
 
         function backAction() {
@@ -99,15 +103,7 @@ Loader {
         ////////
 
         PopupGatewayConfirm {
-            id: gatewayConfirmErase
-
-            onConfirmed: {
-                //
-            }
-        }
-
-        PopupGatewayConfirm {
-            id: gatewayConfirmReboot
+            id: gatewayActionConfirm
 
             onConfirmed: {
                 //
@@ -120,7 +116,7 @@ Loader {
             anchors.fill: parent
 
             contentWidth: -1
-            contentHeight: singleColumn ? (contentColumn1.height + contentColumn2.height)
+            contentHeight: singleColumn ? (contentColumn1.height + contentColumn2.height + Theme.componentMargin*3)
                                         : Math.max(contentColumn1.height, contentColumn2.height)
 
             boundsBehavior: isDesktop ? Flickable.OvershootBounds : Flickable.DragAndOvershootBounds
@@ -130,6 +126,7 @@ Loader {
 
             Grid {
                 id: contentGrid
+
                 anchors.left: parent.left
                 anchors.leftMargin: Theme.componentMargin
                 anchors.right: parent.right
@@ -154,15 +151,20 @@ Loader {
                     bottomPadding: 0
                     spacing: Theme.componentMargin
 
+                    ////////
+
                     Image {
                         anchors.left: parent.left
                         anchors.leftMargin: Theme.componentMargin * 2 // * -1
                         anchors.right: parent.right
                         anchors.rightMargin: Theme.componentMargin * 2 // * -1
-                        height: width
 
+                        //height: Math.min(width, contentColumn1.height*.066)
+                        fillMode: Image.PreserveAspectFit
                         source: "qrc:/assets/gfx/bridge.png" // "qrc:/assets/gfx/plug.png"
                     }
+
+                    ////////
 
                     Row {
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -234,6 +236,8 @@ Loader {
                         }
                     }
 
+                    ////////
+
                     RowLayout { // DEBUG
                         anchors.left: parent.left
                         anchors.right: parent.right
@@ -291,17 +295,6 @@ Loader {
                             }
                         }
                     }
-                }
-
-                ////////////////
-
-                Column {
-                    id: contentColumn2
-                    width: contentGrid.www
-
-                    topPadding: 0
-                    bottomPadding: 0
-                    spacing: Theme.componentMargin
 
                     ////////
 
@@ -318,6 +311,19 @@ Loader {
                             gatewayOnboarding.loadSubScreen()
                         }
                     }
+
+                    ////////
+                }
+
+                ////////////////
+
+                Column {
+                    id: contentColumn2
+                    width: contentGrid.www
+
+                    topPadding: 0
+                    bottomPadding: 0
+                    spacing: Theme.componentMargin
 
                     ////////
 
@@ -368,8 +374,8 @@ Loader {
                             text: qsTr("Erase settings")
 
                             onClicked: {
-                                gatewayConfirmReboot.mode = "erase"
-                                gatewayConfirmErase.open()
+                                gatewayActionConfirm.mode = "erase"
+                                gatewayActionConfirm.open()
                             }
                         }
 
@@ -378,8 +384,8 @@ Loader {
                             text: qsTr("Reboot")
 
                             onClicked: {
-                                gatewayConfirmReboot.mode = "reboot"
-                                gatewayConfirmReboot.open()
+                                gatewayActionConfirm.mode = "reboot"
+                                gatewayActionConfirm.open()
                             }
                         }
 

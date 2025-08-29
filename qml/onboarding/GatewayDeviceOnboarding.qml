@@ -14,8 +14,6 @@ Item {
     function loadSubScreen() {
         console.log("deviceGateway // loadSubScreen(onboarding) >> " + currentGateway)
 
-        //currentGateway.actionWifiScan()
-
         deviceGateway.state = "onboarding"
         reset()
     }
@@ -89,15 +87,55 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 32
 
-                Text {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    horizontalAlignment: Text.AlignHCenter
+                Row {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    spacing: Theme.componentMargin/2
 
-                    text: qsTr("Your gateway is plugged.")
-                    wrapMode: Text.WordWrap
-                    color: Theme.colorSubText
-                    font.pixelSize: Theme.fontSizeContentBig
+                    IconSvg {
+                        //anchors.verticalCenter: parent.verticalCenter
+                        width: 24
+                        height: 24
+                        visible: currentGateway.connected
+                        source: "qrc:/IconLibrary/material-symbols/check_circle-fill.svg"
+                        color: Theme.colorSuccess
+                    }
+
+                    Text {
+                        text: currentGateway.connected ? qsTr("Your gateway is connected!")
+                                                       : qsTr("Your gateway is plugged.")
+                        textFormat: Text.StyledText
+                        font.pixelSize: Theme.fontSizeContentBig
+                        color: Theme.colorSubText
+                        wrapMode: Text.WordWrap
+                        horizontalAlignment: Text.AlignHCenter
+                        width: Math.min(implicitWidth, parent.parent.width - 24 - parent.spacing)
+                    }
+                }
+
+                Row {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    spacing: Theme.componentMargin/2
+
+                    IconSvg {
+                        //anchors.verticalCenter: parent.verticalCenter
+                        width: 24
+                        height: 24
+                        visible: (utilsWifi.currentSSID.length !== 0)
+                        source: "qrc:/IconLibrary/material-symbols/check_circle-fill.svg"
+                        color: Theme.colorSuccess
+                    }
+
+                    Text {
+                        text: (utilsWifi.currentSSID.length !== 0)
+                              ? qsTr("Your smartphone is connected to a WiFi network.")
+                              : qsTr("You can connect your smartphone to a 2.4 GHz WiFi network.")
+                        textFormat: Text.StyledText
+                        font.pixelSize: Theme.fontSizeContentBig
+                        color: Theme.colorSubText
+                        wrapMode: Text.WordWrap
+                        horizontalAlignment: Text.AlignHCenter
+                        width: Math.min(implicitWidth, parent.parent.width - 24 - parent.spacing)
+                    }
                 }
 
                 Text {
@@ -105,18 +143,7 @@ Item {
                     anchors.right: parent.right
                     horizontalAlignment: Text.AlignHCenter
 
-                    text: qsTr("Connect your smartphone to a 2.4 GHz WiFi network.")
-                    wrapMode: Text.WordWrap
-                    color: Theme.colorSubText
-                    font.pixelSize: Theme.fontSizeContentBig
-                }
-
-                Text {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    horizontalAlignment: Text.AlignHCenter
-
-                    text: qsTr("Look for a steady orange light.")+ "<br>" +
+                    text: qsTr("Look for a steady orange light.") + "<br>" +
                           qsTr("If absent, hold the gateway button for 20 seconds.")
                     wrapMode: Text.WordWrap
                     color: Theme.colorSubText
