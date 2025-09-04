@@ -160,137 +160,123 @@ Item {
 
         ////////////////////////////////////////////////////////////////////////
 
-        Item {
+        Item { // gateway setup
             id: page2
 
-            // gateway name & password
+            Flickable {
+                anchors.fill: parent
 
-            Column {
-                anchors.left: parent.left
-                anchors.leftMargin: 24
-                anchors.right: parent.right
-                anchors.rightMargin: 24
+                contentWidth: parent.width
+                contentHeight: columnGateway.height
 
-                topPadding: 16
-                bottomPadding: page2_bottom.height + 64
-                spacing: 24
+                boundsBehavior: isDesktop ? Flickable.OvershootBounds : Flickable.DragAndOvershootBounds
+                ScrollBar.vertical: ScrollBar { visible: false }
 
                 ////
 
                 Column {
-                    id: gateway
+                    id: columnGateway
                     anchors.left: parent.left
+                    anchors.leftMargin: 24
                     anchors.right: parent.right
-                    spacing: 8
+                    anchors.rightMargin: 24
 
-                    function resetGateway() {
-                        tf_gateway_name.clear()
-                        tf_gateway_pwd.clear()
-                    }
+                    topPadding: 24
+                    bottomPadding: page2_bottom.height + 64
+                    spacing: 16
 
-                    Text {
+                    ////
+
+                    Column {
+                        id: gateway
                         anchors.left: parent.left
                         anchors.right: parent.right
-                        height: Theme.componentHeight
+                        spacing: 16
 
-                        text: qsTr("Gateway:")
-                        textFormat: Text.PlainText
-                        wrapMode: Text.WordWrap
-                        color: Theme.colorSubText
-                        font.pixelSize: Theme.fontSizeContentBig
-                        verticalAlignment: Text.AlignBottom
-                    }
-
-                    Text {
-                        width: swipeview.contentSz
-                        horizontalAlignment: Text.AlignHCenter
-
-                        text: "Demo text Demo text Demo text Demo text Demo text Demo text Demo text Demo text Demo text ."
-                        wrapMode: Text.WordWrap
-                        color: Theme.colorSubText
-                        font.pixelSize: Theme.fontSizeContentBig
-                    }
-
-                    TextFieldThemed {
-                        id: tf_gateway_name
-                        width: swipeview.contentSz
-                        height: 36
-
-                        selectByMouse: true
-                        maximumLength: 64
-
-                        placeholderText: qsTr("Name")
-
-                        onEditingFinished: {
-                            //
+                        function resetGateway() {
+                            tf_gateway_name.clear()
+                            tf_gateway_name.text = "OMG_ESP32_BLE"
+                            tf_gateway_pwd.clear()
                         }
 
-                        IconSvg {
-                            width: 20; height: 20;
-                            anchors.right: parent.right
-                            anchors.rightMargin: 12
-                            anchors.verticalCenter: parent.verticalCenter
+                        Text {
+                            width: swipeview.contentSz
 
+                            text: qsTr("You can choose a name to this gateway. It will be used to identify it.")
+                            textFormat: Text.PlainText
+                            wrapMode: Text.WordWrap
+                            horizontalAlignment: Text.AlignJustify
                             color: Theme.colorSubText
-                            source: "qrc:/IconLibrary/material-icons/duotone/manage_accounts.svg"
-                        }
-                    }
-
-                    TextFieldThemed {
-                        id: tf_gateway_pwd
-                        width: swipeview.contentSz
-                        height: 36
-
-                        selectByMouse: true
-                        echoMode: TextInput.Password
-                        maximumLength: 64
-
-                        placeholderText: qsTr("Password")
-
-                        onEditingFinished: {
-                            //
+                            font.pixelSize: Theme.fontSizeContentBig
                         }
 
-                        IconSvg {
-                            width: 20; height: 20;
-                            anchors.right: parent.right
-                            anchors.rightMargin: 12
-                            anchors.verticalCenter: parent.verticalCenter
+                        TextFieldThemed {
+                            id: tf_gateway_name
+                            width: swipeview.contentSz
+                            height: 36
 
+                            selectByMouse: true
+                            maximumLength: 64
+
+                            placeholderText: qsTr("Name")
+
+                            onEditingFinished: {
+                                //
+                            }
+
+                            IconSvg {
+                                width: 20; height: 20;
+                                anchors.right: parent.right
+                                anchors.rightMargin: 12
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                color: Theme.colorSubText
+                                source: "qrc:/IconLibrary/material-icons/duotone/manage_accounts.svg"
+                            }
+                        }
+
+                        Text {
+                            width: swipeview.contentSz
+
+                            text: qsTr("You must create a password before this gateway can be accessed and setup.")
+                            textFormat: Text.PlainText
+                            wrapMode: Text.WordWrap
+                            horizontalAlignment: Text.AlignJustify
                             color: Theme.colorSubText
-                            source: "qrc:/IconLibrary/material-symbols/password.svg"
+                            font.pixelSize: Theme.fontSizeContentBig
+                        }
+
+                        TextFieldThemed {
+                            id: tf_gateway_pwd
+                            width: swipeview.contentSz
+                            height: 36
+
+                            selectByMouse: true
+                            echoMode: TextInput.Password
+                            maximumLength: 64
+
+                            placeholderText: qsTr("Password")
+
+                            onEditingFinished: {
+                                //
+                            }
+
+                            IconSvg {
+                                width: 20; height: 20;
+                                anchors.right: parent.right
+                                anchors.rightMargin: 12
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                color: Theme.colorSubText
+                                source: "qrc:/IconLibrary/material-symbols/password.svg"
+                            }
                         }
                     }
                 }
 
                 ////
             }
-/*
-            Flow {
-                anchors.left: parent.left
-                anchors.leftMargin: 24
-                anchors.right: parent.right
-                anchors.rightMargin: 24
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: 24
 
-                spacing: Theme.componentMargin
-
-                property int btnCount: 1
-                property int btnSize: singleColumn ? width : ((width-spacing*btnCount) / (btnCount+1))
-
-                ButtonSolid {
-                    width: parent.btnSize
-
-                    text: qsTr("Save settings")
-                    color: Theme.colorOrange
-
-                    onClicked: {
-                        swipeview.currentIndex++
-                    }
-                }
-            }
-*/
             ////////
 
             Rectangle {
@@ -354,8 +340,12 @@ Item {
                                 //tf_gateway_name.text
                                 //tf_gateway_pwd.text
 
-                                currentGateway.setGatewayCredentials(tf_gateway_pwd.text)
-                                //currentGateway.actionPasswordSet()
+                                if (currentGateway && currentGateway.connected) {
+                                    if (tf_gateway_name.text && tf_gateway_pwd.text) {
+                                        currentGateway.setGatewayCredentials(tf_gateway_pwd.text)
+                                        currentGateway.actionPasswordSet()
+                                    }
+                                }
 
                                 swipeview.currentIndex++
                             }
@@ -369,7 +359,7 @@ Item {
 
         ////////////////////////////////////////////////////////////////////////
 
-        Item {
+        Item { // wifi setup
             id: page3
 
             Flickable {
@@ -514,7 +504,7 @@ Item {
 
                             onClicked: {
                                 if (deviceManager.bluetooth && currentGateway)
-                                    currentGateway.getWifiNetworks()
+                                    currentGateway.actionWifiScan()
                             }
                         }
                     }
@@ -548,6 +538,10 @@ Item {
                             placeholderText: qsTr("SSID")
                             maximumLength: 32
 
+                            onTextChanged: {
+                                tf_wifi_open = false
+                            }
+
                             onEditingFinished: {
                                 //
                             }
@@ -562,6 +556,8 @@ Item {
                                 source: "qrc:/IconLibrary/material-symbols/wifi.svg"
                             }
                         }
+
+                        property bool tf_wifi_open: false
 
                         TextFieldThemed {
                             id: tf_wifi_pwd
@@ -691,10 +687,15 @@ Item {
                             onClicked: {
                                 //tf_wifi_ssid.text
                                 //tf_wifi_pwd.text
+                                //tf_wifi_open
 
-                                currentGateway.setWifiCredentials(tf_wifi_ssid.text, tf_wifi_pwd.text)
-                                currentGateway.actionWifiSet()
-                                currentGateway.actionWifiConnect()
+                                if (currentGateway && currentGateway.connected) {
+                                    if (tf_wifi_ssid.text) {
+                                        currentGateway.setWifiCredentials(tf_wifi_ssid.text, tf_wifi_pwd.text)
+                                        currentGateway.actionWifiSet()
+                                        currentGateway.actionWifiConnect()
+                                    }
+                                }
 
                                 swipeview.currentIndex++
                             }

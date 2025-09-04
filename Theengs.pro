@@ -43,7 +43,10 @@ INCLUDEPATH     += $${PWD}/thirdparty/TheengsDecoder/src/
 INCLUDEPATH     += $${PWD}/thirdparty/TheengsDecoder/src/arduino_json/src/
 
 # Uncomment to enable virtual devices # AND REBUILD
-#DEFINES += DEBUG_FAKE_DEVICES
+DEFINES += DEBUG_FAKE_DEVICES
+
+# Uncomment to force mobile UI on desktop # AND REBUILD
+#DEFINES += FORCE_MOBILE_UI
 
 # Project files ################################################################
 

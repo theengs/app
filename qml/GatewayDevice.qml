@@ -85,17 +85,22 @@ Loader {
 
         ////////////////////////////////////////////////////////////////////////
 
-        GatewayDeviceOnboarding {
+        GatewayAuthentication {
+            id: gatewayAuthentication
+            visible: (deviceGateway.state === "authentication")
+        }
+
+        GatewayOnboarding {
             id: gatewayOnboarding
             visible: (deviceGateway.state === "onboarding")
         }
 
-        GatewayDeviceWifi {
+        GatewayWiFi {
             id: gatewayWifi
             visible: (deviceGateway.state === "wifi")
         }
 
-        GatewayDeviceMqtt {
+        GatewayMqtt {
             id: gatewayMqtt
             visible: (deviceGateway.state === "mqtt")
         }
@@ -161,7 +166,7 @@ Loader {
 
                         //height: Math.min(width, contentColumn1.height*.066)
                         fillMode: Image.PreserveAspectFit
-                        source: "qrc:/assets/gfx/bridge.png" // "qrc:/assets/gfx/plug.png"
+                        source: "qrc:/assets/gfx/devices/generic.png"
                     }
 
                     ////////

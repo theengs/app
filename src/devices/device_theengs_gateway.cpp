@@ -233,11 +233,6 @@ void DeviceGateway::deviceConnected()
 {
     qDebug() << "DeviceGateway::deviceConnected(" << m_deviceAddress << ")";
     Device::deviceConnected();
-
-    //if (onboarding)
-    {
-        actionWifiScan();
-    }
 }
 
 /* ************************************************************************** */
@@ -246,25 +241,6 @@ void DeviceGateway::deviceDisconnected()
 {
     qDebug() << "DeviceGateway::deviceDisconnected(" << m_deviceAddress << ")";
     Device::deviceDisconnected();
-
-    if (m_ble_action == DeviceUtils::ACTION_THEENGS_ONBOARDING ||
-        m_ble_action == DeviceUtils::ACTION_THEENGS_WIFI_UPDATE)
-    {
-        if (!isSequenceFarEnough())
-        {
-            if (m_setupSession.ble_errored && m_setupSession.retry < 3)
-            {
-                // we'll retry after a second
-                QTimer::singleShot(1000, this, SLOT(retrySequence_internal()));
-            }
-            else
-            {
-                // we mark the sequence as errored
-                m_setupSession.sequence_status = -1;
-                Q_EMIT sequenceUpdated();
-            }
-        }
-    }
 }
 
 /* ************************************************************************** */
@@ -273,7 +249,7 @@ void DeviceGateway::deviceErrored(QLowEnergyController::Error error)
 {
     qDebug() << "DeviceGateway::deviceErrored(" << error << ")";
     Device::deviceErrored(error);
-
+/*
     if (m_ble_action == DeviceUtils::ACTION_THEENGS_ONBOARDING ||
         m_ble_action == DeviceUtils::ACTION_THEENGS_WIFI_UPDATE)
     {
@@ -287,7 +263,7 @@ void DeviceGateway::deviceErrored(QLowEnergyController::Error error)
         else
         {
             // we are NOT connected, we'll retry after a second (if we haven't alread)
-            if (m_setupSession.retry < 3)
+            if (m_setupSession.sequence_retry < 3)
             {
                 QTimer::singleShot(1000, this, SLOT(retrySequence_internal()));
             }
@@ -299,6 +275,7 @@ void DeviceGateway::deviceErrored(QLowEnergyController::Error error)
             }
         }
     }
+*/
 }
 
 /* ************************************************************************** */
@@ -371,99 +348,127 @@ void DeviceGateway::serviceDetailsDiscovered_blufi(QLowEnergyService::ServiceSta
             if (!m_charWrite.isValid()) { qWarning() << "m_charWrite invalid"; }
             if (!m_notificationDesc.isValid()) { qWarning() << "m_notificationDesc invalid"; }
 
-            /// Connected and ready ///
+            // Connected and ready?
 
-            if (m_ble_action >= DeviceUtils::ACTION_THEENGS)
+            areWeReadyYet();
+        }
+    }
+}
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+
+bool DeviceGateway::areWeReadyYet()
+{
+    /// Check services ///
+    if (m_serviceBluFi && m_serviceBluFi->state() == QLowEnergyService::RemoteServiceDiscovered) {
+        qDebug() << "m_serviceBluFi READY";
+    } else {
+        return false;
+    }
+
+    /// Check some values ///
+
+    //
+
+    /// Connected and ready ///
+
+    //
+
+    return true;
+}
+
+void DeviceGateway::deviceReady()
+{
+    if (m_ble_action >= DeviceUtils::ACTION_THEENGS)
+    {
+        // simple sequences
+        if (m_ble_action > DeviceUtils::ACTION_BLUFI)
+        {
+            // start/reset BluFi sequence
+            m_setupSession.blufi_seq_nb = 0;
+
+            startHandshake();
+            setSeqMode();
+
+            if (m_ble_action == DeviceUtils::ACTION_BLUFI_WIFI_GET_STATUS) getWifiState();
+            if (m_ble_action == DeviceUtils::ACTION_BLUFI_WIFI_GET_LIST) getWifiList();
+            if (m_ble_action == DeviceUtils::ACTION_BLUFI_WIFI_SET_CREDENTIALS) setWifiCredentials();
+            if (m_ble_action == DeviceUtils::ACTION_BLUFI_WIFI_CONNECT) setWifiConnect();
+            if (m_ble_action == DeviceUtils::ACTION_BLUFI_WIFI_DISCONNECT) setWifiDisconnect();
+
+            return;
+        }
+
+        // complex sequences
+        if (m_ble_action > DeviceUtils::ACTION_THEENGS)
+        {
+            m_setupSession.blufi_seq_nb = 0;
+            m_setupSession.ble_connected = true;
+            m_setupSession.sequence_status = 1;
+            Q_EMIT sequenceUpdated();
+
+            startHandshake();
+            setSeqMode();
+
+            if (m_ble_action == DeviceUtils::ACTION_THEENGS_ONBOARDING)
             {
-                // simple sequences
-                if (m_ble_action > DeviceUtils::ACTION_BLUFI)
+                if (!m_setupSession.mqtt_settings_sent)
                 {
-                    // start/reset BluFi sequence
-                    m_setupSession.blufi_seq_nb = 0;
-
-                    startHandshake();
-                    setSeqMode();
-
-                    if (m_ble_action == DeviceUtils::ACTION_BLUFI_WIFI_GET_STATUS) getWifiState();
-                    if (m_ble_action == DeviceUtils::ACTION_BLUFI_WIFI_GET_LIST) getWifiList();
-                    if (m_ble_action == DeviceUtils::ACTION_BLUFI_WIFI_SET_CREDENTIALS) setWifiCredentials();
-                    if (m_ble_action == DeviceUtils::ACTION_BLUFI_WIFI_CONNECT) setWifiConnect();
-                    if (m_ble_action == DeviceUtils::ACTION_BLUFI_WIFI_DISCONNECT) setWifiDisconnect();
-
-                    return;
+                    setCustomData();
+                    m_setupSession.mqtt_settings_sent = true;
+                    Q_EMIT sequenceUpdated();
                 }
 
-                // complex sequences
-                if (m_ble_action > DeviceUtils::ACTION_THEENGS)
+                if (!m_setupSession.wifi_settings_sent)
                 {
-                    m_setupSession.blufi_seq_nb = 0;
-                    m_setupSession.ble_connected = true;
-                    m_setupSession.sequence_status = 1;
+                    setWifiCredentials();
+                    m_setupSession.wifi_settings_sent = true;
                     Q_EMIT sequenceUpdated();
 
-                    startHandshake();
-                    setSeqMode();
+                    setWifiConnect();
+                    QTimer::singleShot(1000, this, SLOT(getWifiState()));
+                }
+                else if (m_setupSession.wifi_settings_sent &&
+                         !m_setupSession.wifi_connected)
+                {
+                    getWifiState();
+                }
 
-                    if (m_ble_action == DeviceUtils::ACTION_THEENGS_ONBOARDING)
-                    {
-                        if (!m_setupSession.mqtt_settings_sent)
-                        {
-                            setCustomData();
-                            m_setupSession.mqtt_settings_sent = true;
-                            Q_EMIT sequenceUpdated();
-                        }
-
-                        if (!m_setupSession.wifi_settings_sent)
-                        {
-                            setWifiCredentials();
-                            m_setupSession.wifi_settings_sent = true;
-                            Q_EMIT sequenceUpdated();
-
-                            setWifiConnect();
-                            QTimer::singleShot(1000, this, SLOT(getWifiState()));
-                        }
-                        else if (m_setupSession.wifi_settings_sent &&
-                                 !m_setupSession.wifi_connected)
-                        {
-                            getWifiState();
-                        }
-
-                        if (m_setupSession.wifi_connected)
-                        {
-                            createGateway();
-                        }
-                    }
-
-                    if (m_ble_action == DeviceUtils::ACTION_THEENGS_WIFI_UPDATE)
-                    {
-                        if (m_setupSession.mqtt_settings_sent
-                            && m_setupSession.wifi_settings_sent
-                            && !m_setupSession.wifi_connected)
-                        {
-                            getWifiState();
-                        }
-
-                        if (!m_setupSession.mqtt_settings_sent)
-                        {
-                            setCustomData();
-                            m_setupSession.mqtt_settings_sent = true;
-                            Q_EMIT sequenceUpdated();
-                        }
-
-                        if (!m_setupSession.wifi_settings_sent)
-                        {
-                            setWifiCredentials();
-                            m_setupSession.wifi_settings_sent = true;
-                            Q_EMIT sequenceUpdated();
-
-                            setWifiConnect();
-                            QTimer::singleShot(1000, this, SLOT(getWifiState()));
-                        }
-                    }
-
-                    return;
+                if (m_setupSession.wifi_connected)
+                {
+                    createGateway();
                 }
             }
+
+            if (m_ble_action == DeviceUtils::ACTION_THEENGS_WIFI_UPDATE)
+            {
+                if (m_setupSession.mqtt_settings_sent
+                    && m_setupSession.wifi_settings_sent
+                    && !m_setupSession.wifi_connected)
+                {
+                    getWifiState();
+                }
+
+                if (!m_setupSession.mqtt_settings_sent)
+                {
+                    setCustomData();
+                    m_setupSession.mqtt_settings_sent = true;
+                    Q_EMIT sequenceUpdated();
+                }
+
+                if (!m_setupSession.wifi_settings_sent)
+                {
+                    setWifiCredentials();
+                    m_setupSession.wifi_settings_sent = true;
+                    Q_EMIT sequenceUpdated();
+
+                    setWifiConnect();
+                    QTimer::singleShot(1000, this, SLOT(getWifiState()));
+                }
+            }
+
+            return;
         }
     }
 }
@@ -1227,6 +1232,8 @@ void DeviceGateway::actionPasswordSet()
         qWarning() << "DeviceStodeus::actionPasswordSet() BLE status: " << m_ble_status;
     }
 }
+
+/* ************************************************************************** */
 
 void DeviceGateway::actionWifiScan()
 {

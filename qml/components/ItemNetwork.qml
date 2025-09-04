@@ -33,7 +33,7 @@ T.Button {
 
     background: Rectangle {
         implicitWidth: 512
-        implicitHeight: Theme.componentHeight
+        implicitHeight: 36
 
         color: network.selected ? network.colorHighlight : "transparent"
 

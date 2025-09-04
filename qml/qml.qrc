@@ -27,9 +27,10 @@
         <file>TemperaturePresetList.qml</file>
         <file>TemperaturePreset.qml</file>
 
-        <file alias="GatewayDeviceOnboarding.qml">onboarding/GatewayDeviceOnboarding.qml</file>
-        <file alias="GatewayDeviceWifi.qml">onboarding/GatewayDeviceWifi.qml</file>
-        <file alias="GatewayDeviceMqtt.qml">onboarding/GatewayDeviceMqtt.qml</file>
+        <file alias="GatewayAuthentication.qml">onboarding/GatewayAuthentication.qml</file>
+        <file alias="GatewayOnboarding.qml">onboarding/GatewayOnboarding.qml</file>
+        <file alias="GatewayWiFi.qml">onboarding/GatewayWiFi.qml</file>
+        <file alias="GatewayMqtt.qml">onboarding/GatewayMqtt.qml</file>
 
         <file alias="AirQualityIndicator.qml">charts/AirQualityIndicator.qml</file>
         <file alias="ChartEnvironmentalVoc.qml">charts/ChartEnvironmentalVoc.qml</file>

@@ -5,7 +5,7 @@ import QtQuick.Window
 import ComponentLibrary
 import MobileUI
 
-ApplicationWindow {
+Window {
     id: appWindow
     minimumWidth: 480
     minimumHeight: 960
@@ -837,7 +837,7 @@ ApplicationWindow {
     BannerButton {
         id: gatewayNotification
 
-        visible: (appContent.state !== "GatewayList")
+        visible: (appContent.state !== "GatewayList" && appContent.state !== "GatewayDevice")
         opacity: gatewayTimer.running ? 1 : 0
         Behavior on opacity { OpacityAnimator { duration: 233 } }
 

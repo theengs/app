@@ -10,6 +10,8 @@
         <file>logos/NodeRED.svg</file>
         <file>logos/Jeedom.svg</file>
 
+        <file>gfx/devices/generic.png</file>
+
         <file>menus/menu_back.svg</file>
         <file>menus/menu_close.svg</file>
 

@@ -53,8 +53,6 @@
 #include "private/qandroidextras_p.h" // for QAndroidService
 #endif
 
-//#define FORCE_MOBILE_UI
-
 /* ************************************************************************** */
 
 int main(int argc, char *argv[])

@@ -132,38 +132,46 @@ public:
 
     static const int s_timout_duration = 20000;
 
+    int sequence_status = 0; // -2: timeout  -1: errored // 0: disconnected // 1: running // 2: finished
+    int sequence_retry = 0;
+
+    int ble_status = 0; // -1: errored // 0: disconnected // 1: connecting // 2: connected
+    int mqtt_status = 0; // -1: errored // 0: disconnected // 1: connecting // 2: connected
+    int wifi_status = 0; // -1: errored // 0: disconnected // 1: connecting // 2: connected, no IP // 3: connected
+
     bool ble_connected = false;
+    bool ble_authenticated = false;
+
     bool mqtt_settings_sent = false;
     bool mqtt_connected = false;
     bool wifi_settings_sent = false;
     bool wifi_connected = false;
 
-    int sequence_status = 0; // -2: timeout  -1: errored // 0: disconnected // 1: running // 2: finished
-
-    //int ble_status = 0; // -1: errored // 0: disconnected // 1: connecting // 2: connected
-    int mqtt_status = 0; // -1: errored // 0: disconnected // 1: connecting // 2: connected
-    int wifi_status = 0; // -1: errored // 0: disconnected // 1: connecting // 2: connected, no IP // 3: connected
-
     bool ble_errored = false;
     bool mqtt_errored = false;
     bool wifi_errored = false;
 
-    int retry = 0;
+    QString ble_error;
+    QString mqtt_error;
+    QString wifi_error;
 
     ///
 
     void startSequence() {
         blufi_seq_nb = 0;
 
+        sequence_status = 0;
+        sequence_retry = 0;
+
         ble_connected = false;
+        ble_authenticated = false;
+
         mqtt_settings_sent = false;
         mqtt_connected = false;
         wifi_settings_sent = false;
         wifi_connected = false;
 
-        sequence_status = 0;
-
-        //ble_status = 0;
+        ble_status = 0;
         mqtt_status = 0;
         wifi_status = 0;
 
@@ -171,23 +179,28 @@ public:
         mqtt_errored = false;
         wifi_errored = false;
 
-        retry = 0;
+        ble_error.clear();
+        mqtt_error.clear();
+        wifi_error.clear();
     }
 
     void retrySequence() {
         blufi_seq_nb = 0;
 
-        retry++;
-
         sequence_status = 0;
+        sequence_retry++;
 
-        //ble_status = 0;
+        ble_status = 0;
         mqtt_status = 0;
         wifi_status = 0;
 
         ble_errored = false;
         mqtt_errored = false;
         wifi_errored = false;
+
+        ble_error.clear();
+        mqtt_error.clear();
+        wifi_error.clear();
     }
 };
 
@@ -271,9 +284,11 @@ private:
 
 private:
     // QLowEnergyController related
+
     void serviceScanDone();
     void addLowEnergyService(const QBluetoothUuid &uuid);
     void serviceDetailsDiscovered_blufi(QLowEnergyService::ServiceState newState);
+    bool areWeReadyYet();
 
     QLowEnergyService *m_serviceBluFi = nullptr;
 
@@ -291,11 +306,12 @@ private:
     void bleError(QLowEnergyService::ServiceError error);
 
 protected:
-    virtual void deviceConnected();
-    virtual void deviceDisconnected();
-    virtual void deviceErrored(QLowEnergyController::Error error);
-
     virtual bool getSqlDeviceInfos();
+
+    virtual void deviceErrored(QLowEnergyController::Error error);
+    virtual void deviceDisconnected();
+    virtual void deviceConnected();
+    virtual void deviceReady();
 
 signals:
     void onboardedUpdated();
