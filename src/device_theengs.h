@@ -150,7 +150,7 @@ protected:
     // beacon data
     // TODO
 
-    // watch data
+    // battery monitor data
     // TODO
 
     // probe data
@@ -173,16 +173,19 @@ protected:
     bool m_alarm3 = false;
     bool m_alarm4 = false;
 
+    // motion sensor data
+    bool m_open = false;
+    bool m_motion = false;
+    float m_sensing_distance = -99.f;
+
     // scale data
     float m_weight = -99.f;
     QString m_weightUnit;
     QString m_weightMode;
     int m_impedance = -99;
 
-    // motion sensor data
-    bool m_open = false;
-    bool m_motion = false;
-    float m_sensing_distance = -99.f;
+    // watch data
+    // TODO
 
     // generic data
     QList <QObject *> m_genericData;
@@ -214,6 +217,8 @@ public:
     void setPlantSensor() { m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR; }
     void setThermometer() { m_deviceType = DeviceUtils::DEVICE_THERMOMETER; }
     void setEnvironmental() { m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL; }
+    void setActioner() { m_deviceType = DeviceUtils::DEVICE_THEENGS_ACTIONER; }
+    void setActionerWindow() { m_deviceType = DeviceUtils::DEVICE_THEENGS_ACTIONER_WINDOW; }
 
     // beacon data
     // TODO

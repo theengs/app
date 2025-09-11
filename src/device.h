@@ -64,12 +64,16 @@ class Device: public QObject
     Q_PROPERTY(bool isLight READ isLight NOTIFY sensorUpdated)
     Q_PROPERTY(bool isBeacon READ isBeacon NOTIFY sensorUpdated)
     Q_PROPERTY(bool isRemote READ isRemote NOTIFY sensorUpdated)
+    Q_PROPERTY(bool isPBP READ isPBP NOTIFY sensorUpdated)
     Q_PROPERTY(bool isPGP READ isPGP NOTIFY sensorUpdated)
 
+    Q_PROPERTY(bool isGenericDevice READ isGenericDevice NOTIFY sensorUpdated)
+    Q_PROPERTY(bool isActioner READ isActioner NOTIFY sensorUpdated)
+    Q_PROPERTY(bool isActionerWindow READ isActionerWindow NOTIFY sensorUpdated)
+    Q_PROPERTY(bool isBatteryMonitor READ isBatteryMonitor NOTIFY sensorUpdated)
+    Q_PROPERTY(bool isMotionSensor READ isMotionSensor NOTIFY sensorUpdated)
     Q_PROPERTY(bool isProbe READ isProbe NOTIFY sensorUpdated)
     Q_PROPERTY(bool isScale READ isScale NOTIFY sensorUpdated)
-    Q_PROPERTY(bool isMotionSensor READ isMotionSensor NOTIFY sensorUpdated)
-    Q_PROPERTY(bool isGenericDevice READ isGenericDevice NOTIFY sensorUpdated)
 
     Q_PROPERTY(bool hasBluetoothConnection READ hasBluetoothConnection CONSTANT)
     Q_PROPERTY(bool hasBluetoothAdvertisement READ hasBluetoothAdvertisement CONSTANT)
@@ -154,7 +158,7 @@ Q_SIGNALS:
     void realtimeUpdated(); // sent when a realtime update is received
 
 protected:
-    int m_deviceType = 0;           //!< See DeviceUtils::DeviceType enum
+    int m_deviceType = 16;          //!< See DeviceUtils::DeviceType enum
     int m_deviceCapabilities = 0;   //!< See DeviceUtils::DeviceCapabilities enum
     int m_deviceSensors = 0;        //!< See DeviceUtils::DeviceSensors enum
     int m_deviceBluetoothMode = 0;  //!< See DeviceUtils::BluetoothMode enum
@@ -312,14 +316,19 @@ public:
     bool isLight() const { return (m_deviceType == DeviceUtils::DEVICE_LIGHT); }
     //bool isBeacon() const { return (m_deviceType == DeviceUtils::DEVICE_BEACON); }
     bool isRemote() const { return (m_deviceType == DeviceUtils::DEVICE_REMOTE); }
+    bool isPBP() const { return (m_deviceType == DeviceUtils::DEVICE_PBP); }
     bool isPGP() const { return (m_deviceType == DeviceUtils::DEVICE_PGP); }
 
     virtual bool hasRealTime() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_REALTIME); }
+
+    bool isGenericDevice() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_GENERIC); }
+    bool isActioner() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_ACTIONER); }
+    bool isActionerWindow() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_ACTIONER_WINDOW); }
+    bool isBatteryMonitor() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_BATTERYMONITOR); }
     bool isBeacon() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_BEACON); }
+    bool isMotionSensor() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_MOTIONSENSOR); }
     bool isProbe() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_PROBE); }
     bool isScale() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_SCALE); }
-    bool isMotionSensor() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_MOTIONSENSOR); }
-    bool isGenericDevice() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_GENERIC); }
 
     virtual bool hasHistory() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_HISTORY); }
     bool hasBatteryLevel() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_BATTERY); }

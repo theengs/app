@@ -73,6 +73,7 @@ public:
         SENSOR_OPEN                 = (1 << 25),
         SENSOR_ALARM                = (1 << 26),
         SENSOR_DISTANCE             = (1 << 27),
+        SENSOR_BATTERY              = (1 << 28),
 
         // generic
         SENSOR_MODE                 = (1 << 30),
@@ -80,6 +81,10 @@ public:
     };
     Q_ENUM(DeviceSensorsTheengs)
 
+    /*!
+     * \brief The DeviceTagsTheengs enum
+     * - https://decoder.theengs.io/participate/adding-decoders.html#tag-property
+     */
     enum DeviceTagsTheengs {
         TAG_THB     =  1,   //!< temperature, humidity, battery
         TAG_THBX    =  2,   //!< temperature, humidity, battery, extras
@@ -96,6 +101,14 @@ public:
         TAG_WCVR    = 13,   //!< window covering devices
         TAG_ACTR    = 14,   //!< ON/OFF actuators
         TAG_AIR     = 15,   //!< air environmental monitoring devices
+        TAG_TRACK   = 16,   //!< bluetooth tracker
+        TAG_BTN     = 17,   //!< button
+        TAG_AUDIO   = 18,   //!< audio devices
+        TAG_WIND    = 19,   //!< wind speed anemometers
+        TAG_ENRG_P  = 20,   //!< energy producing, monitoring and storing devices
+
+        TAG_RMAC    = 254,  //!< known random MAC address devices
+        TAG_UNIQ    = 255,  //!< unique devices
     };
     Q_ENUM(DeviceTagsTheengs)
 };

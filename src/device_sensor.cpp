@@ -20,8 +20,8 @@
 #include "device_firmwares.h"
 #include "utils_versionchecker.h"
 
-#include "SettingsManager.h"
 #include "DeviceManager.h"
+#include "SettingsManager.h"
 #include "NotificationManager.h"
 
 #include <QSqlQuery>
@@ -58,6 +58,19 @@ DeviceSensor::DeviceSensor(const QBluetoothDeviceInfo &d, QObject *parent) :
 DeviceSensor::~DeviceSensor()
 {
     if (m_deviceInfos) delete m_deviceInfos;
+
+    qDeleteAll(m_chartData_history_month);
+    m_chartData_history_month.clear();
+    qDeleteAll(m_chartData_history_week);
+    m_chartData_history_week.clear();
+    qDeleteAll(m_chartData_history_day);
+    m_chartData_history_day.clear();
+
+    qDeleteAll(m_chartData_minmax);
+    m_chartData_minmax.clear();
+
+    qDeleteAll(m_chartData_env);
+    m_chartData_env.clear();
 }
 
 /* ************************************************************************** */
@@ -831,8 +844,8 @@ void DeviceSensor::checkDataAvailability()
         if (isPlantSensor())
         {
             // If we have immediate data (<12h old)
-            if (m_soilMoisture > 0 || m_soilConductivity > 0 || m_soilTemperature > 0 ||
-                m_temperature > -20.f || m_humidity > 0 || m_luminosityLux > 0)
+            if (m_soilMoisture > 0 || m_soilConductivity > 0 || m_soilTemperature > 0.f ||
+                m_temperature > -20.f || m_humidity > 0.f || m_luminosityLux > 0)
                 status = true;
 
             tableName = "plantData";
@@ -840,7 +853,7 @@ void DeviceSensor::checkDataAvailability()
         else if (isThermometer())
         {
             // If we have immediate data (<12h old)
-            if (m_temperature > -20.f || m_humidity > 0 || m_pressure > 0)
+            if (m_temperature > -20.f || m_humidity > 0.f || m_pressure > 0.f)
                 status = true;
 
             tableName = "thermoData";
@@ -848,8 +861,8 @@ void DeviceSensor::checkDataAvailability()
         else if (isEnvironmentalSensor())
         {
             // If we have immediate data (<12h old)
-            if (m_temperature > -20.f || m_humidity > 0 || m_luminosityLux > 0 ||
-                m_pm_10 > 0 || m_co2 > 0 || m_voc > 0 || m_rm > 0)
+            if (m_temperature > -20.f || m_humidity > 0.f || m_luminosityLux > 0 ||
+                m_pm_10 > 0.f || m_co2 > 0.f || m_voc > 0.f || m_rm > 0.f)
                 status = true;
 
             tableName = "sensorData";
@@ -885,7 +898,7 @@ void DeviceSensor::checkDataAvailability()
     if (somethingchanged) Q_EMIT dataAvailableUpdated();
 }
 
-bool DeviceSensor::hasDataNamed(const QString &dataName) const
+bool DeviceSensor::hasDataNamed(const QString &dataName, int days) const
 {
     if (dataName.isEmpty()) return false;
 
@@ -944,7 +957,9 @@ bool DeviceSensor::hasDataNamed(const QString &dataName) const
     if (m_dbInternal || m_dbExternal)
     {
         QSqlQuery hasData;
-        hasData.prepare("SELECT COUNT(" + dataName + ") FROM " + tableName + " WHERE deviceAddr = :deviceAddr AND " + dataName + " > 0;");
+        hasData.prepare("SELECT COUNT(" + dataName + ") " \
+                        "FROM " + tableName + " " \
+                        "WHERE deviceAddr = :deviceAddr AND " + dataName + " > 0;");
         hasData.bindValue(":deviceAddr", getAddress());
 
         if (hasData.exec() == false)
@@ -1004,7 +1019,7 @@ int DeviceSensor::countDataNamed(const QString &dataName, int days) const
     }
     else
     {
-        // No database
+        // No database, but maybe today?
         if (m_soilMoisture > 0 || m_soilConductivity > 0 || m_soilTemperature > 0 ||
             m_temperature > -20.f || m_humidity > 0 || m_luminosityLux > 0)
         return 1;
@@ -1232,6 +1247,7 @@ QString DeviceSensor::getDewPointString() const
 }
 
 /* ************************************************************************** */
+/* ************************************************************************** */
 
 int DeviceSensor::getHistoryUpdatePercent() const
 {
@@ -1268,4 +1284,5 @@ float DeviceSensor::getLastMove_days() const
     return days;
 }
 
+/* ************************************************************************** */
 /* ************************************************************************** */

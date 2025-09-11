@@ -150,7 +150,7 @@ class DeviceSensor: public Device
     Q_PROPERTY(float luminosity_bias READ getBiasLuminosity WRITE setBiasLuminosity NOTIFY biasUpdated)
     Q_PROPERTY(float pressure_bias READ getBiasPressure WRITE setBiasPressure NOTIFY biasUpdated)
 
-    // sensor history
+    // sensor history sync
     Q_PROPERTY(int historyUpdatePercent READ getHistoryUpdatePercent NOTIFY progressUpdated)
 
     // graphs
@@ -164,6 +164,7 @@ Q_SIGNALS:
     void biasUpdated();
     void limitsUpdated();
     void minmaxUpdated();
+    void minmaxHistoryUpdated();
     void progressUpdated();
     void chartDataHistoryMonthsUpdated();
     void chartDataHistoryWeeksUpdated();
@@ -313,7 +314,7 @@ public:
     DeviceSensor(const QBluetoothDeviceInfo &d, QObject *parent = nullptr);
     virtual ~DeviceSensor();
 
-    Q_INVOKABLE bool hasDataNamed(const QString &dataName) const;
+    Q_INVOKABLE bool hasDataNamed(const QString &dataName, int days = 31) const;
     Q_INVOKABLE int countDataNamed(const QString &dataName, int days = 31) const;
 
     bool hasSoilMoistureSensor() const { return (m_deviceSensors & DeviceUtils::SENSOR_SOIL_MOISTURE); }
@@ -399,7 +400,7 @@ public:
     float getRH() { return m_rh; }
     float getRM() { return m_rm; }
     float getRS() { return m_rs; }
-    // others
+    // Others
     Q_INVOKABLE QString getTempString() const;
     Q_INVOKABLE float getHeatIndex() const;
     Q_INVOKABLE QString getHeatIndexString() const;
@@ -456,7 +457,7 @@ public:
     void setLimitMmolMin(int limitMmolMin) { if (m_luminosityMmol_limit_min == limitMmolMin) return; m_luminosityMmol_limit_min = limitMmolMin; setSqlPlantLimits(); }
     void setLimitMmolMax(int limitMmolMax) { if (m_luminosityMmol_limit_max == limitMmolMax) return; m_luminosityMmol_limit_max = limitMmolMax; setSqlPlantLimits(); }
 
-    // Data min/max
+    // Data min/max (last 30 days)
     int getSoilMoistureMin() const { return m_soilMoistureMin; }
     int getSoilMoistureMax() const { return m_soilMoistureMax; }
     int getSoilConduMin() const { return m_soilConduMin; }

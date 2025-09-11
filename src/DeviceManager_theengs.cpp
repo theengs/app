@@ -26,8 +26,9 @@
 #include "devices/device_theengs_generic.h"
 #include "devices/device_theengs_probes.h"
 #include "devices/device_theengs_scales.h"
-#include "devices/device_theengs_motionsensors.h"
 #include "devices/device_theengs_thermometers.h"
+#include "devices/device_theengs_motionsensors.h"
+#include "devices/device_theengs_batterymonitors.h"
 
 #include <string>
 
@@ -84,15 +85,34 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName_blu
             device = new DeviceTheengsScales(deviceAddr, deviceName_bluetooth,
                                              deviceModelID_theengs, deviceProps_theengs, this);
         }
+        else if (deviceType == DeviceUtils::DEVICE_THEENGS_THERMOMETER)
+        {
+            device = new DeviceTheengsThermometers(deviceAddr, deviceName_bluetooth,
+                                                   deviceModelID_theengs, deviceProps_theengs, this);
+        }
         else if (deviceType == DeviceUtils::DEVICE_THEENGS_MOTIONSENSOR)
         {
             device = new DeviceTheengsMotionSensors(deviceAddr, deviceName_bluetooth,
                                                     deviceModelID_theengs, deviceProps_theengs, this);
         }
-        else if (deviceType == DeviceUtils::DEVICE_THEENGS_THERMOMETER)
+        else if (deviceType == DeviceUtils::DEVICE_THEENGS_BATTERYMONITOR)
         {
-            device = new DeviceTheengsThermometers(deviceAddr, deviceName_bluetooth,
-                                                   deviceModelID_theengs, deviceProps_theengs, this);
+            device = new DeviceTheengsBatteryMonitors(deviceAddr, deviceName_bluetooth,
+                                                      deviceModelID_theengs, deviceProps_theengs, this);
+        }
+        else if (deviceType == DeviceUtils::DEVICE_THEENGS_ACTIONER)
+        {
+            //device = new DeviceTheengsActioner(deviceInfo, deviceModelID, deviceProps, this);
+            device = new DeviceTheengsGeneric(deviceAddr, deviceName_bluetooth,
+                                              deviceModelID_theengs, deviceProps_theengs, this);
+            device->setActioner();
+        }
+        else if (deviceType == DeviceUtils::DEVICE_THEENGS_ACTIONER_WINDOW)
+        {
+            //device = new DeviceTheengsActionerWindow(deviceInfo, deviceModelID, deviceProps, this);
+            device = new DeviceTheengsGeneric(deviceAddr, deviceName_bluetooth,
+                                              deviceModelID_theengs, deviceProps_theengs, this);
+            device->setActionerWindow();
         }
         else
         {
@@ -214,13 +234,29 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
         {
             device = new DeviceTheengsScales(deviceInfo, deviceModelID, deviceProps, this);
         }
+        else if (deviceType == DeviceUtils::DEVICE_THEENGS_THERMOMETER)
+        {
+            device = new DeviceTheengsThermometers(deviceInfo, deviceModelID, deviceProps, this);
+        }
         else if (deviceType == DeviceUtils::DEVICE_THEENGS_MOTIONSENSOR)
         {
             device = new DeviceTheengsMotionSensors(deviceInfo, deviceModelID, deviceProps, this);
         }
-        else if (deviceType == DeviceUtils::DEVICE_THEENGS_THERMOMETER)
+        else if (deviceType == DeviceUtils::DEVICE_THEENGS_BATTERYMONITOR)
         {
-            device = new DeviceTheengsThermometers(deviceInfo, deviceModelID, deviceProps, this);
+            device = new DeviceTheengsBatteryMonitors(deviceInfo, deviceModelID, deviceProps, this);
+        }
+        else if (deviceType == DeviceUtils::DEVICE_THEENGS_ACTIONER)
+        {
+            //device = new DeviceTheengsActioner(deviceInfo, deviceModelID, deviceProps, this);
+            device = new DeviceTheengsGeneric(deviceInfo, deviceModelID, deviceProps, this);
+            device->setActioner();
+        }
+        else if (deviceType == DeviceUtils::DEVICE_THEENGS_ACTIONER_WINDOW)
+        {
+            //device = new DeviceTheengsActionerWindow(deviceInfo, deviceModelID, deviceProps, this);
+            device = new DeviceTheengsGeneric(deviceInfo, deviceModelID, deviceProps, this);
+            device->setActionerWindow();
         }
         else
         {
@@ -282,7 +318,7 @@ QString DeviceManager::getDeviceModelIdTheengs_fromAdv(const QBluetoothDeviceInf
 
         if (dec.decodeBLEJson(obj) >= 0)
         {
-            QString model = QString::fromStdString(doc["model"]);
+            //QString model = QString::fromStdString(doc["model"]);
             QString modelId = QString::fromStdString(doc["model_id"]);
             QString deviceTypes = QString::fromStdString(doc["type"]);
 
@@ -307,7 +343,7 @@ QString DeviceManager::getDeviceModelIdTheengs_fromAdv(const QBluetoothDeviceInf
 
         if (dec.decodeBLEJson(obj) >= 0)
         {
-            QString model = QString::fromStdString(doc["model"]);
+            //QString model = QString::fromStdString(doc["model"]);
             QString modelId = QString::fromStdString(doc["model_id"]);
             QString deviceTypes = QString::fromStdString(doc["type"]);
 
@@ -682,9 +718,70 @@ void DeviceManager::fakeTheengsDevices()
         }
     }
     {
+        QString deviceName = "BM6";
+        QString deviceModel_theengs = "BM6";
+        QString deviceAddr = "61:57:43:01:5C:6D";
+
+        Device *d = createTheengsDevice_fromDb(deviceName, deviceModel_theengs, deviceAddr);
+        if (d)
+        {
+            m_devices_model->addDevice(d);
+            qDebug() << "* Device added (from FAKER): " << deviceName << "/" << deviceAddr;
+        }
+    }
+    {
         QString deviceName = "THX1/W230150X";
         QString deviceModel_theengs = "THX1/W230150X";
         QString deviceAddr = "61:57:43:01:5C:3E";
+
+        Device *d = createTheengsDevice_fromDb(deviceName, deviceModel_theengs, deviceAddr);
+        if (d)
+        {
+            m_devices_model->addDevice(d);
+            qDebug() << "* Device added (from FAKER): " << deviceName << "/" << deviceAddr;
+        }
+    }
+
+    {
+        QString deviceName = "Bot"; // "Switchbot_S1"
+        QString deviceModel_theengs = "X1";
+        QString deviceAddr = "76:57:43:01:5C:01";
+
+        Device *d = createTheengsDevice_fromDb(deviceName, deviceModel_theengs, deviceAddr);
+        if (d)
+        {
+            m_devices_model->addDevice(d);
+            qDebug() << "* Device added (from FAKER): " << deviceName << "/" << deviceAddr;
+        }
+    }
+    {
+        QString deviceName = "Curtain (2/3)"; // "Switchbot_Curtain 2"
+        QString deviceModel_theengs = "W070160X";
+        QString deviceAddr = "76:57:43:01:5C:02";
+
+        Device *d = createTheengsDevice_fromDb(deviceName, deviceModel_theengs, deviceAddr);
+        if (d)
+        {
+            m_devices_model->addDevice(d);
+            qDebug() << "* Device added (from FAKER): " << deviceName << "/" << deviceAddr;
+        }
+    }
+    {
+        QString deviceName = "Curtain (2/3)"; // "Switchbot_Curtain 3"
+        QString deviceModel_theengs = "W070160X";
+        QString deviceAddr = "76:57:43:01:5C:03";
+
+        Device *d = createTheengsDevice_fromDb(deviceName, deviceModel_theengs, deviceAddr);
+        if (d)
+        {
+            m_devices_model->addDevice(d);
+            qDebug() << "* Device added (from FAKER): " << deviceName << "/" << deviceAddr;
+        }
+    }
+    {
+        QString deviceName = "BlindTilt";
+        QString deviceModel_theengs = "W270160X";
+        QString deviceAddr = "76:57:43:01:5C:04";
 
         Device *d = createTheengsDevice_fromDb(deviceName, deviceModel_theengs, deviceAddr);
         if (d)
@@ -714,8 +811,9 @@ void DeviceManager::fakeTheengsDevices()
 void DeviceManager::fakeTheengsData()
 {
     QBluetoothDeviceInfo info;
-    int rrdd = (rand() % 26);
+    int rrdd = (rand() % 30);
 
+    ////////
 
     if (rrdd == 0) // JQJCY01YM
     {
@@ -754,6 +852,7 @@ void DeviceManager::fakeTheengsData()
         info.setManufacturerData(endian_flip_16(0x0100), QByteArray::fromHex("01010d8f63cb"));
     }
 
+    ////////
 
     if (rrdd == 4) // TPMS
     {
@@ -806,6 +905,7 @@ void DeviceManager::fakeTheengsData()
         else qWarning() << "RAND ERROR";
     }
 
+    ////////
 
     if (rrdd == 9) // Mi_Smart_Scale
     {
@@ -842,6 +942,7 @@ void DeviceManager::fakeTheengsData()
         else qWarning() << "RAND ERROR";
     }
 
+    ////////
 
     if (rrdd == 11) // H5072
     {
@@ -883,6 +984,7 @@ void DeviceManager::fakeTheengsData()
         else qWarning() << "RAND ERROR";
     }
 
+    ////////
 
     if (rrdd == 17) // CGPR1
     {
@@ -908,6 +1010,7 @@ void DeviceManager::fakeTheengsData()
         info.setServiceData(QUuid(0), QByteArray::fromHex("4030dd031d0300010100"));
     }
 
+    ////////
 
     if (rrdd == 20) // ADHS
     {
@@ -951,7 +1054,16 @@ void DeviceManager::fakeTheengsData()
         else if (rrrr == 1) info.setManufacturerData(endian_flip_16(0x4c00), QByteArray::fromHex("0215655f83caae16a10a702e31f30d58dd82f441423144"));
         else qWarning() << "RAND ERROR";
     }
-    if (rrdd == 24) // THX1/W230150X
+    if (rrdd == 24) // BM6
+    {
+        info = QBluetoothDeviceInfo(QBluetoothAddress("61:57:43:01:5C:6D"), "BM6", 0);
+
+        int rrrr = (rand() % 2);
+        if (rrrr == 0) info.setManufacturerData(endian_flip_16(0x4c00), QByteArray::fromHex("4c0002153ba29cd9a42c894856badaf2606ef777114d0000cd"));
+        else if (rrrr == 1) info.setManufacturerData(endian_flip_16(0x4c00), QByteArray::fromHex("4c0002153ba29cd9a42c894856badaf2606ef777114e0000cd"));
+        else qWarning() << "RAND ERROR";
+    }
+    if (rrdd == 25) // THX1/W230150X
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("61:57:43:01:5C:3E"), "THX1/W230150X", 0);
 
@@ -962,7 +1074,43 @@ void DeviceManager::fakeTheengsData()
         else qWarning() << "RAND ERROR";
     }
 
-    if (rrdd == 25) // Oral-B
+    ////////
+
+    if (rrdd == 26) // SBS1 "X1" // Switchbot_S1
+    {
+        info = QBluetoothDeviceInfo(QBluetoothAddress("76:57:43:01:5C:01"), "Switchbot_S1", 0);
+
+        int rrrr = (rand() % 3);
+        if (rrrr == 0) info.setServiceData(QBluetoothUuid(quint32(0x0d00)), QByteArray::fromHex("48d0db"));
+        if (rrrr == 1) info.setServiceData(QBluetoothUuid(quint32(0x0d00)), QByteArray::fromHex("4890cc"));
+        if (rrrr == 2) info.setServiceData(QBluetoothUuid(quint32(0x0d00)), QByteArray::fromHex("48005b"));
+        if (rrrr == 3) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("48004700"));
+        else qWarning() << "RAND ERROR";
+    }
+    if (rrdd == 27) // SBCU "W070160X" // Switchbot_Curtain 2
+    {
+        info = QBluetoothDeviceInfo(QBluetoothAddress("76:57:43:01:5C:02"), "Switchbot_Curtain 2", 0);
+
+        info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("63c011641104"));
+    }
+    if (rrdd == 28) // SBCU "W070160X" // Switchbot_Curtain 3
+    {
+        info = QBluetoothDeviceInfo(QBluetoothAddress("76:57:43:01:5C:03"), "Switchbot_Curtain 3", 0);
+
+        int rrrr = (rand() % 3);
+        if (rrrr == 0) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("7bc04f641204"));
+        if (rrrr == 1) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("7b804d001204"));
+        if (rrrr == 2) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("7b4057e41106"));
+        if (rrrr == 3) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("7bc04f391204"));
+        else qWarning() << "RAND ERROR";
+    }
+    if (rrdd == 29) // SBBT "W270160X" // blind tilt
+    {
+        info = QBluetoothDeviceInfo(QBluetoothAddress("76:57:43:01:5C:04"), "W270160X", 0);
+    }
+    ////////
+
+    if (rrdd == 30) // Oral-B
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("71:57:43:01:5C:3A"), "ORALB_BT", 0);
 
@@ -979,6 +1127,7 @@ void DeviceManager::fakeTheengsData()
         else if (rrrr == 9) info.setManufacturerData(endian_flip_16(0xdc00), QByteArray::fromHex("0202067320020f07080004"));
     }
 
+    ////////
 
     //qDebug() << "DeviceManager::fakeTheengsData(" << info.name() << ")";
     info.setCoreConfigurations(QBluetoothDeviceInfo::LowEnergyCoreConfiguration);

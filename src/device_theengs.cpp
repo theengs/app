@@ -20,9 +20,6 @@
 #include "SettingsManager.h"
 #include "MqttManager.h"
 
-#include <cstdint>
-#include <cmath>
-
 #include <QBluetoothUuid>
 #include <QBluetoothServiceInfo>
 #include <QLowEnergyService>
@@ -258,17 +255,23 @@ bool DeviceTheengs::hasData() const
 {
     // If we have immediate data (<12h old)
 
-    if (isProbe())
+    if (isBatteryMonitor())
     {
-        if (m_temperature1 > -80.f || m_temperature2 > -80.f ||
-            m_temperature3 > -80.f || m_temperature4 > -80.f ||
-            m_temperature5 > -80.f || m_temperature6 > -80.f)
-            return true;
+        return (m_battery1 > -99);
+    }
+    else if (isActioner())
+    {
+        //
+    }
+    else if (isProbe())
+    {
+        return (m_temperature1 > -80.f || m_temperature2 > -80.f ||
+                m_temperature3 > -80.f || m_temperature4 > -80.f ||
+                m_temperature5 > -80.f || m_temperature6 > -80.f);
     }
     else if (isScale())
     {
-        if (m_weight > -80.f)
-            return true;
+        return (m_weight > -80.f);
     }
     else if (isMotionSensor())
     {
@@ -398,14 +401,19 @@ int DeviceTheengs::getTheengsTypeFromTag(const QString &tag_string, const QStrin
         else if (tag == DeviceUtilsTheengs::TAG_SCALE) type = DeviceUtils::DEVICE_THEENGS_SCALE;
         else if (tag == DeviceUtilsTheengs::TAG_BCON) type = DeviceUtils::DEVICE_THEENGS_BEACON;
         else if (tag == DeviceUtilsTheengs::TAG_ACEL) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
-        else if (tag == DeviceUtilsTheengs::TAG_BATT) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (tag == DeviceUtilsTheengs::TAG_BATT) type = DeviceUtils::DEVICE_THEENGS_BATTERYMONITOR;
         else if (tag == DeviceUtilsTheengs::TAG_PLANT) type = DeviceUtils::DEVICE_PLANTSENSOR;
         else if (tag == DeviceUtilsTheengs::TAG_TIRE) type = DeviceUtils::DEVICE_THEENGS_PROBE;
         else if (tag == DeviceUtilsTheengs::TAG_BODY) type = DeviceUtils::DEVICE_THEENGS_SMARTWATCH;
         else if (tag == DeviceUtilsTheengs::TAG_ENRG) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
-        else if (tag == DeviceUtilsTheengs::TAG_WCVR) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
-        else if (tag == DeviceUtilsTheengs::TAG_ACTR) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (tag == DeviceUtilsTheengs::TAG_WCVR) type = DeviceUtils::DEVICE_THEENGS_ACTIONER_WINDOW;
+        else if (tag == DeviceUtilsTheengs::TAG_ACTR) type = DeviceUtils::DEVICE_THEENGS_ACTIONER;
         else if (tag == DeviceUtilsTheengs::TAG_AIR) type = DeviceUtils::DEVICE_ENVIRONMENTAL;
+        else if (tag == DeviceUtilsTheengs::TAG_TRACK) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (tag == DeviceUtilsTheengs::TAG_BTN) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (tag == DeviceUtilsTheengs::TAG_AUDIO) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (tag == DeviceUtilsTheengs::TAG_WIND) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (tag == DeviceUtilsTheengs::TAG_ENRG_P) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
     }
     else if (!type_string.isEmpty() && type_string != "null")
     {
@@ -416,14 +424,19 @@ int DeviceTheengs::getTheengsTypeFromTag(const QString &tag_string, const QStrin
         else if (type_string == "SCALE") type = DeviceUtils::DEVICE_THEENGS_SCALE;
         else if (type_string == "BCON") type = DeviceUtils::DEVICE_THEENGS_BEACON;
         else if (type_string == "ACEL") type = DeviceUtils::DEVICE_THEENGS_GENERIC;
-        else if (type_string == "BATT") type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (type_string == "BATT") type = DeviceUtils::DEVICE_THEENGS_BATTERYMONITOR;
         else if (type_string == "PLANT") type = DeviceUtils::DEVICE_PLANTSENSOR;
         else if (type_string == "TIRE") type = DeviceUtils::DEVICE_THEENGS_PROBE;
         else if (type_string == "BODY") type = DeviceUtils::DEVICE_THEENGS_SMARTWATCH;
         else if (type_string == "ENRG") type = DeviceUtils::DEVICE_THEENGS_GENERIC;
-        else if (type_string == "WCVR") type = DeviceUtils::DEVICE_THEENGS_GENERIC;
-        else if (type_string == "ACTR") type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (type_string == "WCVR") type = DeviceUtils::DEVICE_THEENGS_ACTIONER_WINDOW;
+        else if (type_string == "ACTR") type = DeviceUtils::DEVICE_THEENGS_ACTIONER;
         else if (type_string == "AIR") type = DeviceUtils::DEVICE_ENVIRONMENTAL;
+        else if (type_string == "TRACK") type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (type_string == "BTN") type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (type_string == "AUDIO") type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (type_string == "WIND") type = DeviceUtils::DEVICE_THEENGS_GENERIC;
+        else if (type_string == "ENRG_P") type = DeviceUtils::DEVICE_THEENGS_GENERIC;
     }
 
     return type;

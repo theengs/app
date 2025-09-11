@@ -138,7 +138,8 @@ DeviceManager::DeviceManager(bool daemon)
                 d = new DeviceHygrotempLYWSDCGQ(deviceAddr, deviceName, this);
             else if (deviceName == "LYWSD02" || deviceName == "MHO-C303")
                 d = new DeviceHygrotempClock(deviceAddr, deviceName, this);
-            else if (deviceName == "LYWSD03MMC" || deviceName == "MHO-C401" || deviceName == "XMWSDJO4MMC")
+            else if (deviceName == "LYWSD03MMC" || deviceName == "MHO-C401" ||
+                     deviceName == "XMWSDJO4MMC" || deviceName == "MJWSD05MMC")
                 d = new DeviceHygrotempSquare(deviceAddr, deviceName, this);
             else if (deviceName == "ClearGrass Temp & RH" || deviceName == "Qingping Temp & RH M")
                 d = new DeviceHygrotempCGG1(deviceAddr, deviceName, this);
@@ -882,21 +883,24 @@ void DeviceManager::deviceDiscoveryStopped()
 
 void DeviceManager::setLastRun()
 {
-    QSqlQuery setLastRun;
-    setLastRun.prepare("UPDATE lastRun SET lastRun = :run");
-    setLastRun.bindValue(":run", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+    if (m_dbInternal || m_dbExternal)
+    {
+        QSqlQuery setLastRun;
+        setLastRun.prepare("UPDATE lastRun SET lastRun = :run");
+        setLastRun.bindValue(":run", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
 
-    if (setLastRun.exec())
-    {
-        if (setLastRun.numRowsAffected() == 0)
+        if (setLastRun.exec())
         {
-            // addLastRun?
+            if (setLastRun.numRowsAffected() == 0)
+            {
+                // addLastRun?
+            }
         }
-    }
-    else
-    {
-        qWarning() << "> setLastRun.exec() ERROR"
-                   << setLastRun.lastError().type() << ":" << setLastRun.lastError().text();
+        else
+        {
+            qWarning() << "> setLastRun.exec() ERROR"
+                       << setLastRun.lastError().type() << ":" << setLastRun.lastError().text();
+        }
     }
 }
 
@@ -989,7 +993,7 @@ void DeviceManager::scanDevices_start()
     }
     else
     {
-        qWarning() << "Cannot scan or listen without BLE or BLE permissions";
+        qWarning() << "Cannot scan or listen without BLE (or BLE permissions)";
     }
 }
 
@@ -1015,6 +1019,10 @@ void DeviceManager::scanDevices_stop()
                 m_scanning = false;
                 Q_EMIT scanningChanged();
             }
+
+            // clean up device lists?
+            //m_gateways_model->clearDevices();
+            //m_sensors_model->clearDevices();
         }
     }
 }
@@ -1105,7 +1113,7 @@ void DeviceManager::listenDevices_start()
     }
     else
     {
-        qWarning() << "Cannot scan or listen without BLE or BLE permissions";
+        qWarning() << "Cannot scan or listen without BLE (or BLE permissions)";
     }
 }
 

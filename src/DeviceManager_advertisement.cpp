@@ -105,6 +105,8 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info,
             QString mac_qstr = dd->getAddressMAC();
             QString mac_qstr_clean = dd->getAddressMAC().remove(':');
 
+            // Handle advertisement //
+
             const QList<quint16> &manufacturerIds = info.manufacturerIds();
             for (const auto id: manufacturerIds)
             {

@@ -84,9 +84,13 @@ void DeviceManager::scanNearby_start()
             }
             else
             {
-                qWarning() << "Cannot scan or listen without related Android permissions";
+                qWarning() << "Cannot scan or listen without BLE permissions";
             }
         }
+    }
+    else
+    {
+        qWarning() << "Cannot scan or listen without BLE (or BLE permissions)";
     }
 }
 
