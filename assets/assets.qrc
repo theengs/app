@@ -12,8 +12,11 @@
 
         <file>gfx/devices/generic.png</file>
 
-        <file>menus/menu_back.svg</file>
-        <file>menus/menu_close.svg</file>
+        <file>icons_custom/battery_car.svg</file>
+        <file>icons_custom/pot_empty.svg</file>
+        <file>icons_custom/pot_flower.svg</file>
+        <file>icons_custom/thermometer.svg</file>
+        <file>icons_custom/thermometer_big.svg</file>
 
         <file>icons_fontawesome/cow-solid.svg</file>
         <file>icons_fontawesome/fish-fins-solid.svg</file>
@@ -22,12 +25,24 @@
         <file>icons_fontawesome/piggy-bank-solid.svg</file>
         <file>icons_fontawesome/question-solid.svg</file>
 
-        <file>icons_material/baseline-monitor_weight-24px.svg</file>
-        <file>icons_material/baseline-outdoor_grill-24px.svg</file>
-
-        <file>icons_custom/pot_empty-24px.svg</file>
-        <file>icons_custom/pot_flower-24px.svg</file>
-        <file>icons_custom/thermometer-24px.svg</file>
-        <file>icons_custom/thermometer_big-24px.svg</file>
+        <file>icons_material/curtains_closed.svg</file>
+        <file>icons_material/curtains_closed-fill.svg</file>
+        <file>icons_material/local_laundry_service.svg</file>
+        <file>icons_material/local_laundry_service-fill.svg</file>
+        <file>icons_material/monitor_weight.svg</file>
+        <file>icons_material/monitor_weight-fill.svg</file>
+        <file>icons_material/outdoor_grill.svg</file>
+        <file>icons_material/outdoor_grill-fill.svg</file>
+        <file>icons_material/switch.svg</file>
+        <file>icons_material/switch-fill.svg</file>
+        <file>icons_material/tire_repair.svg</file>
+        <file>icons_material/tire_repair-fill.svg</file>
+        <file>icons_material/watch.svg</file>
+        <file>icons_material/watch-fill.svg</file>
+        <file>icons_material/window_sensor-fill.svg</file>
+        <file>icons_material/window_sensor.svg</file>
+        <file>icons_material/window_open-fill.svg</file>
+        <file>icons_material/window_closed-fill.svg</file>
+        <file>icons_material/window_closed.svg</file>
     </qresource>
 </RCC>

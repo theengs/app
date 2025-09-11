@@ -64,12 +64,12 @@ function getDeviceIcon(device, devicePlanted) {
     if (device.isPlantSensor) {
         if (devicePlanted) {
             if (deviceName === "ropot" || deviceName === "Parrot pot")
-                src = "qrc:/assets/icons_custom/pot_flower-24px.svg"
+                src = "qrc:/assets/icons_custom/pot_flower.svg"
             else
                 src = "qrc:/IconLibrary/material-symbols/sensors/local_florist.svg"
         } else {
             if (deviceName === "ropot" || deviceName === "Parrot pot")
-                src = "qrc:/assets/icons_custom/pot_empty-24px.svg"
+                src = "qrc:/assets/icons_custom/pot_empty.svg"
             else
                 src = "qrc:/IconLibrary/material-symbols/hardware/settings_remote.svg"
         }
@@ -115,13 +115,24 @@ function getDeviceIcon(device, devicePlanted) {
 
 function getDeviceIconTheengs(device, devicePlanted) {
     var src = ""
+    var deviceName = device.deviceName
 
     if (device.isProbe) {
-        src = "qrc:/IconLibrary/material-symbols/media/settings_input_component.svg"
+        if (deviceName.startsWith("TPMS")) {
+            src = "qrc:/assets/icons_material/tire_repair.svg"
+        } else {
+            src = "qrc:/IconLibrary/material-symbols/media/settings_input_component.svg"
+        }
     } else if (device.isScale) {
-        src = "qrc:/assets/icons_material/baseline-monitor_weight-24px.svg"
+        src = "qrc:/assets/icons_material/monitor_weight.svg"
     } else if (device.isMotionSensor) {
         src = "qrc:/IconLibrary/material-symbols/sensors/sensors.svg"
+    } else if (device.isBatteryMonitor) {
+        src = "qrc:/assets/icons_custom/battery_car.svg"
+    } else if (device.isActioner) {
+        src = "qrc:/assets/icons_material/switch.svg"
+    } else if (device.isActionerWindow) {
+        src = "qrc:/assets/icons_material/window_sensor.svg"
     } else {
         src = getDeviceIcon(device, devicePlanted)
     }

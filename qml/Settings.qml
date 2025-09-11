@@ -32,7 +32,9 @@ Item {
         Column {
             id: contentColumn
             anchors.left: parent.left
+            anchors.leftMargin: ((singleColumn || isPhone) ? 0 : parent.width * 0.12)
             anchors.right: parent.right
+            anchors.rightMargin: ((singleColumn || isPhone) ? 0 : parent.width * 0.12)
 
             topPadding: Theme.componentMargin
             bottomPadding: Theme.componentMargin

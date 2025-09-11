@@ -979,7 +979,7 @@ Loader {
 
                                     title: qsTr("Temperature")
                                     legend: "°" + settingsManager.tempUnit
-                                    icon: "qrc:/assets/icons_custom/thermometer-24px.svg"
+                                    icon: "qrc:/assets/icons_custom/thermometer.svg"
                                     value: currentDevice.temperature
                                     precision: 1
                                     //onSensorSelection: primary = "temperature"

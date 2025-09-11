@@ -21,7 +21,9 @@ Item {
         Column {
             id: contentColumn
             anchors.left: parent.left
+            anchors.leftMargin: ((singleColumn || isPhone) ? 0 : parent.width * 0.12)
             anchors.right: parent.right
+            anchors.rightMargin: ((singleColumn || isPhone) ? 0 : parent.width * 0.12)
 
             ////////////////
 
@@ -235,13 +237,13 @@ Item {
 
                     Repeater {
                         model: [
-                            "Theengs (LGPL v3)",
+                            "Theengs decoder (LGPL v3)",
                             "Qt6 (LGPL v3)",
-                            "QtMqtt (GPL 3)",
+                            "QtMqtt (GPL v3)",
                             "MobileUI (MIT)",
                             "MobileSharing (MIT)",
                             "SingleApplication (MIT)",
-                            "Google Material Icons (MIT)",
+                            "Google Material Icons (Apache 2.0)",
                         ]
                         delegate: Text {
                             width: parent.width

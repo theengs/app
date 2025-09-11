@@ -160,12 +160,12 @@ Item {
         if (boxDevice.isPlantSensor) {
             if (hasHygro) {
                 if (boxDevice.deviceName === "ropot" || boxDevice.deviceName === "Parrot pot")
-                    imageDevice.source = "qrc:/assets/icons_custom/pot_flower-24px.svg"
+                    imageDevice.source = "qrc:/assets/icons_custom/pot_flower.svg"
                 else
                     imageDevice.source = "qrc:/IconLibrary/material-symbols/sensors/local_florist.svg"
             } else {
                 if (boxDevice.deviceName === "ropot" || boxDevice.deviceName === "Parrot pot")
-                    imageDevice.source = "qrc:/assets/icons_custom/pot_empty-24px.svg"
+                    imageDevice.source = "qrc:/assets/icons_custom/pot_empty.svg"
                 else
                     imageDevice.source = "qrc:/IconLibrary/material-symbols/hardware/settings_remote.svg"
             }
@@ -433,6 +433,8 @@ Item {
                 color: boxDevice.hasData ? Theme.colorHighContrast : Theme.colorSubText
                 source: "qrc:/IconLibrary/material-symbols/chevron_right.svg"
             }
+
+            ////
         }
 
         ////////////////

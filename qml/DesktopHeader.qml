@@ -73,7 +73,7 @@ Rectangle {
             title.text = qsTr("Welcome")
             menus.visible = false
 
-            buttonBack.source = "qrc:/assets/menus/menu_close.svg"
+            buttonBack.source = "qrc:/IconLibrary/material-symbols/close.svg"
         } else {
             title.text = "Theengs"
             menus.visible = true
@@ -81,7 +81,7 @@ Rectangle {
             if (appContent.state === "DeviceList") {
                 buttonBack.source = "qrc:/assets/logos/logo-greyscale.svg"
             } else {
-                buttonBack.source = "qrc:/assets/menus/menu_back.svg"
+                buttonBack.source = "qrc:/IconLibrary/material-symbols/arrow_back_ios_new.svg"
             }
         }
     }
