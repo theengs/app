@@ -85,6 +85,8 @@ SOURCES  += src/main.cpp \
             src/device_theengs.cpp \
             src/devices/device_theengs_gateway.cpp \
             src/devices/device_theengs_generic.cpp \
+            src/devices/device_theengs_actuators.cpp \
+            src/devices/device_theengs_windowactuators.cpp \
             src/devices/device_theengs_beacons.cpp \
             src/devices/device_theengs_batterymonitors.cpp \
             src/devices/device_theengs_motionsensors.cpp \
@@ -95,7 +97,6 @@ SOURCES  += src/main.cpp \
             src/TempPreset.cpp \
             src/rc4/rc4.cpp \
             src/blufi/BluFiFrame.cpp
-
 
 HEADERS  += src/SettingsManager.h \
             src/DatabaseManager.h \
@@ -130,6 +131,8 @@ HEADERS  += src/SettingsManager.h \
             src/device_theengs.h \
             src/devices/device_theengs_gateway.h \
             src/devices/device_theengs_generic.h \
+            src/devices/device_theengs_actuators.h \
+            src/devices/device_theengs_windowactuators.h \
             src/devices/device_theengs_beacons.h \
             src/devices/device_theengs_batterymonitors.h \
             src/devices/device_theengs_motionsensors.h \

@@ -259,7 +259,11 @@ bool DeviceTheengs::hasData() const
     {
         return (m_battery1 > -99);
     }
-    else if (isActioner())
+    else if (isActuator())
+    {
+        //
+    }
+    else if (isActuatorWindow())
     {
         //
     }
@@ -406,8 +410,8 @@ int DeviceTheengs::getTheengsTypeFromTag(const QString &tag_string, const QStrin
         else if (tag == DeviceUtilsTheengs::TAG_TIRE) type = DeviceUtils::DEVICE_THEENGS_PROBE;
         else if (tag == DeviceUtilsTheengs::TAG_BODY) type = DeviceUtils::DEVICE_THEENGS_SMARTWATCH;
         else if (tag == DeviceUtilsTheengs::TAG_ENRG) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
-        else if (tag == DeviceUtilsTheengs::TAG_WCVR) type = DeviceUtils::DEVICE_THEENGS_ACTIONER_WINDOW;
-        else if (tag == DeviceUtilsTheengs::TAG_ACTR) type = DeviceUtils::DEVICE_THEENGS_ACTIONER;
+        else if (tag == DeviceUtilsTheengs::TAG_WCVR) type = DeviceUtils::DEVICE_THEENGS_ACTUATOR_WINDOW;
+        else if (tag == DeviceUtilsTheengs::TAG_ACTR) type = DeviceUtils::DEVICE_THEENGS_ACTUATOR;
         else if (tag == DeviceUtilsTheengs::TAG_AIR) type = DeviceUtils::DEVICE_ENVIRONMENTAL;
         else if (tag == DeviceUtilsTheengs::TAG_TRACK) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
         else if (tag == DeviceUtilsTheengs::TAG_BTN) type = DeviceUtils::DEVICE_THEENGS_GENERIC;
@@ -429,8 +433,8 @@ int DeviceTheengs::getTheengsTypeFromTag(const QString &tag_string, const QStrin
         else if (type_string == "TIRE") type = DeviceUtils::DEVICE_THEENGS_PROBE;
         else if (type_string == "BODY") type = DeviceUtils::DEVICE_THEENGS_SMARTWATCH;
         else if (type_string == "ENRG") type = DeviceUtils::DEVICE_THEENGS_GENERIC;
-        else if (type_string == "WCVR") type = DeviceUtils::DEVICE_THEENGS_ACTIONER_WINDOW;
-        else if (type_string == "ACTR") type = DeviceUtils::DEVICE_THEENGS_ACTIONER;
+        else if (type_string == "WCVR") type = DeviceUtils::DEVICE_THEENGS_ACTUATOR_WINDOW;
+        else if (type_string == "ACTR") type = DeviceUtils::DEVICE_THEENGS_ACTUATOR;
         else if (type_string == "AIR") type = DeviceUtils::DEVICE_ENVIRONMENTAL;
         else if (type_string == "TRACK") type = DeviceUtils::DEVICE_THEENGS_GENERIC;
         else if (type_string == "BTN") type = DeviceUtils::DEVICE_THEENGS_GENERIC;

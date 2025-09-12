@@ -24,11 +24,13 @@
 
 #include "device_theengs.h"
 #include "devices/device_theengs_generic.h"
+#include "devices/device_theengs_actuators.h"
+#include "devices/device_theengs_windowactuators.h"
+#include "devices/device_theengs_batterymonitors.h"
+#include "devices/device_theengs_motionsensors.h"
 #include "devices/device_theengs_probes.h"
 #include "devices/device_theengs_scales.h"
 #include "devices/device_theengs_thermometers.h"
-#include "devices/device_theengs_motionsensors.h"
-#include "devices/device_theengs_batterymonitors.h"
 
 #include <string>
 
@@ -100,19 +102,15 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName_blu
             device = new DeviceTheengsBatteryMonitors(deviceAddr, deviceName_bluetooth,
                                                       deviceModelID_theengs, deviceProps_theengs, this);
         }
-        else if (deviceType == DeviceUtils::DEVICE_THEENGS_ACTIONER)
+        else if (deviceType == DeviceUtils::DEVICE_THEENGS_ACTUATOR)
         {
-            //device = new DeviceTheengsActioner(deviceInfo, deviceModelID, deviceProps, this);
-            device = new DeviceTheengsGeneric(deviceAddr, deviceName_bluetooth,
-                                              deviceModelID_theengs, deviceProps_theengs, this);
-            device->setActioner();
+            device = new DeviceTheengsActuators(deviceAddr, deviceName_bluetooth,
+                                                deviceModelID_theengs, deviceProps_theengs, this);
         }
-        else if (deviceType == DeviceUtils::DEVICE_THEENGS_ACTIONER_WINDOW)
+        else if (deviceType == DeviceUtils::DEVICE_THEENGS_ACTUATOR_WINDOW)
         {
-            //device = new DeviceTheengsActionerWindow(deviceInfo, deviceModelID, deviceProps, this);
-            device = new DeviceTheengsGeneric(deviceAddr, deviceName_bluetooth,
-                                              deviceModelID_theengs, deviceProps_theengs, this);
-            device->setActionerWindow();
+            device = new DeviceTheengsWindowActuators(deviceAddr, deviceName_bluetooth,
+                                                      deviceModelID_theengs, deviceProps_theengs, this);
         }
         else
         {
@@ -246,17 +244,13 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
         {
             device = new DeviceTheengsBatteryMonitors(deviceInfo, deviceModelID, deviceProps, this);
         }
-        else if (deviceType == DeviceUtils::DEVICE_THEENGS_ACTIONER)
+        else if (deviceType == DeviceUtils::DEVICE_THEENGS_ACTUATOR)
         {
-            //device = new DeviceTheengsActioner(deviceInfo, deviceModelID, deviceProps, this);
-            device = new DeviceTheengsGeneric(deviceInfo, deviceModelID, deviceProps, this);
-            device->setActioner();
+            device = new DeviceTheengsActuators(deviceInfo, deviceModelID, deviceProps, this);
         }
-        else if (deviceType == DeviceUtils::DEVICE_THEENGS_ACTIONER_WINDOW)
+        else if (deviceType == DeviceUtils::DEVICE_THEENGS_ACTUATOR_WINDOW)
         {
-            //device = new DeviceTheengsActionerWindow(deviceInfo, deviceModelID, deviceProps, this);
-            device = new DeviceTheengsGeneric(deviceInfo, deviceModelID, deviceProps, this);
-            device->setActionerWindow();
+            device = new DeviceTheengsWindowActuators(deviceInfo, deviceModelID, deviceProps, this);
         }
         else
         {
@@ -779,7 +773,7 @@ void DeviceManager::fakeTheengsDevices()
         }
     }
     {
-        QString deviceName = "BlindTilt";
+        QString deviceName = "BlindTilt"; // WoBlindTilt
         QString deviceModel_theengs = "W270160X";
         QString deviceAddr = "76:57:43:01:5C:04";
 
@@ -811,7 +805,7 @@ void DeviceManager::fakeTheengsDevices()
 void DeviceManager::fakeTheengsData()
 {
     QBluetoothDeviceInfo info;
-    int rrdd = (rand() % 30);
+    int rrdd = (rand() % 31);
 
     ////////
 
@@ -824,9 +818,9 @@ void DeviceManager::fakeTheengsData()
         else if (rrrr == 1) info.setServiceData(QUuid(0), QByteArray::fromHex("5020df02283a5c014357480610025302"));
         else if (rrrr == 2) info.setServiceData(QUuid(0), QByteArray::fromHex("5020df025b3a5c014357481010020800"));
         else if (rrrr == 3) info.setServiceData(QUuid(0), QByteArray::fromHex("5120df023e3a5c01435748041002c400"));
-        else qWarning() << "RAND ERROR";
+        else qWarning() << __LINE__ << "RAND ERROR";
     }
-    if (rrdd == 1) // CGDN1
+    else if (rrdd == 1) // CGDN1
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("11:57:43:01:5C:3B"), "CGDN1", 0);
 
@@ -834,9 +828,9 @@ void DeviceManager::fakeTheengsData()
         if (rrrr == 0) info.setServiceData(QBluetoothUuid(quint32(0xfdcd)), QByteArray::fromHex("080eaabbccddeeff010422014c011204710072001302ed03"));
         else if (rrrr == 1) info.setServiceData(QBluetoothUuid(quint32(0xfdcd)), QByteArray::fromHex("880eaabbccddeeff0104f900b50112047d0186011302fd02"));
         else if (rrrr == 2) info.setServiceData(QBluetoothUuid(quint32(0xfdcd)), QByteArray::fromHex("880eaabbccddeeff0104f600ab011204a400d7001302c702"));
-        else qWarning() << "RAND ERROR";
+        else qWarning() << __LINE__ << "RAND ERROR";
     }
-    if (rrdd == 2) // CGP1W
+    else if (rrdd == 2) // CGP1W
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("11:57:43:01:5C:3C"), "CGP1W", 0);
 
@@ -844,9 +838,9 @@ void DeviceManager::fakeTheengsData()
         if (rrrr == 0) info.setServiceData(QBluetoothUuid(quint32(0xfdcd)), QByteArray::fromHex("08094c0140342d5801040801870207024f2702015c"));
         else if (rrrr == 1) info.setServiceData(QBluetoothUuid(quint32(0xfdcd)), QByteArray::fromHex("08094c0140342d5801040f01880207024f2702015c"));
         else if (rrrr == 2) info.setServiceData(QBluetoothUuid(quint32(0xfdcd)), QByteArray::fromHex("08094c0140342d580104fc004a0207026627020120"));
-        else qWarning() << "RAND ERROR";
+        else qWarning() << __LINE__ << "RAND ERROR";
     }
-    if (rrdd == 3) // H5106
+    else if (rrdd == 3) // H5106
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("11:57:43:01:5C:3D"), "GVH5106_4313", 0);
         info.setManufacturerData(endian_flip_16(0x0100), QByteArray::fromHex("01010d8f63cb"));
@@ -854,16 +848,16 @@ void DeviceManager::fakeTheengsData()
 
     ////////
 
-    if (rrdd == 4) // TPMS
+    else if (rrdd == 4) // TPMS
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("21:57:43:01:5C:3A"), "TPMS1_10CA8F", 0);
 
         int rrrr = (rand() % 2);
         if (rrrr == 0) info.setManufacturerData(endian_flip_16(0x0001), QByteArray::fromHex("215743015c3af46503007c0c00003300"));
         else if (rrrr == 1) info.setManufacturerData(endian_flip_16(0x0001), QByteArray::fromHex("215743015c3afb630100ef0900005700"));
-        else qWarning() << "RAND ERROR";
+        else qWarning() << __LINE__ << "RAND ERROR";
     }
-    if (rrdd == 5) // H5055
+    else if (rrdd == 5) // H5055
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("22:57:43:01:5C:3A"), "GVH5055", 0);
 
@@ -872,9 +866,9 @@ void DeviceManager::fakeTheengsData()
         else if (rrrr == 1) info.setManufacturerData(endian_flip_16(0xcf04), QByteArray::fromHex("0400417f065600ffff2c01069100ffff2c010"));
         else if (rrrr == 2) info.setManufacturerData(endian_flip_16(0xcf04), QByteArray::fromHex("040061bf065c00ffff2c01063700ffff2c010000"));
         else if (rrrr == 3) info.setManufacturerData(endian_flip_16(0xcf04), QByteArray::fromHex("0400538f06ffffffff2c01065400ffff2c010"));
-        else qWarning() << "RAND ERROR";
+        else qWarning() << __LINE__ << "RAND ERROR";
     }
-    if (rrdd == 6) // IBT-2X
+    else if (rrdd == 6) // IBT-2X
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("23:57:43:01:5C:3A"), "iBBQ", 0);
 
@@ -884,30 +878,30 @@ void DeviceManager::fakeTheengsData()
         else if (rrrr == 2) info.setManufacturerData(0, QByteArray::fromHex("0000235743015c3af6ff8a02"));
         else if (rrrr == 3) info.setManufacturerData(0, QByteArray::fromHex("0000235743015c3adc00d200"));
         else if (rrrr == 4) info.setManufacturerData(0, QByteArray::fromHex("0000235743015c3af6ff4402"));
-        else qWarning() << "RAND ERROR";
+        else qWarning() << __LINE__ << "RAND ERROR";
     }
-    if (rrdd == 7) // IBT-4XS
+    else if (rrdd == 7) // IBT-4XS
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("24:57:43:01:5C:3A"), "iBBQ", 0);
 
         int rrrr = (rand() % 2);
         if (rrrr == 0) info.setManufacturerData(0, QByteArray::fromHex("0000245743015c3a04010401fa00fa00"));
         else if (rrrr == 1) info.setManufacturerData(0, QByteArray::fromHex("0000245743015c3a0401f6ff58021202"));
-        else qWarning() << "RAND ERROR";
+        else qWarning() << __LINE__ << "RAND ERROR";
     }
-    if (rrdd == 8) // IBT-6XS
+    else if (rrdd == 8) // IBT-6XS
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("25:57:43:01:5C:3A"), "iBBQ", 0);
 
         int rrrr = (rand() % 2);
         if (rrrr == 0) info.setManufacturerData(0, QByteArray::fromHex("00003403de2745cdd200c800f6ffd200f6fff6ff"));
         else if (rrrr == 1) info.setManufacturerData(0, QByteArray::fromHex("00000cb2b71b5b18c800c800f6ffd200f6fff6ff"));
-        else qWarning() << "RAND ERROR";
+        else qWarning() << __LINE__ << "RAND ERROR";
     }
 
     ////////
 
-    if (rrdd == 9) // Mi_Smart_Scale
+    else if (rrdd == 9) // Mi_Smart_Scale
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("31:57:43:01:5C:3A"), "Xiaomi scale", 0);
 
@@ -920,9 +914,9 @@ void DeviceManager::fakeTheengsData()
         else if (rrrr == 5) info.setServiceData(QBluetoothUuid(quint32(0x181d)), QByteArray::fromHex("637607e607020e10293a"));
         else if (rrrr == 6) info.setServiceData(QBluetoothUuid(quint32(0x181d)), QByteArray::fromHex("a37233e607020e10293a"));
         else if (rrrr == 7) info.setServiceData(QBluetoothUuid(quint32(0x181d)), QByteArray::fromHex("e37607e607020e10293a"));
-        else qWarning() << "RAND ERROR";
+        else qWarning() << __LINE__ << "RAND ERROR";
     }
-    if (rrdd == 10) // Mi_Body_Composition_Scale
+    else if (rrdd == 10) // Mi_Body_Composition_Scale
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("32:57:43:01:5C:3A"), "Xiaomi scale", 0);
 
@@ -939,41 +933,41 @@ void DeviceManager::fakeTheengsData()
         else if (rrrr == 9) info.setServiceData(QBluetoothUuid(quint32(0x181b)), QByteArray::fromHex("03a6e607020e10293af701f136"));
         else if (rrrr ==10) info.setServiceData(QBluetoothUuid(quint32(0x181b)), QByteArray::fromHex("03a4e607020e10293a0000f136"));
         else if (rrrr ==11) info.setServiceData(QBluetoothUuid(quint32(0x181b)), QByteArray::fromHex("07a4e607020e10293a0000ce04"));
-        else qWarning() << "RAND ERROR";
+        else qWarning() << __LINE__ << "RAND ERROR";
     }
 
     ////////
 
-    if (rrdd == 11) // H5072
+    else if (rrdd == 11) // H5072
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("41:57:43:01:5C:3A"), "GVH5072_1234", 0);
         info.setManufacturerData(endian_flip_16(0x88ec), QByteArray::fromHex("000418ee6400"));
     }
-    if (rrdd == 12) // H5075
+    else if (rrdd == 12) // H5075
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("42:57:43:01:5C:3A"), "GVH5075_1234", 0);
         info.setManufacturerData(endian_flip_16(0x88ec), QByteArray::fromHex("0004344b6400"));
     }
-    if (rrdd == 13) // H5102
+    else if (rrdd == 13) // H5102
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("43:57:43:01:5C:3A"), "GVH5102_1234", 0);
         info.setManufacturerData(endian_flip_16(0x0100), QByteArray::fromHex("010103590e64"));
     }
-    if (rrdd == 14) // BM_V23
+    else if (rrdd == 14) // BM_V23
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("44:57:43:01:5C:3A"), "V23", 0);
         info.setManufacturerData(endian_flip_16(0x3301), QByteArray::fromHex("17560e10177000ef01b3006c0100"));
     }
-    if (rrdd == 15) // IBS-TH1
+    else if (rrdd == 15) // IBS-TH1
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("45:57:43:01:5C:3A"), "sps", 0);
 
         int rrrr = (rand() % 2);
         if (rrrr == 0) info.setManufacturerData(endian_flip_16(0x660a), QByteArray::fromHex("03150110805908"));
         else if (rrrr == 1) info.setManufacturerData(endian_flip_16(0xcd09), QByteArray::fromHex("a51901d03f0008"));
-        else qWarning() << "RAND ERROR";
+        else qWarning() << __LINE__ << "RAND ERROR";
     }
-    if (rrdd == 16) // IBS-TH2
+    else if (rrdd == 16) // IBS-TH2
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("46:57:43:01:5C:3A"), "tps", 0);
 
@@ -981,18 +975,18 @@ void DeviceManager::fakeTheengsData()
         if (rrrr == 0) info.setManufacturerData(endian_flip_16(0x660a), QByteArray::fromHex("03150110805908"));
         else if (rrrr == 1) info.setManufacturerData(endian_flip_16(0x76fb), QByteArray::fromHex("03150110805908"));
         else if (rrrr == 2) info.setManufacturerData(endian_flip_16(0xd8f8), QByteArray::fromHex("00000035733206"));
-        else qWarning() << "RAND ERROR";
+        else qWarning() << __LINE__ << "RAND ERROR";
     }
 
     ////////
 
-    if (rrdd == 17) // CGPR1
+    else if (rrdd == 17) // CGPR1
     {
         QBluetoothUuid uuid(static_cast<quint16>(0xfdcd));
         info = QBluetoothDeviceInfo(QBluetoothAddress("51:57:43:01:5C:3A"), "CGPR1", 0);
         info.setServiceData(uuid, QByteArray::fromHex("8812aabbccddeeff0201640f01c4090405020000"));
     }
-    if (rrdd == 18) // CGH1
+    else if (rrdd == 18) // CGH1
     {
         QBluetoothUuid uuid(static_cast<quint16>(0xfdcd));
         info = QBluetoothDeviceInfo(QBluetoothAddress("52:57:43:01:5C:3A"), "CGH1", 0);
@@ -1002,9 +996,9 @@ void DeviceManager::fakeTheengsData()
         else if (rrrr == 1) info.setServiceData(uuid, QByteArray::fromHex("0804751060342d580201600f01420f0101"));
         else if (rrrr == 2) info.setServiceData(uuid, QByteArray::fromHex("4804751060342d580401000f01cb"));
         else if (rrrr == 3) info.setServiceData(uuid, QByteArray::fromHex("4804751060342d580401010f01d5"));
-        else qWarning() << "RAND ERROR";
+        else qWarning() << __LINE__ << "RAND ERROR";
     }
-    if (rrdd == 19) // MUE4094RT
+    else if (rrdd == 19) // MUE4094RT
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("53:57:43:01:5C:3A"), "MUE4094RT", 0);
         info.setServiceData(QUuid(0), QByteArray::fromHex("4030dd031d0300010100"));
@@ -1012,13 +1006,12 @@ void DeviceManager::fakeTheengsData()
 
     ////////
 
-    if (rrdd == 20) // ADHS
+    else if (rrdd == 20) // ADHS
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("61:57:43:01:5C:3A"), "ADHS", 0);
-
         info.setManufacturerData(endian_flip_16(0xeefa), QByteArray::fromHex("0000240015000015001a0029000c194f000000"));
     }
-    if (rrdd == 21) // INEM
+    else if (rrdd == 21) // INEM
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("61:57:43:01:5C:3B"), "INEM", 0);
 
@@ -1030,9 +1023,9 @@ void DeviceManager::fakeTheengsData()
         else if (rrrr == 4) info.setManufacturerData(endian_flip_16(0x9082), QByteArray::fromHex("dd0061b80000c4096b0080"));
         else if (rrrr == 5) info.setManufacturerData(endian_flip_16(0x9082), QByteArray::fromHex("6300f0cf0000c419760080"));
         else if (rrrr == 6) info.setManufacturerData(endian_flip_16(0x9682), QByteArray::fromHex("dd0061b80000c4193b0080"));
-        else qWarning() << "RAND ERROR";
+        else qWarning() << __LINE__ << "RAND ERROR";
     }
-    if (rrdd == 22) // SDLS
+    else if (rrdd == 22) // SDLS
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("61:57:43:01:5C:3C"), "SDLS", 0);
 
@@ -1043,27 +1036,27 @@ void DeviceManager::fakeTheengsData()
         else if (rrrr == 3) info.setManufacturerData(endian_flip_16(0xae01), QByteArray::fromHex("ca9dec4160fc5f424a005207"));
         else if (rrrr == 4) info.setManufacturerData(endian_flip_16(0xae01), QByteArray::fromHex("ca9dec4160fc5f424a005200"));
         else if (rrrr == 5) info.setManufacturerData(endian_flip_16(0xae01), QByteArray::fromHex("ca9dec4160fc5f424a005206"));
-        else qWarning() << "RAND ERROR";
+        else qWarning() << __LINE__ << "RAND ERROR";
     }
-    if (rrdd == 23) // BM2
+    else if (rrdd == 23) // BM2
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("61:57:43:01:5C:3D"), "BM2", 0);
 
         int rrrr = (rand() % 2);
         if (rrrr == 0) info.setManufacturerData(endian_flip_16(0x4c00), QByteArray::fromHex("0215655f83caae16a10a702e31f30d58dd82f644000064"));
         else if (rrrr == 1) info.setManufacturerData(endian_flip_16(0x4c00), QByteArray::fromHex("0215655f83caae16a10a702e31f30d58dd82f441423144"));
-        else qWarning() << "RAND ERROR";
+        else qWarning() << __LINE__ << "RAND ERROR";
     }
-    if (rrdd == 24) // BM6
+    else if (rrdd == 24) // BM6
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("61:57:43:01:5C:6D"), "BM6", 0);
 
         int rrrr = (rand() % 2);
-        if (rrrr == 0) info.setManufacturerData(endian_flip_16(0x4c00), QByteArray::fromHex("4c0002153ba29cd9a42c894856badaf2606ef777114d0000cd"));
-        else if (rrrr == 1) info.setManufacturerData(endian_flip_16(0x4c00), QByteArray::fromHex("4c0002153ba29cd9a42c894856badaf2606ef777114e0000cd"));
-        else qWarning() << "RAND ERROR";
+        if (rrrr == 0) info.setManufacturerData(endian_flip_16(0x4c00), QByteArray::fromHex("02153ba29cd9a42c894856badaf2606ef777114d0000cd"));
+        else if (rrrr == 1) info.setManufacturerData(endian_flip_16(0x4c00), QByteArray::fromHex("02153ba29cd9a42c894856badaf2606ef777114e0000cd"));
+        else qWarning() << __LINE__ << "RAND ERROR";
     }
-    if (rrdd == 25) // THX1/W230150X
+    else if (rrdd == 25) // THX1/W230150X
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("61:57:43:01:5C:3E"), "THX1/W230150X", 0);
 
@@ -1071,46 +1064,75 @@ void DeviceManager::fakeTheengsData()
         if (rrrr == 0) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("6900ba18993b"));
         else if (rrrr == 1) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("6900ba031938"));
         else if (rrrr == 2) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("6900ba379ab8"));
-        else qWarning() << "RAND ERROR";
+        else qWarning() << __LINE__ << "RAND ERROR";
     }
 
     ////////
 
-    if (rrdd == 26) // SBS1 "X1" // Switchbot_S1
+    else if (rrdd == 26) // SBS1 "X1" // Switchbot_S1
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("76:57:43:01:5C:01"), "Switchbot_S1", 0);
 
-        int rrrr = (rand() % 3);
+        int rrrr = (rand() % 4);
         if (rrrr == 0) info.setServiceData(QBluetoothUuid(quint32(0x0d00)), QByteArray::fromHex("48d0db"));
-        if (rrrr == 1) info.setServiceData(QBluetoothUuid(quint32(0x0d00)), QByteArray::fromHex("4890cc"));
-        if (rrrr == 2) info.setServiceData(QBluetoothUuid(quint32(0x0d00)), QByteArray::fromHex("48005b"));
-        if (rrrr == 3) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("48004700"));
-        else qWarning() << "RAND ERROR";
+        else if (rrrr == 1) info.setServiceData(QBluetoothUuid(quint32(0x0d00)), QByteArray::fromHex("4890cc"));
+        else if (rrrr == 2) info.setServiceData(QBluetoothUuid(quint32(0x0d00)), QByteArray::fromHex("48005b"));
+        else if (rrrr == 3) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("48004700"));
+        else qWarning() << __LINE__ << "RAND ERROR";
     }
-    if (rrdd == 27) // SBCU "W070160X" // Switchbot_Curtain 2
+    else if (rrdd == 27) // SBCU "W070160X" // Switchbot_Curtain 2
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("76:57:43:01:5C:02"), "Switchbot_Curtain 2", 0);
 
         info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("63c011641104"));
     }
-    if (rrdd == 28) // SBCU "W070160X" // Switchbot_Curtain 3
+    else if (rrdd == 28) // SBCU "W070160X" // Switchbot_Curtain 3
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("76:57:43:01:5C:03"), "Switchbot_Curtain 3", 0);
 
-        int rrrr = (rand() % 3);
+        int rrrr = (rand() % 4);
         if (rrrr == 0) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("7bc04f641204"));
-        if (rrrr == 1) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("7b804d001204"));
-        if (rrrr == 2) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("7b4057e41106"));
-        if (rrrr == 3) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("7bc04f391204"));
-        else qWarning() << "RAND ERROR";
+        else if (rrrr == 1) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("7b804d001204"));
+        else if (rrrr == 2) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("7b4057e41106"));
+        else if (rrrr == 3) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("7bc04f391204"));
+        else qWarning() << __LINE__ << "RAND ERROR";
     }
-    if (rrdd == 29) // SBBT "W270160X" // blind tilt
+    else if (rrdd == 29) // SBBT "W270160X" // blind tilt
     {
-        info = QBluetoothDeviceInfo(QBluetoothAddress("76:57:43:01:5C:04"), "W270160X", 0);
+        info = QBluetoothDeviceInfo(QBluetoothAddress("76:57:43:01:5C:04"), "WoBlindTilt", 0);
+
+        int rrrr = (rand() % 11);
+
+        if (rrrr == 0) info.setManufacturerData(endian_flip_16(0x6909), QByteArray::fromHex("aabbccddeeff0d275514"));
+        else if (rrrr == 1) info.setManufacturerData(endian_flip_16(0x6909), QByteArray::fromHex("aabbccddeeffd5256414"));
+        else if (rrrr == 2) info.setManufacturerData(endian_flip_16(0x6909), QByteArray::fromHex("aabbccddeeffd8253214"));
+        else if (rrrr == 3) info.setManufacturerData(endian_flip_16(0x6909), QByteArray::fromHex("aabbccddeeffcf270014"));
+        else if (rrrr == 4) info.setManufacturerData(endian_flip_16(0x6909), QByteArray::fromHex("aabbccddeeffe0254d14"));
+        else if (rrrr == 5) info.setManufacturerData(endian_flip_16(0x6909), QByteArray::fromHex("aabbccddeeffd3274914"));
+        else if (rrrr == 6) info.setManufacturerData(endian_flip_16(0x6909), QByteArray::fromHex("aabbccddeeffd3272814"));
+        else if (rrrr == 7) info.setManufacturerData(endian_flip_16(0x6909), QByteArray::fromHex("aabbccddeeffd3273c14"));
+        else if (rrrr == 8) info.setManufacturerData(endian_flip_16(0x6909), QByteArray::fromHex("aabbccddeeff4427504184"));
+        else if (rrrr == 9) info.setManufacturerData(endian_flip_16(0x6909), QByteArray::fromHex("aabbccddeeff2427412184"));
+        else if (rrrr == 10) info.setManufacturerData(endian_flip_16(0x6909), QByteArray::fromHex("aabbccddeeff39274b4184"));
+        else qWarning() << __LINE__ << "RAND ERROR";
+
+        if (rrrr == 0) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("78003c"));
+        else if (rrrr == 1) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("780048"));
+        else if (rrrr == 2) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("780036"));
+        else if (rrrr == 3) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("780036"));
+        else if (rrrr == 4) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("780036"));
+        else if (rrrr == 5) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("780036"));
+        else if (rrrr == 6) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("780060"));
+        else if (rrrr == 7) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("780060"));
+        else if (rrrr == 8) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("780064"));
+        else if (rrrr == 9) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("780064"));
+        else if (rrrr == 10) info.setServiceData(QBluetoothUuid(quint32(0xfd3d)), QByteArray::fromHex("780064"));
+        else qWarning() << __LINE__ << "RAND ERROR";
     }
+
     ////////
 
-    if (rrdd == 30) // Oral-B
+    else if (rrdd == 30) // Oral-B
     {
         info = QBluetoothDeviceInfo(QBluetoothAddress("71:57:43:01:5C:3A"), "ORALB_BT", 0);
 
@@ -1125,9 +1147,12 @@ void DeviceManager::fakeTheengsData()
         else if (rrrr == 7) info.setManufacturerData(endian_flip_16(0xdc00), QByteArray::fromHex("0471050332010e08032e04"));
         else if (rrrr == 8) info.setManufacturerData(endian_flip_16(0xdc00), QByteArray::fromHex("0202060220000001010004"));
         else if (rrrr == 9) info.setManufacturerData(endian_flip_16(0xdc00), QByteArray::fromHex("0202067320020f07080004"));
+        else qWarning() << __LINE__ << "RAND ERROR";
     }
 
     ////////
+
+    else qWarning() << "fakeTheengsData()" << "RAND ERROR";
 
     //qDebug() << "DeviceManager::fakeTheengsData(" << info.name() << ")";
     info.setCoreConfigurations(QBluetoothDeviceInfo::LowEnergyCoreConfiguration);

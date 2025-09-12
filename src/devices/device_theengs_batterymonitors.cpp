@@ -17,10 +17,6 @@
 */
 
 #include "device_theengs_batterymonitors.h"
-#include "NotificationManager.h"
-#include "SettingsManager.h"
-#include "TempPresetManager.h"
-#include "TempPreset.h"
 
 #include <QBluetoothUuid>
 #include <QBluetoothServiceInfo>
@@ -107,11 +103,13 @@ void DeviceTheengsBatteryMonitors::setRtWindow(const int w)
 
 void DeviceTheengsBatteryMonitors::parseTheengsProps(const QString &json)
 {
-    qDebug() << "DeviceTheengsBatteryMonitors::parseTheengsProps()";
-    qDebug() << "JSON:" << json;
+    //qDebug() << "DeviceTheengsBatteryMonitors::parseTheengsProps()";
+    //qDebug() << "JSON:" << json;
 
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
     QJsonObject prop = doc.object()["properties"].toObject();
+
+    // JSON: "{\"properties\":{\"batt\":{\"unit\":\"%\",\"name\":\"battery\"},\"device\":{\"unit\":\"string\",\"name\":\"tracker device\"}}}"
 
     // MAC address
     if (prop.contains("mac")) m_deviceAddressMAC = prop["mac"].toString();
@@ -144,12 +142,14 @@ void DeviceTheengsBatteryMonitors::parseTheengsAdvertisement(const QString &json
     if (obj["model_id"].toString() == "BM2" || obj["model_id"].toString() == "BM6")
     {
         m_battery1 = obj["batt"].toInt();
-        //bool track = obj["track"].toBool();
-        //QString device = obj["device"].toString();
-    }
+        //bool track = obj["track"].toBool(); // unused
+        //QString device = obj["device"].toString(); // unused
 
-    {
+        // rt data
         m_lastUpdate = QDateTime::currentDateTime();
+        while (m_rt_batt.size() > 600) { m_rt_batt.pop_front(); } // sanetize
+        m_rt_batt.push_back(std::make_pair(m_lastUpdate, m_battery1));
+        Q_EMIT rtGraphUpdated();
 
         if (needsUpdateDb())
         {
@@ -178,71 +178,15 @@ void DeviceTheengsBatteryMonitors::parseTheengsAdvertisement(const QString &json
 
 /* ************************************************************************** */
 
-void DeviceTheengsBatteryMonitors::startRtCapture(bool start)
-{
-    if (m_capture_started != start)
-    {
-        m_capture_started = start;
-
-        if (m_capture_started) qDebug() << "DeviceTheengsBatteryMonitors::startRtCapture()" << getAddress() << getName();
-        else qDebug() << "DeviceTheengsBatteryMonitors::stopRtCapture()" << getAddress() << getName();
-
-        // init ranges
-        for (int i = 0; i < 6; i++)
-        {
-            m_capture_range_was.push_back(-3);
-        }
-    }
-}
-
-void DeviceTheengsBatteryMonitors::sanetizeRtCapture(int index)
-{/*
-    if (index < 0 || index > 5) return;
-    if (m_rt_probe[index].size() < 600 &&
-        m_rt_probe[index].first().first.secsTo(QDateTime::currentDateTime()) < 660) return;
-
-    std::pair <QDateTime, float> cur = m_rt_probe[index].first();
-    float curval = cur.second;
-    int curcnt = 1;
-
-    for (const auto &d: m_rt_probe[index])
-    {
-        // don't sanetize inside the last 10m window
-        if (d.first.secsTo(QDateTime::currentDateTime()) < 600) break;
-
-        if (cur.first.secsTo(d.first) < 60)
-        {
-            curval += d.second;
-            curcnt++;
-            m_rt_probe[index].removeFirst();
-        }
-        else
-        {
-            cur.second = curval / static_cast<float>(curcnt);
-            m_rt_san_probe[index].push_back(cur);
-            cur = d;
-            curval = cur.second;
-            curcnt = 1;
-        }
-    }
-
-    if (curcnt > 1)
-    {
-        cur.second = curval / static_cast<float>(curcnt);
-        m_rt_san_probe[index].push_back(cur);
-    }*/
-}
-
-void DeviceTheengsBatteryMonitors::getChartData_probeRT(QDateTimeAxis *axis,
-                                                        QLineSeries *batt,
-                                                        bool reload)
+void DeviceTheengsBatteryMonitors::getChartData_batteryRT(QDateTimeAxis *axis, QLineSeries *batt, bool reload)
 {
     //qDebug() << "DeviceTheengsBatteryMonitors::getChartData_probeRT()" << getAddress() << getName();
     //qDebug() << "min " << QDateTime::currentDateTime().addSecs(-300).toString("hh:mm:ss");
     //qDebug() << "max " << QDateTime::currentDateTime().toString("hh:mm:ss");
 
     //if (!m_capture_started) startRtCapture(true);
-/*
+    if (!batt) return;
+
     int seconds = m_realtime_window * -60;
     axis->setFormat("hh:mm");
     axis->setMin(QDateTime::currentDateTime().addSecs(seconds));
@@ -259,27 +203,11 @@ void DeviceTheengsBatteryMonitors::getChartData_probeRT(QDateTimeAxis *axis,
     }
 
     //
-    int maxprobes = 0;
-    QLineSeries *temp[6] = { nullptr };
-    if (temp1 && hasTemp1()) { maxprobes++; temp[0] = temp1; temp1->clear(); }
-    if (temp2 && hasTemp2()) { maxprobes++; temp[1] = temp2; temp2->clear(); }
-    if (temp3 && hasTemp3()) { maxprobes++; temp[2] = temp3; temp3->clear(); }
-    if (temp4 && hasTemp4()) { maxprobes++; temp[3] = temp4; temp4->clear(); }
-    if (temp5 && hasTemp5()) { maxprobes++; temp[4] = temp5; temp5->clear(); }
-    if (temp6 && hasTemp6()) { maxprobes++; temp[5] = temp6; temp6->clear(); }
-
-    for (int i = 0; i < maxprobes; i++)
-    {
-        for (const auto &p: m_rt_san_probe[i]) {
-            if (p.first.secsTo(QDateTime::currentDateTime()) > -seconds) continue;
-            temp[i]->append(p.first.toMSecsSinceEpoch(), p.second);
-        }
-        for (const auto &p: m_rt_probe[i]) {
-            if (p.first.secsTo(QDateTime::currentDateTime()) > -seconds) continue;
-            temp[i]->append(p.first.toMSecsSinceEpoch(), p.second);
-        }
+    batt->clear();
+    for (const auto &p: m_rt_batt) {
+        if (p.first.secsTo(QDateTime::currentDateTime()) > -seconds) continue;
+        batt->append(p.first.toMSecsSinceEpoch(), p.second);
     }
-*/
 }
 
 /* ************************************************************************** */

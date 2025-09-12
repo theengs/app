@@ -16,16 +16,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DEVICE_THEENGS_BATTERYMONITORS_H
-#define DEVICE_THEENGS_BATTERYMONITORS_H
+#ifndef DEVICE_THEENGS_WINDOW_ACTUATORS_H
+#define DEVICE_THEENGS_WINDOW_ACTUATORS_H
 /* ************************************************************************** */
 
 #include "device_theengs.h"
 
 #include <QObject>
 #include <QList>
-#include <QDateTime>
-#include <QElapsedTimer>
 
 #include <QBluetoothDeviceInfo>
 #include <QLowEnergyController>
@@ -33,54 +31,60 @@
 /* ************************************************************************** */
 
 /*!
- * Theengs battery monitors:
- * - BM2 / BM6
+ * Theengs window actuators
+ *
+ * DeviceSwitchbotBlindTilt
+ * Switchbot Blind Tilt alias "SBBT" alias "W270160X"
+ *
+ * DeviceSwitchbotCurtain
+ * Switchbot Curtain alias "SBCU" alias "W070160X"
  */
-class DeviceTheengsBatteryMonitors: public DeviceTheengs
+class DeviceTheengsWindowActuators: public DeviceTheengs
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString preset READ getPreset WRITE setPreset NOTIFY presetUpdated)
-    Q_PROPERTY(int realtimeWindow READ getRtWindow WRITE setRtWindow NOTIFY rtWindowUpdated)
+    Q_PROPERTY(bool calibrated READ getCalibrated NOTIFY calibratedUpdated)
+    Q_PROPERTY(bool moving READ getMoving NOTIFY movingUpdated)
+    Q_PROPERTY(QString direction READ getDirection NOTIFY directionUpdated)
+    Q_PROPERTY(int position READ getPosition NOTIFY positionUpdated)
+    Q_PROPERTY(int open READ getOpen NOTIFY openUpdated)
+    Q_PROPERTY(int lightlevel READ getLightLevel NOTIFY lightlevelUpdated)
 
-    // battery monitor rt data
-    QList <std::pair<QDateTime, float>> m_rt_batt;
+    bool m_calibrated = false;
+    bool m_moving = false;
+    QString m_direction;
+    int m_position = -1;
+    int m_open = -1;
+    int m_lightlevel= -1;
 
-    QElapsedTimer m_rt_lastupdate;
-
-    // battery monitor settings
-    QString m_preset;
-    int m_realtime_window = 5;
-
-    QString getPreset() const { return m_preset; }
-    void setPreset(const QString &p);
-
-    int getRtWindow() const { return m_realtime_window; }
-    void setRtWindow(const int w);
+    bool getCalibrated() const { return m_calibrated; }
+    bool getMoving() const { return m_moving; }
+    QString getDirection() const { return m_direction; }
+    int getPosition() const { return m_position; }
+    int getOpen() const { return m_open; }
+    int getLightLevel() const { return m_lightlevel; }
 
 signals:
-    void presetUpdated();
-    void rtGraphCleaned();
-    void rtGraphUpdated();
-    void rtWindowUpdated();
+    void calibratedUpdated();
+    void movingUpdated();
+    void directionUpdated();
+    void positionUpdated();
+    void openUpdated();
+    void lightlevelUpdated();
 
 public:
-    DeviceTheengsBatteryMonitors(const QString &deviceAddr, const QString &deviceName,
+    DeviceTheengsWindowActuators(const QString &deviceAddr, const QString &deviceName,
                                  const QString &deviceModel, const QString &devicePropsJson,
                                  QObject *parent = nullptr);
-    DeviceTheengsBatteryMonitors(const QBluetoothDeviceInfo &d,
+    DeviceTheengsWindowActuators(const QBluetoothDeviceInfo &d,
                                  const QString &deviceModel, const QString &devicePropsJson,
                                  QObject *parent = nullptr);
-    ~DeviceTheengsBatteryMonitors();
+    ~DeviceTheengsWindowActuators();
 
     // theengs decoder
     void parseTheengsProps(const QString &json);
     void parseTheengsAdvertisement(const QString &json);
-
-    // Chart battery monitoring
-    Q_INVOKABLE void getChartData_batteryRT(QDateTimeAxis *axis, QLineSeries *batt,
-                                            bool reload = false);
 };
 
 /* ************************************************************************** */
-#endif // DEVICE_THEENGS_BATTERYMONITORS_H
+#endif // DEVICE_THEENGS_WINDOW_ACTUATORS_H

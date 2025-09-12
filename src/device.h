@@ -68,8 +68,8 @@ class Device: public QObject
     Q_PROPERTY(bool isPGP READ isPGP NOTIFY sensorUpdated)
 
     Q_PROPERTY(bool isGenericDevice READ isGenericDevice NOTIFY sensorUpdated)
-    Q_PROPERTY(bool isActioner READ isActioner NOTIFY sensorUpdated)
-    Q_PROPERTY(bool isActionerWindow READ isActionerWindow NOTIFY sensorUpdated)
+    Q_PROPERTY(bool isActuator READ isActuator NOTIFY sensorUpdated)
+    Q_PROPERTY(bool isActuatorWindow READ isActuatorWindow NOTIFY sensorUpdated)
     Q_PROPERTY(bool isBatteryMonitor READ isBatteryMonitor NOTIFY sensorUpdated)
     Q_PROPERTY(bool isMotionSensor READ isMotionSensor NOTIFY sensorUpdated)
     Q_PROPERTY(bool isProbe READ isProbe NOTIFY sensorUpdated)
@@ -322,8 +322,8 @@ public:
     virtual bool hasRealTime() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_REALTIME); }
 
     bool isGenericDevice() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_GENERIC); }
-    bool isActioner() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_ACTIONER); }
-    bool isActionerWindow() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_ACTIONER_WINDOW); }
+    bool isActuator() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_ACTUATOR); }
+    bool isActuatorWindow() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_ACTUATOR_WINDOW); }
     bool isBatteryMonitor() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_BATTERYMONITOR); }
     bool isBeacon() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_BEACON); }
     bool isMotionSensor() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_MOTIONSENSOR); }

@@ -129,9 +129,9 @@ function getDeviceIconTheengs(device, devicePlanted) {
         src = "qrc:/IconLibrary/material-symbols/sensors/sensors.svg"
     } else if (device.isBatteryMonitor) {
         src = "qrc:/assets/icons_custom/battery_car.svg"
-    } else if (device.isActioner) {
+    } else if (device.isActuator) {
         src = "qrc:/assets/icons_material/switch.svg"
-    } else if (device.isActionerWindow) {
+    } else if (device.isActuatorWindow) {
         src = "qrc:/assets/icons_material/window_sensor.svg"
     } else {
         src = getDeviceIcon(device, devicePlanted)

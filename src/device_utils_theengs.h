@@ -40,8 +40,10 @@ public:
     }
 
     enum DeviceSensorsTheengs {
-        // probes
+        // probes (tire pressure)
         SENSOR_PROBES_TPMS          = (1 <<  0),
+
+        // probes (temp)
         SENSOR_TEMPERATURE_1        = (1 <<  1),
         SENSOR_TEMPERATURE_2        = (1 <<  2),
         SENSOR_TEMPERATURE_3        = (1 <<  3),
@@ -73,9 +75,10 @@ public:
         SENSOR_OPEN                 = (1 << 25),
         SENSOR_ALARM                = (1 << 26),
         SENSOR_DISTANCE             = (1 << 27),
+
         SENSOR_BATTERY              = (1 << 28),
 
-        // generic
+        SENSOR_DIRECTION            = (1 << 29),
         SENSOR_MODE                 = (1 << 30),
         SENSOR_STATE                = (1 << 31),
     };

@@ -92,15 +92,13 @@ public:
     void parseTheengsProps(const QString &json);
     void parseTheengsAdvertisement(const QString &json);
 
-    // Chart probe realtime
+    // Chart probe realtime/AIO
     Q_INVOKABLE void startRtCapture(bool start = true);
     Q_INVOKABLE void getChartData_probeRT(QDateTimeAxis *axis,
                                           QLineSeries *temp1, QLineSeries *temp2,
                                           QLineSeries *temp3, QLineSeries *temp4,
                                           QLineSeries *temp5, QLineSeries *temp6,
                                           bool reload = false);
-
-    // Chart probe AIO
     Q_INVOKABLE void getChartData_probeAIO(int maxDays,
                                            QDateTimeAxis *axis,
                                            QLineSeries *temp1, QLineSeries *temp2,

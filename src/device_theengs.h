@@ -88,6 +88,8 @@ class DeviceTheengs: public DeviceSensor
 
     // probe data
     Q_PROPERTY(bool hasProbesTPMS READ hasProbesTPMS NOTIFY sensorsUpdated)
+    Q_PROPERTY(bool hasProbesBBQ READ hasProbesBBQ NOTIFY sensorsUpdated)
+
     Q_PROPERTY(bool hasTemperature1 READ hasTemp1 NOTIFY sensorsUpdated)
     Q_PROPERTY(bool hasTemperature2 READ hasTemp2 NOTIFY sensorsUpdated)
     Q_PROPERTY(bool hasTemperature3 READ hasTemp3 NOTIFY sensorsUpdated)
@@ -95,7 +97,6 @@ class DeviceTheengs: public DeviceSensor
     Q_PROPERTY(bool hasTemperature5 READ hasTemp5 NOTIFY sensorsUpdated)
     Q_PROPERTY(bool hasTemperature6 READ hasTemp6 NOTIFY sensorsUpdated)
 
-    Q_PROPERTY(bool hasProbesBBQ READ hasProbesBBQ NOTIFY sensorsUpdated)
     Q_PROPERTY(float temperature1 READ getTemp1 NOTIFY dataUpdated)
     Q_PROPERTY(float temperature2 READ getTemp2 NOTIFY dataUpdated)
     Q_PROPERTY(float temperature3 READ getTemp3 NOTIFY dataUpdated)
@@ -127,11 +128,13 @@ class DeviceTheengs: public DeviceSensor
     Q_PROPERTY(int impedance READ getImpedance NOTIFY dataUpdated)
 
     // motion sensor data
-    Q_PROPERTY(bool hasOpen READ hasOpen NOTIFY sensorsUpdated)
     Q_PROPERTY(bool hasMotion READ hasMotion NOTIFY sensorsUpdated)
+    Q_PROPERTY(bool hasOpen READ hasOpen NOTIFY sensorsUpdated)
+    Q_PROPERTY(bool hasAlarm READ hasAlarm NOTIFY sensorsUpdated)
+    Q_PROPERTY(bool hasDistance READ hasDistance NOTIFY sensorsUpdated)
 
-    Q_PROPERTY(bool open READ getOpen NOTIFY dataUpdated)
     Q_PROPERTY(bool motion READ getMotion NOTIFY dataUpdated)
+    Q_PROPERTY(bool open READ getOpen NOTIFY dataUpdated)
 
     // generic data
     Q_PROPERTY(QVariant genericData READ getGenericData NOTIFY genericDataUpdated)
@@ -217,14 +220,6 @@ public:
     void setPlantSensor() { m_deviceType = DeviceUtils::DEVICE_PLANTSENSOR; }
     void setThermometer() { m_deviceType = DeviceUtils::DEVICE_THERMOMETER; }
     void setEnvironmental() { m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL; }
-    void setActioner() { m_deviceType = DeviceUtils::DEVICE_THEENGS_ACTIONER; }
-    void setActionerWindow() { m_deviceType = DeviceUtils::DEVICE_THEENGS_ACTIONER_WINDOW; }
-
-    // beacon data
-    // TODO
-
-    // watch data
-    // TODO
 
     // probe data
     bool hasProbesTPMS() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_PROBES_TPMS); }
@@ -268,6 +263,12 @@ public:
     bool getAlarm3() const { return m_alarm3; }
     bool getAlarm4() const { return m_alarm4; }
 
+    // beacon data
+    // TODO
+
+    // watch data
+    // TODO
+
     // scale data
     bool hasWeight() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_WEIGHT); }
     bool hasWeightMode() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_WEIGHT_MODE); }
@@ -280,11 +281,14 @@ public:
     int getImpedance() const { return m_impedance; }
 
     // motion sensor data
-    bool hasOpen() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_OPEN); }
     bool hasMotion() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_MOTION); }
+    bool hasOpen() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_OPEN); }
+    bool hasAlarm() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_ALARM); }
+    bool hasDistance() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_DISTANCE); }
 
     bool getOpen() const { return m_open; }
     bool getMotion() const { return m_motion; }
+    float getDistance() const { return m_sensing_distance; }
 
     // MQTT discovery
     static bool createDiscoveryMQTT(const QString &deviceAddr, const QString &deviceName,
