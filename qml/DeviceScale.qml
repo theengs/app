@@ -16,12 +16,16 @@ Loader {
         // set device
         if (typeof clickedDevice === "undefined" || !clickedDevice) return
         if (!clickedDevice.isScale) return
-        if (clickedDevice === currentDevice) return
-        currentDevice = clickedDevice
+
+        // set device
+        if (currentDevice !== clickedDevice) currentDevice = clickedDevice
 
         // load screen
-        deviceScale.active = true
+        if (!deviceScale.active)  deviceScale.active = true
         deviceScale.item.loadDevice()
+
+        // change screen
+        appContent.state = "DeviceScale"
     }
 
     ////////

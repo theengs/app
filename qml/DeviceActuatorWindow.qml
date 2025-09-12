@@ -6,7 +6,7 @@ import DeviceUtils
 import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
 
 Loader {
-    id: deviceMotionSensor
+    id: deviceActuator
 
     property var currentDevice: null
 
@@ -14,24 +14,24 @@ Loader {
 
     function loadDevice(clickedDevice) {
         if (typeof clickedDevice === "undefined" || !clickedDevice) return
-        if (!clickedDevice.isMotionSensor) return
+        if (!clickedDevice.isActuatorWindow) return
 
         // set device
         if (currentDevice !== clickedDevice) currentDevice = clickedDevice
 
         // load screen
-        if (!deviceMotionSensor.active) deviceMotionSensor.active = true
-        deviceMotionSensor.item.loadDevice()
+        if (!deviceActuator.active) deviceActuator.active = true
+        deviceActuator.item.loadDevice()
 
         // change screen
-        appContent.state = "DeviceMotionSensor"
+        appContent.state = "DeviceActuatorWindow"
     }
 
     ////////
 
     function backAction() {
-        if (deviceMotionSensor.status === Loader.Ready)
-            deviceMotionSensor.item.backAction()
+        if (deviceActuator.status === Loader.Ready)
+            deviceActuator.item.backAction()
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -40,7 +40,7 @@ Loader {
     asynchronous: false
 
     sourceComponent: Item {
-        id: itemDeviceMotionSensor
+        id: itemDeviceActuator
         implicitWidth: 480
         implicitHeight: 720
 
@@ -115,7 +115,7 @@ Loader {
         ////////
 
         function loadDevice() {
-            //console.log("deviceMotionSensor // loadDevice() >> " + currentDevice)
+            //console.log("deviceActuator // loadDevice() >> " + currentDevice)
 
             loadGraph()
             updateHeader()
@@ -124,8 +124,8 @@ Loader {
 
         function updateHeader() {
             if (typeof currentDevice === "undefined" || !currentDevice) return
-            if (!currentDevice.isMotionSensor) return
-            //console.log("deviceMotionSensor // updateHeader() >> " + currentDevice)
+            if (!currentDevice.isActuatorWindow) return
+            //console.log("deviceActuator // updateHeader() >> " + currentDevice)
 
             // Status
             updateStatusText()
@@ -133,14 +133,14 @@ Loader {
 
         function updateData() {
             if (typeof currentDevice === "undefined" || !currentDevice) return
-            if (!currentDevice.isMotionSensor) return
-            //console.log("deviceMotionSensor // updateData() >> " + currentDevice)
+            if (!currentDevice.isActuatorWindow) return
+            //console.log("deviceActuator // updateData() >> " + currentDevice)
         }
 
         function updateStatusText() {
             if (typeof currentDevice === "undefined" || !currentDevice) return
-            if (!currentDevice.isMotionSensor) return
-            //console.log("deviceMotionSensor // updateStatusText() >> " + currentDevice)
+            if (!currentDevice.isActuatorWindow) return
+            //console.log("deviceActuator // updateStatusText() >> " + currentDevice)
 
             // Status
             textStatus.text = UtilsDeviceSensors.getDeviceStatusText(currentDevice.status)
@@ -183,16 +183,16 @@ Loader {
             //
         }
 
-        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////
 
         Flow {
             anchors.fill: parent
 
             Rectangle {
-                id: motionBox
+                id: actuatorBox
 
-                property int dimboxw: Math.min(deviceMotionSensor.width * 0.4, isPhone ? 300 : 600)
-                property int dimboxh: Math.max(deviceMotionSensor.height * 0.333, isPhone ? 180 : 256)
+                property int dimboxw: Math.min(deviceActuator.width * 0.4, isPhone ? 300 : 600)
+                property int dimboxh: Math.max(deviceActuator.height * 0.333, isPhone ? 180 : 256)
 
                 width: {
                     if (isTablet && screenOrientation == Qt.PortraitOrientation) return parent.width
@@ -213,7 +213,7 @@ Loader {
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.verticalCenterOffset: -(appHeader.height / 3)
 
-                    width: singleColumn ? motionBox.height * 0.75 : motionBox.width * 0.66
+                    width: singleColumn ? actuatorBox.height * 0.75 : actuatorBox.width * 0.66
                     height: width
                     radius: width
                     color: Qt.alpha(cccc, 0.1)
@@ -424,15 +424,19 @@ Loader {
             Item {
                 width: {
                     if (isTablet && screenOrientation == Qt.PortraitOrientation) return parent.width
-                    return singleColumn ? parent.width : (parent.width - motionBox.width)
+                    return singleColumn ? parent.width : (parent.width - actuatorBox.width)
                 }
                 height: {
-                    if (isTablet && screenOrientation == Qt.PortraitOrientation) return (parent.height - motionBox.height)
-                    return singleColumn ? (parent.height - motionBox.height) : parent.height
+                    if (isTablet && screenOrientation == Qt.PortraitOrientation) return (parent.height - actuatorBox.height)
+                    return singleColumn ? (parent.height - actuatorBox.height) : parent.height
                 }
 
                 // EMPTY
             }
+
+            ////////////////
         }
+
+        ////////////////////////////////////////////////////////////////////////
     }
 }

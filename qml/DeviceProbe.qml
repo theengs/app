@@ -31,9 +31,7 @@ Loader {
         if (currentDevice.hasProbesBBQ) currentDevice.startRtCapture(true)
 
         // load screen
-        if (!deviceProbe.active) {
-            deviceProbe.active = true
-        }
+        if (!deviceProbe.active) deviceProbe.active = true
         deviceProbe.item.loadDevice()
 
         // change screen

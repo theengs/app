@@ -18,12 +18,15 @@
         <file>DevicePlantSensorData.qml</file>
         <file>DevicePlantSensorHistory.qml</file>
         <file>DevicePlantSensorSettings.qml</file>
-        <file>DeviceProbe.qml</file>
-        <file>DeviceScale.qml</file>
-        <file>DeviceMotionSensor.qml</file>
         <file>DeviceThermometer.qml</file>
         <file>DeviceEnvironmental.qml</file>
         <file>DeviceGeneric.qml</file>
+        <file>DeviceActuator.qml</file>
+        <file>DeviceActuatorWindow.qml</file>
+        <file>DeviceBatteryMonitor.qml</file>
+        <file>DeviceProbe.qml</file>
+        <file>DeviceScale.qml</file>
+        <file>DeviceMotionSensor.qml</file>
         <file>TemperaturePresetList.qml</file>
         <file>TemperaturePreset.qml</file>
 
@@ -39,6 +42,7 @@
         <file alias="ChartScaleDataAio.qml">charts/ChartScaleDataAio.qml</file>
         <file alias="ChartProbeDataAio.qml">charts/ChartProbeDataAio.qml</file>
         <file alias="ChartProbeRealTime.qml">charts/ChartProbeRealTime.qml</file>
+        <file alias="ChartBatteryRealTime.qml">charts/ChartBatteryRealTime.qml</file>
         <file alias="ChartThermometerMinMax.qml">charts/ChartThermometerMinMax.qml</file>
         <file alias="ChartThermometerMinMaxBar.qml">charts/ChartThermometerMinMaxBar.qml</file>
         <file alias="IndicatorsCompact.qml">charts/IndicatorsCompact.qml</file>

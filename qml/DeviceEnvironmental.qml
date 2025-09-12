@@ -20,7 +20,7 @@ Loader {
         currentDevice = clickedDevice
 
         // load screen
-        deviceEnvironmental.active = true
+        if (!deviceEnvironmental.active) deviceEnvironmental.active = true
         deviceEnvironmental.item.loadDevice()
 
         // change screen

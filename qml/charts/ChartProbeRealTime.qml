@@ -75,11 +75,11 @@ Item {
         target: currentDevice
 
         function onRtGraphUpdated() {
-            //console.log("onRtgraphUpdated")
+            //console.log("onRtGraphUpdated")
             updateGraph()
         }
         function onRtGraphCleaned() {
-            //console.log("onRtgraphCleaned")
+            //console.log("onRtGraphCleaned")
             updateGraph()
         }
     }

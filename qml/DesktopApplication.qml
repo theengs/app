@@ -241,14 +241,20 @@ ApplicationWindow {
             screenDeviceThermometer.backAction()
         } else if (appContent.state === "DeviceEnvironmental") {
             screenDeviceEnvironmental.backAction()
+        } else if (appContent.state === "DeviceGeneric") {
+            screenDeviceGeneric.backAction()
+        } else if (appContent.state === "DeviceActuator") {
+            screenDeviceActuator.backAction()
+        } else if (appContent.state === "DeviceActuatorWindow") {
+            screenDeviceActuatorWindow.backAction()
+        } else if (appContent.state === "DeviceBatteryMonitor") {
+            screenDeviceBatteryMonitor.backAction()
+        } else if (appContent.state === "DeviceMotionSensor") {
+            screenDeviceMotionSensor.backAction()
         } else if (appContent.state === "DeviceProbe") {
             screenDeviceProbe.backAction()
         } else if (appContent.state === "DeviceScale") {
             screenDeviceScale.backAction()
-        } else if (appContent.state === "DeviceMotionSensor") {
-            screenDeviceMotionSensor.backAction()
-        } else if (appContent.state === "DeviceGeneric") {
-            screenDeviceGeneric.backAction()
         } else if (appContent.state === "DeviceBrowser") {
             screenDeviceBrowser.backAction()
         } else if (appContent.state === "GatewayList") {
@@ -284,6 +290,12 @@ ApplicationWindow {
                 appContent.state = "DeviceScale"
             else if (appContent.previousStates[appContent.previousStates.length-1] === "DeviceMotionSensor")
                 appContent.state = "DeviceMotionSensor"
+            else if (appContent.previousStates[appContent.previousStates.length-1] === "DeviceBatteryMonitor")
+                appContent.state = "DeviceBatteryMonitor"
+            else if (appContent.previousStates[appContent.previousStates.length-1] === "DeviceActuator")
+                appContent.state = "DeviceActuator"
+            else if (appContent.previousStates[appContent.previousStates.length-1] === "DeviceActuatorWindow")
+                appContent.state = "DeviceActuatorWindow"
             else if (appContent.previousStates[appContent.previousStates.length-1] === "DeviceGeneric")
                 appContent.state = "DeviceGeneric"
             else if (appContent.previousStates[appContent.previousStates.length-1] === "DeviceBrowser")
@@ -402,20 +414,33 @@ ApplicationWindow {
             id: screenDeviceEnvironmental
             anchors.fill: parent
         }
-        DeviceProbe {
-            id: screenDeviceProbe
+
+        DeviceGeneric {
+            id: screenDeviceGeneric
             anchors.fill: parent
         }
-        DeviceScale {
-            id: screenDeviceScale
+        DeviceActuator {
+            id: screenDeviceActuator
+            anchors.fill: parent
+        }
+        DeviceActuatorWindow {
+            id: screenDeviceActuatorWindow
+            anchors.fill: parent
+        }
+        DeviceBatteryMonitor {
+            id: screenDeviceBatteryMonitor
             anchors.fill: parent
         }
         DeviceMotionSensor {
             id: screenDeviceMotionSensor
             anchors.fill: parent
         }
-        DeviceGeneric {
-            id: screenDeviceGeneric
+        DeviceProbe {
+            id: screenDeviceProbe
+            anchors.fill: parent
+        }
+        DeviceScale {
+            id: screenDeviceScale
             anchors.fill: parent
         }
 
@@ -476,6 +501,9 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceProbe; visible: false; }
                 PropertyChanges { target: screenDeviceScale; visible: false; }
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceActuator; visible: false; }
+                PropertyChanges { target: screenDeviceActuatorWindow; visible: false; }
+                PropertyChanges { target: screenDeviceBatteryMonitor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenGatewayList; visible: false; }
                 PropertyChanges { target: screenGatewayDevice; visible: false; }
@@ -494,6 +522,9 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceProbe; visible: false; }
                 PropertyChanges { target: screenDeviceScale; visible: false; }
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceActuator; visible: false; }
+                PropertyChanges { target: screenDeviceActuatorWindow; visible: false; }
+                PropertyChanges { target: screenDeviceBatteryMonitor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenGatewayList; visible: false; }
                 PropertyChanges { target: screenGatewayDevice; visible: false; }
@@ -512,6 +543,9 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceProbe; visible: false; }
                 PropertyChanges { target: screenDeviceScale; visible: false; }
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceActuator; visible: false; }
+                PropertyChanges { target: screenDeviceActuatorWindow; visible: false; }
+                PropertyChanges { target: screenDeviceBatteryMonitor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenGatewayList; visible: false; }
                 PropertyChanges { target: screenGatewayDevice; visible: false; }
@@ -530,6 +564,9 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceProbe; visible: false; }
                 PropertyChanges { target: screenDeviceScale; visible: false; }
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceActuator; visible: false; }
+                PropertyChanges { target: screenDeviceActuatorWindow; visible: false; }
+                PropertyChanges { target: screenDeviceBatteryMonitor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenGatewayList; visible: false; }
                 PropertyChanges { target: screenGatewayDevice; visible: false; }
@@ -539,33 +576,82 @@ ApplicationWindow {
                 PropertyChanges { target: screenAbout; visible: false; }
                 PropertyChanges { target: screenDeviceBrowser; visible: false; }
             },
+
             State {
-                name: "DeviceProbe"
-                PropertyChanges { target: screenDeviceList; visible: false; }
-                PropertyChanges { target: screenDevicePlantSensor; visible: false; }
-                PropertyChanges { target: screenDeviceThermometer; visible: false; }
-                PropertyChanges { target: screenDeviceEnvironmental; visible: false; }
-                PropertyChanges { target: screenDeviceProbe; visible: true; focus: true; }
-                PropertyChanges { target: screenDeviceScale; visible: false; }
-                PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
-                PropertyChanges { target: screenDeviceGeneric; visible: false; }
-                PropertyChanges { target: screenGatewayList; visible: false; }
-                PropertyChanges { target: screenGatewayDevice; visible: false; }
-                PropertyChanges { target: screenPresetsList; visible: false; }
-                PropertyChanges { target: screenSettingsMqtt; visible: false; }
-                PropertyChanges { target: screenSettings; visible: false; }
-                PropertyChanges { target: screenAbout; visible: false; }
-                PropertyChanges { target: screenDeviceBrowser; visible: false; }
-            },
-            State {
-                name: "DeviceScale"
+                name: "DeviceGeneric"
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; }
                 PropertyChanges { target: screenDeviceEnvironmental; visible: false; }
                 PropertyChanges { target: screenDeviceProbe; visible: false; }
-                PropertyChanges { target: screenDeviceScale; visible: true; focus: true; }
+                PropertyChanges { target: screenDeviceScale; visible: false; }
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceActuator; visible: false; }
+                PropertyChanges { target: screenDeviceActuatorWindow; visible: false; }
+                PropertyChanges { target: screenDeviceBatteryMonitor; visible: false; }
+                PropertyChanges { target: screenDeviceGeneric; visible: true; focus: true; }
+                PropertyChanges { target: screenGatewayList; visible: false; }
+                PropertyChanges { target: screenGatewayDevice; visible: false; }
+                PropertyChanges { target: screenPresetsList; visible: false; }
+                PropertyChanges { target: screenSettingsMqtt; visible: false; }
+                PropertyChanges { target: screenSettings; visible: false; }
+                PropertyChanges { target: screenAbout; visible: false; }
+                PropertyChanges { target: screenDeviceBrowser; visible: false; }
+            },
+            State {
+                name: "DeviceActuator"
+                PropertyChanges { target: screenDeviceList; visible: false; }
+                PropertyChanges { target: screenDevicePlantSensor; visible: false; }
+                PropertyChanges { target: screenDeviceThermometer; visible: false; }
+                PropertyChanges { target: screenDeviceEnvironmental; visible: false; }
+                PropertyChanges { target: screenDeviceProbe; visible: false; }
+                PropertyChanges { target: screenDeviceScale; visible: false; }
+                PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceActuator; visible: true; focus: true; }
+                PropertyChanges { target: screenDeviceActuatorWindow; visible: false; }
+                PropertyChanges { target: screenDeviceBatteryMonitor; visible: false; }
+                PropertyChanges { target: screenDeviceGeneric; visible: false; }
+                PropertyChanges { target: screenGatewayList; visible: false; }
+                PropertyChanges { target: screenGatewayDevice; visible: false; }
+                PropertyChanges { target: screenPresetsList; visible: false; }
+                PropertyChanges { target: screenSettingsMqtt; visible: false; }
+                PropertyChanges { target: screenSettings; visible: false; }
+                PropertyChanges { target: screenAbout; visible: false; }
+                PropertyChanges { target: screenDeviceBrowser; visible: false; }
+            },
+            State {
+                name: "DeviceActuatorWindow"
+                PropertyChanges { target: screenDeviceList; visible: false; }
+                PropertyChanges { target: screenDevicePlantSensor; visible: false; }
+                PropertyChanges { target: screenDeviceThermometer; visible: false; }
+                PropertyChanges { target: screenDeviceEnvironmental; visible: false; }
+                PropertyChanges { target: screenDeviceProbe; visible: false; }
+                PropertyChanges { target: screenDeviceScale; visible: false; }
+                PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceActuator; visible: false; }
+                PropertyChanges { target: screenDeviceActuatorWindow; visible: true; focus: true; }
+                PropertyChanges { target: screenDeviceBatteryMonitor; visible: false; }
+                PropertyChanges { target: screenDeviceGeneric; visible: false; }
+                PropertyChanges { target: screenGatewayList; visible: false; }
+                PropertyChanges { target: screenGatewayDevice; visible: false; }
+                PropertyChanges { target: screenPresetsList; visible: false; }
+                PropertyChanges { target: screenSettingsMqtt; visible: false; }
+                PropertyChanges { target: screenSettings; visible: false; }
+                PropertyChanges { target: screenAbout; visible: false; }
+                PropertyChanges { target: screenDeviceBrowser; visible: false; }
+            },
+            State {
+                name: "DeviceBatteryMonitor"
+                PropertyChanges { target: screenDeviceList; visible: false; }
+                PropertyChanges { target: screenDevicePlantSensor; visible: false; }
+                PropertyChanges { target: screenDeviceThermometer; visible: false; }
+                PropertyChanges { target: screenDeviceEnvironmental; visible: false; }
+                PropertyChanges { target: screenDeviceProbe; visible: false; }
+                PropertyChanges { target: screenDeviceScale; visible: false; }
+                PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceActuator; visible: false; }
+                PropertyChanges { target: screenDeviceActuatorWindow; visible: false; }
+                PropertyChanges { target: screenDeviceBatteryMonitor; visible: true; focus: true; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenGatewayList; visible: false; }
                 PropertyChanges { target: screenGatewayDevice; visible: false; }
@@ -584,6 +670,9 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceProbe; visible: false; }
                 PropertyChanges { target: screenDeviceScale; visible: false; }
                 PropertyChanges { target: screenDeviceMotionSensor; visible: true; focus: true; }
+                PropertyChanges { target: screenDeviceActuator; visible: false; }
+                PropertyChanges { target: screenDeviceActuatorWindow; visible: false; }
+                PropertyChanges { target: screenDeviceBatteryMonitor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenGatewayList; visible: false; }
                 PropertyChanges { target: screenGatewayDevice; visible: false; }
@@ -594,15 +683,39 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceBrowser; visible: false; }
             },
             State {
-                name: "DeviceGeneric"
+                name: "DeviceProbe"
+                PropertyChanges { target: screenDeviceList; visible: false; }
+                PropertyChanges { target: screenDevicePlantSensor; visible: false; }
+                PropertyChanges { target: screenDeviceThermometer; visible: false; }
+                PropertyChanges { target: screenDeviceEnvironmental; visible: false; }
+                PropertyChanges { target: screenDeviceProbe; visible: true; focus: true; }
+                PropertyChanges { target: screenDeviceScale; visible: false; }
+                PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceActuator; visible: false; }
+                PropertyChanges { target: screenDeviceActuatorWindow; visible: false; }
+                PropertyChanges { target: screenDeviceBatteryMonitor; visible: false; }
+                PropertyChanges { target: screenDeviceGeneric; visible: false; }
+                PropertyChanges { target: screenGatewayList; visible: false; }
+                PropertyChanges { target: screenGatewayDevice; visible: false; }
+                PropertyChanges { target: screenPresetsList; visible: false; }
+                PropertyChanges { target: screenSettingsMqtt; visible: false; }
+                PropertyChanges { target: screenSettings; visible: false; }
+                PropertyChanges { target: screenAbout; visible: false; }
+                PropertyChanges { target: screenDeviceBrowser; visible: false; }
+            },
+            State {
+                name: "DeviceScale"
                 PropertyChanges { target: screenDeviceList; visible: false; }
                 PropertyChanges { target: screenDevicePlantSensor; visible: false; }
                 PropertyChanges { target: screenDeviceThermometer; visible: false; }
                 PropertyChanges { target: screenDeviceEnvironmental; visible: false; }
                 PropertyChanges { target: screenDeviceProbe; visible: false; }
-                PropertyChanges { target: screenDeviceScale; visible: false; }
+                PropertyChanges { target: screenDeviceScale; visible: true; focus: true; }
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
-                PropertyChanges { target: screenDeviceGeneric; visible: true; focus: true; }
+                PropertyChanges { target: screenDeviceActuator; visible: false; }
+                PropertyChanges { target: screenDeviceActuatorWindow; visible: false; }
+                PropertyChanges { target: screenDeviceBatteryMonitor; visible: false; }
+                PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenGatewayList; visible: false; }
                 PropertyChanges { target: screenGatewayDevice; visible: false; }
                 PropertyChanges { target: screenPresetsList; visible: false; }
@@ -621,6 +734,9 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceProbe; visible: false; }
                 PropertyChanges { target: screenDeviceScale; visible: false; }
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceActuator; visible: false; }
+                PropertyChanges { target: screenDeviceActuatorWindow; visible: false; }
+                PropertyChanges { target: screenDeviceBatteryMonitor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenGatewayList; visible: true; focus: true; }
                 PropertyChanges { target: screenGatewayDevice; visible: false; }
@@ -639,6 +755,9 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceProbe; visible: false; }
                 PropertyChanges { target: screenDeviceScale; visible: false; }
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceActuator; visible: false; }
+                PropertyChanges { target: screenDeviceActuatorWindow; visible: false; }
+                PropertyChanges { target: screenDeviceBatteryMonitor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenGatewayList; visible: false; }
                 PropertyChanges { target: screenGatewayDevice; visible: true; focus: true; }
@@ -658,6 +777,9 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceProbe; visible: false; }
                 PropertyChanges { target: screenDeviceScale; visible: false; }
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceActuator; visible: false; }
+                PropertyChanges { target: screenDeviceActuatorWindow; visible: false; }
+                PropertyChanges { target: screenDeviceBatteryMonitor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenGatewayList; visible: false; }
                 PropertyChanges { target: screenGatewayDevice; visible: false; }
@@ -677,6 +799,9 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceProbe; visible: false; }
                 PropertyChanges { target: screenDeviceScale; visible: false; }
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceActuator; visible: false; }
+                PropertyChanges { target: screenDeviceActuatorWindow; visible: false; }
+                PropertyChanges { target: screenDeviceBatteryMonitor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenGatewayList; visible: false; }
                 PropertyChanges { target: screenGatewayDevice; visible: false; }
@@ -695,6 +820,9 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceProbe; visible: false; }
                 PropertyChanges { target: screenDeviceScale; visible: false; }
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceActuator; visible: false; }
+                PropertyChanges { target: screenDeviceActuatorWindow; visible: false; }
+                PropertyChanges { target: screenDeviceBatteryMonitor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenGatewayList; visible: false; }
                 PropertyChanges { target: screenGatewayDevice; visible: false; }
@@ -713,6 +841,9 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceProbe; visible: false; }
                 PropertyChanges { target: screenDeviceScale; visible: false; }
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceActuator; visible: false; }
+                PropertyChanges { target: screenDeviceActuatorWindow; visible: false; }
+                PropertyChanges { target: screenDeviceBatteryMonitor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenGatewayList; visible: false; }
                 PropertyChanges { target: screenGatewayDevice; visible: false; }
@@ -732,6 +863,9 @@ ApplicationWindow {
                 PropertyChanges { target: screenDeviceProbe; visible: false; }
                 PropertyChanges { target: screenDeviceScale; visible: false; }
                 PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceActuator; visible: false; }
+                PropertyChanges { target: screenDeviceActuatorWindow; visible: false; }
+                PropertyChanges { target: screenDeviceBatteryMonitor; visible: false; }
                 PropertyChanges { target: screenDeviceGeneric; visible: false; }
                 PropertyChanges { target: screenGatewayList; visible: false; }
                 PropertyChanges { target: screenGatewayDevice; visible: false; }

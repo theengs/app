@@ -13,15 +13,18 @@ Loader {
     ////////
 
     function loadDevice(clickedDevice) {
-        // set device
         if (typeof clickedDevice === "undefined" || !clickedDevice) return
         if (!clickedDevice.isGenericDevice) return
-        if (clickedDevice === currentDevice) return
-        currentDevice = clickedDevice
+
+        // set device
+        if (currentDevice !== clickedDevice) currentDevice = clickedDevice
 
         // load screen
-        deviceGeneric.active = true
+        if (!deviceGeneric.active) deviceGeneric.active = true
         deviceGeneric.item.loadDevice()
+
+        // change screen
+        appContent.state = "DeviceGeneric"
     }
 
     ////////

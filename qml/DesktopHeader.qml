@@ -211,10 +211,13 @@ Rectangle {
                       (appContent.state === "DevicePlantSensor" ||
                        appContent.state === "DeviceThermometer" ||
                        appContent.state === "DeviceEnvironmental" ||
-                       appContent.state === "DeviceProbe" ||
-                       appContent.state === "DeviceScale" ||
+                       appContent.state === "DeviceGeneric" ||
+                       appContent.state === "DeviceActuator" ||
+                       appContent.state === "DeviceActuatorWindow" ||
+                       appContent.state === "DeviceBatteryMonitor" ||
                        appContent.state === "DeviceMotionSensor" ||
-                       appContent.state === "DeviceGeneric"))
+                       appContent.state === "DeviceProbe" ||
+                       appContent.state === "DeviceScale"))
 
             source: "qrc:/IconLibrary/material-symbols/pin.svg"
             tooltipText: qsTr("Set MAC address")
@@ -633,10 +636,13 @@ Rectangle {
         visible: (!headerUnicolor &&
                   appContent.state !== "DeviceThermometer" &&
                   appContent.state !== "DeviceEnvironmental" &&
+                  appContent.state !== "DeviceGeneric" &&
+                  appContent.state !== "DeviceActuator" &&
+                  appContent.state !== "DeviceActuatorWindow" &&
+                  appContent.state !== "DeviceBatteryMonitor" &&
+                  appContent.state !== "DeviceMotionSensor" &&
                   appContent.state !== "DeviceProbe" &&
                   appContent.state !== "DeviceScale" &&
-                  appContent.state !== "DeviceMotionSensor" &&
-                  appContent.state !== "DeviceGeneric" &&
                   appContent.state !== "Tutorial")
 
         height: 2

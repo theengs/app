@@ -82,6 +82,12 @@ Item {
                     loaderIndicators.sourceComponent = componentText_1l
             } else if (boxDevice.isMotionSensor) {
                 loaderIndicators.sourceComponent = componentText_2l
+            } else if (boxDevice.isBatteryMonitor) {
+                loaderIndicators.sourceComponent = componentBM
+            } else if (boxDevice.isActuator) {
+                loaderIndicators.sourceComponent = componentActuator
+            } else if (boxDevice.isActuatorWindow) {
+                loaderIndicators.sourceComponent = componentActuatorWindow
             }
 
             if (loaderIndicators.item) {
@@ -264,15 +270,15 @@ Item {
                     } else if (boxDevice.isScale) {
                         selectedDevice = boxDevice
                         screenDeviceScale.loadDevice(boxDevice)
-                        appContent.state = "DeviceScale"
                     } else if (boxDevice.isMotionSensor) {
                         selectedDevice = boxDevice
                         screenDeviceMotionSensor.loadDevice(boxDevice)
-                        appContent.state = "DeviceMotionSensor"
+                    } else if (boxDevice.isBatteryMonitor) {
+                        selectedDevice = boxDevice
+                        screenDeviceBatteryMonitor.loadDevice(boxDevice)
                     } else if (boxDevice.isGenericDevice) {
                         selectedDevice = boxDevice
                         screenDeviceGeneric.loadDevice(boxDevice)
-                        appContent.state = "DeviceGeneric"
                     }
                 }
 
@@ -1005,6 +1011,169 @@ Item {
 
                 background: true
                 backgroundOpacity: 0.33
+            }
+        }
+    }
+
+    ////////////////
+
+    Component {
+        id: componentBM
+
+        Item {
+            width: rowRight.height
+            height: width
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.verticalCenterOffset: 4
+
+            function initData() {
+                gaugeLegend.text = boxDevice.battery1 + "%"
+                gaugeValue.value = boxDevice.battery1
+            }
+
+            function updateData() {
+                gaugeLegend.text = boxDevice.battery1 + "%"
+                gaugeValue.value = boxDevice.battery1
+            }
+
+            Text {
+                id: gaugeLegend
+                anchors.centerIn: parent
+
+                text: "%"
+                textFormat: Text.PlainText
+                font.pixelSize: Theme.fontSizeContent
+                color: Theme.colorSubText
+            }
+
+            ProgressArc {
+                id: gaugeValue
+                anchors.fill: parent
+
+                backgroundColor: {
+                    if (value < 25) return Theme.colorRed
+                    else if (value < 50) return Theme.colorOrange
+                    return Theme.colorBlue
+                }
+
+                arcColor: backgroundColor
+                arcWidth: isPhone ? 8 : (hugeMode ? 12 : 10)
+                arcSpan: 270
+
+                valueMin: 0
+                valueMax: 100
+                value: -1
+
+                background: true
+                backgroundOpacity: 0.33
+            }
+        }
+    }
+
+    ////////////////
+
+    Component {
+        id: componentActuator
+
+        Item {
+            width: rowRight.height
+            height: width
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.verticalCenterOffset: 4
+
+            function initData() {
+                updateData()
+            }
+
+            function updateData() {
+                if (boxDevice.state === true) {
+                    indicator.color = Theme.colorForeground
+                    legend.text = "ON"
+                } else {
+                    indicator.color = "transparent"
+                    legend.text = "OFF"
+                }
+            }
+
+            Rectangle {
+                id: indicator
+                anchors.fill: parent
+                anchors.margins: 16
+                radius: width
+
+                color: Theme.colorForeground
+                border.width: 2
+                border.color: Theme.colorSeparator
+            }
+
+            Text {
+                id: legend
+                anchors.centerIn: parent
+
+                text: "?"
+                textFormat: Text.PlainText
+                font.pixelSize: Theme.fontSizeContent
+                color: Theme.colorSubText
+            }
+        }
+    }
+
+    ////////////////
+
+    Component {
+        id: componentActuatorWindow
+
+        Item {
+            width: rowRight.height
+            height: width
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.verticalCenterOffset: 4
+
+            function initData() {
+                indicator.rotation = (boxDevice.deviceModel === "W270160X") ? 90 : 0 // vertical/horizontal
+                updateData()
+            }
+
+            function updateData() {
+                indicatorSlider.width = (indicator.width-4) * (boxDevice.position/100.0)
+                legend.text = boxDevice.position
+            }
+
+            Rectangle {
+                id: indicator
+                anchors.fill: parent
+                anchors.margins: 12
+
+                rotation: 0
+
+                radius: 2
+                color: Theme.colorForeground
+                border.width: 2
+                border.color: Theme.colorSeparator
+
+                Rectangle {
+                    id: indicatorSlider
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.bottom: parent.bottom
+                    anchors.margins: 2
+
+                    radius: 2
+                    rotation: 0
+                    opacity: 0.33
+                    width: indicator.width * 0.5
+                    color: Theme.colorPrimary
+                }
+            }
+
+            Text {
+                id: legend
+                anchors.centerIn: parent
+
+                text: "?"
+                textFormat: Text.PlainText
+                font.pixelSize: Theme.fontSizeContent
+                color: Theme.colorSubText
             }
         }
     }
