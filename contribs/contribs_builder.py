@@ -40,7 +40,7 @@ targets = ['linux', 'linux_x86_64', 'linux_arm64',
            'android_armv8', 'android_armv7', 'android_x86_64', 'android_x86',
            'ios', 'ios_simulator']
 
-softwares = ['qtmqtt', 'qtconnectivity']
+softwares = ['qtmqtt', 'qtconnectivity', 'mbedtls']
 
 print("> targets available:")
 print(str(targets))
@@ -306,6 +306,17 @@ for TARGET in TARGETS:
                 print("> Downloading " + FILE_qtconnectivity + "...")
                 urllib.request.urlretrieve("https://github.com/emericg/qtconnectivity/archive/refs/heads/blescanfiltering_v1_" + QT_VERSION.replace('.','') + ".zip", src_dir + FILE_qtconnectivity)
 
+## mbedTLS (version: 3.6.4)
+NAME_mbedtls = "mbedTLS"
+VERSION_mbedtls = "3.6.4"
+FILE_mbedtls = "mbedtls-" + VERSION_mbedtls + "-easy-make-lib.tar.bz2"
+DIR_mbedtls = "mbedtls-" + VERSION_mbedtls
+
+if "mbedtls" in softwares_selected:
+    if not os.path.exists(src_dir + FILE_mbedtls):
+        print("> Downloading " + FILE_mbedtls + "...")
+        urllib.request.urlretrieve("https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-" + VERSION_mbedtls + "/" + FILE_mbedtls, src_dir + FILE_mbedtls)
+
 ## BUILD SOFTWARES #############################################################
 
 for TARGET in TARGETS:
@@ -412,6 +423,21 @@ for TARGET in TARGETS:
     print("")
 
     #### EXTRACT, BUILD & INSTALL ####
+
+    ## mbedTLS
+    if "mbedtls" in softwares_selected:
+        if not os.path.isdir(build_dir + DIR_mbedtls):
+            zipMBTLS = tarfile.open(src_dir + FILE_mbedtls)
+            zipMBTLS.extractall(build_dir)
+
+        try: os.makedirs(build_dir + DIR_mbedtls + "/build")
+        except: print() # who cares
+
+        print("> Building mbedTLS")
+        subprocess.check_call(CMAKE_cmd + ["-G", CMAKE_gen, "-DCMAKE_BUILD_TYPE=Release", "-DUSE_SHARED_MBEDTLS_LIBRARY=On", "-DENABLE_TESTING=Off", "-DCMAKE_INSTALL_PREFIX=" + env_dir + "/usr", ".."], cwd=build_dir + DIR_mbedtls + "/build")
+        subprocess.check_call(["cmake", "--build", ".", "--target", "all"], cwd=build_dir + DIR_mbedtls + "/build")
+        #subprocess.check_call(["cmake", "--install", "."], cwd=build_dir + DIR_mbedtls + "/build")
+        subprocess.check_call(["ninja", "install"], cwd=build_dir + DIR_mbedtls + "/build") # Qt BUG 91647
 
     ## QtMqtt
     if "qtmqtt" in softwares_selected:
