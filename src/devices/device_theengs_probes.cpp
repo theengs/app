@@ -125,9 +125,20 @@ void DeviceTheengsProbes::parseTheengsProps(const QString &json)
     Q_EMIT capabilitiesUpdated();
 
     // Sensors
-    if (prop.contains("count") && prop.contains("alarm"))
+    if (prop.contains("alarm") && prop.contains("count") && prop.contains("pres"))
     {
-        m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_PROBES_TPMS;
+        if (prop.contains("pressure1")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_PRESSURE_1;
+        if (prop.contains("pressure2")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_PRESSURE_2;
+        if (prop.contains("pressure3")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_PRESSURE_3;
+        if (prop.contains("pressure4")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_PRESSURE_4;
+
+        if (m_deviceName.contains("TPMS") || m_deviceModel.contains("TPMS"))
+        {
+            m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_PRESSURE_1;
+            m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_PRESSURE_2;
+            m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_PRESSURE_3;
+            m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_PRESSURE_4;
+        }
     }
     else
     {

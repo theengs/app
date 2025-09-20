@@ -16,11 +16,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DEVICE_THEENGS_BM26_H
-#define DEVICE_THEENGS_BM26_H
+#ifndef DEVICE_THEENGS_SBBT_H
+#define DEVICE_THEENGS_SBBT_H
 /* ************************************************************************** */
 
-#include "device_theengs_batterymonitors.h"
+#include "device_theengs_windowactuators.h"
 
 #include <QObject>
 #include <QList>
@@ -34,22 +34,22 @@
 /* ************************************************************************** */
 
 /*!
- * BM2 / BM6 battery monitors
+ * Switchbot Blind Tilt alias "SBBT" alias "W270160X"
  */
-class DeviceTheengsBM26: public DeviceTheengsBatteryMonitors
+class DeviceSwitchbotBlindTilt: public DeviceTheengsWindowActuators
 {
     Q_OBJECT
 
-    QBluetoothUuid uuid_volt_srv = QBluetoothUuid(QStringLiteral("0000fff0-0000-1000-8000-00805f9b34fb"));
-    QBluetoothUuid uuid_volt_char_notify = QBluetoothUuid(QStringLiteral("0000ff04-0000-1000-8000-00805f9b34fb"));
+    QBluetoothUuid uuid_data_srv = QBluetoothUuid(QStringLiteral("0000fff0-0000-1000-8000-00805f9b34fb"));
+    QBluetoothUuid uuid_data_char_notify = QBluetoothUuid(QStringLiteral("0000ff04-0000-1000-8000-00805f9b34fb"));
 
-    QLowEnergyService *m_serviceVolt = nullptr;
+    QLowEnergyService *m_serviceData = nullptr;
     QLowEnergyCharacteristic m_charNotif;
     QLowEnergyDescriptor m_notificationDesc;
 
     void serviceScanDone();
     void addLowEnergyService(const QBluetoothUuid &uuid);
-    void serviceDetailsDiscovered_volt(QLowEnergyService::ServiceState newState);
+    void serviceDetailsDiscovered_data(QLowEnergyService::ServiceState newState);
 
     void bleServiceError(QLowEnergyService::ServiceError error);
     void bleReadDone(const QLowEnergyCharacteristic &c, const QByteArray &value);
@@ -64,16 +64,14 @@ protected:
     virtual void deviceConnected();
 
 public:
-    DeviceTheengsBM26(const QString &deviceAddr, const QString &deviceName,
-                      const QString &deviceModel, const QString &devicePropsJson,
-                      QObject *parent = nullptr);
-    DeviceTheengsBM26(const QBluetoothDeviceInfo &d,
-                      const QString &deviceModel, const QString &devicePropsJson,
-                      QObject *parent = nullptr);
-    ~DeviceTheengsBM26();
-
-    Q_INVOKABLE void actionReadVoltage();
+    DeviceSwitchbotBlindTilt(const QString &deviceAddr, const QString &deviceName,
+                             const QString &deviceModel, const QString &devicePropsJson,
+                             QObject *parent = nullptr);
+    DeviceSwitchbotBlindTilt(const QBluetoothDeviceInfo &d,
+                             const QString &deviceModel, const QString &devicePropsJson,
+                             QObject *parent = nullptr);
+    ~DeviceSwitchbotBlindTilt();
 };
 
 /* ************************************************************************** */
-#endif // DEVICE_THEENGS_BM26_H
+#endif // DEVICE_THEENGS_SBBT_H

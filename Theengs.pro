@@ -100,6 +100,9 @@ SOURCES  += src/main.cpp \
             src/devices/device_theengs_scales.cpp \
             src/devices/device_theengs_thermometers.cpp \
             src/devices/device_bm26.cpp \
+            src/devices/device_sbbt.cpp \
+            src/devices/device_sbcu.cpp \
+            src/devices/device_sbs1.cpp \
             src/TempPresetManager.cpp \
             src/TempPreset.cpp \
             src/rc4/rc4.cpp \
@@ -147,6 +150,9 @@ HEADERS  += src/SettingsManager.h \
             src/devices/device_theengs_scales.h \
             src/devices/device_theengs_thermometers.h \
             src/devices/device_bm26.h \
+            src/devices/device_sbbt.h \
+            src/devices/device_sbcu.h \
+            src/devices/device_sbs1.h \
             src/TempPresetManager.h \
             src/TempPreset.h \
             src/rc4/rc4.h \

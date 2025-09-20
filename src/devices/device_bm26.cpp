@@ -54,7 +54,8 @@ DeviceTheengsBM26::DeviceTheengsBM26(const QString &deviceAddr,
 
     if (m_deviceModel == "BM2" || m_deviceModel == "BM6")
     {
-        //
+        if (!hasBatteryPercent()) m_deviceSensors += DeviceUtilsTheengs::SENSOR_BATTERY_PERCENT;
+        if (!hasBatteryVoltage()) m_deviceSensors += DeviceUtilsTheengs::SENSOR_BATTERY_VOLTAGE;
     }
 }
 
@@ -73,7 +74,8 @@ DeviceTheengsBM26::DeviceTheengsBM26(const QBluetoothDeviceInfo &d,
 
     if (m_deviceModel == "BM2" || m_deviceModel == "BM6")
     {
-        //
+        if (!hasBatteryPercent()) m_deviceSensors += DeviceUtilsTheengs::SENSOR_BATTERY_PERCENT;
+        if (!hasBatteryVoltage()) m_deviceSensors += DeviceUtilsTheengs::SENSOR_BATTERY_VOLTAGE;
     }
 }
 

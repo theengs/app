@@ -119,6 +119,7 @@ void DeviceTheengsActuators::parseTheengsAdvertisement(const QString &json)
     {
         QString state_str;
         bool state;
+
         if (state_str != obj["state"].toString())
         {
             state_str = obj["state"].toString();
@@ -137,9 +138,24 @@ void DeviceTheengsActuators::parseTheengsAdvertisement(const QString &json)
                 m_state = state;
                 Q_EMIT stateUpdated();
             }
-        } else
+        }
+        else if (m_mode == "onestate")
         {
-            qWarning() << "DeviceTheengsActuators unsupported mode:" << m_mode;
+            if (state_str == "true") {
+                state = true;
+            } else {
+                state = false;
+            }
+
+            if (m_state != state)
+            {
+                m_state = state;
+                Q_EMIT stateUpdated();
+            }
+        }
+        else
+        {
+            qWarning() << "DeviceTheengsActuators unsupported mode:" << m_mode << "with state:" << m_state;
         }
     }
 

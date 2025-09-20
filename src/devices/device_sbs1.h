@@ -16,16 +16,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DEVICE_THEENGS_BM26_H
-#define DEVICE_THEENGS_BM26_H
+#ifndef DEVICE_THEENGS_SBS1_H
+#define DEVICE_THEENGS_SBS1_H
 /* ************************************************************************** */
 
-#include "device_theengs_batterymonitors.h"
+#include "device_theengs_actuators.h"
 
 #include <QObject>
+#include <QString>
+#include <QStringLiteral>
 #include <QList>
-#include <QDateTime>
-#include <QElapsedTimer>
+#include <QTimer>
 
 #include <QBluetoothUuid>
 #include <QBluetoothDeviceInfo>
@@ -34,22 +35,22 @@
 /* ************************************************************************** */
 
 /*!
- * BM2 / BM6 battery monitors
+ * Switchbot SmartSwitch alias "SBS1" alias "X1"
  */
-class DeviceTheengsBM26: public DeviceTheengsBatteryMonitors
+class DeviceSwitchbotSmartSwitch: public DeviceTheengsActuators
 {
     Q_OBJECT
 
-    QBluetoothUuid uuid_volt_srv = QBluetoothUuid(QStringLiteral("0000fff0-0000-1000-8000-00805f9b34fb"));
-    QBluetoothUuid uuid_volt_char_notify = QBluetoothUuid(QStringLiteral("0000ff04-0000-1000-8000-00805f9b34fb"));
+    QBluetoothUuid uuid_data_srv = QBluetoothUuid(QStringLiteral("0000fff0-0000-1000-8000-00805f9b34fb"));
+    QBluetoothUuid uuid_data_char_notify = QBluetoothUuid(QStringLiteral("0000ff04-0000-1000-8000-00805f9b34fb"));
 
-    QLowEnergyService *m_serviceVolt = nullptr;
+    QLowEnergyService *m_serviceData = nullptr;
     QLowEnergyCharacteristic m_charNotif;
     QLowEnergyDescriptor m_notificationDesc;
 
     void serviceScanDone();
     void addLowEnergyService(const QBluetoothUuid &uuid);
-    void serviceDetailsDiscovered_volt(QLowEnergyService::ServiceState newState);
+    void serviceDetailsDiscovered_data(QLowEnergyService::ServiceState newState);
 
     void bleServiceError(QLowEnergyService::ServiceError error);
     void bleReadDone(const QLowEnergyCharacteristic &c, const QByteArray &value);
@@ -58,22 +59,15 @@ class DeviceTheengsBM26: public DeviceTheengsBatteryMonitors
     void bleDescriptorRead(const QLowEnergyDescriptor &d, const QByteArray &value);
     void bleDescriptorWritten(const QLowEnergyDescriptor &d, const QByteArray &value);
 
-protected:
-    virtual void deviceErrored(QLowEnergyController::Error error);
-    virtual void deviceDisconnected();
-    virtual void deviceConnected();
-
 public:
-    DeviceTheengsBM26(const QString &deviceAddr, const QString &deviceName,
-                      const QString &deviceModel, const QString &devicePropsJson,
-                      QObject *parent = nullptr);
-    DeviceTheengsBM26(const QBluetoothDeviceInfo &d,
-                      const QString &deviceModel, const QString &devicePropsJson,
-                      QObject *parent = nullptr);
-    ~DeviceTheengsBM26();
-
-    Q_INVOKABLE void actionReadVoltage();
+    DeviceSwitchbotSmartSwitch(const QString &deviceAddr, const QString &deviceName,
+                               const QString &deviceModel, const QString &devicePropsJson,
+                               QObject *parent = nullptr);
+    DeviceSwitchbotSmartSwitch(const QBluetoothDeviceInfo &d,
+                               const QString &deviceModel, const QString &devicePropsJson,
+                               QObject *parent = nullptr);
+    ~DeviceSwitchbotSmartSwitch();
 };
 
 /* ************************************************************************** */
-#endif // DEVICE_THEENGS_BM26_H
+#endif // DEVICE_THEENGS_SBS1_H

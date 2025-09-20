@@ -86,10 +86,17 @@ class DeviceTheengs: public DeviceSensor
 {
     Q_OBJECT
 
-    // probe data
     Q_PROPERTY(bool hasProbesTPMS READ hasProbesTPMS NOTIFY sensorsUpdated)
     Q_PROPERTY(bool hasProbesBBQ READ hasProbesBBQ NOTIFY sensorsUpdated)
 
+    // battery monitors
+    Q_PROPERTY(bool hasBatteryPercent READ hasBatteryPercent NOTIFY sensorsUpdated)
+    Q_PROPERTY(bool hasBatteryVoltage READ hasBatteryVoltage NOTIFY sensorsUpdated)
+
+    Q_PROPERTY(int batteryPercent READ getBatteryPercent NOTIFY dataUpdated)
+    Q_PROPERTY(float batteryVoltage READ getBatteryVoltage NOTIFY dataUpdated)
+
+    // probes
     Q_PROPERTY(bool hasTemperature1 READ hasTemp1 NOTIFY sensorsUpdated)
     Q_PROPERTY(bool hasTemperature2 READ hasTemp2 NOTIFY sensorsUpdated)
     Q_PROPERTY(bool hasTemperature3 READ hasTemp3 NOTIFY sensorsUpdated)
@@ -116,7 +123,7 @@ class DeviceTheengs: public DeviceSensor
     Q_PROPERTY(bool alarm3 READ getAlarm3 NOTIFY dataUpdated)
     Q_PROPERTY(bool alarm4 READ getAlarm4 NOTIFY dataUpdated)
 
-    // scale data
+    // scales
     Q_PROPERTY(bool hasWeight READ hasWeight NOTIFY sensorsUpdated)
     Q_PROPERTY(bool hasWeightMode READ hasWeightMode NOTIFY sensorsUpdated)
     Q_PROPERTY(bool hasWeightUnit READ hasWeightUnit NOTIFY sensorsUpdated)
@@ -127,7 +134,7 @@ class DeviceTheengs: public DeviceSensor
     Q_PROPERTY(QString weightUnit READ getWeightUnit NOTIFY dataUpdated)
     Q_PROPERTY(int impedance READ getImpedance NOTIFY dataUpdated)
 
-    // motion sensor data
+    // motion sensors
     Q_PROPERTY(bool hasMotion READ hasMotion NOTIFY sensorsUpdated)
     Q_PROPERTY(bool hasOpen READ hasOpen NOTIFY sensorsUpdated)
     Q_PROPERTY(bool hasAlarm READ hasAlarm NOTIFY sensorsUpdated)
@@ -135,6 +142,9 @@ class DeviceTheengs: public DeviceSensor
 
     Q_PROPERTY(bool motion READ getMotion NOTIFY dataUpdated)
     Q_PROPERTY(bool open READ getOpen NOTIFY dataUpdated)
+
+    // watches
+    // TODO
 
     // generic data
     Q_PROPERTY(QVariant genericData READ getGenericData NOTIFY genericDataUpdated)
@@ -148,13 +158,19 @@ Q_SIGNALS:
     void genericDataUpdated();
 
 protected:
-    int m_deviceSensorsTheengs = 0;     //!< See DeviceSensorsTheengs enum
-
-    // beacon data
-    // TODO
+    int64_t m_deviceSensorsTheengs = 0;     //!< See DeviceSensorsTheengs enum
 
     // battery monitor data
-    // TODO
+    int m_batteryPercent = -99;
+    float m_batteryVoltage = -99.f;
+
+    // beacon data
+    float m_acclX = -99.f;
+    float m_acclY = -99.f;
+    float m_acclZ = -99.f;
+    float m_gyroX = -99.f;
+    float m_gyroY = -99.f;
+    float m_gyroZ = -99.f;
 
     // probe data
     float m_temperature1 = -99.f;
@@ -188,7 +204,8 @@ protected:
     int m_impedance = -99;
 
     // watch data
-    // TODO
+    int m_steps = -99;
+    int m_heartrate = -99;
 
     // generic data
     QList <QObject *> m_genericData;
@@ -221,16 +238,31 @@ public:
     void setThermometer() { m_deviceType = DeviceUtils::DEVICE_THERMOMETER; }
     void setEnvironmental() { m_deviceType = DeviceUtils::DEVICE_ENVIRONMENTAL; }
 
-    // probe data
-    bool hasProbesTPMS() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_PROBES_TPMS); }
+    bool hasProbesTPMS() const { return hasPressure1() && hasPressure2() && hasPressure3() && hasPressure4(); }
     bool hasProbesBBQ() const { return !hasProbesTPMS() && hasTemp1() && hasTemp2(); }
 
+    // battery monitor data
+    bool hasBatteryPercent() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_BATTERY_PERCENT); }
+    bool hasBatteryVoltage() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_BATTERY_VOLTAGE); }
+
+    int getBatteryPercent() const { return m_batteryPercent; }
+    float getBatteryVoltage() const { return m_batteryVoltage; }
+
+    // beacon data
+    bool hasAccl() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_ACCL); }
+    bool hasGyro() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_GYRO); }
+
+    // probe data
     bool hasTemp1() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_TEMPERATURE_1); }
     bool hasTemp2() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_TEMPERATURE_2); }
     bool hasTemp3() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_TEMPERATURE_3); }
     bool hasTemp4() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_TEMPERATURE_4); }
     bool hasTemp5() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_TEMPERATURE_5); }
     bool hasTemp6() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_TEMPERATURE_6); }
+    bool hasPressure1() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_PRESSURE_1); }
+    bool hasPressure2() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_PRESSURE_2); }
+    bool hasPressure3() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_PRESSURE_3); }
+    bool hasPressure4() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_PRESSURE_4); }
 
     float getTemp1() const;
     float getTemp1C() const { return m_temperature1; }
@@ -263,12 +295,6 @@ public:
     bool getAlarm3() const { return m_alarm3; }
     bool getAlarm4() const { return m_alarm4; }
 
-    // beacon data
-    // TODO
-
-    // watch data
-    // TODO
-
     // scale data
     bool hasWeight() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_WEIGHT); }
     bool hasWeightMode() const { return (m_deviceSensorsTheengs & DeviceUtilsTheengs::SENSOR_WEIGHT_MODE); }
@@ -289,6 +315,9 @@ public:
     bool getOpen() const { return m_open; }
     bool getMotion() const { return m_motion; }
     float getDistance() const { return m_sensing_distance; }
+
+    // watch data
+    // TODO
 
     // MQTT discovery
     static bool createDiscoveryMQTT(const QString &deviceAddr, const QString &deviceName,

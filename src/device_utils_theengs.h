@@ -40,47 +40,46 @@ public:
     }
 
     enum DeviceSensorsTheengs {
-        // probes (tire pressure)
-        SENSOR_PROBES_TPMS          = (1 <<  0),
+        // beacons
+        SENSOR_ACCL                 = (1 <<  0), //!< Accelerometer
+        SENSOR_GYRO                 = (1 <<  1), //!< Gyroscope
 
         // probes (temp)
-        SENSOR_TEMPERATURE_1        = (1 <<  1),
-        SENSOR_TEMPERATURE_2        = (1 <<  2),
-        SENSOR_TEMPERATURE_3        = (1 <<  3),
-        SENSOR_TEMPERATURE_4        = (1 <<  4),
-        SENSOR_TEMPERATURE_5        = (1 <<  5),
-        SENSOR_TEMPERATURE_6        = (1 <<  6),
+        SENSOR_TEMPERATURE_1        = (1 <<  2),
+        SENSOR_TEMPERATURE_2        = (1 <<  3),
+        SENSOR_TEMPERATURE_3        = (1 <<  4),
+        SENSOR_TEMPERATURE_4        = (1 <<  5),
+        SENSOR_TEMPERATURE_5        = (1 <<  6),
+        SENSOR_TEMPERATURE_6        = (1 <<  7),
+
+        // probes (pressure)
+        SENSOR_PRESSURE_1           = (1 <<  8),
+        SENSOR_PRESSURE_2           = (1 <<  9),
+        SENSOR_PRESSURE_3           = (1 << 10),
+        SENSOR_PRESSURE_4           = (1 << 11),
 
         // scales
-        SENSOR_WEIGHT_UNIT          = (1 << 10),
-        SENSOR_WEIGHT_MODE          = (1 << 11),
-        SENSOR_WEIGHT               = (1 << 12),
-        SENSOR_IMPEDANCE            = (1 << 13),
-
-        // beacons
-        SENSOR_ACCL_X               = (1 << 16), //!< Accelerometer
-        SENSOR_ACCL_Y               = (1 << 17),
-        SENSOR_ACCL_Z               = (1 << 18),
-
-        SENSOR_GYRO_X               = (1 << 19), //!< Gyroscope
-        SENSOR_GYRO_Y               = (1 << 20),
-        SENSOR_GYRO_Z               = (1 << 21),
+        SENSOR_WEIGHT_UNIT          = (1 << 12),
+        SENSOR_WEIGHT_MODE          = (1 << 13),
+        SENSOR_WEIGHT               = (1 << 14),
+        SENSOR_IMPEDANCE            = (1 << 15),
 
         // smartwatchs
-        SENSOR_STEPS                = (1 << 22), //!< Pedometer
-        SENSOR_HEARTRATE            = (1 << 23), //!< Heart rate monitor
+        SENSOR_STEPS                = (1 << 16), //!< Pedometer
+        SENSOR_HEARTRATE            = (1 << 17), //!< Heart rate monitor
 
         // others
-        SENSOR_MOTION               = (1 << 24),
-        SENSOR_OPEN                 = (1 << 25),
-        SENSOR_ALARM                = (1 << 26),
-        SENSOR_DISTANCE             = (1 << 27),
+        SENSOR_MODE                 = (1 << 18),
+        SENSOR_STATE                = (1 << 19),
 
-        SENSOR_BATTERY              = (1 << 28),
+        SENSOR_ALARM                = (1 << 20),
+        SENSOR_OPEN                 = (1 << 21),
+        SENSOR_MOTION               = (1 << 22),
+        SENSOR_DIRECTION            = (1 << 23),
+        SENSOR_DISTANCE             = (1 << 24),
 
-        SENSOR_DIRECTION            = (1 << 29),
-        SENSOR_MODE                 = (1 << 30),
-        SENSOR_STATE                = (1 << 31),
+        SENSOR_BATTERY_PERCENT      = (1 << 25),
+        SENSOR_BATTERY_VOLTAGE      = (1 << 26),
     };
     Q_ENUM(DeviceSensorsTheengs)
 

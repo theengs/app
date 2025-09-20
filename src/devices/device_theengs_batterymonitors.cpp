@@ -120,7 +120,7 @@ void DeviceTheengsBatteryMonitors::parseTheengsProps(const QString &json)
     //Q_EMIT capabilitiesUpdated();
 
     // Sensors
-    if (prop.contains("batt")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_BATTERY;
+    //if (prop.contains("batt")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_BATTERY_PERCENT;
     Q_EMIT sensorsUpdated();
 }
 

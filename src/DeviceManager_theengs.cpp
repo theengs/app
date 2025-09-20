@@ -32,6 +32,9 @@
 #include "devices/device_theengs_scales.h"
 #include "devices/device_theengs_thermometers.h"
 #include "devices/device_bm26.h"
+#include "devices/device_sbbt.h"
+#include "devices/device_sbcu.h"
+#include "devices/device_sbs1.h"
 
 #include <string>
 

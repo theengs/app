@@ -276,6 +276,12 @@ Item {
                     } else if (boxDevice.isBatteryMonitor) {
                         selectedDevice = boxDevice
                         screenDeviceBatteryMonitor.loadDevice(boxDevice)
+                    } else if (boxDevice.isActuator) {
+                        selectedDevice = boxDevice
+                        screenDeviceActuator.loadDevice(boxDevice)
+                    } else if (boxDevice.isActuatorWindow) {
+                        selectedDevice = boxDevice
+                        screenDeviceActuatorWindow.loadDevice(boxDevice)
                     } else if (boxDevice.isGenericDevice) {
                         selectedDevice = boxDevice
                         screenDeviceGeneric.loadDevice(boxDevice)
