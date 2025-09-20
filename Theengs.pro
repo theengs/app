@@ -17,6 +17,7 @@ QT     += mqtt
 # Use Qt Quick compiler
 ios | android { CONFIG += qtquickcompiler }
 
+#
 win32 { DEFINES += _USE_MATH_DEFINES }
 
 # Force patched Qt Connectivity for Android Bluetooth background daemon
@@ -36,14 +37,19 @@ CONFIG += UTILS_WIFI_ENABLED
 CONFIG += UTILS_NOTIFICATIONS_ENABLED
 include(thirdparty/AppUtils/AppUtils.pri)
 
+# mbedTLS for various encryption needs
+DEFINES += ENABLE_MBEDTLS
+
 # Theengs submodule
 ios | macx { DEFINES += NO_MAC_ADDR }
 SOURCES         += $${PWD}/thirdparty/TheengsDecoder/src/decoder.cpp
 INCLUDEPATH     += $${PWD}/thirdparty/TheengsDecoder/src/
 INCLUDEPATH     += $${PWD}/thirdparty/TheengsDecoder/src/arduino_json/src/
 
+# Debugging ####################################################################
+
 # Uncomment to enable virtual devices # AND REBUILD
-DEFINES += DEBUG_FAKE_DEVICES
+#DEFINES += DEBUG_FAKE_DEVICES
 
 # Uncomment to force mobile UI on desktop # AND REBUILD
 #DEFINES += FORCE_MOBILE_UI
@@ -93,6 +99,7 @@ SOURCES  += src/main.cpp \
             src/devices/device_theengs_probes.cpp \
             src/devices/device_theengs_scales.cpp \
             src/devices/device_theengs_thermometers.cpp \
+            src/devices/device_bm26.cpp \
             src/TempPresetManager.cpp \
             src/TempPreset.cpp \
             src/rc4/rc4.cpp \
@@ -139,6 +146,7 @@ HEADERS  += src/SettingsManager.h \
             src/devices/device_theengs_probes.h \
             src/devices/device_theengs_scales.h \
             src/devices/device_theengs_thermometers.h \
+            src/devices/device_bm26.h \
             src/TempPresetManager.h \
             src/TempPreset.h \
             src/rc4/rc4.h \
@@ -196,6 +204,10 @@ INCLUDEPATH     += $${CONTRIBS_DIR}/include/
 QMAKE_LIBDIR    += $${CONTRIBS_DIR}/lib/
 QMAKE_RPATHDIR  += $${CONTRIBS_DIR}/lib/
 
+contains(DEFINES, ENABLE_MBEDTLS) {
+    LIBS += -lmbedtls -lmbedx509 -lmbedcrypto
+}
+
 # Build settings ###############################################################
 
 DEFINES += QT_DEPRECATED_WARNINGS
@@ -211,8 +223,7 @@ UI_DIR      = build/$${QT_ARCH}/
 
 DESTDIR     = bin/
 
-################################################################################
-# Application deployment and installation steps
+# Application deployment #######################################################
 
 linux:!android {
     TARGET = $$lower($${TARGET})

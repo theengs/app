@@ -291,19 +291,16 @@ private:
     bool areWeReadyYet();
 
     QLowEnergyService *m_serviceBluFi = nullptr;
-
     QLowEnergyCharacteristic m_charWrite;
     QLowEnergyCharacteristic m_charRead;
     QLowEnergyDescriptor m_notificationDesc;
 
-    void bleWriteDone(const QLowEnergyCharacteristic &c, const QByteArray &value);
+    void bleServiceError(QLowEnergyService::ServiceError error);
     void bleReadDone(const QLowEnergyCharacteristic &c, const QByteArray &value);
     void bleReadNotify(const QLowEnergyCharacteristic &c, const QByteArray &value);
-
-    void descriptorRead(const QLowEnergyDescriptor &d, const QByteArray &value);
-    void descriptorWritten(const QLowEnergyDescriptor &d, const QByteArray &value);
-
-    void bleError(QLowEnergyService::ServiceError error);
+    void bleWriteDone(const QLowEnergyCharacteristic &c, const QByteArray &value);
+    void bleDescriptorRead(const QLowEnergyDescriptor &d, const QByteArray &value);
+    void bleDescriptorWritten(const QLowEnergyDescriptor &d, const QByteArray &value);
 
 protected:
     virtual bool getSqlDeviceInfos();

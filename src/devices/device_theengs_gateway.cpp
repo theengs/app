@@ -295,10 +295,10 @@ void DeviceGateway::serviceScanDone()
             connect(m_serviceBluFi, &QLowEnergyService::characteristicRead, this, &DeviceGateway::bleReadDone);
             connect(m_serviceBluFi, &QLowEnergyService::characteristicWritten, this, &DeviceGateway::bleWriteDone);
 
-            //connect(m_serviceBluFi, &QLowEnergyService::descriptorRead, this, &DeviceGateway::descriptorRead);
-            //connect(m_serviceBluFi, &QLowEnergyService::descriptorWritten, this, &DeviceGateway::descriptorWritten);
+            //connect(m_serviceBluFi, &QLowEnergyService::descriptorRead, this, &DeviceGateway::bleDescriptorRead);
+            //connect(m_serviceBluFi, &QLowEnergyService::descriptorWritten, this, &DeviceGateway::bleDescriptorWritten);
 
-            connect(m_serviceBluFi, &QLowEnergyService::errorOccurred, this, &DeviceGateway::bleError);
+            connect(m_serviceBluFi, &QLowEnergyService::errorOccurred, this, &DeviceGateway::bleServiceError);
 
             // Windows hack, see: QTBUG-80770 and QTBUG-78488
             QTimer::singleShot(0, this, [=] () { m_serviceBluFi->discoverDetails(QLowEnergyService::FullDiscovery); });
@@ -554,21 +554,21 @@ void DeviceGateway::bleReadNotify(const QLowEnergyCharacteristic &c, const QByte
 
 /* ************************************************************************** */
 
-void DeviceGateway::descriptorRead(const QLowEnergyDescriptor &, const QByteArray &)
+void DeviceGateway::bleDescriptorRead(const QLowEnergyDescriptor &, const QByteArray &)
 {
-    qDebug() << "DeviceGateway::descriptorRead()";
+    qDebug() << "DeviceGateway::bleDescriptorRead()";
 }
 
-void DeviceGateway::descriptorWritten(const QLowEnergyDescriptor &, const QByteArray &)
+void DeviceGateway::bleDescriptorWritten(const QLowEnergyDescriptor &, const QByteArray &)
 {
-    qDebug() << "DeviceGateway::descriptorWritten()";
+    qDebug() << "DeviceGateway::bleDescriptorWritten()";
 }
 
 /* ************************************************************************** */
 
-void DeviceGateway::bleError(QLowEnergyService::ServiceError e)
+void DeviceGateway::bleServiceError(QLowEnergyService::ServiceError e)
 {
-    qDebug() << "DeviceGateway::bleError(" << e << ")";
+    qDebug() << "DeviceGateway::bleServiceError(" << e << ")";
 }
 
 /* ************************************************************************** */

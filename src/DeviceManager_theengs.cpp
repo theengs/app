@@ -31,6 +31,7 @@
 #include "devices/device_theengs_probes.h"
 #include "devices/device_theengs_scales.h"
 #include "devices/device_theengs_thermometers.h"
+#include "devices/device_bm26.h"
 
 #include <string>
 
@@ -99,8 +100,16 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName_blu
         }
         else if (deviceType == DeviceUtils::DEVICE_THEENGS_BATTERYMONITOR)
         {
-            device = new DeviceTheengsBatteryMonitors(deviceAddr, deviceName_bluetooth,
-                                                      deviceModelID_theengs, deviceProps_theengs, this);
+            if (deviceName_bluetooth == "Battery Monitor" || deviceModelID_theengs == "BM2" || deviceModelID_theengs == "BM6")
+            {
+                device = new DeviceTheengsBM26(deviceAddr, deviceName_bluetooth,
+                                               deviceModelID_theengs, deviceProps_theengs, this);
+            }
+            else
+            {
+                device = new DeviceTheengsBatteryMonitors(deviceAddr, deviceName_bluetooth,
+                                                          deviceModelID_theengs, deviceProps_theengs, this);
+            }
         }
         else if (deviceType == DeviceUtils::DEVICE_THEENGS_ACTUATOR)
         {
@@ -242,7 +251,14 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
         }
         else if (deviceType == DeviceUtils::DEVICE_THEENGS_BATTERYMONITOR)
         {
-            device = new DeviceTheengsBatteryMonitors(deviceInfo, deviceModelID, deviceProps, this);
+            if (deviceInfo.name() == "Battery Monitor" || deviceModelID == "BM2" || deviceModelID == "BM6")
+            {
+                device = new DeviceTheengsBM26(deviceInfo, deviceModelID, deviceProps, this);
+            }
+            else
+            {
+                device = new DeviceTheengsBatteryMonitors(deviceInfo, deviceModelID, deviceProps, this);
+            }
         }
         else if (deviceType == DeviceUtils::DEVICE_THEENGS_ACTUATOR)
         {

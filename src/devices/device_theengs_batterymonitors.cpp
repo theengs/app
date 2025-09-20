@@ -141,38 +141,48 @@ void DeviceTheengsBatteryMonitors::parseTheengsAdvertisement(const QString &json
 
     if (obj["model_id"].toString() == "BM2" || obj["model_id"].toString() == "BM6")
     {
-        m_battery1 = obj["batt"].toInt();
+        int battery = obj["batt"].toInt();
         //bool track = obj["track"].toBool(); // unused
         //QString device = obj["device"].toString(); // unused
 
-        // rt data
-        m_lastUpdate = QDateTime::currentDateTime();
-        while (m_rt_batt.size() > 600) { m_rt_batt.pop_front(); } // sanetize
-        m_rt_batt.push_back(std::make_pair(m_lastUpdate, m_battery1));
-        Q_EMIT rtGraphUpdated();
-
-        if (needsUpdateDb())
+        // valid data?
+        if (battery >= 0 && battery <= 100)
         {
-            if (m_dbInternal || m_dbExternal)
+            // changes?
+            if (m_battery1 != battery)
             {
-/*
-                addData.prepare("REPLACE INTO sensorTheengs (deviceAddr, timestamp, battery1)"
-                                " VALUES (:deviceAddr, :ts, :batt)");
-                addData.bindValue(":batt", m_battery1);
-
-                addData.bindValue(":deviceAddr", getAddress());
-                addData.bindValue(":ts", m_lastUpdate.toString("yyyy-MM-dd hh:mm:ss"));
-
-                if (addData.exec())
-                    m_lastUpdateDatabase = m_lastUpdate;
-                else
-                    qWarning() << "> DeviceTheengsBatteryMonitors addData.exec() ERROR"
-                               << addData.lastError().type() << ":" << addData.lastError().text();
-*/
+                m_battery1 = battery;
+                //Q_EMIT dataUpdated();
             }
-        }
+            refreshDataFinished(true);
 
-        refreshDataFinished(true);
+            // rt data
+            m_lastUpdate = QDateTime::currentDateTime();
+            while (m_rt_batt.size() > 600) { m_rt_batt.pop_front(); } // sanetize
+            m_rt_batt.push_back(std::make_pair(m_lastUpdate, m_battery1));
+            Q_EMIT rtGraphUpdated();
+/*
+            // save // hijack battery1
+            if (needsUpdateDb())
+            {
+                if (m_dbInternal || m_dbExternal)
+                {
+                    addData.prepare("REPLACE INTO sensorTheengs (deviceAddr, timestamp, battery1)"
+                                    " VALUES (:deviceAddr, :ts, :batt)");
+                    addData.bindValue(":batt", m_battery1);
+
+                    addData.bindValue(":deviceAddr", getAddress());
+                    addData.bindValue(":ts", m_lastUpdate.toString("yyyy-MM-dd hh:mm:ss"));
+
+                    if (addData.exec())
+                        m_lastUpdateDatabase = m_lastUpdate;
+                    else
+                        qWarning() << "> DeviceTheengsBatteryMonitors addData.exec() ERROR"
+                                   << addData.lastError().type() << ":" << addData.lastError().text();
+                }
+            }
+*/
+        }
     }
 }
 

@@ -33,8 +33,7 @@
 /* ************************************************************************** */
 
 /*!
- * Theengs battery monitors:
- * - BM2 / BM6
+ * Theengs generic battery monitors
  */
 class DeviceTheengsBatteryMonitors: public DeviceTheengs
 {
