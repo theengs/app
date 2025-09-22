@@ -59,6 +59,11 @@ class DeviceSwitchbotSmartSwitch: public DeviceTheengsActuators
     void bleDescriptorRead(const QLowEnergyDescriptor &d, const QByteArray &value);
     void bleDescriptorWritten(const QLowEnergyDescriptor &d, const QByteArray &value);
 
+protected:
+    virtual void deviceErrored(QLowEnergyController::Error error);
+    virtual void deviceDisconnected();
+    virtual void deviceConnected();
+
 public:
     DeviceSwitchbotSmartSwitch(const QString &deviceAddr, const QString &deviceName,
                                const QString &deviceModel, const QString &devicePropsJson,

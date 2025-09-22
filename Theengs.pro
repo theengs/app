@@ -38,7 +38,7 @@ CONFIG += UTILS_NOTIFICATIONS_ENABLED
 include(thirdparty/AppUtils/AppUtils.pri)
 
 # mbedTLS for various encryption needs
-DEFINES += ENABLE_MBEDTLS
+#DEFINES += ENABLE_MBEDTLS
 
 # Theengs submodule
 ios | macx { DEFINES += NO_MAC_ADDR }
