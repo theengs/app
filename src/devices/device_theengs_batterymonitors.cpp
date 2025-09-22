@@ -77,6 +77,7 @@ DeviceTheengsBatteryMonitors::~DeviceTheengsBatteryMonitors()
 }
 
 /* ************************************************************************** */
+/* ************************************************************************** */
 
 void DeviceTheengsBatteryMonitors::setPreset(const QString &p)
 {
@@ -124,6 +125,7 @@ void DeviceTheengsBatteryMonitors::parseTheengsProps(const QString &json)
     Q_EMIT sensorsUpdated();
 }
 
+/* ************************************************************************** */
 /* ************************************************************************** */
 
 void DeviceTheengsBatteryMonitors::parseTheengsAdvertisement(const QString &json)
@@ -187,11 +189,12 @@ void DeviceTheengsBatteryMonitors::parseTheengsAdvertisement(const QString &json
 }
 
 /* ************************************************************************** */
+/* ************************************************************************** */
 
 void DeviceTheengsBatteryMonitors::getChartData_batteryRT(QDateTimeAxis *axis, QLineSeries *batt, bool reload)
 {
-    //qDebug() << "DeviceTheengsBatteryMonitors::getChartData_probeRT()" << getAddress() << getName();
-    //qDebug() << "min " << QDateTime::currentDateTime().addSecs(-300).toString("hh:mm:ss");
+    //qDebug() << "DeviceTheengsBatteryMonitors::getChartData_batteryRT()" << getAddress() << getName();
+    //qDebug() << "min " << QDateTime::currentDateTime().addSecs(m_realtime_window * -60).toString("hh:mm:ss");
     //qDebug() << "max " << QDateTime::currentDateTime().toString("hh:mm:ss");
 
     //if (!m_capture_started) startRtCapture(true);
@@ -214,10 +217,18 @@ void DeviceTheengsBatteryMonitors::getChartData_batteryRT(QDateTimeAxis *axis, Q
 
     //
     batt->clear();
-    for (const auto &p: m_rt_batt) {
+    for (const auto &p: m_rt_batt)
+    {
         if (p.first.secsTo(QDateTime::currentDateTime()) > -seconds) continue;
         batt->append(p.first.toMSecsSinceEpoch(), p.second);
     }
+}
+
+/* ************************************************************************** */
+
+void DeviceTheengsBatteryMonitors::getChartData_batteryHistory(QDateTimeAxis *axis, QLineSeries *batt, bool reload)
+{
+    //qDebug() << "DeviceTheengsBatteryMonitors::getChartData_batteryHistory()" << getAddress() << getName();
 }
 
 /* ************************************************************************** */

@@ -226,7 +226,7 @@ Loader {
 
                 MouseArea { anchors.fill: parent } // prevent clicks below this area
 
-                Item { // battery indicator
+                Item { // indicators
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.verticalCenterOffset: -(appHeader.height / 3)
@@ -244,7 +244,13 @@ Loader {
                         color: cccc
                     }
 
-                    Item {
+                    Item { // battery indicator (voltage)
+                        id: indicatorV
+                        anchors.fill: parent
+                        anchors.margins: 0
+                    }
+
+                    Item { // battery indicator (percent)
                         id: indicator
                         anchors.fill: parent
                         anchors.margins: 0

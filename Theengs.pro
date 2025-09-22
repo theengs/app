@@ -28,8 +28,8 @@ include(thirdparty/MobileUI/MobileUI.pri)
 include(thirdparty/MobileSharing/MobileSharing.pri)
 
 # SingleApplication for desktop OS
-include(thirdparty/SingleApplication/SingleApplication.pri)
 DEFINES += QAPPLICATION_CLASS=QApplication
+include(thirdparty/SingleApplication/SingleApplication.pri)
 
 # Various utils
 CONFIG += UTILS_DOCK_ENABLED
@@ -322,6 +322,12 @@ android {
                  $${PWD}/assets/android/build.gradle
 
     include($${PWD}/contribs/env/android_openssl-master/openssl.pri)
+
+    contains(DEFINES, ENABLE_MBEDTLS) {
+        ANDROID_EXTRA_LIBS += $${PWD}/contribs/env/android_$${ARCH}/usr/lib/libmbedtls.so
+        ANDROID_EXTRA_LIBS += $${PWD}/contribs/env/android_$${ARCH}/usr/lib/libmbedx509.so
+        ANDROID_EXTRA_LIBS += $${PWD}/contribs/env/android_$${ARCH}/usr/lib/libmbedcrypto.so
+    }
 }
 
 ios {

@@ -147,14 +147,12 @@ Item {
             textTitle.text = boxDevice.deviceName
         }
         // Location
-        textLocation.font.pixelSize = hugeMode ? 20 : 18
         if (boxDevice.deviceLocationName) {
             textLocation.visible = true
             textLocation.text = boxDevice.deviceLocationName
         } else {
             if (Qt.platform.os === "osx" || Qt.platform.os === "ios") {
                 textLocation.visible = false
-                textLocation.text = ""
             } else {
                 textLocation.visible = true
                 textLocation.text = boxDevice.deviceAddress

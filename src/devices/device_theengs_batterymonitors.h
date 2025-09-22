@@ -49,7 +49,7 @@ class DeviceTheengsBatteryMonitors: public DeviceTheengs
 
     // battery monitor settings
     QString m_preset;
-    int m_realtime_window = 5;
+    int m_realtime_window = 10;
 
     QString getPreset() const { return m_preset; }
     void setPreset(const QString &p);
@@ -77,8 +77,8 @@ public:
     void parseTheengsAdvertisement(const QString &json);
 
     // Chart battery monitoring
-    Q_INVOKABLE void getChartData_batteryRT(QDateTimeAxis *axis, QLineSeries *batt,
-                                            bool reload = false);
+    Q_INVOKABLE void getChartData_batteryRT(QDateTimeAxis *axis, QLineSeries *batt, bool reload = false);
+    Q_INVOKABLE void getChartData_batteryHistory(QDateTimeAxis *axis, QLineSeries *batt, bool reload = false);
 };
 
 /* ************************************************************************** */
