@@ -225,6 +225,8 @@ public:
 
     virtual bool isValid() const;
 
+    virtual bool isDataFresh_db() const;
+
     virtual bool needsUpdateRt() const;
     virtual bool needsUpdateDb() const;
 

@@ -58,6 +58,9 @@ class DeviceTheengsBM26: public DeviceTheengsBatteryMonitors
     void bleDescriptorRead(const QLowEnergyDescriptor &d, const QByteArray &value);
     void bleDescriptorWritten(const QLowEnergyDescriptor &d, const QByteArray &value);
 
+    bool areValuesValid_voltage(const float v) const;
+    bool addDatabaseRecord_voltage(const QDateTime &timestamp, const float v);
+
 protected:
     virtual void deviceErrored(QLowEnergyController::Error error);
     virtual void deviceDisconnected();

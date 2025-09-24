@@ -314,6 +314,18 @@ bool DeviceTheengs::needsUpdateRt() const
     return !isDataFresh_rt();
 }
 
+bool DeviceTheengs::isDataFresh_db() const
+{
+    int maxMin = 20;
+
+    SettingsManager *sm = SettingsManager::getInstance();
+    if (isPlantSensor()) maxMin = sm->getUpdateIntervalPlant();
+    else if (isThermometer()) maxMin = sm->getUpdateIntervalThermo();
+    else if (isEnvironmentalSensor()) maxMin = sm->getUpdateIntervalEnv();
+
+    return (getLastUpdateDbInt() >= 0 && getLastUpdateDbInt() < maxMin);
+}
+
 bool DeviceTheengs::needsUpdateDb() const
 {
     return !isDataFresh_db();

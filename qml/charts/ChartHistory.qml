@@ -378,8 +378,9 @@ Item {
                         font.bold: false
                         horizontalAlignment: Text.AlignHCenter
                     }
+                }
 
-                } ////////////////
+                ////////////////
             }
         }
     }

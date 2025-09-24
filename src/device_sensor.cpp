@@ -1088,8 +1088,9 @@ bool DeviceSensor::hasData() const
 
 bool DeviceSensor::isDataFresh_rt() const
 {
-    SettingsManager *sm = SettingsManager::getInstance();
     int maxMin = 120;
+
+    SettingsManager *sm = SettingsManager::getInstance();
     if (isPlantSensor()) maxMin = sm->getUpdateIntervalPlant();
     else if (isThermometer()) maxMin = sm->getUpdateIntervalThermo();
     else if (isEnvironmentalSensor()) maxMin = sm->getUpdateIntervalEnv();
@@ -1099,8 +1100,9 @@ bool DeviceSensor::isDataFresh_rt() const
 
 bool DeviceSensor::isDataFresh_db() const
 {
-    SettingsManager *sm = SettingsManager::getInstance();
     int maxMin = 120;
+
+    SettingsManager *sm = SettingsManager::getInstance();
     if (isPlantSensor()) maxMin = sm->getUpdateIntervalPlant();
     else if (isThermometer()) maxMin = sm->getUpdateIntervalThermo();
     else if (isEnvironmentalSensor()) maxMin = sm->getUpdateIntervalEnv();

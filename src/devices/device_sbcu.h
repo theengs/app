@@ -40,10 +40,12 @@ class DeviceSwitchbotCurtain: public DeviceTheengsWindowActuators
 {
     Q_OBJECT
 
-    QBluetoothUuid uuid_data_srv = QBluetoothUuid(QStringLiteral("0000fff0-0000-1000-8000-00805f9b34fb"));
-    QBluetoothUuid uuid_data_char_notify = QBluetoothUuid(QStringLiteral("0000ff04-0000-1000-8000-00805f9b34fb"));
+    QBluetoothUuid uuid_data_srv = QBluetoothUuid(QStringLiteral("cba20d00-224d-11e6-9fb8-0002a5d5c51b"));
+    QBluetoothUuid uuid_data_char_action = QBluetoothUuid(QStringLiteral("cba20002-224d-11e6-9fb8-0002a5d5c51b"));
+    QBluetoothUuid uuid_data_char_notify = QBluetoothUuid(QStringLiteral("cba20003-224d-11e6-9fb8-0002a5d5c51b"));
 
     QLowEnergyService *m_serviceData = nullptr;
+    QLowEnergyCharacteristic m_charAction;
     QLowEnergyCharacteristic m_charNotif;
     QLowEnergyDescriptor m_notificationDesc;
 

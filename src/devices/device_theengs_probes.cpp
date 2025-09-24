@@ -49,9 +49,12 @@ DeviceTheengsProbes::DeviceTheengsProbes(const QString &deviceAddr, const QStrin
 
     parseTheengsProps(devicePropsJson);
 
-    if (m_deviceModel == "TPMS") {
+    if (m_deviceModel == "TPMS")
+    {
         getSqlTpmsData(12*60);
-    } else {
+    }
+    else
+    {
         if (hasSetting("preset")) m_preset = getSetting("preset").toString();
         if (hasSetting("interval")) m_realtime_window = getSetting("interval").toString().toInt();
         //getSqlProbeData(12*60); // disabled
@@ -69,9 +72,12 @@ DeviceTheengsProbes::DeviceTheengsProbes(const QBluetoothDeviceInfo &d,
 
     parseTheengsProps(devicePropsJson);
 
-    if (m_deviceModel == "TPMS") {
+    if (m_deviceModel == "TPMS")
+    {
         getSqlTpmsData(12*60);
-    } else {
+    }
+    else
+    {
         if (hasSetting("preset")) m_preset = getSetting("preset").toString();
         if (hasSetting("interval")) m_realtime_window = getSetting("interval").toString().toInt();
         //getSqlProbeData(12*60); // disabled

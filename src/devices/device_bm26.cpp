@@ -22,6 +22,8 @@
 #include "mbedtls/aes.h"
 #endif
 
+#include <random>
+
 #include <QBluetoothUuid>
 #include <QBluetoothServiceInfo>
 #include <QLowEnergyService>
@@ -232,38 +234,23 @@ void DeviceTheengsBM26::bleReadNotify(const QLowEnergyCharacteristic &c, const Q
         mbedtls_aes_free(&aes);
 
         float volt = ((output[2] | (output[1] << 8)) >> 4) / 100.0f;
-        if (volt > -20.f && volt < 20.f)
+
+        if (areValuesValid_voltage(volt))
         {
+            // update?
             if (volt != m_batteryVoltage)
             {
+                m_lastUpdate = QDateTime::currentDateTime();
+
                 m_batteryVoltage = volt;
                 Q_EMIT dataUpdated();
             }
-/*
-            // save
-            if (needsUpdateDb()) // TODO
+
+            // save?
+            if (needsUpdateDb())
             {
-                if (m_dbInternal || m_dbExternal)
-                {
-                    // hijack battery2 // stored as int, so m_batteryVoltage*100
-                    int vvv = m_batteryVoltage*100.f;
-
-                    QSqlQuery addData;
-                    addData.prepare("REPLACE INTO sensorTheengs (deviceAddr, timestamp, battery2)"
-                                    " VALUES (:deviceAddr, :ts, :voltage)");
-                    addData.bindValue(":voltage", vvv);
-
-                    addData.bindValue(":deviceAddr", getAddress());
-                    addData.bindValue(":ts", m_lastUpdate.toString("yyyy-MM-dd hh:mm:ss"));
-
-                    if (addData.exec())
-                        m_lastUpdateDatabase = m_lastUpdate;
-                    else
-                        qWarning() << "> DeviceTheengsBatteryMonitors addData.exec(v) ERROR"
-                                   << addData.lastError().type() << ":" << addData.lastError().text();
-                }
+                addDatabaseRecord_voltage(m_lastUpdate, m_batteryVoltage);
             }
-*/
         }
         else
         {
@@ -276,6 +263,68 @@ void DeviceTheengsBM26::bleReadNotify(const QLowEnergyCharacteristic &c, const Q
 void DeviceTheengsBM26::bleServiceError(QLowEnergyService::ServiceError e)
 {
     qDebug() << "DeviceTheengsBM26::bleServiceError(" << e << ")";
+}
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+
+float fakeFloat()
+{
+    // Use a random device to seed the generator
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    // Define the distribution between 10.0 and 14.0
+    static std::uniform_real_distribution<float> dist(10.0f, 14.0f);
+
+    return dist(gen);
+}
+
+bool DeviceTheengsBM26::areValuesValid_voltage(const float v) const
+{
+    return (v > -20.f && v < 20.f);
+}
+
+bool DeviceTheengsBM26::addDatabaseRecord_voltage(const QDateTime &timestamp, const float v)
+{
+    //qDebug() << "DeviceTheengsBM26::addDatabaseRecord_voltage()" << v;
+    bool status = false;
+
+    if (m_dbInternal || m_dbExternal)
+    {
+        if (areValuesValid_voltage(v))
+        {
+            // SQL date format YYYY-MM-DD HH:MM:SS
+            // We only save one record every 20m
+
+            // hijack battery2 // stored as int, so m_batteryVoltage*100
+            int vvv = v*100.f;
+
+            QSqlQuery addData;
+            addData.prepare("REPLACE INTO sensorTheengs (deviceAddr, timestamp, battery2)"
+                            " VALUES (:deviceAddr, :ts, :voltage)");
+            addData.bindValue(":deviceAddr", getAddress());
+            addData.bindValue(":ts", timestamp.toString("yyyy-MM-dd hh:mm:ss"));
+            addData.bindValue(":voltage", vvv);
+            status = addData.exec();
+
+            if (status)
+            {
+                m_lastUpdateDatabase = timestamp;
+            }
+            else
+            {
+                qWarning() << "> DeviceTheengsBatteryMonitors addData.exec(v) ERROR"
+                           << addData.lastError().type() << ":" << addData.lastError().text();
+            }
+        }
+        else
+        {
+            qWarning() << "areValuesValid_voltage(" << m_deviceName << ") values are INVALID";
+        }
+    }
+
+    return status;
 }
 
 /* ************************************************************************** */
