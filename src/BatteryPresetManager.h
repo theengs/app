@@ -1,0 +1,77 @@
+/*
+    Theengs - Decode things and devices
+    Copyright: (c) Florian ROBERT
+
+    This file is part of Theengs.
+
+    Theengs is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    Theengs is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#ifndef BATTERY_PRESET_MANAGER_H
+#define BATTERY_PRESET_MANAGER_H
+/* ************************************************************************** */
+
+#include <QObject>
+#include <QString>
+#include <QVariant>
+#include <QList>
+
+class BatteryPreset;
+
+/* ************************************************************************** */
+
+class BatteryPresetManager: public QObject
+{
+    Q_OBJECT
+
+    QList <QObject *> m_presets;
+    Q_PROPERTY(QVariant presets READ getPresets NOTIFY presetsChanged)
+    Q_PROPERTY(int presetCount READ getPresetCount NOTIFY presetsChanged)
+
+    QList <QObject *> m_presetsFiltered;
+    Q_PROPERTY(QVariant presetsFiltered READ getPresetsFiltered NOTIFY presetsFilteredChanged)
+    Q_PROPERTY(int presetCountFiltered READ getPresetCountFiltered NOTIFY presetsFilteredChanged)
+
+    int getPresetCount() { return m_presets.size(); }
+    QVariant getPresets() { return QVariant::fromValue(m_presets); }
+
+    int getPresetCountFiltered() { return m_presetsFiltered.size(); }
+    QVariant getPresetsFiltered() { return QVariant::fromValue(m_presetsFiltered); }
+
+    bool m_dbInternal = false;  //!< do we have an internal SQLite database?
+    bool m_dbExternal = false;  //!< do we have a remote MySQL database?
+
+    // Singleton
+    static BatteryPresetManager *instance;
+    BatteryPresetManager();
+    ~BatteryPresetManager();
+
+Q_SIGNALS:
+    void presetsChanged();
+    void presetsFilteredChanged();
+
+public:
+    static BatteryPresetManager *getInstance();
+
+    Q_INVOKABLE bool load();
+    Q_INVOKABLE void filter(const QString &filter);
+
+    Q_INVOKABLE bool isPresetNameValid(const QString &name);
+    Q_INVOKABLE bool addPreset(const int type, const QString &name);
+    Q_INVOKABLE bool copyPreset(const QString &name, const QString &newName);
+    Q_INVOKABLE bool removePreset(const QString &name);
+
+    Q_INVOKABLE BatteryPreset *getPreset(const QString &name);
+};
+
+/* ************************************************************************** */
+#endif // BATTERY_PRESET_MANAGER_H

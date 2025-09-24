@@ -4,7 +4,7 @@ import QtQuick.Controls
 import ComponentLibrary
 
 Popup {
-    id: popupPresetSelection
+    id: popupBatteryPresets
 
     x: singleColumn ? 0 : (appWindow.width / 2) - (width / 2)
     y: singleColumn ? 0 : ((appWindow.height / 2) - (height / 2))
@@ -21,7 +21,7 @@ Popup {
     signal selected(var name)
 
     onAboutToShow: {
-        tempPresetsManager.filter(presetSearchBox.displayText)
+        batteryPresetsManager.filter(presetSearchBox.displayText)
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -78,7 +78,7 @@ Popup {
 
                 placeholderText: qsTr("Filter presets")
 
-                onDisplayTextChanged: tempPresetsManager.filter(presetSearchBox.displayText)
+                onDisplayTextChanged: batteryPresetsManager.filter(presetSearchBox.displayText)
 
                 Row {
                     anchors.right: parent.right
@@ -89,7 +89,7 @@ Popup {
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
 
-                        text: qsTr("%1 presets").arg(((presetSearchBox.displayText) ? tempPresetsManager.presetCountFiltered : tempPresetsManager.presetCount))
+                        text: qsTr("%1 presets").arg(((presetSearchBox.displayText) ? batteryPresetsManager.presetCountFiltered : batteryPresetsManager.presetCount))
                         font.pixelSize: Theme.fontSizeContentSmall
                         color: Theme.colorSubText
                     }
@@ -129,68 +129,14 @@ Popup {
             spacing: 0
             clip: true
 
-            header: Rectangle {
-                anchors.left: parent.left
-                anchors.leftMargin: Theme.componentMarginXL
-                anchors.right: parent.right
-                anchors.rightMargin: Theme.componentMarginXL
-
-                height: colHeader.height + Theme.componentMargin*2
-                radius: Theme.componentRadius
-                color: Theme.colorForeground
-
-                Column {
-                    id: colHeader
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.margins: Theme.componentMargin
-                    spacing: Theme.componentMargin - 4
-
-                    Row {
-                        spacing: Theme.componentMargin
-
-                        IconSvg {
-                            width: 24; height: 24;
-                            anchors.verticalCenter: parent.verticalCenter
-                            source: "qrc:/IconLibrary/material-symbols/warning.svg"
-                            color: Theme.colorWarning
-                        }
-
-                        Text {
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: qsTr("Safety first")
-                            textFormat: Text.PlainText
-                            font.pixelSize: Theme.fontSizeContent
-                            color: Theme.colorText
-                            wrapMode: Text.WordWrap
-                        }
-                    }
-
-                    Text {
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-
-                        text: qsTr("The cooking temperatures provided in this app are general recommendations. Variations in equipment, ingredients, and conditions can affect cooking outcomes.") + "<br>" +
-                              qsTr("Always verify food is cooked to safe temperatures.") + "<br>" +
-                              qsTr("The application developer is not liable for any cooking results.")
-                        textFormat: Text.StyledText
-
-                        color: Theme.colorSubText
-                        wrapMode: Text.WordWrap
-                        font.pixelSize: Theme.componentFontSize
-                    }
-                }
-            }
-
-            model: tempPresetsManager.presetsFiltered
-            delegate: TemperaturePresetSearchWidget {
+            model: batteryPresetsManager.presetsFiltered
+            delegate: BatteryPresetSearchWidget {
                 width: ListView.view.width
                 height: 64
 
                 onClicked: {
-                    popupPresetSelection.selected(modelData.name)
-                    popupPresetSelection.close()
+                    popupBatteryPresets.selected(modelData.name)
+                    popupBatteryPresets.close()
                 }
             }
         }
@@ -215,7 +161,7 @@ Popup {
                 text: qsTr("Cancel")
                 color: Theme.colorGrey
 
-                onClicked: popupPresetSelection.close()
+                onClicked: popupBatteryPresets.close()
             }
 
             ButtonSolid {
@@ -225,8 +171,8 @@ Popup {
                 color: Theme.colorSubText
 
                 onClicked: {
-                    popupPresetSelection.selected(null)
-                    popupPresetSelection.close()
+                    popupBatteryPresets.selected(null)
+                    popupBatteryPresets.close()
                 }
             }
         }

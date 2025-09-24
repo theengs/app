@@ -27,16 +27,16 @@
 
 /* ************************************************************************** */
 
-class PresetUtils: public QObject
+class TempPresetUtils: public QObject
 {
     Q_OBJECT
 
 public:
     static void registerQML()
     {
-        qRegisterMetaType<PresetUtils::PresetType>("PresetUtils::PresetType");
+        qRegisterMetaType<TempPresetUtils::PresetType>("TempPresetUtils::PresetType");
 
-        qmlRegisterType<PresetUtils>("PresetUtils", 1, 0, "PresetUtils");
+        qmlRegisterType<TempPresetUtils>("TempPresetUtils", 1, 0, "TempPresetUtils");
     }
 
     enum PresetType {

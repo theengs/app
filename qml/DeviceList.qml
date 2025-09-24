@@ -430,13 +430,13 @@ Item {
         visible: isDesktop
 
         ButtonSolid {
-            text: qsTr("presets")
+            text: qsTr("Temp. presets")
             color: Theme.colorSecondary
             onClicked: screenPresetsList.loadScreen()
         }
 
         ButtonSolid {
-            text: qsTr("devices")
+            text: qsTr("Device browser")
             color: Theme.colorSecondary
             onClicked: screenDeviceBrowser.loadScreen()
         }

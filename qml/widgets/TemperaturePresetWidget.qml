@@ -22,9 +22,9 @@ SwipeDelegate {
         active: false
         asynchronous: false
 
-        sourceComponent: PopupPresetDelete {
+        sourceComponent: PopupTempPresetDelete {
             id: popupDelete
-            onConfirmed: presetsManager.removePreset(modelData.name)
+            onConfirmed: tempPresetsManager.removePreset(modelData.name)
             onClosed: swipe.close()
         }
     }

@@ -103,6 +103,8 @@ SOURCES  += src/main.cpp \
             src/devices/device_sbbt.cpp \
             src/devices/device_sbcu.cpp \
             src/devices/device_sbs1.cpp \
+            src/BatteryPresetManager.cpp \
+            src/BatteryPreset.cpp \
             src/TempPresetManager.cpp \
             src/TempPreset.cpp \
             src/rc4/rc4.cpp \
@@ -153,6 +155,8 @@ HEADERS  += src/SettingsManager.h \
             src/devices/device_sbbt.h \
             src/devices/device_sbcu.h \
             src/devices/device_sbs1.h \
+            src/BatteryPresetManager.h \
+            src/BatteryPreset.h \
             src/TempPresetManager.h \
             src/TempPreset.h \
             src/rc4/rc4.h \

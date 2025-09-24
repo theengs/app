@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 
-import PresetUtils
+import TempPresetUtils
 import "qrc:/js/UtilsPresets.js" as UtilsPresets
 
 import ComponentLibrary
@@ -172,9 +172,9 @@ Popup {
                     text: qsTr("Create new preset")
                     color: Theme.colorPrimary
 
-                    enabled: presetsManager.isPresetNameValid(presetName.text)
+                    enabled: tempPresetsManager.isPresetNameValid(presetName.text)
                     onClicked: {
-                        presetsManager.addPreset(presetType.currentSelection, presetName.text)
+                        tempPresetsManager.addPreset(presetType.currentSelection, presetName.text)
                         popupPresetAdd.close()
                     }
                 }

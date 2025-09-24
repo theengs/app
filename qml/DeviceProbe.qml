@@ -7,7 +7,7 @@ import ComponentLibrary
 import DeviceUtils
 import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
 
-import PresetUtils
+import TempPresetUtils
 import "qrc:/js/UtilsPresets.js" as UtilsPresets
 
 Loader {
@@ -127,7 +127,7 @@ Loader {
             graphLoader.source = "" // force graph reload
             loadGraph()
 
-            currentPreset = presetsManager.getPreset(currentDevice.preset)
+            currentPreset = tempPresetsManager.getPreset(currentDevice.preset)
             currentInterval = currentDevice.realtimeWindow
             if (currentInterval === 60) selectorInterval.currentSelection = 3
             else if (currentInterval === 30) selectorInterval.currentSelection = 2
@@ -1293,11 +1293,11 @@ Loader {
                                 }
                                 sourceSize: 20
 
-                                PopupPresetSelection {
+                                PopupTempPresetSelection {
                                     id: popupPresetSelection
                                     onSelected: (name) => {
                                         currentDevice.preset = name
-                                        currentPreset = presetsManager.getPreset(currentDevice.preset)
+                                        currentPreset = tempPresetsManager.getPreset(currentDevice.preset)
                                     }
                                 }
 

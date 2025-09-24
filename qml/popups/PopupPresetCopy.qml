@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 
-import PresetUtils
+import TempPresetUtils
 import "qrc:/js/UtilsPresets.js" as UtilsPresets
 
 import ComponentLibrary
@@ -149,9 +149,9 @@ Popup {
                     text: qsTr("Copy preset")
                     color: Theme.colorPrimary
 
-                    enabled: presetsManager.isPresetNameValid(presetName.text)
+                    enabled: tempPresetsManager.isPresetNameValid(presetName.text)
                     onClicked: {
-                        presetsManager.copyPreset(currentPreset.name, presetName.text)
+                        tempPresetsManager.copyPreset(currentPreset.name, presetName.text)
                         popupPresetCopy.confirmed()
                         popupPresetCopy.close()
                     }

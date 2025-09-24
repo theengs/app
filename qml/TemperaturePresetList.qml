@@ -105,7 +105,7 @@ Loader {
                         }
                     }
 
-                    model: presetsManager.presets
+                    model: tempPresetsManager.presets
                     delegate: TemperaturePresetWidget {
                         width: ListView.view.width
                         height: 96
@@ -117,7 +117,7 @@ Loader {
                     }
                 }
 
-                PopupPresetAdd {
+                PopupTempPresetAdd {
                     id: popupPresetAdd
                 }
 

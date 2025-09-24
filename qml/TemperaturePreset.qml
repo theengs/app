@@ -237,14 +237,14 @@ Item {
 
     ////////////////////////////////////////////////////////////////////////////
 
-    PopupPresetCopy {
+    PopupTempPresetCopy {
         id: popupPresetCopy
         onConfirmed: {
             // back to the preset list
             screenPresetsList.backAction()
         }
     }
-    PopupPresetRangeAdd {
+    PopupTempPresetRangeAdd {
         id: popupPresetRangeAdd
     }
 

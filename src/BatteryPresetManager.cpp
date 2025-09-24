@@ -16,8 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "TempPresetManager.h"
-#include "TempPreset.h"
+#include "BatteryPresetManager.h"
+#include "BatteryPreset.h"
 #include "DatabaseManager.h"
 
 #include <QDir>
@@ -30,27 +30,27 @@
 
 /* ************************************************************************** */
 
-TempPresetManager *TempPresetManager::instance = nullptr;
+BatteryPresetManager *BatteryPresetManager::instance = nullptr;
 
-TempPresetManager *TempPresetManager::getInstance()
+BatteryPresetManager *BatteryPresetManager::getInstance()
 {
     if (instance == nullptr)
     {
-        instance = new TempPresetManager();
+        instance = new BatteryPresetManager();
     }
 
     return instance;
 }
 
-TempPresetManager::TempPresetManager()
+BatteryPresetManager::BatteryPresetManager()
 {
     load();
     filter("");
 
-    qmlRegisterType<TempPreset>("TempPreset", 1, 0, "TempPreset");
+    qmlRegisterType<BatteryPreset>("BatteryPreset", 1, 0, "BatteryPreset");
 }
 
-TempPresetManager::~TempPresetManager()
+BatteryPresetManager::~BatteryPresetManager()
 {
     m_presetsFiltered.clear();
 
@@ -60,56 +60,55 @@ TempPresetManager::~TempPresetManager()
 
 /* ************************************************************************** */
 
-bool TempPresetManager::load()
+bool BatteryPresetManager::load()
 {
     bool status = true;
 
     // Load APP presets
     {
-        TempPreset *t1 = new TempPreset(-1, TempPresetUtils::PRESET_BEEF, true, "Beef", "", this);
-        t1->addRange("Rare", false, 49, 54, true);
-        t1->addRange("Medium Rare", false, 54, 60, true);
-        t1->addRange("Safe internal temperature", false, 63, 63, true);
-        t1->addRange("Medium", false, 60, 66, true);
-        t1->addRange("Medium Well", false, 66, 71, true);
-        t1->addRange("Well Done", false, 71, -1, false);
-        m_presets.push_back(t1);
+        BatteryPreset *b1 = new BatteryPreset(-1, BatteryPresetUtils::PRESET_LEADACID, true,
+                                              "Lead Acid", 10, 12, this);
+        m_presets.push_back(b1);
 
-        TempPreset *t2 = new TempPreset(-2, TempPresetUtils::PRESET_PORK, true, "Pork", "", this);
-        t2->addRange("Safe internal temperature", false, 63, 70, true);
-        t2->addRange("Ground Pork", false, 71, -1, false);
-        m_presets.push_back(t2);
+        BatteryPreset *b2 = new BatteryPreset(-2, BatteryPresetUtils::PRESET_AGM, true,
+                                              "Absorbent Glass Mat", 10, 12, this);
+        m_presets.push_back(b2);
 
-        TempPreset *t3 = new TempPreset(-3, TempPresetUtils::PRESET_CHICKEN, true, "Chicken", "", this);
-        t3->addRange("Safe internal temperature", false, 74, -1, false);
-        m_presets.push_back(t3);
+        BatteryPreset *b3 = new BatteryPreset(-3, BatteryPresetUtils::PRESET_EFB, true,
+                                              "Enhanced Flooded Battery", 10, 12, this);
+        m_presets.push_back(b3);
 
-        TempPreset *t4 = new TempPreset(-4, TempPresetUtils::PRESET_FISH, true, "Fish", "", this);
-        t4->addRange("Safe internal temperature", false, 63, -1, false);
-        m_presets.push_back(t4);
+        BatteryPreset *b4 = new BatteryPreset(-4, BatteryPresetUtils::PRESET_GEL, true,
+                                              "Gel", 10, 12, this);
+        m_presets.push_back(b4);
+
+        BatteryPreset *b5 = new BatteryPreset(-5, BatteryPresetUtils::PRESET_LION, true,
+                                              "Lithium Ion", 10, 12, this);
+        m_presets.push_back(b5);
     }
 
     // USER presets?
     DatabaseManager *db = DatabaseManager::getInstance();
     if (db)
     {
-        m_dbInternal = db->hasDatabaseInternal();
-        m_dbExternal = db->hasDatabaseExternal();
+        //m_dbInternal = db->hasDatabaseInternal();
+        //m_dbExternal = db->hasDatabaseExternal();
     }
 
     // Load USER presets
     if (m_dbInternal || m_dbExternal)
     {
         QSqlQuery queryPresets;
-        queryPresets.exec("SELECT id, type, name, ranges FROM tempPresets");
+        queryPresets.exec("SELECT id, type, name, vMin, vMax FROM batteryPresets");
         while (queryPresets.next())
         {
             int id = queryPresets.value(0).toInt();
             int type = queryPresets.value(1).toInt();
             QString name = queryPresets.value(2).toString();
-            QString ranges = queryPresets.value(3).toString();
+            float vMin = queryPresets.value(3).toFloat();
+            float vMax = queryPresets.value(4).toFloat();
 
-            TempPreset *d = new TempPreset(id, type, false, name, ranges, this);
+            BatteryPreset *d = new BatteryPreset(id, type, false, name, vMin, vMax, this);
             if (d) m_presets.push_back(d);
         }
     }
@@ -117,18 +116,18 @@ bool TempPresetManager::load()
     return status;
 }
 
-void TempPresetManager::filter(const QString &filter)
+void BatteryPresetManager::filter(const QString &filter)
 {
-    //qDebug() << "TempPresetManager::filter()" << filter;
+    //qDebug() << "BatteryPresetManager::filter()" << filter;
 
     m_presetsFiltered.clear();
 
     for (auto pp: std::as_const(m_presets))
     {
-        TempPreset *tp = qobject_cast<TempPreset*>(pp);
-        if (tp->getName().toLower().contains(filter.toLower()))
+        BatteryPreset *bp = qobject_cast<BatteryPreset*>(pp);
+        if (bp->getName().toLower().contains(filter.toLower()))
         {
-            m_presetsFiltered.push_back(tp);
+            m_presetsFiltered.push_back(bp);
         }
     }
 
@@ -137,7 +136,7 @@ void TempPresetManager::filter(const QString &filter)
 
 /* ************************************************************************** */
 
-bool TempPresetManager::isPresetNameValid(const QString &name)
+bool BatteryPresetManager::isPresetNameValid(const QString &name)
 {
     bool status = false;
 
@@ -147,8 +146,8 @@ bool TempPresetManager::isPresetNameValid(const QString &name)
 
         for (auto pp: std::as_const(m_presets))
         {
-            TempPreset *tp = qobject_cast<TempPreset*>(pp);
-            if (tp && tp->getName() == name)
+            BatteryPreset *bp = qobject_cast<BatteryPreset*>(pp);
+            if (bp && bp->getName() == name)
             {
                 status = false;
             }
@@ -158,11 +157,11 @@ bool TempPresetManager::isPresetNameValid(const QString &name)
     return status;
 }
 
-bool TempPresetManager::addPreset(const int type, const QString &name)
+bool BatteryPresetManager::addPreset(const int type, const QString &name)
 {
-    //qDebug() << "TempPresetManager::addPreset(" << type << name << ")";
-
-    TempPreset *newpreset = new TempPreset(0, type, false, name, "", this);
+    //qDebug() << "BatteryPresetManager::addPreset(" << type << name << ")";
+/*
+    BatteryPreset *newpreset = new BatteryPreset(0, type, false, name, "", this);
     if (newpreset)
     {
         newpreset->save();
@@ -172,20 +171,20 @@ bool TempPresetManager::addPreset(const int type, const QString &name)
         Q_EMIT presetsChanged();
         return true;
     }
-
+*/
     return false;
 }
 
-bool TempPresetManager::copyPreset(const QString &name, const QString &newName)
+bool BatteryPresetManager::copyPreset(const QString &name, const QString &newName)
 {
-    qDebug() << "TempPresetManager::copyPreset(" << name << newName << ")";
-
+    qDebug() << "BatteryPresetManager::copyPreset(" << name << newName << ")";
+/*
     for (auto pp: std::as_const(m_presets))
     {
-        TempPreset *tp = qobject_cast<TempPreset*>(pp);
-        if (tp && tp->getName() == name)
+        BatteryPreset *bp = qobject_cast<BatteryPreset*>(pp);
+        if (bp && bp->getName() == name)
         {
-            TempPreset *newpreset = new TempPreset(*tp, newName, this);
+            BatteryPreset *newpreset = new BatteryPreset(*bp, newName, this);
             if (newpreset)
             {
                 newpreset->save();
@@ -198,27 +197,27 @@ bool TempPresetManager::copyPreset(const QString &name, const QString &newName)
             }
         }
     }
-
+*/
     return false;
 }
 
-bool TempPresetManager::removePreset(const QString &name)
+bool BatteryPresetManager::removePreset(const QString &name)
 {
     bool status = false;
 
-    //qDebug() << "TempPresetManager::removePreset()" << name;
-
+    //qDebug() << "BatteryPresetManager::removePreset()" << name;
+/*
     for (auto pp: std::as_const(m_presets))
     {
-        TempPreset *tp = qobject_cast<TempPreset*>(pp);
-        if (tp && !tp->getReadOnly() && tp->getName() == name)
+        BatteryPreset *bp = qobject_cast<BatteryPreset*>(pp);
+        if (bp && !bp->getReadOnly() && bp->getName() == name)
         {
             // Remove from database
             if (m_dbInternal || m_dbExternal)
             {
                 QSqlQuery removePreset;
-                removePreset.prepare("DELETE FROM tempPresets WHERE id = :id");
-                removePreset.bindValue(":id", tp->getId());
+                removePreset.prepare("DELETE FROM batteryPresets WHERE id = :id");
+                removePreset.bindValue(":id", bp->getId());
 
                 if (removePreset.exec() == false)
                 {
@@ -228,8 +227,8 @@ bool TempPresetManager::removePreset(const QString &name)
             }
 
             // Remove preset
-            m_presets.removeOne(tp);
-            delete tp;
+            m_presets.removeOne(bp);
+            delete bp;
 
             Q_EMIT presetsChanged();
             status = true;
@@ -237,22 +236,22 @@ bool TempPresetManager::removePreset(const QString &name)
             break;
         }
     }
-
+*/
     return status;
 }
 
 /* ************************************************************************** */
 
-TempPreset *TempPresetManager::getPreset(const QString &name)
+BatteryPreset *BatteryPresetManager::getPreset(const QString &name)
 {
-    TempPreset *p = nullptr;
+    BatteryPreset *p = nullptr;
 
     for (auto pp: std::as_const(m_presets))
     {
-        TempPreset *tp = qobject_cast<TempPreset*>(pp);
-        if (tp && tp->getName() == name)
+        BatteryPreset *bp = qobject_cast<BatteryPreset*>(pp);
+        if (bp && bp->getName() == name)
         {
-            return tp;
+            return bp;
         }
     }
 

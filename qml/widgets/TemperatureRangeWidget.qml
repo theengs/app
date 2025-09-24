@@ -23,7 +23,7 @@ Rectangle {
         active: false
         asynchronous: false
 
-        sourceComponent: PopupPresetRangeDelete {
+        sourceComponent: PopupTempPresetRangeDelete {
             id: popupDelete
             onConfirmed: currentPreset.removeRange(modelData.name)
         }

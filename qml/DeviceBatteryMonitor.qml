@@ -7,7 +7,7 @@ import ComponentLibrary
 import DeviceUtils
 import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
 
-import PresetUtils
+import BatteryPresetUtils
 import "qrc:/js/UtilsPresets.js" as UtilsPresets
 
 Loader {
@@ -120,7 +120,7 @@ Loader {
             graphLoader.source = "" // force graph reload
             loadGraph()
 /*
-            currentPreset = presetsManager.getPreset(currentDevice.preset)
+            currentPreset = batteryPresetsManager.getPreset(currentDevice.preset)
             currentInterval = currentDevice.realtimeWindow
             if (currentInterval === 60) selectorInterval.currentSelection = 3
             else if (currentInterval === 30) selectorInterval.currentSelection = 2
@@ -466,9 +466,90 @@ Loader {
                     anchors.left: parent.left
                     anchors.right: parent.right
 
-                    visible: false
-                    height: 0
+                    visible: true
+                    height: 40
                     z: 2
+
+                    Rectangle {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        height: 40
+
+                        color: Theme.colorForeground
+
+                        RowLayout {
+                            anchors.left: parent.left
+                            anchors.leftMargin: Theme.componentMargin
+                            anchors.right: parent.right
+                            anchors.rightMargin: Theme.componentMargin
+
+                            height: parent.height
+                            spacing: 12
+
+                            Rectangle {
+                                Layout.preferredHeight: parent.height
+                                Layout.preferredWidth: legendPreset.contentWidth + 12
+
+                                visible: !singleColumn
+                                color: Qt.darker(Theme.colorForeground, 1.03)
+
+                                Text {
+                                    id: legendPreset
+                                    anchors.centerIn: parent
+                                    text: qsTr("PRESET")
+                                    textFormat: Text.PlainText
+                                    color: Theme.colorText
+                                }
+                            }
+
+                            SelectorMenuItem {
+                                Layout.preferredHeight: 32
+                                Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+
+                                highlighted: true
+
+                                text: {
+                                    if (currentPreset) return currentPreset.name
+                                    return qsTr("preset")
+                                }
+                                source: {
+                                    if (currentPreset) return UtilsPresets.getBatteryPresetIcon(currentPreset.type)
+                                    return "qrc:/IconLibrary/material-icons/duotone/tune.svg"
+                                }
+                                sourceSize: 20
+
+                                PopupBatteryPresetSelection {
+                                    id: popupPresetSelection
+                                    onSelected: (name) => {
+                                        currentDevice.preset = name
+                                        currentPreset = batteryPresetsManager.getPreset(currentDevice.preset)
+                                    }
+                                }
+
+                                onClicked: {
+                                    popupPresetSelection.open()
+                                }
+                            }
+
+                            Item {
+                                Layout.fillWidth: singleColumn
+                                Layout.preferredHeight: 32
+                            }
+
+                            ButtonClear {
+                                text: "connect"
+                                onClicked: {
+                                    currentDevice.actionConnect()
+                                }
+                            }
+                            ButtonClear {
+                                text: "fakedata"
+                                onClicked: {
+                                    currentDevice.actionFakeVoltage()
+                                }
+                            }
+                        }
+                    }
                 }
 
                 ////////
