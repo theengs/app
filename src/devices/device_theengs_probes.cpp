@@ -584,6 +584,7 @@ void DeviceTheengsProbes::getChartData_probeAIO(int maxDays, QDateTimeAxis *axis
 
         axis->setFormat("dd MMM");
         axis->setMax(QDateTime::currentDateTime());
+
         bool minSet = false;
         bool minmaxChanged = false;
 

@@ -119,14 +119,14 @@ Loader {
 
             graphLoader.source = "" // force graph reload
             loadGraph()
-/*
+
             currentPreset = batteryPresetsManager.getPreset(currentDevice.preset)
             currentInterval = currentDevice.realtimeWindow
-            if (currentInterval === 60) selectorInterval.currentSelection = 3
-            else if (currentInterval === 30) selectorInterval.currentSelection = 2
-            else if (currentInterval === 10) selectorInterval.currentSelection = 1
-            else selectorInterval.currentSelection = 0
-*/
+            //if (currentInterval === 60) selectorInterval.currentSelection = 3
+            //else if (currentInterval === 30) selectorInterval.currentSelection = 2
+            //else if (currentInterval === 10) selectorInterval.currentSelection = 1
+            //else selectorInterval.currentSelection = 0
+
             updateHeader()
             updateData()
         }
@@ -167,7 +167,11 @@ Loader {
             if (!currentDevice.isBatteryMonitor) return
 
             if (graphLoader.status !== Loader.Ready) {
-                graphLoader.source = "ChartBatteryRealTime.qml"
+                if (currentDevice.batteryPercent > 0) {
+                    graphLoader.source = "ChartBatteryHistory.qml"
+                } else {
+                    graphLoader.source = "ChartBatteryRealTime.qml"
+                }
             }
 
             if (graphLoader.status === Loader.Ready && graphLoader.asynchronous === false) {
@@ -195,11 +199,11 @@ Loader {
             if (isMobile) mobileUI.setScreenAlwaysOn(false)
         }
         function isHistoryMode() {
-            if (graphLoader.status === Loader.Ready) return batteryChart.isIndicator()
+            //if (graphLoader.status === Loader.Ready) return batteryChart.isIndicator()
             return false
         }
         function resetHistoryMode() {
-            if (graphLoader.status === Loader.Ready) batteryChart.resetIndicator()
+            //if (graphLoader.status === Loader.Ready) batteryChart.resetIndicator()
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -226,6 +230,8 @@ Loader {
 
                 MouseArea { anchors.fill: parent } // prevent clicks below this area
 
+                ////////
+
                 Item { // indicators
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
@@ -233,6 +239,8 @@ Loader {
 
                     width: singleColumn ? batteryBox.height * 0.75 : batteryBox.width * 0.66
                     height: width
+
+                    ////
 
                     IconSvg { // sensorDisconnected
                         width: isMobile ? 96 : 128
@@ -244,16 +252,12 @@ Loader {
                         color: cccc
                     }
 
-                    Item { // battery indicator (voltage)
-                        id: indicatorV
-                        anchors.fill: parent
-                        anchors.margins: 0
-                    }
+                    ////
 
                     Item { // battery indicator (percent)
-                        id: indicator
+                        id: indicatorP
                         anchors.fill: parent
-                        anchors.margins: 0
+                        anchors.margins: 16
 
                         visible: currentDevice.hasData
 
@@ -273,7 +277,7 @@ Loader {
 
                             valueMin: 0
                             valueMax: 100
-                            value: currentDevice.battery1
+                            value: currentDevice.batteryPercent
 
                             background: true
                             backgroundOpacity: 0.33
@@ -281,12 +285,12 @@ Loader {
 
                         IconSvg {
                             id: batteryIcon
-                            anchors.horizontalCenter: indicator.horizontalCenter
-                            anchors.verticalCenter: indicator.verticalCenter
+                            anchors.horizontalCenter: indicatorP.horizontalCenter
+                            anchors.verticalCenter: indicatorP.verticalCenter
                             anchors.verticalCenterOffset: 16
 
-                            width: indicator.width * 0.50
-                            height: indicator.height * 0.50
+                            width: indicatorP.width * 0.50
+                            height: indicatorP.height * 0.50
 
                             color: cccc
                             smooth: true
@@ -308,16 +312,128 @@ Loader {
                                 font.pixelSize: isMobile ? 20 : 24
                                 font.bold: true
                             }
-                            Text {
+                            Row {
                                 anchors.horizontalCenter: parent.horizontalCenter
+                                spacing: 24
 
-                                text: currentDevice.battery1 + "%"
-                                color: cccc
-                                font.pixelSize: isMobile ? 20 : 24
-                                font.bold: false
+                                Text {
+                                    visible: (currentDevice.batteryPercent > 0)
+                                    text: currentDevice.batteryPercent + "%"
+                                    color: cccc
+                                    font.pixelSize: isMobile ? 20 : 24
+                                    font.bold: false
+                                }
+                                Text {
+                                    visible: (currentDevice.batteryVoltage > 0)
+                                    text: currentDevice.batteryVoltage.toFixed(1) + "V"
+                                    color: cccc
+                                    font.pixelSize: isMobile ? 20 : 24
+                                    font.bold: false
+                                }
                             }
                         }
                     }
+
+                    ////
+
+                    Item { // battery indicator (voltage)
+                        id: indicatorV
+                        anchors.top: indicatorP.bottom
+                        anchors.left: indicatorP.left
+                        anchors.right: indicatorP.right
+                        anchors.margins: 0
+
+                        visible: currentDevice.hasData && (currentDevice.batteryVoltage > 0)
+
+                        property real minV: 4
+                        property real maxV: 16
+                        property real minL: (currentPreset) ? currentPreset.voltageMin : 10
+                        property real maxL: (currentPreset) ? currentPreset.voltageMax : 12
+
+                        ProgressBarThemed {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+
+                            opacity: 0.33
+                            colorBackground: cccc
+
+                            from: indicatorV.minV
+                            to: indicatorV.maxV
+                            value: 0
+
+                            Rectangle { //
+                                anchors.top: parent.top
+                                anchors.bottom: parent.bottom
+                                radius: 0 // height
+
+                                x: (parent.width / (indicatorV.maxV - indicatorV.minV)) * (indicatorV.minL - indicatorV.minV)
+                                width: (parent.width / (indicatorV.maxV - indicatorV.minV)) * (indicatorV.maxL - indicatorV.minL)
+
+                                Canvas {
+                                    anchors.top: parent.bottom
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: -(width/2)
+                                    width: 12
+                                    height: 8
+                                    opacity: 1
+                                    rotation: 180
+
+                                    Connections {
+                                        target: Theme
+                                        function onCurrentThemeChanged() { indicator.requestPaint() }
+                                    }
+                                    onPaint: {
+                                        var ctx = getContext("2d")
+                                        ctx.reset()
+                                        ctx.moveTo(0, 0)
+                                        ctx.lineTo(width, 0)
+                                        ctx.lineTo(width / 2, height)
+                                        ctx.closePath()
+                                        ctx.fillStyle = cccc
+                                        ctx.fill()
+                                    }
+                                }
+                                Canvas {
+                                    anchors.top: parent.bottom
+                                    anchors.right: parent.right
+                                    anchors.rightMargin: -(width/2)
+                                    width: 12
+                                    height: 8
+                                    opacity: 1
+                                    rotation: 180
+
+                                    Connections {
+                                        target: Theme
+                                        function onCurrentThemeChanged() { indicator.requestPaint() }
+                                    }
+                                    onPaint: {
+                                        var ctx = getContext("2d")
+                                        ctx.reset()
+                                        ctx.moveTo(0, 0)
+                                        ctx.lineTo(width, 0)
+                                        ctx.lineTo(width / 2, height)
+                                        ctx.closePath()
+                                        ctx.fillStyle = cccc
+                                        ctx.fill()
+                                    }
+                                }
+                            }
+                        }
+                        ProgressBarThemed {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+
+                            opacity: 0.66
+                            colorBackground: "transparent"
+                            colorForeground: Theme.colorPrimary
+
+                            from: indicatorV.minV
+                            to: indicatorV.maxV
+                            value: currentDevice.batteryVoltage
+                        }
+                    }
+
+                    ////
                 }
 
                 ////////

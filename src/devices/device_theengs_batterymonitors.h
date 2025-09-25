@@ -57,6 +57,13 @@ class DeviceTheengsBatteryMonitors: public DeviceTheengs
     int getRtWindow() const { return m_realtime_window; }
     void setRtWindow(const int w);
 
+protected:
+    bool areValuesValid_percent(const int p) const;
+    bool areValuesValid_voltage(const float v) const;
+
+    bool addDatabaseRecord_percent(const QDateTime &timestamp, const int p);
+    bool addDatabaseRecord_voltage(const QDateTime &timestamp, const float v);
+
 signals:
     void presetUpdated();
     void rtGraphCleaned();
@@ -78,7 +85,7 @@ public:
 
     // Chart battery monitoring
     Q_INVOKABLE void getChartData_batteryRT(QDateTimeAxis *axis, QLineSeries *batt, bool reload = false);
-    Q_INVOKABLE void getChartData_batteryHistory(QDateTimeAxis *axis, QLineSeries *batt, bool reload = false);
+    Q_INVOKABLE void getChartData_batteryHistory(QDateTimeAxis *axis, QLineSeries *batt, bool reload = false, int days = 30);
 };
 
 /* ************************************************************************** */

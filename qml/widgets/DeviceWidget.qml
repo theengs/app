@@ -1031,13 +1031,13 @@ Item {
             anchors.verticalCenterOffset: 4
 
             function initData() {
-                gaugeLegend.text = boxDevice.battery1 + "%"
-                gaugeValue.value = boxDevice.battery1
+                gaugeLegend.text = boxDevice.batteryPercent + "%"
+                gaugeValue.value = boxDevice.batteryPercent
             }
 
             function updateData() {
-                gaugeLegend.text = boxDevice.battery1 + "%"
-                gaugeValue.value = boxDevice.battery1
+                gaugeLegend.text = boxDevice.batteryPercent + "%"
+                gaugeValue.value = boxDevice.batteryPercent
             }
 
             Text {

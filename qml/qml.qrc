@@ -43,6 +43,7 @@
         <file alias="ChartProbeDataAio.qml">charts/ChartProbeDataAio.qml</file>
         <file alias="ChartProbeRealTime.qml">charts/ChartProbeRealTime.qml</file>
         <file alias="ChartBatteryRealTime.qml">charts/ChartBatteryRealTime.qml</file>
+        <file alias="ChartBatteryHistory.qml">charts/ChartBatteryHistory.qml</file>
         <file alias="ChartThermometerMinMax.qml">charts/ChartThermometerMinMax.qml</file>
         <file alias="ChartThermometerMinMaxBar.qml">charts/ChartThermometerMinMaxBar.qml</file>
         <file alias="IndicatorsCompact.qml">charts/IndicatorsCompact.qml</file>

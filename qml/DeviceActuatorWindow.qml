@@ -240,6 +240,8 @@ Loader {
                             anchors.horizontalCenter: parent.horizontalCenter
 
                             text: {
+                                return currentDevice.direction
+
                                 if (currentDevice.hasOpen) return "open"
                                 else if (currentDevice.hasMotion) return "motion"
                                 else return ""
@@ -255,9 +257,8 @@ Loader {
                             anchors.horizontalCenter: parent.horizontalCenter
 
                             text: {
-                                if (currentDevice.hasOpen) return (currentDevice.open) ? "opened" : "closed"
-                                else if (currentDevice.hasMotion) return (currentDevice.motion) ? "yes" : "no"
-                                else return "?"
+                                return currentDevice.position
+                                //return "?"
                             }
 
                             font.pixelSize: isPhone ? 26 : 30
@@ -269,15 +270,15 @@ Loader {
                         Item {
                             width: 12
                             height: 12
-                            visible: (currentDevice.hasLuminositySensor && currentDevice.luminosityLux >= 0)
+                            //visible: (currentDevice.hasLuminositySensor && currentDevice.luminosityLux >= 0)
                         }
                         Row {
                             anchors.horizontalCenter: parent.horizontalCenter
                             spacing: 8
-                            visible: (currentDevice.hasLuminositySensor && currentDevice.luminosityLux >= 0)
+                            //visible: (currentDevice.hasLuminositySensor && currentDevice.luminosityLux >= 0)
 
                             Text {
-                                text: currentDevice.luminosityLux
+                                text: currentDevice.lightlevel
                                 font.pixelSize: isPhone ? 22 : 24
                                 color: cccc
                                 opacity: 1

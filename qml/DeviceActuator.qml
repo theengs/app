@@ -240,9 +240,9 @@ Loader {
                             anchors.horizontalCenter: parent.horizontalCenter
 
                             text: {
-                                if (currentDevice.hasOpen) return "open"
-                                else if (currentDevice.hasMotion) return "motion"
-                                else return ""
+                                if (currentDevice.mode === "on/off") return "on/off"
+                                else if (currentDevice.mode === "onestate") return "one state"
+                                else return currentDevice.mode
                             }
 
                             font.pixelSize: isPhone ? 22 : 26
@@ -255,8 +255,8 @@ Loader {
                             anchors.horizontalCenter: parent.horizontalCenter
 
                             text: {
-                                if (currentDevice.hasOpen) return (currentDevice.open) ? "opened" : "closed"
-                                else if (currentDevice.hasMotion) return (currentDevice.motion) ? "yes" : "no"
+                                if (currentDevice.mode === "on/off") return currentDevice.state ? "on" : "off"
+                                else if (currentDevice.mode === "onestate") return currentDevice.state
                                 else return "?"
                             }
 
@@ -264,30 +264,6 @@ Loader {
                             font.bold: true
                             color: cccc
                             opacity: 1
-                        }
-
-                        Item {
-                            width: 12
-                            height: 12
-                            visible: (currentDevice.hasLuminositySensor && currentDevice.luminosityLux >= 0)
-                        }
-                        Row {
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            spacing: 8
-                            visible: (currentDevice.hasLuminositySensor && currentDevice.luminosityLux >= 0)
-
-                            Text {
-                                text: currentDevice.luminosityLux
-                                font.pixelSize: isPhone ? 22 : 24
-                                color: cccc
-                                opacity: 1
-                            }
-                            Text {
-                                text: "lux"
-                                font.pixelSize: isPhone ? 20 : 22
-                                color: cccc
-                                opacity: 0.66
-                            }
                         }
                     }
                 }
