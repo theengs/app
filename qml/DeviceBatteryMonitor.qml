@@ -66,6 +66,7 @@ Loader {
             function onCapabilitiesUpdated() { updateHeader() }
             function onStatusUpdated() { updateHeader() }
 
+            function onPresetUpdated() { updatePreset() }
             function onDataUpdated() { updateData() }
             function onRefreshUpdated() { updateData() }
             function onHistoryUpdated() { }
@@ -144,6 +145,17 @@ Loader {
             if (typeof currentDevice === "undefined" || !currentDevice) return
             if (!currentDevice.isBatteryMonitor) return
             //console.log("DeviceBatteryMonitor // updateData() >> " + currentDevice)
+        }
+
+        function updatePreset() {
+            if (typeof currentDevice === "undefined" || !currentDevice) return
+            if (!currentDevice.isBatteryMonitor) return
+            //console.log("DeviceBatteryMonitor // updatePreset() >> " + currentDevice)
+
+            currentPreset = batteryPresetsManager.getPreset(currentDevice.preset)
+            if (graphLoader.status === Loader.Ready) {
+                batteryChart.updatePreset()
+            }
         }
 
         function updateStatusText() {
@@ -638,7 +650,6 @@ Loader {
                                     id: popupPresetSelection
                                     onSelected: (name) => {
                                         currentDevice.preset = name
-                                        currentPreset = batteryPresetsManager.getPreset(currentDevice.preset)
                                     }
                                 }
 

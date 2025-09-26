@@ -268,9 +268,61 @@ void DeviceTheengsBM26::bleServiceError(QLowEnergyService::ServiceError e)
 /* ************************************************************************** */
 /* ************************************************************************** */
 
+float fakeFloat()
+{
+    // Use a random device to seed the generator
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    // Define the distribution between 10.0 and 14.0
+    static std::uniform_real_distribution<float> dist(10.0f, 14.0f);
+
+    return dist(gen);
+}
+
+void DeviceTheengsBM26::actionFakeVoltage()
+{
+    qDebug() << "DeviceGateway::actionFakeVoltage()" << getAddress() << getName();
+
+    float volt = fakeFloat();
+
+    // valid data?
+    if (areValuesValid_voltage(volt))
+    {
+        m_lastUpdate = QDateTime::currentDateTime();
+
+        // changes?
+        if (volt != m_batteryVoltage)
+        {
+            m_batteryVoltage = volt;
+            Q_EMIT dataUpdated();
+        }
+
+        // save?
+        if (needsUpdateDb())
+        {
+            addDatabaseRecord_voltage(m_lastUpdate, m_batteryVoltage);
+        }
+    }
+}
+
 void DeviceTheengsBM26::actionReadVoltage()
 {
-    //
+    qDebug() << "DeviceGateway::actionReadVoltage()" << getAddress() << getName();
+
+    if (m_ble_status == DeviceUtils::DEVICE_CONNECTED)
+    {
+        actionStarted(DeviceUtils::ACTION_UPDATE);
+    }
+    else if ((m_ble_status <= DeviceUtils::DEVICE_AVAILABLE))
+    {
+        actionStarted(DeviceUtils::ACTION_UPDATE);
+        deviceConnect();
+    }
+    else
+    {
+        qWarning() << "DeviceGateway::actionReadVoltage() BLE status: " << m_ble_status;
+    }
 }
 
 /* ************************************************************************** */

@@ -14,6 +14,8 @@ SwipeDelegate {
     clip: true
     padding: Theme.componentMargin
 
+    property bool selected: false
+
     ////////////////////////////////////////////////////////////////////////////
 
     background: Rectangle {
@@ -96,7 +98,7 @@ SwipeDelegate {
                     spacing: 4
 
                     Text {
-                        text: modelData.voltageMin + "v"
+                        text: modelData.voltageMin.toFixed(1) + "v"
                         textFormat: Text.PlainText
                         font.pixelSize: Theme.fontSizeContentSmall
                         color: Theme.colorText
@@ -110,7 +112,7 @@ SwipeDelegate {
                     }
 
                     Text {
-                        text: modelData.voltageMax + "v"
+                        text: modelData.voltageMax.toFixed(1) + "v"
                         textFormat: Text.PlainText
                         font.pixelSize: Theme.fontSizeContentSmall
                         color: Theme.colorText
@@ -118,6 +120,15 @@ SwipeDelegate {
                 }
 
                 ////
+            }
+
+            ////////
+
+            ButtonClear {
+                visible: batteryPresetSearchWidget.selected
+
+                color: Theme.colorGreen
+                source: "qrc:/IconLibrary/material-symbols/check.svg"
             }
 
             ////////

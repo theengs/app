@@ -54,6 +54,7 @@ Popup {
             id: presetSearchArea
             anchors.left: parent.left
             anchors.right: parent.right
+            anchors.margins: Theme.componentRadius
 
             height: presetSearchBox.height + Theme.componentMarginXL*2
             color: Theme.colorBackground
@@ -131,8 +132,10 @@ Popup {
 
             model: batteryPresetsManager.presetsFiltered
             delegate: BatteryPresetSearchWidget {
-                width: ListView.view.width
+                width: ListView.view.width - Theme.componentBorderWidth*2
                 height: 64
+
+                selected: (currentPreset && currentPreset.name === modelData.name)
 
                 onClicked: {
                     popupBatteryPresets.selected(modelData.name)

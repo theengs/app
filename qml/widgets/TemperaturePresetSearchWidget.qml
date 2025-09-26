@@ -14,6 +14,8 @@ SwipeDelegate {
     clip: true
     padding: Theme.componentMargin
 
+    property bool selected: false
+
     ////////////////////////////////////////////////////////////////////////////
 
     background: Rectangle {
@@ -139,6 +141,15 @@ SwipeDelegate {
                 }
 
                 ////
+            }
+
+            ////////
+
+            ButtonClear {
+                visible: temperaturePresetSearchWidget.selected
+
+                color: Theme.colorGreen
+                source: "qrc:/IconLibrary/material-symbols/check.svg"
             }
 
             ////////

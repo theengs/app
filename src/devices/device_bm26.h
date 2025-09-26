@@ -72,6 +72,7 @@ public:
                       QObject *parent = nullptr);
     ~DeviceTheengsBM26();
 
+    Q_INVOKABLE void actionFakeVoltage();
     Q_INVOKABLE void actionReadVoltage();
 };
 

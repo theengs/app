@@ -13,8 +13,8 @@ Item {
     property bool showGraphDots: settingsManager.graphShowDots
     property color legendColor: Theme.colorSubText
 
-    property real limitMin: 10
-    property real limitMax: 12
+    property real limitMin: 0
+    property real limitMax: 0
 
     property real valueMin: 0
     property real valueMax: 20
@@ -25,20 +25,17 @@ Item {
         if (typeof currentDevice === "undefined" || !currentDevice) return
         //console.log("chartBatteryHistory // loadGraph() >> " + currentDevice)
 
-        battery1Data.visible = true // currentDevice.hasBatteryVoltage
-        battery1Data.clear()
-        //battery2Data.visible = currentDevice.hasBatteryPercent
-        //battery2Data.clear()
-
-        limitMin = (currentPreset) ? currentPreset.voltageMin : 10
-        limitMax = (currentPreset) ? currentPreset.voltageMax : 12
+        battery2Data.visible = true // currentDevice.hasBatteryVoltage
+        battery2Data.clear()
 
         axisPercents.min = 0
         axisPercents.max = 100
         axisVolts.min = valueMin
         axisVolts.max = valueMax
 
-        legendColor = Qt.rgba(legendColor.r, legendColor.g, legendColor.b, 0.8)
+        chartBatteryHistory.limitMin = (currentPreset) ? currentPreset.voltageMin : 0
+        chartBatteryHistory.limitMax = (currentPreset) ? currentPreset.voltageMax : 0
+        chartBatteryHistory.legendColor = Qt.rgba(legendColor.r, legendColor.g, legendColor.b, 0.8)
     }
 
     function updateGraph() {
@@ -49,20 +46,33 @@ Item {
         var count = 0 // currentDevice.countDataNamed("battery2", days)
 
         //// DATA
-        battery1Data.clear()
-        //battery2Data.clear()
+        battery2Data.clear()
 
-        currentDevice.getChartData_batteryHistory(axisTime, battery1Data, false, days)
+        currentDevice.getChartData_batteryHistory(axisTime, battery2Data, false, days)
 
         //// AXIS
         //axisVolts.min = currentDevice.voltMin*0.85
         //axisVolts.max = currentDevice.voltMax*1.15
 
         /// Graph visibility
-        count = battery1Data.count
+        count = battery2Data.count
         aioGraph.visible = (count > 1)
         noDataIndicator.visible = (count <= 0)
         showGraphDots = (settingsManager.graphShowDots && count < 16)
+    }
+
+    function updatePreset() {
+        if (typeof currentDevice === "undefined" || !currentDevice) return
+
+        if (currentPreset) {
+            //console.log("DeviceBatteryMonitor // onPresetUpdated() >> " + currentPreset.name)
+            chartBatteryHistory.limitMin = currentPreset.voltageMin
+            chartBatteryHistory.limitMax = currentPreset.voltageMax
+        } else {
+            //console.log("DeviceBatteryMonitor // onPresetUpdated() >> empty preset")
+            chartBatteryHistory.limitMin = 0
+            chartBatteryHistory.limitMax = 0
+        }
     }
 
     function qpoint_lerp(p0, p1, x) { return (p0.y + (x - p0.x) * ((p1.y - p0.y) / (p1.x - p0.x))) }
@@ -92,7 +102,7 @@ Item {
                        gridLineColor: Theme.colorSeparator; }
 
         LineSeries {
-            id: battery1Data
+            id: battery2Data
             useOpenGL: useOpenGL
             pointsVisible: showGraphDots
             color: Theme.colorBlue; width: 2;
