@@ -42,8 +42,8 @@ DeviceSwitchbotSmartSwitch::DeviceSwitchbotSmartSwitch(const QString &deviceAddr
     DeviceTheengsActuators(deviceAddr, deviceName, deviceModel, devicePropsJson, parent)
 {
     m_deviceModel = deviceModel;
-    m_deviceType = DeviceUtils::DEVICE_THEENGS_BATTERYMONITOR;
-    m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
+    m_deviceType = DeviceUtils::DEVICE_THEENGS_ACTUATOR;
+    //m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
     m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 
     parseTheengsProps(devicePropsJson);
@@ -56,8 +56,8 @@ DeviceSwitchbotSmartSwitch::DeviceSwitchbotSmartSwitch(const QBluetoothDeviceInf
     DeviceTheengsActuators(d, deviceModel, devicePropsJson, parent)
 {
     m_deviceModel = deviceModel;
-    m_deviceType = DeviceUtils::DEVICE_THEENGS_BATTERYMONITOR;
-    m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
+    m_deviceType = DeviceUtils::DEVICE_THEENGS_ACTUATOR;
+    //m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
     m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 
     parseTheengsProps(devicePropsJson);
@@ -152,14 +152,18 @@ void DeviceSwitchbotSmartSwitch::serviceDetailsDiscovered_data(QLowEnergyService
 
         if (m_serviceData)
         {
-            // Characteristic "read / notify"
-            m_charNotif = m_serviceData->characteristic(uuid_data_char_notify);
-            m_notificationDesc = m_charNotif.clientCharacteristicConfiguration();
+            // TX Characteristic
+            m_charTX = m_serviceData->characteristic(uuid_data_char_tx);
+
+            // RX Characteristic
+            m_charRX = m_serviceData->characteristic(uuid_data_char_rx);
+            m_notificationDesc = m_charRX.clientCharacteristicConfiguration();
             m_serviceData->writeDescriptor(m_notificationDesc, QByteArray::fromHex("0100"));
 
             // Debug
-            if (!m_charNotif.isValid()) { qWarning() << "m_charNotif invalid"; }
-            if (!m_notificationDesc.isValid()) { qWarning() << "m_notificationDesc invalid"; }
+            if (!m_charTX.isValid()) { qWarning() << "m_charTX invalid"; }
+            if (!m_charRX.isValid()) { qWarning() << "m_charRX invalid"; }
+            if (!m_notificationDesc.isValid()) { qWarning() << "m_notificationDesc on m_charRX invalid"; }
         }
     }
 }
@@ -194,6 +198,13 @@ void DeviceSwitchbotSmartSwitch::bleReadNotify(const QLowEnergyCharacteristic &c
 {
     qDebug() << "DeviceSwitchbotSmartSwitch::bleReadNotify(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
     qDebug() << "DATA: 0x" << value.toHex();
+
+    if (c.uuid() == uuid_data_char_rx && value.size() == 16)
+    {
+        const uint8_t *data = reinterpret_cast<const quint8 *>(value.constData());
+
+        //
+    }
 }
 
 void DeviceSwitchbotSmartSwitch::bleServiceError(QLowEnergyService::ServiceError e)
@@ -203,11 +214,17 @@ void DeviceSwitchbotSmartSwitch::bleServiceError(QLowEnergyService::ServiceError
 
 /* ************************************************************************** */
 /* ************************************************************************** */
-/*
-void DeviceSwitchbotSmartSwitch::actionReadVoltage()
+
+void DeviceSwitchbotSmartSwitch::actionAction(const int action)
 {
-    //
+    qDebug() << "DeviceSwitchbotSmartSwitch::actionAction(" << action << ")";
+
+    static uint8_t ON[] = {0x57, 0x01, 0x01};
+    static uint8_t OFF[] = {0x57, 0x01, 0x02};
+    static uint8_t PRESS[] = {0x57, 0x01, 0x00};
+    static uint8_t DOWN[] = {0x57, 0x01, 0x03};
+    static uint8_t UP[] = {0x57, 0x01, 0x04};
 }
-*/
+
 /* ************************************************************************** */
 /* ************************************************************************** */

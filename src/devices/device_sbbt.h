@@ -41,12 +41,12 @@ class DeviceSwitchbotBlindTilt: public DeviceTheengsWindowActuators
     Q_OBJECT
 
     QBluetoothUuid uuid_data_srv = QBluetoothUuid(QStringLiteral("cba20d00-224d-11e6-9fb8-0002a5d5c51b"));
-    QBluetoothUuid uuid_data_char_action = QBluetoothUuid(QStringLiteral("cba20002-224d-11e6-9fb8-0002a5d5c51b"));
-    QBluetoothUuid uuid_data_char_notify = QBluetoothUuid(QStringLiteral("cba20003-224d-11e6-9fb8-0002a5d5c51b"));
+    QBluetoothUuid uuid_data_char_rx = QBluetoothUuid(QStringLiteral("cba20002-224d-11e6-9fb8-0002a5d5c51b"));
+    QBluetoothUuid uuid_data_char_tx = QBluetoothUuid(QStringLiteral("cba20003-224d-11e6-9fb8-0002a5d5c51b"));
 
     QLowEnergyService *m_serviceData = nullptr;
-    QLowEnergyCharacteristic m_charAction;
-    QLowEnergyCharacteristic m_charNotif;
+    QLowEnergyCharacteristic m_charRX;
+    QLowEnergyCharacteristic m_charTX;
     QLowEnergyDescriptor m_notificationDesc;
 
     void serviceScanDone();
@@ -73,6 +73,8 @@ public:
                              const QString &deviceModel, const QString &devicePropsJson,
                              QObject *parent = nullptr);
     ~DeviceSwitchbotBlindTilt();
+
+    Q_INVOKABLE void actionAction(const int action = 0);
 };
 
 /* ************************************************************************** */

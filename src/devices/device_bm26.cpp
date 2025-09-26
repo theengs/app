@@ -56,11 +56,8 @@ DeviceTheengsBM26::DeviceTheengsBM26(const QString &deviceAddr,
 
     parseTheengsProps(devicePropsJson);
 
-    if (m_deviceModel == "BM2" || m_deviceModel == "BM6")
-    {
-        if (!hasBatteryPercent()) m_deviceSensors += DeviceUtilsTheengs::SENSOR_BATTERY_PERCENT;
-        if (!hasBatteryVoltage()) m_deviceSensors += DeviceUtilsTheengs::SENSOR_BATTERY_VOLTAGE;
-    }
+    if (!hasBatteryPercent()) m_deviceSensors += DeviceUtilsTheengs::SENSOR_BATTERY_PERCENT;
+    if (!hasBatteryVoltage()) m_deviceSensors += DeviceUtilsTheengs::SENSOR_BATTERY_VOLTAGE;
 }
 
 DeviceTheengsBM26::DeviceTheengsBM26(const QBluetoothDeviceInfo &d,
@@ -78,11 +75,8 @@ DeviceTheengsBM26::DeviceTheengsBM26(const QBluetoothDeviceInfo &d,
 
     parseTheengsProps(devicePropsJson);
 
-    if (m_deviceModel == "BM2" || m_deviceModel == "BM6")
-    {
-        if (!hasBatteryPercent()) m_deviceSensors += DeviceUtilsTheengs::SENSOR_BATTERY_PERCENT;
-        if (!hasBatteryVoltage()) m_deviceSensors += DeviceUtilsTheengs::SENSOR_BATTERY_VOLTAGE;
-    }
+    if (!hasBatteryPercent()) m_deviceSensors += DeviceUtilsTheengs::SENSOR_BATTERY_PERCENT;
+    if (!hasBatteryVoltage()) m_deviceSensors += DeviceUtilsTheengs::SENSOR_BATTERY_VOLTAGE;
 }
 
 /* ************************************************************************** */
@@ -217,12 +211,12 @@ void DeviceTheengsBM26::bleReadNotify(const QLowEnergyCharacteristic &c, const Q
     qDebug() << "DeviceTheengsBM26::bleReadNotify(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
     qDebug() << "DATA: 0x" << value.toHex();
 
-    const uint8_t *data = reinterpret_cast<const quint8 *>(value.constData());
-
     // Volt UUID // 16 bytes frames
     if (c.uuid() == uuid_volt_char_notify && value.size() == 16)
     {
 #if defined(ENABLE_MBEDTLS)
+        const uint8_t *data = reinterpret_cast<const quint8 *>(value.constData());
+
         unsigned char output[16];
         unsigned char iv[16] = { };
         unsigned char key[16] = { 108, 101, 97, 103, 101, 110, 100, 255, 254, 49, 56, 56, 50, 52, 54, 54, };

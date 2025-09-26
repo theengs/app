@@ -43,8 +43,18 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info,
                                     QBluetoothDeviceInfo::Fields updatedFields)
 {
     //qDebug() << "bleDevice_updated() " << info.name() << info.address(); // << info.deviceUuid() // << " updatedFields: " << updatedFields
-
     Q_UNUSED(updatedFields) // We don't use QBluetoothDeviceInfo::Fields, it's unreliable
+
+    bool status_device = false;
+    bool status_gateway = false;
+    bool appleOS = false;
+
+#if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
+    // No need to try to handle unknown devices on macOS / iOS, because
+    // we don't have MAC addresses to ID them...
+    // Maybe later if Theengs decoder can output MAC from advertisement packets
+    appleOS = true;
+#endif
 
 #if !defined(DEBUG_FAKE_DEVICES)
     if (info.rssi() >= 0) return; // we probably just hit the device cache
@@ -86,8 +96,6 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info,
     }
 
     /// KNOWN DEVICES //////////////////////////////////////////////////////////
-
-    bool status_device = false;
 
     for (auto d: std::as_const(m_devices_model->m_devices))
     {
@@ -248,15 +256,6 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info,
         }
     }
 
-    // No need to try to handle unknown devices on macOS / iOS, because
-    // we don't have MAC addresses to ID them...
-    // Maybe later if Theengs decoder can output MAC from advertisement packets
-#if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
-    bool appleOS = true;
-#else
-    bool appleOS = false;
-#endif
-
     if (!status_device && !appleOS) // UN-KNOWN DEVICES ///////////////////////////////////////////
     {
         QString mac_qstr = info.address().toString();
@@ -359,15 +358,18 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info,
 
     /// Dynamic scanning ///////////////////////////////////////////////////////
 
-    if (info.name().startsWith("OMG_"))
-    {
-        //qDebug() << "addBleGateway(" << info.name() << ") FROM DYNAMIC SCANNING";
-        addBleGateway(info);
-    }
     if (m_scanning)
     {
-        //qDebug() << "addBleDevice(" << info.name() << ") FROM DYNAMIC SCANNING";
-        addBleDevice(info);
+        if (info.name().startsWith("OMG_"))
+        {
+            //qDebug() << "addBleGateway(" << info.name() << ") FROM DYNAMIC SCANNING";
+            addBleGateway(info);
+        }
+        else
+        {
+            //qDebug() << "addBleDevice(" << info.name() << ") FROM DYNAMIC SCANNING";
+            addBleDevice(info);
+        }
     }
 }
 

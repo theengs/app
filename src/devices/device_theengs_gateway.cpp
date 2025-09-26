@@ -1217,19 +1217,19 @@ void DeviceGateway::actionPasswordSet()
 {
     if (m_ble_status == DeviceUtils::DEVICE_CONNECTED)
     {
-        qDebug() << "DeviceStodeus::actionPasswordSet()" << getAddress() << getName();
+        qDebug() << "DeviceGateway::actionPasswordSet()" << getAddress() << getName();
         actionStarted(DeviceUtils::ACTION_BLUFI_CUSTOM_SET_PASSWORD);
         setCustomData_setPassword();
     }
     else if ((m_ble_status <= DeviceUtils::DEVICE_AVAILABLE))
     {
-        qDebug() << "DeviceStodeus::actionPasswordSet()" << getAddress() << getName();
+        qDebug() << "DeviceGateway::actionPasswordSet()" << getAddress() << getName();
         actionStarted(DeviceUtils::ACTION_BLUFI_CUSTOM_SET_PASSWORD);
         deviceConnect();
     }
     else
     {
-        qWarning() << "DeviceStodeus::actionPasswordSet() BLE status: " << m_ble_status;
+        qWarning() << "DeviceGateway::actionPasswordSet() BLE status: " << m_ble_status;
     }
 }
 
@@ -1239,19 +1239,19 @@ void DeviceGateway::actionWifiScan()
 {
     if (m_ble_status == DeviceUtils::DEVICE_CONNECTED)
     {
-        qDebug() << "DeviceStodeus::actionWifiScan()" << getAddress() << getName();
+        qDebug() << "DeviceGateway::actionWifiScan()" << getAddress() << getName();
         actionStarted(DeviceUtils::ACTION_BLUFI_WIFI_GET_LIST);
         getWifiList();
     }
     else if ((m_ble_status <= DeviceUtils::DEVICE_AVAILABLE))
     {
-        qDebug() << "DeviceStodeus::actionWifiScan()" << getAddress() << getName();
+        qDebug() << "DeviceGateway::actionWifiScan()" << getAddress() << getName();
         actionStarted(DeviceUtils::ACTION_BLUFI_WIFI_GET_LIST);
         deviceConnect();
     }
     else
     {
-        qWarning() << "DeviceStodeus::actionWifiScan() BLE status: " << m_ble_status;
+        qWarning() << "DeviceGateway::actionWifiScan() BLE status: " << m_ble_status;
     }
 }
 
@@ -1259,19 +1259,19 @@ void DeviceGateway::actionWifiSet()
 {
     if (m_ble_status == DeviceUtils::DEVICE_CONNECTED)
     {
-        qDebug() << "DeviceStodeus::actionWifiSet()" << getAddress() << getName();
+        qDebug() << "DeviceGateway::actionWifiSet()" << getAddress() << getName();
         actionStarted(DeviceUtils::ACTION_BLUFI_WIFI_SET_CREDENTIALS);
         setWifiCredentials();
     }
     else if ((m_ble_status <= DeviceUtils::DEVICE_AVAILABLE))
     {
-        qDebug() << "DeviceStodeus::actionWifiSet()" << getAddress() << getName();
+        qDebug() << "DeviceGateway::actionWifiSet()" << getAddress() << getName();
         actionStarted(DeviceUtils::ACTION_BLUFI_WIFI_SET_CREDENTIALS);
         deviceConnect();
     }
     else
     {
-        qWarning() << "DeviceStodeus::actionWifiSet() BLE status: " << m_ble_status;
+        qWarning() << "DeviceGateway::actionWifiSet() BLE status: " << m_ble_status;
     }
 }
 
@@ -1279,19 +1279,19 @@ void DeviceGateway::actionWifiConnect()
 {
     if (m_ble_status == DeviceUtils::DEVICE_CONNECTED)
     {
-        qDebug() << "DeviceStodeus::actionWifiConnect()" << getAddress() << getName();
+        qDebug() << "DeviceGateway::actionWifiConnect()" << getAddress() << getName();
         actionStarted(DeviceUtils::ACTION_BLUFI_WIFI_CONNECT);
         setWifiConnect();
     }
     else if ((m_ble_status <= DeviceUtils::DEVICE_AVAILABLE))
     {
-        qDebug() << "DeviceStodeus::actionWifiConnect()" << getAddress() << getName();
+        qDebug() << "DeviceGateway::actionWifiConnect()" << getAddress() << getName();
         actionStarted(DeviceUtils::ACTION_BLUFI_WIFI_CONNECT);
         deviceConnect();
     }
     else
     {
-        qWarning() << "DeviceStodeus::actionWifiConnect() BLE status: " << m_ble_status;
+        qWarning() << "DeviceGateway::actionWifiConnect() BLE status: " << m_ble_status;
     }
 }
 
@@ -1299,19 +1299,19 @@ void DeviceGateway::actionWifiDisconnect()
 {
     if (m_ble_status == DeviceUtils::DEVICE_CONNECTED)
     {
-        qDebug() << "DeviceStodeus::actionWifiDisconnect()" << getAddress() << getName();
+        qDebug() << "DeviceGateway::actionWifiDisconnect()" << getAddress() << getName();
         actionStarted(DeviceUtils::ACTION_BLUFI_WIFI_DISCONNECT);
         setWifiDisconnect();
     }
     else if ((m_ble_status <= DeviceUtils::DEVICE_AVAILABLE))
     {
-        qDebug() << "DeviceStodeus::actionWifiDisconnect()" << getAddress() << getName();
+        qDebug() << "DeviceGateway::actionWifiDisconnect()" << getAddress() << getName();
         actionStarted(DeviceUtils::ACTION_BLUFI_WIFI_DISCONNECT);
         deviceConnect();
     }
     else
     {
-        qWarning() << "DeviceStodeus::actionWifiDisconnect() BLE status: " << m_ble_status;
+        qWarning() << "DeviceGateway::actionWifiDisconnect() BLE status: " << m_ble_status;
     }
 }
 
@@ -1321,19 +1321,19 @@ void DeviceGateway::actionMqttSet()
 {
     if (m_ble_status == DeviceUtils::DEVICE_CONNECTED)
     {
-        qDebug() << "DeviceStodeus::actionMqttSet()" << getAddress() << getName();
+        qDebug() << "DeviceGateway::actionMqttSet()" << getAddress() << getName();
         actionStarted(DeviceUtils::ACTION_BLUFI_CUSTOM_SET_MQTT);
         setCustomData_setMqtt();
     }
     else if ((m_ble_status <= DeviceUtils::DEVICE_AVAILABLE))
     {
-        qDebug() << "DeviceStodeus::actionMqttSet()" << getAddress() << getName();
+        qDebug() << "DeviceGateway::actionMqttSet()" << getAddress() << getName();
         actionStarted(DeviceUtils::ACTION_BLUFI_CUSTOM_SET_MQTT);
         deviceConnect();
     }
     else
     {
-        qWarning() << "DeviceStodeus::actionMqttSet() BLE status: " << m_ble_status;
+        qWarning() << "DeviceGateway::actionMqttSet() BLE status: " << m_ble_status;
     }
 }
 
@@ -1343,19 +1343,19 @@ void DeviceGateway::actionStatus()
 {
     if (m_ble_status == DeviceUtils::DEVICE_CONNECTED)
     {
-        qDebug() << "DeviceStodeus::actionStatus()" << getAddress() << getName();
+        qDebug() << "DeviceGateway::actionStatus()" << getAddress() << getName();
         actionStarted(DeviceUtils::ACTION_BLUFI_CUSTOM_GET_STATUS);
         setCustomData_getStatus();
     }
     else if ((m_ble_status <= DeviceUtils::DEVICE_AVAILABLE))
     {
-        qDebug() << "DeviceStodeus::actionStatus()" << getAddress() << getName();
+        qDebug() << "DeviceGateway::actionStatus()" << getAddress() << getName();
         actionStarted(DeviceUtils::ACTION_BLUFI_CUSTOM_GET_STATUS);
         deviceConnect();
     }
     else
     {
-        qWarning() << "DeviceStodeus::actionStatus() BLE status: " << m_ble_status;
+        qWarning() << "DeviceGateway::actionStatus() BLE status: " << m_ble_status;
     }
 }
 
@@ -1365,19 +1365,19 @@ void DeviceGateway::actionErase()
 {
     if (m_ble_status == DeviceUtils::DEVICE_CONNECTED)
     {
-        qDebug() << "DeviceStodeus::actionErase()" << getAddress() << getName();
+        qDebug() << "DeviceGateway::actionErase()" << getAddress() << getName();
         actionStarted(DeviceUtils::ACTION_BLUFI_CUSTOM_ERASE);
         setCustomData_erase();
     }
     else if ((m_ble_status <= DeviceUtils::DEVICE_AVAILABLE))
     {
-        qDebug() << "DeviceStodeus::actionErase()" << getAddress() << getName();
+        qDebug() << "DeviceGateway::actionErase()" << getAddress() << getName();
         actionStarted(DeviceUtils::ACTION_BLUFI_CUSTOM_ERASE);
         deviceConnect();
     }
     else
     {
-        qWarning() << "DeviceStodeus::actionErase() BLE status: " << m_ble_status;
+        qWarning() << "DeviceGateway::actionErase() BLE status: " << m_ble_status;
     }
 }
 
@@ -1387,19 +1387,19 @@ void DeviceGateway::actionRestart()
 {
     if (m_ble_status == DeviceUtils::DEVICE_CONNECTED)
     {
-        qDebug() << "DeviceStodeus::actionRestart()" << getAddress() << getName();
+        qDebug() << "DeviceGateway::actionRestart()" << getAddress() << getName();
         actionStarted(DeviceUtils::ACTION_BLUFI_CUSTOM_RESTART);
         setCustomData_restart();
     }
     else if ((m_ble_status <= DeviceUtils::DEVICE_AVAILABLE))
     {
-        qDebug() << "DeviceStodeus::actionRestart()" << getAddress() << getName();
+        qDebug() << "DeviceGateway::actionRestart()" << getAddress() << getName();
         actionStarted(DeviceUtils::ACTION_BLUFI_CUSTOM_RESTART);
         deviceConnect();
     }
     else
     {
-        qWarning() << "DeviceStodeus::actionRestart() BLE status: " << m_ble_status;
+        qWarning() << "DeviceGateway::actionRestart() BLE status: " << m_ble_status;
     }
 }
 

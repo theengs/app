@@ -116,13 +116,34 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName_blu
         }
         else if (deviceType == DeviceUtils::DEVICE_THEENGS_ACTUATOR)
         {
-            device = new DeviceTheengsActuators(deviceAddr, deviceName_bluetooth,
-                                                deviceModelID_theengs, deviceProps_theengs, this);
+            if (deviceModelID_theengs == "X1")
+            {
+                device = new DeviceSwitchbotSmartSwitch(deviceAddr, deviceName_bluetooth,
+                                                        deviceModelID_theengs, deviceProps_theengs, this);
+            }
+            else
+            {
+                device = new DeviceTheengsActuators(deviceAddr, deviceName_bluetooth,
+                                                    deviceModelID_theengs, deviceProps_theengs, this);
+            }
         }
         else if (deviceType == DeviceUtils::DEVICE_THEENGS_ACTUATOR_WINDOW)
         {
-            device = new DeviceTheengsWindowActuators(deviceAddr, deviceName_bluetooth,
+            if (deviceModelID_theengs == "W270160X")
+            {
+                device = new DeviceSwitchbotBlindTilt(deviceAddr, deviceName_bluetooth,
                                                       deviceModelID_theengs, deviceProps_theengs, this);
+            }
+            else if (deviceModelID_theengs == "W070160X")
+            {
+                device = new DeviceSwitchbotCurtain(deviceAddr, deviceName_bluetooth,
+                                                    deviceModelID_theengs, deviceProps_theengs, this);
+            }
+            else
+            {
+                device = new DeviceTheengsWindowActuators(deviceAddr, deviceName_bluetooth,
+                                                          deviceModelID_theengs, deviceProps_theengs, this);
+            }
         }
         else
         {
@@ -265,11 +286,29 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
         }
         else if (deviceType == DeviceUtils::DEVICE_THEENGS_ACTUATOR)
         {
-            device = new DeviceTheengsActuators(deviceInfo, deviceModelID, deviceProps, this);
+            if (deviceModelID == "X1")
+            {
+                device = new DeviceSwitchbotSmartSwitch(deviceInfo, deviceModelID, deviceProps, this);
+            }
+            else
+            {
+                device = new DeviceTheengsActuators(deviceInfo, deviceModelID, deviceProps, this);
+            }
         }
         else if (deviceType == DeviceUtils::DEVICE_THEENGS_ACTUATOR_WINDOW)
         {
-            device = new DeviceTheengsWindowActuators(deviceInfo, deviceModelID, deviceProps, this);
+            if (deviceModelID == "W270160X")
+            {
+                device = new DeviceSwitchbotBlindTilt(deviceInfo, deviceModelID, deviceProps, this);
+            }
+            else if (deviceModelID == "W070160X")
+            {
+                device = new DeviceSwitchbotCurtain(deviceInfo, deviceModelID, deviceProps, this);
+            }
+            else
+            {
+                device = new DeviceTheengsWindowActuators(deviceInfo, deviceModelID, deviceProps, this);
+            }
         }
         else
         {

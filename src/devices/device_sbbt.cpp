@@ -42,8 +42,8 @@ DeviceSwitchbotBlindTilt::DeviceSwitchbotBlindTilt(const QString &deviceAddr,
     DeviceTheengsWindowActuators(deviceAddr, deviceName, deviceModel, devicePropsJson, parent)
 {
     m_deviceModel = deviceModel;
-    m_deviceType = DeviceUtils::DEVICE_THEENGS_BATTERYMONITOR;
-    m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
+    m_deviceType = DeviceUtils::DEVICE_THEENGS_ACTUATOR_WINDOW;
+    //m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
     m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 
     parseTheengsProps(devicePropsJson);
@@ -56,8 +56,8 @@ DeviceSwitchbotBlindTilt::DeviceSwitchbotBlindTilt(const QBluetoothDeviceInfo &d
     DeviceTheengsWindowActuators(d, deviceModel, devicePropsJson, parent)
 {
     m_deviceModel = deviceModel;
-    m_deviceType = DeviceUtils::DEVICE_THEENGS_BATTERYMONITOR;
-    m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
+    m_deviceType = DeviceUtils::DEVICE_THEENGS_ACTUATOR_WINDOW;
+    //m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
     m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 
     parseTheengsProps(devicePropsJson);
@@ -152,14 +152,7 @@ void DeviceSwitchbotBlindTilt::serviceDetailsDiscovered_data(QLowEnergyService::
 
         if (m_serviceData)
         {
-            // Characteristic "read / notify"
-            m_charNotif = m_serviceData->characteristic(uuid_data_char_notify);
-            m_notificationDesc = m_charNotif.clientCharacteristicConfiguration();
-            m_serviceData->writeDescriptor(m_notificationDesc, QByteArray::fromHex("0100"));
-
-            // Debug
-            if (!m_charNotif.isValid()) { qWarning() << "m_charNotif invalid"; }
-            if (!m_notificationDesc.isValid()) { qWarning() << "m_notificationDesc invalid"; }
+            //
         }
     }
 }
@@ -203,11 +196,17 @@ void DeviceSwitchbotBlindTilt::bleServiceError(QLowEnergyService::ServiceError e
 
 /* ************************************************************************** */
 /* ************************************************************************** */
-/*
-void DeviceSwitchbotBlindTilt::actionReadVoltage()
+
+void DeviceSwitchbotBlindTilt::actionAction(const int action)
 {
-    //
+    qDebug() << "DeviceSwitchbotBlindTilt::actionAction(" << action << ")";
+
+    static uint8_t OPEN[] = {0x57, 0x0f, 0x45, 0x01, 0x01, 0x01, 0x32};
+    static uint8_t CLOSE_DOWN[] = {0x57, 0x0f, 0x45, 0x01, 0x01, 0x01, 0x00};
+    static uint8_t CLOSE_UP[] = {0x57, 0x0f, 0x45, 0x01, 0x01, 0x01, 0x64};
+    static uint8_t MOVE[] = {0x57, 0x0f, 0x45, 0x01, 0x01, 0x01, 0x00};
+    static uint8_t STOP[] = {0x57, 0x0f, 0x45, 0x01, 0x00, 0x01};
 }
-*/
+
 /* ************************************************************************** */
 /* ************************************************************************** */
