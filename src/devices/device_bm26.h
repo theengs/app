@@ -35,6 +35,8 @@
 
 /*!
  * BM2 / BM6 battery monitors
+ *
+ * - https://github.com/1technophile/OpenMQTTGateway/blob/226297ba5b445461c0d2e228c6d4925000c1d354/main/gatewayBLEConnect.cpp#L259
  */
 class DeviceTheengsBM26: public DeviceTheengsBatteryMonitors
 {

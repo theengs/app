@@ -33,6 +33,39 @@
 #include <QDebug>
 
 /* ************************************************************************** */
+enum BotCommands {
+    CMD_ACTION          = 0x01, //!< Execute an Action
+    CMD_GET_INFO        = 0x02, //!< Get Device Basic Info
+    CMD_SET_INFO        = 0x03, //!< Set Device Basic Info
+    CMD_GET_TIMEMANAG   = 0x08, //!< Get Device Time Management Info
+    CMD_SET_TIMEMANAG   = 0x09, //!< Set Device Time Management Info
+};
+
+enum BotModes {
+    MOD_PRESS           = 0x00, //!<
+    MOD_SWITCH          = 0x01, //!<
+};
+
+enum BotActions {
+    ACT_PUSHPULL        = 0x00, //!< push and pull back
+    ACT_ON              = 0x01, //!< light switch on
+    ACT_OFF             = 0x02, //!< light switch off
+    ACT_STOP            = 0x03, //!< push stop
+    ACT_BACK            = 0x04, //!< back
+};
+
+enum BotResponses {
+    RSP_OK              = 0x01, //!< OK, Action executed
+    RSP_ERROR           = 0x02, //!< ERROR, Error while executing an Action
+    RSP_BUSY            = 0x03, //!< BUSY, Device is busy now, please try later
+    RSP_PROTOCOL        = 0x04, //!< Communication protocol version incompatible
+    RSP_UNSUPPORTED     = 0x05, //!< Device does not support this Command
+    RSP_LOWBATT         = 0x06, //!< Device's battery is low
+    RSP_UNSUPPORTED2    = 0x0D, //!< This command is not supported in the current mode
+    RSP_DISCONNECTED    = 0x0E, //!< Disconnected from the device that needs to stay connected
+};
+
+/* ************************************************************************** */
 
 DeviceSwitchbotSmartSwitch::DeviceSwitchbotSmartSwitch(const QString &deviceAddr,
                                                        const QString &deviceName,
@@ -152,13 +185,13 @@ void DeviceSwitchbotSmartSwitch::serviceDetailsDiscovered_data(QLowEnergyService
 
         if (m_serviceData)
         {
-            // TX Characteristic
-            m_charTX = m_serviceData->characteristic(uuid_data_char_tx);
-
             // RX Characteristic
             m_charRX = m_serviceData->characteristic(uuid_data_char_rx);
             m_notificationDesc = m_charRX.clientCharacteristicConfiguration();
             m_serviceData->writeDescriptor(m_notificationDesc, QByteArray::fromHex("0100"));
+
+            // TX Characteristic
+            m_charTX = m_serviceData->characteristic(uuid_data_char_tx);
 
             // Debug
             if (!m_charTX.isValid()) { qWarning() << "m_charTX invalid"; }
@@ -178,6 +211,8 @@ void DeviceSwitchbotSmartSwitch::bleDescriptorRead(const QLowEnergyDescriptor &,
 void DeviceSwitchbotSmartSwitch::bleDescriptorWritten(const QLowEnergyDescriptor &, const QByteArray &)
 {
     qDebug() << "DeviceSwitchbotSmartSwitch::bleDescriptorWritten()";
+
+    m_serviceData->writeCharacteristic(m_charTX, QByteArray::fromHex("5702"), QLowEnergyService::WriteWithResponse);
 }
 
 /* ************************************************************************** */
@@ -199,11 +234,54 @@ void DeviceSwitchbotSmartSwitch::bleReadNotify(const QLowEnergyCharacteristic &c
     qDebug() << "DeviceSwitchbotSmartSwitch::bleReadNotify(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
     qDebug() << "DATA: 0x" << value.toHex();
 
-    if (c.uuid() == uuid_data_char_rx && value.size() == 16)
-    {
-        const uint8_t *data = reinterpret_cast<const quint8 *>(value.constData());
+    const uint8_t *data = reinterpret_cast<const quint8 *>(value.constData());
 
-        //
+    if (c.uuid() == uuid_data_char_rx && value.size() == 3)
+    {
+        /// response from "CMD_ACTION" or "CMD_SET_INFO" commands
+        // [00] status
+        // [1+] payload sent?
+
+        if (data[0] == RSP_OK)
+        {
+            if (data[1] == 0xff) // CMD_ACTION?
+            {
+                //
+            }
+            else if (data[1] == 0x64) // CMD_SET_INFO?
+            {
+                //
+            }
+            else // ?
+            {
+                // ?
+            }
+        }
+    }
+    else if (c.uuid() == uuid_data_char_rx && value.size() == 13)
+    {
+        /// response from "CMD_GET_INFO" command
+        // [ 0] Bat Per     The battery percentage
+        // [ 1] FW Ver      Firmware Version
+        // [2-6] (not used by this device)
+        // [ 7] Timer Num   The number of Timer
+        // [ 8] Act Mode    The act mode of Bot
+        // [ 9] Hold Times
+        // [10] Service data byte 0
+        // [11] Service data byte 1
+
+        int battery = data[1];
+        setBattery(battery);
+
+        QString firmware = QString::number(data[2]);
+        setFirmware(firmware);
+
+        int timernum = data[8];
+        int actionmode = data[9];
+        int holdtime = data[10];
+
+        setSwitchMode(actionmode);
+        setSwitchTime(holdtime);
     }
 }
 
@@ -215,15 +293,85 @@ void DeviceSwitchbotSmartSwitch::bleServiceError(QLowEnergyService::ServiceError
 /* ************************************************************************** */
 /* ************************************************************************** */
 
+void DeviceSwitchbotSmartSwitch::setSwitchMode(const int m)
+{
+    qDebug() << "DeviceSwitchbotSmartSwitch::setSwitchMode(" << m << ")";
+
+    if (m == 0 || m == 1)
+    {
+        if (m != m_switchMode)
+        {
+            m_switchMode = m;
+            Q_EMIT switchmodeUpdated();
+        }
+    }
+}
+
+void DeviceSwitchbotSmartSwitch::setSwitchTime(const int t)
+{
+    qDebug() << "DeviceSwitchbotSmartSwitch::bleServiceError(" << t << ")";
+
+    if (t >= 0 && t <= 60)
+    {
+        if (t != m_switchHoldTime)
+        {
+            m_switchHoldTime = t;
+            Q_EMIT switchtimeUpdated();
+        }
+    }
+}
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+
+void DeviceSwitchbotSmartSwitch::actionMode(const int mode, const int inverted)
+{
+    qDebug() << "DeviceSwitchbotSmartSwitch::actionMode(" << mode << inverted << ")";
+
+    if (m_charTX.isValid())
+    {
+        QByteArray cmd;
+
+        char md = 0;
+        if (md == 0) md = MOD_PRESS;
+        else if (md == 1) md = MOD_SWITCH;
+        md <<= 4;
+        if (inverted) md &= 0x01;
+
+        // Magic Number
+        cmd.push_back(0x57);
+        // Header / Command
+        cmd.push_back(CMD_SET_INFO);
+        // Payload...
+        cmd.push_back(0x64); // hardcoded
+        cmd.push_back(md); // mode
+
+        m_serviceData->writeCharacteristic(m_charTX, cmd,  QLowEnergyService::WriteWithResponse);
+    }
+}
+
 void DeviceSwitchbotSmartSwitch::actionAction(const int action)
 {
     qDebug() << "DeviceSwitchbotSmartSwitch::actionAction(" << action << ")";
 
-    static uint8_t ON[] = {0x57, 0x01, 0x01};
-    static uint8_t OFF[] = {0x57, 0x01, 0x02};
-    static uint8_t PRESS[] = {0x57, 0x01, 0x00};
-    static uint8_t DOWN[] = {0x57, 0x01, 0x03};
-    static uint8_t UP[] = {0x57, 0x01, 0x04};
+    if (m_charTX.isValid())
+    {
+        QByteArray cmd;
+
+        // Magic Number
+        cmd.push_back(0x57);
+        // Header / Command
+        cmd.push_back(CMD_ACTION);
+        // Payload...
+        if (action == 0) cmd.push_back(ACT_PUSHPULL);
+        else if (action == 1) cmd.push_back(ACT_ON);
+        else if (action == 2) cmd.push_back(ACT_OFF);
+        else if (action == 3) cmd.push_back(ACT_STOP);
+        else if (action == 4) cmd.push_back(ACT_BACK);
+        else cmd.push_back(ACT_ON); // default?
+
+        m_serviceData->writeCharacteristic(m_charTX, cmd,  QLowEnergyService::WriteWithResponse);
+    }
 }
 
 /* ************************************************************************** */

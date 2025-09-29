@@ -61,8 +61,8 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info,
     if ((info.coreConfigurations() & QBluetoothDeviceInfo::LowEnergyCoreConfiguration) == false) return; // not a BLE device
 #endif
 
-    if (m_devices_blacklist.contains(info.address().toString())) return; // device is blacklisted
-    if (m_devices_blacklist.contains(info.deviceUuid().toString())) return; // device is blacklisted
+    if (m_devices_blacklist.contains(info.address().toString())) return; // device MAC is blacklisted
+    if (m_devices_blacklist.contains(info.deviceUuid().toString())) return; // device UUID is blacklisted
 
     /// KNOWN GATEWAYS /////////////////////////////////////////////////////////
 
@@ -89,6 +89,8 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info,
 
                 dd->parseAdvertisementData(DeviceUtils::BLE_ADV_MANUFACTURERDATA,
                                            id, info.manufacturerData(id));
+
+                status_gateway = true;
             }
 
             break;

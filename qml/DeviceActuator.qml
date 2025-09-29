@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Layouts
 import QtQuick.Controls
 
 import ComponentLibrary
@@ -18,6 +19,9 @@ Loader {
 
         // set device
         if (currentDevice !== clickedDevice) currentDevice = clickedDevice
+
+        // connect device
+        currentDevice.actionConnect()
 
         // load screen
         if (!deviceActuator.active) deviceActuator.active = true
@@ -208,14 +212,14 @@ Loader {
 
                 MouseArea { anchors.fill: parent } // prevent clicks below this area
 
-                Rectangle { // round indicator
+                Rectangle { // rectangle indicator // mimic switchbot s1
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.verticalCenterOffset: -(appHeader.height / 3)
 
                     width: singleColumn ? actuatorBox.height * 0.75 : actuatorBox.width * 0.66
-                    height: width
-                    radius: width
+                    height: width*0.75
+                    radius: 32
                     color: Qt.alpha(cccc, 0.1)
                     border.width: 2
                     border.color: Qt.alpha(cccc, 0.33)
@@ -225,24 +229,29 @@ Loader {
                         height: isMobile ? 96 : 128
                         anchors.centerIn: parent
 
-                        visible: !currentDevice.hasData
+                        visible: !(currentDevice.available || currentDevice.connected) // !currentDevice.hasData
                         source: "qrc:/IconLibrary/material-symbols/bluetooth_disabled.svg"
                         color: cccc
                     }
 
                     Column {
                         anchors.centerIn: parent
-                        spacing: 0
 
-                        visible: currentDevice.hasData
+                        visible: (currentDevice.available || currentDevice.connected) // currentDevice.hasData
+                        spacing: 0
 
                         Text { // legend
                             anchors.horizontalCenter: parent.horizontalCenter
 
                             text: {
-                                if (currentDevice.mode === "on/off") return "on/off"
-                                else if (currentDevice.mode === "onestate") return "one state"
-                                else return currentDevice.mode
+                                if (currentDevice.deviceModel === "X1") {
+                                    if (currentDevice.mode === "on/off") return qsTr("Switch mode")
+                                    else if (currentDevice.mode === "onestate") return qsTr("Press mode")
+                                    else return qsTr("Unknown mode")
+                                }
+                                if (currentDevice.mode === "on/off") return qsTr("on/off")
+                                else if (currentDevice.mode === "onestate") return qsTr("one state")
+                                return currentDevice.mode
                             }
 
                             font.pixelSize: isPhone ? 22 : 26
@@ -395,7 +404,7 @@ Loader {
                 }
             }
 
-            ////////////////
+            ////////////////////////////////////////////////////////////////////
 
             Item {
                 width: {
@@ -407,7 +416,7 @@ Loader {
                     return singleColumn ? (parent.height - actuatorBox.height) : parent.height
                 }
 
-                // EMPTY
+                ////////////////
             }
 
             ////////////////

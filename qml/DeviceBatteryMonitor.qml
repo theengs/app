@@ -575,7 +575,7 @@ Loader {
                 }
             }
 
-            ////////////////
+            ////////////////////////////////////////////////////////////////////
 
             Item {
                 width: {
@@ -589,91 +589,84 @@ Loader {
 
                 ////////
 
-                Column {
+                Rectangle {
                     id: presetStuff
                     anchors.left: parent.left
                     anchors.right: parent.right
 
-                    visible: true
-                    height: 40
+                    height: isMobile ? 40 : 48
                     z: 2
+                    visible: true
+                    color: Theme.colorForeground
 
-                    Rectangle {
+                    RowLayout {
                         anchors.left: parent.left
+                        anchors.leftMargin: Theme.componentMargin
                         anchors.right: parent.right
-                        height: 40
+                        anchors.rightMargin: Theme.componentMargin
 
-                        color: Theme.colorForeground
+                        height: parent.height
+                        spacing: 12
 
-                        RowLayout {
-                            anchors.left: parent.left
-                            anchors.leftMargin: Theme.componentMargin
-                            anchors.right: parent.right
-                            anchors.rightMargin: Theme.componentMargin
+                        Rectangle {
+                            Layout.preferredHeight: parent.height
+                            Layout.preferredWidth: legendPreset.contentWidth + 12
 
-                            height: parent.height
-                            spacing: 12
+                            visible: !singleColumn
+                            color: Qt.darker(Theme.colorForeground, 1.03)
 
-                            Rectangle {
-                                Layout.preferredHeight: parent.height
-                                Layout.preferredWidth: legendPreset.contentWidth + 12
+                            Text {
+                                id: legendPreset
+                                anchors.centerIn: parent
+                                text: qsTr("PRESET")
+                                textFormat: Text.PlainText
+                                color: Theme.colorText
+                            }
+                        }
 
-                                visible: !singleColumn
-                                color: Qt.darker(Theme.colorForeground, 1.03)
+                        SelectorMenuItem {
+                            Layout.preferredHeight: 32
+                            Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
 
-                                Text {
-                                    id: legendPreset
-                                    anchors.centerIn: parent
-                                    text: qsTr("PRESET")
-                                    textFormat: Text.PlainText
-                                    color: Theme.colorText
+                            highlighted: true
+
+                            text: {
+                                if (currentPreset) return currentPreset.name
+                                return qsTr("preset")
+                            }
+                            source: {
+                                if (currentPreset) return UtilsPresets.getBatteryPresetIcon(currentPreset.type)
+                                return "qrc:/IconLibrary/material-icons/duotone/tune.svg"
+                            }
+                            sourceSize: 20
+
+                            PopupBatteryPresetSelection {
+                                id: popupPresetSelection
+                                onSelected: (name) => {
+                                    currentDevice.preset = name
                                 }
                             }
 
-                            SelectorMenuItem {
-                                Layout.preferredHeight: 32
-                                Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-
-                                highlighted: true
-
-                                text: {
-                                    if (currentPreset) return currentPreset.name
-                                    return qsTr("preset")
-                                }
-                                source: {
-                                    if (currentPreset) return UtilsPresets.getBatteryPresetIcon(currentPreset.type)
-                                    return "qrc:/IconLibrary/material-icons/duotone/tune.svg"
-                                }
-                                sourceSize: 20
-
-                                PopupBatteryPresetSelection {
-                                    id: popupPresetSelection
-                                    onSelected: (name) => {
-                                        currentDevice.preset = name
-                                    }
-                                }
-
-                                onClicked: {
-                                    popupPresetSelection.open()
-                                }
+                            onClicked: {
+                                popupPresetSelection.open()
                             }
+                        }
 
-                            Item {
-                                Layout.fillWidth: singleColumn
-                                Layout.preferredHeight: 32
-                            }
+                        Item {
+                            Layout.fillWidth: singleColumn
+                            Layout.preferredHeight: 32
+                        }
 
-                            ButtonClear {
-                                text: "connect"
-                                onClicked: {
-                                    currentDevice.actionConnect()
-                                }
+                        ButtonClear {
+                            text: "connect"
+                            onClicked: {
+                                currentDevice.actionConnect()
                             }
-                            ButtonClear {
-                                text: "fakedata"
-                                onClicked: {
-                                    currentDevice.actionFakeVoltage()
-                                }
+                        }
+                        ButtonClear {
+                            text: "fakedata"
+                            onClicked: {
+                                currentDevice.actionFakeVoltage()
                             }
                         }
                     }

@@ -35,14 +35,16 @@
 
 /*!
  * Switchbot Curtain alias "SBCU" alias "W070160X"
+ *
+ * - https://github.com/OpenWonderLabs/SwitchBotAPI-BLE/blob/latest/devicetypes/curtain3.md
  */
 class DeviceSwitchbotCurtain: public DeviceTheengsWindowActuators
 {
     Q_OBJECT
 
     QBluetoothUuid uuid_data_srv = QBluetoothUuid(QStringLiteral("cba20d00-224d-11e6-9fb8-0002a5d5c51b"));
-    QBluetoothUuid uuid_data_char_rx = QBluetoothUuid(QStringLiteral("cba20002-224d-11e6-9fb8-0002a5d5c51b"));
-    QBluetoothUuid uuid_data_char_tx = QBluetoothUuid(QStringLiteral("cba20003-224d-11e6-9fb8-0002a5d5c51b"));
+    QBluetoothUuid uuid_data_char_rx = QBluetoothUuid(QStringLiteral("cba20003-224d-11e6-9fb8-0002a5d5c51b"));
+    QBluetoothUuid uuid_data_char_tx = QBluetoothUuid(QStringLiteral("cba20002-224d-11e6-9fb8-0002a5d5c51b"));
 
     QLowEnergyService *m_serviceData = nullptr;
     QLowEnergyCharacteristic m_charRX;
