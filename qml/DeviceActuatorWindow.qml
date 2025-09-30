@@ -19,6 +19,9 @@ Loader {
         // set device
         if (currentDevice !== clickedDevice) currentDevice = clickedDevice
 
+        // connect device
+        currentDevice.actionConnect(true)
+
         // load screen
         if (!deviceActuator.active) deviceActuator.active = true
         deviceActuator.item.loadDevice()

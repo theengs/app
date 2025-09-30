@@ -152,7 +152,18 @@ void DeviceSwitchbotCurtain::serviceDetailsDiscovered_data(QLowEnergyService::Se
 
         if (m_serviceData)
         {
-            //
+            // RX Characteristic
+            m_charRX = m_serviceData->characteristic(uuid_data_char_rx);
+            m_notificationDesc = m_charRX.clientCharacteristicConfiguration();
+            m_serviceData->writeDescriptor(m_notificationDesc, QByteArray::fromHex("0100"));
+
+            // TX Characteristic
+            m_charTX = m_serviceData->characteristic(uuid_data_char_tx);
+
+            // Debug
+            if (!m_charTX.isValid()) { qWarning() << "m_charTX invalid"; }
+            if (!m_charRX.isValid()) { qWarning() << "m_charRX invalid"; }
+            if (!m_notificationDesc.isValid()) { qWarning() << "m_notificationDesc on m_charRX invalid"; }
         }
     }
 }
@@ -167,6 +178,9 @@ void DeviceSwitchbotCurtain::bleDescriptorRead(const QLowEnergyDescriptor &, con
 void DeviceSwitchbotCurtain::bleDescriptorWritten(const QLowEnergyDescriptor &, const QByteArray &)
 {
     qDebug() << "DeviceSwitchbotCurtain::bleDescriptorWritten()";
+
+    // Ask for device info
+    m_serviceData->writeCharacteristic(m_charTX, QByteArray::fromHex("5702"), QLowEnergyService::WriteWithResponse);
 }
 
 /* ************************************************************************** */

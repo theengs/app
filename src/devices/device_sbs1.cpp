@@ -80,6 +80,10 @@ DeviceSwitchbotSmartSwitch::DeviceSwitchbotSmartSwitch(const QString &deviceAddr
     m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 
     parseTheengsProps(devicePropsJson);
+
+    if (hasSetting("switchMode")) m_switchMode = getSetting("switchMode").toString().toInt();
+    if (hasSetting("switchHoldTime")) m_switchHoldTime = getSetting("switchHoldTime").toString().toInt();
+    if (hasSetting("switchInverted")) m_switchInverted = getSetting("switchInverted").toString().toInt();
 }
 
 DeviceSwitchbotSmartSwitch::DeviceSwitchbotSmartSwitch(const QBluetoothDeviceInfo &d,
@@ -94,6 +98,10 @@ DeviceSwitchbotSmartSwitch::DeviceSwitchbotSmartSwitch(const QBluetoothDeviceInf
     m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 
     parseTheengsProps(devicePropsJson);
+
+    if (hasSetting("switchMode")) m_switchMode = getSetting("switchMode").toString().toInt();
+    if (hasSetting("switchHoldTime")) m_switchHoldTime = getSetting("switchHoldTime").toString().toInt();
+    if (hasSetting("switchInverted")) m_switchInverted = getSetting("switchInverted").toString().toInt();
 }
 
 /* ************************************************************************** */
@@ -212,6 +220,7 @@ void DeviceSwitchbotSmartSwitch::bleDescriptorWritten(const QLowEnergyDescriptor
 {
     qDebug() << "DeviceSwitchbotSmartSwitch::bleDescriptorWritten()";
 
+    // Ask for device info
     m_serviceData->writeCharacteristic(m_charTX, QByteArray::fromHex("5702"), QLowEnergyService::WriteWithResponse);
 }
 
@@ -303,13 +312,14 @@ void DeviceSwitchbotSmartSwitch::setSwitchMode(const int m)
         {
             m_switchMode = m;
             Q_EMIT switchmodeUpdated();
+
+            setSetting("switchMode", m);
         }
     }
 }
-
 void DeviceSwitchbotSmartSwitch::setSwitchTime(const int t)
 {
-    qDebug() << "DeviceSwitchbotSmartSwitch::bleServiceError(" << t << ")";
+    qDebug() << "DeviceSwitchbotSmartSwitch::setSwitchTime(" << t << ")";
 
     if (t >= 0 && t <= 60)
     {
@@ -317,7 +327,22 @@ void DeviceSwitchbotSmartSwitch::setSwitchTime(const int t)
         {
             m_switchHoldTime = t;
             Q_EMIT switchtimeUpdated();
+
+            setSetting("switchHoldTime", t);
         }
+    }
+}
+
+void DeviceSwitchbotSmartSwitch::setSwitchInverted(const bool i)
+{
+    qDebug() << "DeviceSwitchbotSmartSwitch::setSwitchInverted(" << i << ")";
+
+    if (i != m_switchInverted)
+    {
+        m_switchInverted = i;
+        Q_EMIT switchinvertedUpdated();
+
+        setSetting("switchInverted", i);
     }
 }
 
@@ -333,8 +358,8 @@ void DeviceSwitchbotSmartSwitch::actionMode(const int mode, const int inverted)
         QByteArray cmd;
 
         char md = 0;
-        if (md == 0) md = MOD_PRESS;
-        else if (md == 1) md = MOD_SWITCH;
+        if (mode == 0) md = MOD_PRESS;
+        else if (mode == 1) md = MOD_SWITCH;
         md <<= 4;
         if (inverted) md &= 0x01;
 

@@ -45,14 +45,18 @@ class DeviceSwitchbotSmartSwitch: public DeviceTheengsActuators
 
     Q_PROPERTY(int switchMode READ getSwitchMode WRITE setSwitchMode NOTIFY switchmodeUpdated)
     Q_PROPERTY(int switchTime READ getSwitchTime WRITE setSwitchTime NOTIFY switchtimeUpdated)
+    Q_PROPERTY(bool switchInverted READ getSwitchInverted WRITE setSwitchInverted NOTIFY switchinvertedUpdated)
 
     /// Device
 
     int m_switchMode = 0;
     int m_switchHoldTime = 1;
+    bool m_switchInverted = false;
 
     int getSwitchMode() const { return m_switchMode; }
     void setSwitchMode(const int m);
+    bool getSwitchInverted() const { return m_switchInverted; }
+    void setSwitchInverted(const bool i);
     int getSwitchTime() const { return m_switchHoldTime; }
     void setSwitchTime(const int t);
 
@@ -80,6 +84,7 @@ class DeviceSwitchbotSmartSwitch: public DeviceTheengsActuators
 
 signals:
     void switchmodeUpdated();
+    void switchinvertedUpdated();
     void switchtimeUpdated();
 
 protected:

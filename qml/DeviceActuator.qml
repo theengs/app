@@ -21,7 +21,7 @@ Loader {
         if (currentDevice !== clickedDevice) currentDevice = clickedDevice
 
         // connect device
-        currentDevice.actionConnect()
+        currentDevice.actionConnect(true)
 
         // load screen
         if (!deviceActuator.active) deviceActuator.active = true
@@ -417,6 +417,183 @@ Loader {
                 }
 
                 ////////////////
+
+                Rectangle {
+                    id: infoArea
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+
+                    height: isMobile ? 40 : 48
+                    z: 2
+                    visible: true
+                    color: Theme.colorForeground
+
+                    RowLayout {
+                        anchors.left: parent.left
+                        anchors.leftMargin: Theme.componentMargin
+                        anchors.right: parent.right
+                        anchors.rightMargin: Theme.componentMargin
+
+                        height: parent.height
+                        spacing: 12
+
+                        ButtonClear {
+                            text: qsTr("Connect")
+                            onClicked: currentDevice.actionConnect()
+                        }
+                    }
+                }
+
+                ////////////////
+
+                Column {
+                    id: contentArea
+                    anchors.top: infoArea.bottom
+                    anchors.topMargin: 16
+                    anchors.left: parent.left
+                    anchors.leftMargin: 16
+                    anchors.right: parent.right
+                    anchors.rightMargin: 16 + (singleColumn ? 0 : parent.width * 0.5)
+                    spacing: 16
+
+                    opacity: currentDevice.connected ? 1 : 0.33
+                    enabled: currentDevice.connected
+
+                    ////////
+
+                    SelectorMenu {
+                        id: modeswitch
+                        width: parent.width
+                        height: 40
+
+                        model: ListModel {
+                            ListElement { idx: 0; txt: qsTr("Press"); src: ""; sz: 16; }
+                            ListElement { idx: 1; txt: qsTr("Commutation"); src: ""; sz: 16; }
+                            //ListElement { idx: 2; txt: qsTr("Personalized"); src: ""; sz: 16; }
+                        }
+
+                        currentSelection: currentDevice.switchMode
+                        onMenuSelected: (index) => {
+                            currentDevice.switchMode = index
+                            currentDevice.actionMode(index)
+                        }
+                    }
+
+                    Text {
+                        width: parent.width
+                        //height: 40
+
+                        textFormat: Text.PlainText
+                        text: {
+                            if (currentDevice && currentDevice.switchMode === 0)
+                                return qsTr("In Press Mode, your Bot will press your switch.")
+                            if (currentDevice && currentDevice.switchMode === 1)
+                                return qsTr("In Switch Mode, your Bot will press and pull your on/off switch.")
+                            return ""
+                        }
+                        font.pixelSize: Theme.fontSizeContent
+                        wrapMode: Text.WordWrap
+                        color: Theme.colorText
+                    }
+
+                    ListSeparator { }
+
+                    ////////
+
+                    Column {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        spacing: 4
+
+                        Text {
+                            width: parent.width
+                            textFormat: Text.PlainText
+                            text: qsTr("Press-hold Time")
+                            font.pixelSize: Theme.fontSizeContent
+                            wrapMode: Text.WordWrap
+                            color: Theme.colorText
+                        }
+
+                        SliderValueSolid {
+                            width: parent.width
+                            from: 0
+                            to: 60
+                            snapMode: Slider.SnapAlways
+
+                            value: currentDevice.switchTime
+                            onMoved: currentDevice.switchTime = value
+                        }
+                    }
+
+                    ListSeparator { }
+
+                    ////////
+
+                    SwitchThemed {
+                        width: parent.width
+                        LayoutMirroring.enabled: true
+
+                        text: qsTr("Reverse ON/OFF Directions")
+                        checked: currentDevice.switchInverted
+                        onClicked: currentDevice.switchInverted = checked
+                    }
+
+                    ListSeparator { }
+
+                    ////////
+
+                    RoundButtonClear {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        width: 96; height: 96;
+                        visible: (currentDevice.switchMode === 0)
+
+                        color: Theme.colorGrey
+                        text: qsTr("Press")
+                        onClicked: currentDevice.actionAction(0)
+                    }
+
+                    ////////
+
+                    Row {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        visible: (currentDevice.switchMode === 1)
+                        spacing: 16
+
+                        RoundButtonClear {
+                            width: 80; height: 80;
+                            text: qsTr("On")
+                            onClicked: currentDevice.actionAction(1)
+                        }
+
+                        RoundButtonClear {
+                            width: 80; height: 80;
+                            text: qsTr("Off")
+                            onClicked: currentDevice.actionAction(2)
+                        }
+                    }
+
+                    ////////
+
+                    Column {
+                        spacing: 4
+                        opacity: 0.66
+
+                        Text {
+                            text: "battery: " + currentDevice.deviceBattery
+                        }
+                        Text {
+                            text: "firmware: " + currentDevice.deviceFirmware
+                        }
+                        Text {
+                            text: "mode: " + currentDevice.switchMode
+                        }
+                        Text {
+                            text: "hold time: " + currentDevice.switchTime
+                        }
+                    }
+
+                    ////////
+                }
             }
 
             ////////////////

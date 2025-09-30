@@ -400,19 +400,19 @@ public:
     Q_INVOKABLE bool hasSetting(const QString &key) const;
     Q_INVOKABLE QVariant getSetting(const QString &key) const;
     Q_INVOKABLE bool setSetting(const QString &key, QVariant value);
-/*
+
     // BLE lifecycle
-    virtual void deviceConnect();
+    virtual void deviceConnect(const bool stayConnected = false); //!< Initiate a BLE connection with a device
     virtual void deviceReconnect();
-    virtual void deviceDisconnect();
-    virtual void deviceDisconnectForNow();
-*/
+    virtual void deviceDisconnect(const bool stayConnected = false);
+    virtual void deviceDisconnect_temporary();
+
     // BLE advertisement
     virtual void parseAdvertisementData(const uint16_t adv_mode, const uint16_t adv_id, const QByteArray &data);
 
     // BLE generic actions
-    Q_INVOKABLE virtual void actionConnect();
-    Q_INVOKABLE virtual void actionDisconnect();
+    Q_INVOKABLE virtual void actionConnect(const bool stayConnected = false);
+    Q_INVOKABLE virtual void actionDisconnect(const bool stayConnected = false);
     Q_INVOKABLE virtual void actionScan();
     Q_INVOKABLE virtual void actionScanWithValues();
     Q_INVOKABLE virtual void actionReboot();
@@ -425,14 +425,7 @@ public:
     Q_INVOKABLE void actionWatering();
     Q_INVOKABLE void actionCalibrate();
 
-    // theengs decoder
-    void setTheengsModelId(const QString &model, const QString &modelID);
-    void changeTheengsModelId(const QString &model, const QString &modelID);
-
-public slots:
-    void deviceConnect();               //!< Initiate a BLE connection with a device
-    void deviceDisconnect();
-
+    // Internal actions
     void refreshQueued();
     void refreshDequeued();
 
@@ -441,6 +434,10 @@ public slots:
     void refreshStartRealtime();
     void refreshRetry();
     void refreshStop();
+
+    // theengs decoder
+    void setTheengsModelId(const QString &model, const QString &modelID);
+    void changeTheengsModelId(const QString &model, const QString &modelID);
 };
 
 /* ************************************************************************** */
