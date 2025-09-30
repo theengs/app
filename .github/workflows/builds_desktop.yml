@@ -15,7 +15,7 @@ on:
 env:
   APP_NAME: "Theengs"
   APP_VERSION: "1.5.0"
-  QT_VERSION: "6.7.3"
+  QT_VERSION: "6.9.3"
 
 #-------------------------------------------------------------------------------
 # Workflow jobs
@@ -159,6 +159,7 @@ jobs:
         with:
           version: ${{env.QT_VERSION}}
           modules: qtconnectivity qtwebsockets qtcharts
+          arch: 'win64_msvc2022_64'
 
       # Install NSIS (already installed in 'windows-2022')
       #- name: Install NSIS
@@ -171,7 +172,7 @@ jobs:
       - name: Build dependencies (from contribs script)
         run: |
              cd contribs/
-             python3 contribs_builder.py --targets=msvc2019 --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
+             python3 contribs_builder.py --targets=msvc2022 --software qtmqtt,qtconnectivity --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
              cd ..
 
       # Setup env

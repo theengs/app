@@ -125,7 +125,7 @@ rebuild = False
 targets_selected = []
 softwares_selected = []
 
-QT_VERSION = "6.7.3"
+QT_VERSION = "6.9.3"
 #QT_DIRECTORY = os.getenv('QT_DIRECTORY', '')
 QT_DIRECTORY = os.getenv('QT_ROOT_DIR', '') + "/../../" # from GitHub jurplel/install-qt-action
 MSVC_GEN_VER = ""
@@ -343,7 +343,7 @@ for TARGET in TARGETS:
     print("- qt6_dir : " + qt6_dir)
     print("- qt6_bin_dir : " + qt6_bin_dir)
 
-    ## PREPARE Qt module build
+    ## PREPARE Qt modules build
     if OS_HOST == "Windows":
         QT_CONF_MODULE_cmd = qt6_bin_dir + "qt-configure-module.bat"
         CMAKE_qt_cmd = [qt6_bin_dir + "qt-cmake.bat"]
@@ -358,6 +358,10 @@ for TARGET in TARGETS:
             # HACK # GitHub CI + aqt + Qt cross compilation
             if (OS_HOST == "Linux"): os.environ["QT_HOST_PATH"] = str(QT_DIRECTORY + "/" + QT_VERSION + "/gcc_64/")
             if (OS_HOST == "Darwin"): os.environ["QT_HOST_PATH"] = str(QT_DIRECTORY + "/" + QT_VERSION + "/macOS/")
+        if OS_TARGET == "android":
+            # HACK # env variables?
+            os.environ["ANDROID_SDK_ROOT"] = str(ANDROID_SDK_ROOT)
+            os.environ["ANDROID_NDK_ROOT"] = str(ANDROID_NDK_ROOT)
 
     ## CMAKE command selection
     CMAKE_cmd = ["cmake"]
