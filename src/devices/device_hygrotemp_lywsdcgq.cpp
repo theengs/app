@@ -290,11 +290,12 @@ void DeviceHygrotempLYWSDCGQ::parseAdvertisementData(const uint16_t adv_mode,
                                                      const uint16_t adv_id,
                                                      const QByteArray &ba)
 {
-/*
-    qDebug() << "DeviceHygrotempLYWSDCGQ::parseAdvertisementData(" << m_deviceAddress
-             << " - " << adv_mode << " - 0x" << adv_id << ")";
-    qDebug() << "DATA (" << ba.size() << "bytes)   >  0x" << ba.toHex();
-*/
+    //qDebug() << "DeviceHygrotempLYWSDCGQ::parseAdvertisementData(" << m_deviceAddress
+    //         << " - " << adv_mode << " - 0x" << adv_id << ")";
+    //qDebug() << "DATA (" << ba.size() << "bytes)   >  0x" << ba.toHex();
+
+    Q_UNUSED(adv_mode)
+    Q_UNUSED(adv_id)
 
     // MiBeacon protocol / 12-20 bytes messages
     // LYWSDCGQ uses 15 and 18 bytes messages

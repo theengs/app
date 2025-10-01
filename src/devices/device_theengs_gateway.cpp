@@ -582,6 +582,8 @@ void DeviceGateway::parseAdvertisementData(const uint16_t adv_mode,
     //         << " - " << adv_mode << " - 0x" << adv_id << ")";
     //qDebug() << "DATA (" << ba.size() << "bytes)   >  0x" << ba.toHex();
 
+    Q_UNUSED(adv_mode)
+
     if (adv_id == 0xffff && ba.size() == 2)
     {
         const quint8 *data = reinterpret_cast<const quint8 *>(ba.constData());

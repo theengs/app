@@ -36,6 +36,9 @@ Loader {
     function backAction() {
         if (deviceActuator.status === Loader.Ready)
             deviceActuator.item.backAction()
+
+        // disconnect device
+        if (currentDevice) currentDevice.actionDisconnect()
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -60,6 +63,7 @@ Loader {
             function onSensorsUpdated() { updateHeader() }
             function onCapabilitiesUpdated() { updateHeader() }
             function onStatusUpdated() { updateHeader() }
+
             function onDataUpdated() {
                 updateData()
             }
@@ -131,7 +135,6 @@ Loader {
             if (!currentDevice.isActuator) return
             //console.log("deviceActuator // updateHeader() >> " + currentDevice)
 
-            // Status
             updateStatusText()
         }
 
@@ -146,16 +149,7 @@ Loader {
             if (!currentDevice.isActuator) return
             //console.log("deviceActuator // updateStatusText() >> " + currentDevice)
 
-            // Status
             textStatus.text = UtilsDeviceSensors.getDeviceStatusText(currentDevice.status)
-
-            if (currentDevice.status === DeviceUtils.DEVICE_OFFLINE &&
-                (currentDevice.isDataFresh_rt() || currentDevice.isDataToday())) {
-                if (currentDevice.lastUpdateMin <= 1)
-                    textStatus.text = qsTr("Synced")
-                else
-                    textStatus.text = qsTr("Synced %1 ago").arg(currentDevice.lastUpdateStr)
-            }
         }
 
         function loadGraph() {
@@ -215,9 +209,9 @@ Loader {
                 Rectangle { // rectangle indicator // mimic switchbot s1
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    anchors.verticalCenterOffset: -(appHeader.height / 3)
+                    anchors.verticalCenterOffset: -(appHeader.height * 0.4)
 
-                    width: singleColumn ? actuatorBox.height * 0.75 : actuatorBox.width * 0.66
+                    width: singleColumn ? actuatorBox.height * 0.85 : actuatorBox.width * 0.66
                     height: width*0.75
                     radius: 32
                     color: Qt.alpha(cccc, 0.1)
@@ -245,9 +239,12 @@ Loader {
 
                             text: {
                                 if (currentDevice.deviceModel === "X1") {
-                                    if (currentDevice.mode === "on/off") return qsTr("Switch mode")
-                                    else if (currentDevice.mode === "onestate") return qsTr("Press mode")
-                                    else return qsTr("Unknown mode")
+                                    if (currentDevice.mode === "onestate" || currentDevice.switchMode === 0)
+                                        return qsTr("Press mode")
+                                    if (currentDevice.mode === "on/off" || currentDevice.switchMode === 1)
+                                        return qsTr("Switch mode")
+                                    else
+                                        return qsTr("Unknown mode...")
                                 }
                                 if (currentDevice.mode === "on/off") return qsTr("on/off")
                                 else if (currentDevice.mode === "onestate") return qsTr("one state")
@@ -264,6 +261,13 @@ Loader {
                             anchors.horizontalCenter: parent.horizontalCenter
 
                             text: {
+                                if (currentDevice.deviceModel === "X1") {
+                                    if (currentDevice.mode === "on/off")
+                                        return currentDevice.state ? "on" : "off"
+                                    else if (currentDevice.mode === "onestate")
+                                        return currentDevice.state
+                                    else return "?"
+                                }
                                 if (currentDevice.mode === "on/off") return currentDevice.state ? "on" : "off"
                                 else if (currentDevice.mode === "onestate") return currentDevice.state
                                 else return "?"
@@ -273,6 +277,18 @@ Loader {
                             font.bold: true
                             color: cccc
                             opacity: 1
+                        }
+
+                        IconSvg {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            width: 30
+                            height: 32
+
+                            visible: (currentDevice.hasBattery && currentDevice.deviceBattery >= 0)
+                            source: UtilsDeviceSensors.getDeviceBatteryIcon(currentDevice.deviceBattery)
+                            color: cccc
+                            rotation: 90
+                            fillMode: Image.PreserveAspectCrop
                         }
                     }
                 }
@@ -439,7 +455,7 @@ Loader {
 
                         ButtonClear {
                             text: qsTr("Connect")
-                            onClicked: currentDevice.actionConnect()
+                            onClicked: currentDevice.actionConnect(true)
                         }
                     }
                 }
@@ -594,9 +610,9 @@ Loader {
 
                     ////////
                 }
-            }
 
-            ////////////////
+                ////////////////
+            }
         }
 
         ////////////////////////////////////////////////////////////////////////

@@ -191,21 +191,23 @@ bool DevicePlantSensor::loadJournalEntries()
 bool DevicePlantSensor::addJournalEntry(const int type, const QDateTime &date, const QString &comment)
 {
     //qDebug() << "DevicePlantSensor::addJournalEntry()" << m_deviceAddress << type << date << comment;
-    bool status = false;
 
     // not for Theengs
+    Q_UNUSED(type)
+    Q_UNUSED(date)
+    Q_UNUSED(comment)
 
-    return status;
+    return false;
 }
 
 bool DevicePlantSensor::removeJournalEntry(const int id)
 {
     //qDebug() << "DevicePlantSensor::removeJournalEntry() id #" << id;
-    bool status = false;
 
     // not for Theengs
+    Q_UNUSED(id)
 
-    return status;
+    return false;
 }
 
 /* ************************************************************************** */
@@ -215,6 +217,7 @@ void DevicePlantSensor::setPlantName(const QString &plant)
     //qDebug() << "DevicePlantSensor::setPlantName()" << plant;
 
     // not for Theengs
+    Q_UNUSED(plant)
 }
 
 void DevicePlantSensor::resetPlant()

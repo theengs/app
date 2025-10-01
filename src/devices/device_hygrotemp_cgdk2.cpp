@@ -245,11 +245,13 @@ void DeviceHygrotempCGDK2::parseAdvertisementData(const uint16_t adv_mode,
                                                   const uint16_t adv_id,
                                                   const QByteArray &ba)
 {
-/*
-    qDebug() << "DeviceHygrotempCGDK2::parseAdvertisementData(" << m_deviceAddress
-             << " - " << adv_mode << " - 0x" << adv_id << ")";
-    qDebug() << "DATA (" << ba.size() << "bytes)   >  0x" << ba.toHex();
-*/
+    //qDebug() << "DeviceHygrotempCGDK2::parseAdvertisementData(" << m_deviceAddress
+    //         << " - " << adv_mode << " - 0x" << adv_id << ")";
+    //qDebug() << "DATA (" << ba.size() << "bytes)   >  0x" << ba.toHex();
+
+    Q_UNUSED(adv_mode)
+    Q_UNUSED(adv_id)
+
     if (ba.size() == 17) // Qingping data protocol // 17 bytes messages
     {
         const quint8 *data = reinterpret_cast<const quint8 *>(ba.constData());

@@ -1,0 +1,57 @@
+/*
+    Theengs - Decode things and devices
+    Copyright: (c) Florian ROBERT
+
+    This file is part of Theengs.
+
+    Theengs is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    Theengs is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#ifndef DEVICE_SWITCHBOT_UTILS_H
+#define DEVICE_SWITCHBOT_UTILS_H
+/* ************************************************************************** */
+
+enum BotCommands {
+    CMD_ACTION          = 0x01, //!< Execute an Action
+    CMD_GET_INFO        = 0x02, //!< Get Device Basic Info
+    CMD_SET_INFO        = 0x03, //!< Set Device Basic Info
+    CMD_GET_TIMEMANAG   = 0x08, //!< Get Device Time Management Info
+    CMD_SET_TIMEMANAG   = 0x09, //!< Set Device Time Management Info
+    CMD_ACTION_EXTENDED = 0x0f, //!< Execute an ExtendedAction
+};
+
+enum BotModes {
+    MOD_PRESS           = 0x00, //!<
+    MOD_SWITCH          = 0x01, //!<
+};
+
+enum BotActions {
+    ACT_PUSHPULL        = 0x00, //!< push and pull back
+    ACT_ON              = 0x01, //!< light switch on
+    ACT_OFF             = 0x02, //!< light switch off
+    ACT_STOP            = 0x03, //!< push stop
+    ACT_BACK            = 0x04, //!< back
+};
+
+enum BotResponses {
+    RSP_OK              = 0x01, //!< OK, Action executed
+    RSP_ERROR           = 0x02, //!< ERROR, Error while executing an Action
+    RSP_BUSY            = 0x03, //!< BUSY, Device is busy now, please try later
+    RSP_PROTOCOL        = 0x04, //!< Communication protocol version incompatible
+    RSP_UNSUPPORTED     = 0x05, //!< Device does not support this Command
+    RSP_LOWBATT         = 0x06, //!< Device's battery is low
+    RSP_UNSUPPORTED2    = 0x0D, //!< This command is not supported in the current mode
+    RSP_DISCONNECTED    = 0x0E, //!< Disconnected from the device that needs to stay connected
+};
+
+/* ************************************************************************** */
+#endif // DEVICE_SWITCHBOT_UTILS_H

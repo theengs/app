@@ -177,9 +177,9 @@ protected:
     bool m_hasDataToday = false;
     bool m_hasDataHistory = false;
 
-    bool hasDataFresh() const { return m_hasDataFresh; }
-    bool hasDataToday() const { return m_hasDataFresh || m_hasDataToday; }
-    bool hasDataHistory() const { return m_hasDataFresh || m_hasDataToday || m_hasDataHistory; }
+    virtual bool hasDataFresh() const { return m_hasDataFresh; }
+    virtual bool hasDataToday() const { return m_hasDataFresh || m_hasDataToday; }
+    virtual bool hasDataHistory() const { return m_hasDataFresh || m_hasDataToday || m_hasDataHistory; }
 
     // plant data
     int m_soilMoisture = -99;

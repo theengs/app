@@ -66,6 +66,27 @@ DeviceTheengsWindowActuators::~DeviceTheengsWindowActuators()
 /* ************************************************************************** */
 /* ************************************************************************** */
 
+void DeviceTheengsWindowActuators::setPosition(const int p)
+{
+    qDebug() << "DeviceTheengsWindowActuators::setPosition(" << p << ")";
+
+    if (p >= 0 && p <= 100)
+    {
+        if (p != m_position)
+        {
+            m_position = p;
+            Q_EMIT positionUpdated();
+        }
+    }
+    else
+    {
+        qWarning() << "DeviceTheengsWindowActuators::setPosition(" << p << ") INVALID";
+    }
+}
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+
 void DeviceTheengsWindowActuators::parseTheengsProps(const QString &json)
 {
     //qDebug() << "DeviceTheengsWindowActuators::parseTheengsProps()";
@@ -91,7 +112,7 @@ void DeviceTheengsWindowActuators::parseTheengsProps(const QString &json)
     if (prop.contains("mode")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_MODE;
     if (prop.contains("state")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_STATE;
     //if (prop.contains("calibrated")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_;
-    //if (prop.contains("lightlevel")) m_deviceSensorsTheengs |= DeviceUtilsTheengs::SENSOR_;
+    if (prop.contains("lightlevel")) m_deviceSensors |= DeviceUtils::SENSOR_LUMINOSITY;
     Q_EMIT sensorsUpdated();
 }
 

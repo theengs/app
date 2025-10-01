@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Layouts
 import QtQuick.Controls
 
 import ComponentLibrary
@@ -35,6 +36,9 @@ Loader {
     function backAction() {
         if (deviceActuator.status === Loader.Ready)
             deviceActuator.item.backAction()
+
+        if (currentDevice)
+            currentDevice.actionDisconnect()
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -130,7 +134,6 @@ Loader {
             if (!currentDevice.isActuatorWindow) return
             //console.log("deviceActuator // updateHeader() >> " + currentDevice)
 
-            // Status
             updateStatusText()
         }
 
@@ -145,16 +148,7 @@ Loader {
             if (!currentDevice.isActuatorWindow) return
             //console.log("deviceActuator // updateStatusText() >> " + currentDevice)
 
-            // Status
             textStatus.text = UtilsDeviceSensors.getDeviceStatusText(currentDevice.status)
-
-            if (currentDevice.status === DeviceUtils.DEVICE_OFFLINE &&
-                (currentDevice.isDataFresh_rt() || currentDevice.isDataToday())) {
-                if (currentDevice.lastUpdateMin <= 1)
-                    textStatus.text = qsTr("Synced")
-                else
-                    textStatus.text = qsTr("Synced %1 ago").arg(currentDevice.lastUpdateStr)
-            }
         }
 
         function loadGraph() {
@@ -211,33 +205,55 @@ Loader {
 
                 MouseArea { anchors.fill: parent } // prevent clicks below this area
 
-                Rectangle { // round indicator
+                Item { // square indicator (mimic a window)
+                    width: singleColumn ? actuatorBox.height * 0.75 : actuatorBox.width * 0.66
+                    height: width
+
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.verticalCenterOffset: -(appHeader.height / 3)
 
-                    width: singleColumn ? actuatorBox.height * 0.75 : actuatorBox.width * 0.66
-                    height: width
-                    radius: width
-                    color: Qt.alpha(cccc, 0.1)
-                    border.width: 2
-                    border.color: Qt.alpha(cccc, 0.33)
+                    Rectangle {
+                        id: indicator
+                        anchors.fill: parent
+                        anchors.margins: 12
+
+                        radius: 4
+                        color: Qt.alpha(cccc, 0.1)
+                        border.width: 2
+                        border.color: Qt.alpha(cccc, 0.33)
+
+                        rotation: (currentDevice.deviceModel === "W270160X") ? 90 : 0
+
+                        Rectangle {
+                            id: indicatorSlider
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            anchors.bottom: parent.bottom
+                            anchors.margins: 2
+
+                            radius: 2
+                            opacity: 0.33
+                            width: (indicator.width-4) * (currentDevice.position/100.0)
+                            color: Theme.colorPrimary
+                        }
+                    }
 
                     IconSvg { // sensorDisconnected
                         width: isMobile ? 96 : 128
                         height: isMobile ? 96 : 128
                         anchors.centerIn: parent
 
-                        visible: !currentDevice.hasData
+                        visible: !(currentDevice.available || currentDevice.connected) // !currentDevice.hasData
                         source: "qrc:/IconLibrary/material-symbols/bluetooth_disabled.svg"
                         color: cccc
                     }
 
                     Column {
                         anchors.centerIn: parent
-                        spacing: 0
 
-                        visible: currentDevice.hasData
+                        visible: (currentDevice.available || currentDevice.connected) // currentDevice.hasData
+                        spacing: 0
 
                         Text { // legend
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -275,6 +291,7 @@ Loader {
                             height: 12
                             //visible: (currentDevice.hasLuminositySensor && currentDevice.luminosityLux >= 0)
                         }
+
                         Row {
                             anchors.horizontalCenter: parent.horizontalCenter
                             spacing: 8
@@ -292,6 +309,18 @@ Loader {
                                 color: cccc
                                 opacity: 0.66
                             }
+                        }
+
+                        IconSvg {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            width: 30
+                            height: 32
+
+                            visible: (currentDevice.hasBattery && currentDevice.deviceBattery >= 0)
+                            source: UtilsDeviceSensors.getDeviceBatteryIcon(currentDevice.deviceBattery)
+                            color: cccc
+                            rotation: 90
+                            fillMode: Image.PreserveAspectCrop
                         }
                     }
                 }
@@ -423,7 +452,7 @@ Loader {
                 }
             }
 
-            ////////////////
+            ////////////////////////////////////////////////////////////////////
 
             Item {
                 width: {
@@ -436,9 +465,87 @@ Loader {
                 }
 
                 // EMPTY
-            }
 
-            ////////////////
+                ////////////////
+
+                Rectangle {
+                    id: infoArea
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+
+                    height: isMobile ? 40 : 48
+                    z: 2
+                    visible: true
+                    color: Theme.colorForeground
+
+                    RowLayout {
+                        anchors.left: parent.left
+                        anchors.leftMargin: Theme.componentMargin
+                        anchors.right: parent.right
+                        anchors.rightMargin: Theme.componentMargin
+
+                        height: parent.height
+                        spacing: 12
+
+                        ButtonClear {
+                            text: qsTr("Connect")
+                            onClicked: currentDevice.actionConnect(true)
+                        }
+                    }
+                }
+
+                ////////////////
+
+                Column {
+                    id: contentArea
+                    anchors.top: infoArea.bottom
+                    anchors.topMargin: 16
+                    anchors.left: parent.left
+                    anchors.leftMargin: 16
+                    anchors.right: parent.right
+                    anchors.rightMargin: 16 + (singleColumn ? 0 : parent.width * 0.5)
+                    spacing: 16
+
+                    opacity: currentDevice.connected ? 1 : 0.33
+                    enabled: currentDevice.connected
+
+                    ////////
+
+                    Column {
+                        spacing: 4
+                        opacity: 0.66
+
+                        Text {
+                            text: "battery: " + currentDevice.deviceBattery
+                        }
+                        Text {
+                            text: "firmware: " + currentDevice.deviceFirmware
+                        }
+                        Text {
+                            text: "calibrated: " + currentDevice.calibrated
+                        }
+                        Text {
+                            text: "moving: " + currentDevice.moving
+                        }
+                        Text {
+                            text: "direction: " + currentDevice.direction
+                        }
+                        Text {
+                            text: "position: " + currentDevice.position
+                        }
+                        Text {
+                            text: "open: " + currentDevice.open
+                        }
+                        Text {
+                            text: "lightlevel: " + currentDevice.lightlevel
+                        }
+                    }
+
+                    ////////
+                }
+
+                ////////////////
+            }
         }
 
         ////////////////////////////////////////////////////////////////////////

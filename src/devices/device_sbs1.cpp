@@ -17,6 +17,7 @@
 */
 
 #include "device_sbs1.h"
+#include "device_sb_utils.h"
 
 #include <QBluetoothUuid>
 #include <QBluetoothServiceInfo>
@@ -31,39 +32,6 @@
 
 #include <QListIterator>
 #include <QDebug>
-
-/* ************************************************************************** */
-enum BotCommands {
-    CMD_ACTION          = 0x01, //!< Execute an Action
-    CMD_GET_INFO        = 0x02, //!< Get Device Basic Info
-    CMD_SET_INFO        = 0x03, //!< Set Device Basic Info
-    CMD_GET_TIMEMANAG   = 0x08, //!< Get Device Time Management Info
-    CMD_SET_TIMEMANAG   = 0x09, //!< Set Device Time Management Info
-};
-
-enum BotModes {
-    MOD_PRESS           = 0x00, //!<
-    MOD_SWITCH          = 0x01, //!<
-};
-
-enum BotActions {
-    ACT_PUSHPULL        = 0x00, //!< push and pull back
-    ACT_ON              = 0x01, //!< light switch on
-    ACT_OFF             = 0x02, //!< light switch off
-    ACT_STOP            = 0x03, //!< push stop
-    ACT_BACK            = 0x04, //!< back
-};
-
-enum BotResponses {
-    RSP_OK              = 0x01, //!< OK, Action executed
-    RSP_ERROR           = 0x02, //!< ERROR, Error while executing an Action
-    RSP_BUSY            = 0x03, //!< BUSY, Device is busy now, please try later
-    RSP_PROTOCOL        = 0x04, //!< Communication protocol version incompatible
-    RSP_UNSUPPORTED     = 0x05, //!< Device does not support this Command
-    RSP_LOWBATT         = 0x06, //!< Device's battery is low
-    RSP_UNSUPPORTED2    = 0x0D, //!< This command is not supported in the current mode
-    RSP_DISCONNECTED    = 0x0E, //!< Disconnected from the device that needs to stay connected
-};
 
 /* ************************************************************************** */
 
@@ -270,14 +238,14 @@ void DeviceSwitchbotSmartSwitch::bleReadNotify(const QLowEnergyCharacteristic &c
     else if (c.uuid() == uuid_data_char_rx && value.size() == 13)
     {
         /// response from "CMD_GET_INFO" command
-        // [ 0] Bat Per     The battery percentage
-        // [ 1] FW Ver      Firmware Version
-        // [2-6] (not used by this device)
-        // [ 7] Timer Num   The number of Timer
-        // [ 8] Act Mode    The act mode of Bot
-        // [ 9] Hold Times
-        // [10] Service data byte 0
-        // [11] Service data byte 1
+        // [ 1] Bat Per         The battery percentage
+        // [ 2] FW Ver          Firmware Version
+        // [3-7]                (not used by this device)
+        // [ 8] Timer Num       The number of Timer
+        // [ 9] Act Mode        The act mode of Bot
+        // [10] Hold Times
+        // [11] Service data byte 0
+        // [12] Service data byte 1
 
         int battery = data[1];
         setBattery(battery);
@@ -285,7 +253,7 @@ void DeviceSwitchbotSmartSwitch::bleReadNotify(const QLowEnergyCharacteristic &c
         QString firmware = QString::number(data[2]);
         setFirmware(firmware);
 
-        int timernum = data[8];
+        int timers = data[8];
         int actionmode = data[9];
         int holdtime = data[10];
 
@@ -316,7 +284,12 @@ void DeviceSwitchbotSmartSwitch::setSwitchMode(const int m)
             setSetting("switchMode", m);
         }
     }
+    else
+    {
+        qWarning() << "DeviceSwitchbotSmartSwitch::setSwitchMode(" << m << ") INVALID";
+    }
 }
+
 void DeviceSwitchbotSmartSwitch::setSwitchTime(const int t)
 {
     qDebug() << "DeviceSwitchbotSmartSwitch::setSwitchTime(" << t << ")";
@@ -330,6 +303,10 @@ void DeviceSwitchbotSmartSwitch::setSwitchTime(const int t)
 
             setSetting("switchHoldTime", t);
         }
+    }
+    else
+    {
+        qWarning() << "DeviceSwitchbotSmartSwitch::setSwitchTime(" << t << ") INVALID";
     }
 }
 
@@ -399,5 +376,4 @@ void DeviceSwitchbotSmartSwitch::actionAction(const int action)
     }
 }
 
-/* ************************************************************************** */
 /* ************************************************************************** */

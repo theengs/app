@@ -343,7 +343,7 @@ bool DeviceTheengs::isValid() const
     if (m_deviceSensors == 0 && m_deviceSensorsTheengs == 0)
     {
         qWarning() << "DeviceTheengs::isValid(false)" << "m_deviceSensors == 0 && m_deviceSensorsTheengs == 0";
-        return false;
+        return true; // might not actually be a sensor, so we let it slide
     }
 
     return true;

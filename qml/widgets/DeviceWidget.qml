@@ -1163,7 +1163,6 @@ Item {
                     anchors.margins: 2
 
                     radius: 2
-                    rotation: 0
                     opacity: 0.33
                     width: indicator.width * 0.5
                     color: Theme.colorPrimary

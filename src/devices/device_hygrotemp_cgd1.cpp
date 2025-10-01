@@ -73,11 +73,12 @@ void DeviceHygrotempCGD1::parseAdvertisementData(const uint16_t adv_mode,
                                                  const uint16_t adv_id,
                                                  const QByteArray &ba)
 {
-/*
-    qDebug() << "DeviceHygrotempCGD1::parseAdvertisementData(" << m_deviceAddress
-             << " - " << adv_mode << " - 0x" << adv_id << ")";
-    qDebug() << "DATA (" << ba.size() << "bytes)   >  0x" << ba.toHex();
-*/
+    //qDebug() << "DeviceHygrotempCGD1::parseAdvertisementData(" << m_deviceAddress
+    //         << " - " << adv_mode << " - 0x" << adv_id << ")";
+    //qDebug() << "DATA (" << ba.size() << "bytes)   >  0x" << ba.toHex();
+
+    Q_UNUSED(adv_mode)
+    Q_UNUSED(adv_id)
 
     // MiBeacon? // 12 bytes messages?
     // MiBeacon? // 14 bytes messages?

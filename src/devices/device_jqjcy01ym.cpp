@@ -78,11 +78,13 @@ void DeviceJQJCY01YM::parseAdvertisementData(const uint16_t adv_mode,
                                              const uint16_t adv_id,
                                              const QByteArray &ba)
 {
-/*
-    qDebug() << "DeviceJQJCY01YM::parseAdvertisementData(" << m_deviceAddress
-             << " - " << adv_mode << " - 0x" << adv_id << ")";
-    qDebug() << "DATA (" << ba.size() << "bytes)   >  0x" << ba.toHex();
-*/
+    //qDebug() << "DeviceJQJCY01YM::parseAdvertisementData(" << m_deviceAddress
+    //         << " - " << adv_mode << " - 0x" << adv_id << ")";
+    //qDebug() << "DATA (" << ba.size() << "bytes)   >  0x" << ba.toHex();
+
+    Q_UNUSED(adv_mode)
+    Q_UNUSED(adv_id)
+
     // MiBeacon protocol / 12-20 bytes messages
     // JQJCY01YM uses 15, 16 and 18 bytes messages
 

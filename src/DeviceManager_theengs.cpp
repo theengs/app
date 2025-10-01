@@ -336,7 +336,11 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
             device->setPlantSensor();
         }
 */
-        if (!device->isValid())
+        if (!device)
+        {
+            qWarning() << "Couldn't add device:" << deviceInfo.name();
+        }
+        else if (!device->isValid())
         {
             qWarning() << "Device is invalid:" << deviceInfo.name();
             delete device;

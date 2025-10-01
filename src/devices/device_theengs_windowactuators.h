@@ -64,6 +64,13 @@ class DeviceTheengsWindowActuators: public DeviceTheengs
     int getOpen() const { return m_open; }
     int getLightLevel() const { return m_lightlevel; }
 
+protected:
+    void setPosition(const int p);
+
+    bool hasDataFresh() const { return (m_position >= 0); }
+    bool hasDataToday() const { return (m_position >= 0); }
+    bool hasDataHistory() const { return false; }
+
 signals:
     void calibratedUpdated();
     void movingUpdated();

@@ -42,6 +42,9 @@ Loader {
     function backAction() {
         if (deviceBM.status === Loader.Ready)
             deviceBM.item.backAction()
+
+        // disconnect device
+        //if (currentDevice) currentDevice.actionDisconnect()
     }
 
     ////////////////////////////////////////////////////////////////////////////

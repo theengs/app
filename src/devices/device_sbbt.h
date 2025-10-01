@@ -23,9 +23,9 @@
 #include "device_theengs_windowactuators.h"
 
 #include <QObject>
+#include <QString>
+#include <QStringLiteral>
 #include <QList>
-#include <QDateTime>
-#include <QElapsedTimer>
 
 #include <QBluetoothUuid>
 #include <QBluetoothDeviceInfo>
@@ -39,6 +39,8 @@
 class DeviceSwitchbotBlindTilt: public DeviceTheengsWindowActuators
 {
     Q_OBJECT
+
+    /// BLE
 
     QBluetoothUuid uuid_data_srv = QBluetoothUuid(QStringLiteral("cba20d00-224d-11e6-9fb8-0002a5d5c51b"));
     QBluetoothUuid uuid_data_char_rx = QBluetoothUuid(QStringLiteral("cba20003-224d-11e6-9fb8-0002a5d5c51b"));

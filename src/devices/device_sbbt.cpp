@@ -17,6 +17,7 @@
 */
 
 #include "device_sbbt.h"
+#include "device_sb_utils.h"
 
 #include <QBluetoothUuid>
 #include <QBluetoothServiceInfo>
@@ -201,6 +202,21 @@ void DeviceSwitchbotBlindTilt::bleReadNotify(const QLowEnergyCharacteristic &c, 
 {
     qDebug() << "DeviceSwitchbotBlindTilt::bleReadNotify(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
     qDebug() << "DATA: 0x" << value.toHex();
+
+    const uint8_t *data = reinterpret_cast<const quint8 *>(value.constData());
+
+    if (c.uuid() == uuid_data_char_rx && value.size() == 777)
+    {
+        /// response from "CMD_GET_INFO" command
+        // [ 1] Bat Per         The battery percentage
+        // [ 2] FW Ver          Firmware Version
+
+        int battery = data[1];
+        setBattery(battery);
+
+        QString firmware = QString::number(data[2]);
+        setFirmware(firmware);
+    }
 }
 
 void DeviceSwitchbotBlindTilt::bleServiceError(QLowEnergyService::ServiceError e)

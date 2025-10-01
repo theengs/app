@@ -26,7 +26,6 @@
 #include <QString>
 #include <QStringLiteral>
 #include <QList>
-#include <QTimer>
 
 #include <QBluetoothUuid>
 #include <QBluetoothDeviceInfo>

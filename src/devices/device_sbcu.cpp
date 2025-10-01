@@ -17,6 +17,7 @@
 */
 
 #include "device_sbcu.h"
+#include "device_sb_utils.h"
 
 #include <QBluetoothUuid>
 #include <QBluetoothServiceInfo>
@@ -201,6 +202,43 @@ void DeviceSwitchbotCurtain::bleReadNotify(const QLowEnergyCharacteristic &c, co
 {
     qDebug() << "DeviceSwitchbotCurtain::bleReadNotify(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
     qDebug() << "DATA: 0x" << value.toHex();
+
+    const uint8_t *data = reinterpret_cast<const quint8 *>(value.constData());
+
+    if (c.uuid() == uuid_data_char_rx && value.size() == 8)
+    {
+        /// response from "CMD_GET_INFO" command
+        // [ 1] Bat Per         The battery percentage
+        // [ 2] FW Ver          Firmware Version
+        // [ 3] Chain Length    Device Chain Length
+        // [ 4] (State 1)
+        //      (b7) > direction, 0: default (open to the left), 1: reverse
+        //      (b6) > touch and go, 0: disable, 1: enable
+        //      (b5) > lighting effect, 0: disable, 1: enable
+        //      (b4) > reserved
+        //      (b3) > fault, 0-none, 1-faulty
+        // [ 5] (State 2)
+        //      (b3) > Whether solar panel is plugged in, 0-No, 1-There is solar panel
+        //      (b2) > calibrated, 0-not calibrated, 1-calibrated
+        //     (b1:0) > 0-motion status, 0-static, 1-open window, 2-close window
+        // [ 6] Position        Current location of the device (%)
+        // [ 7] Timer Amount    Number of timers
+
+        int battery = data[1];
+        setBattery(battery);
+
+        QString firmware = QString::number(data[2]);
+        setFirmware(firmware);
+
+        int direction = (data[4] >> 7) & 0x01;
+        int solar = ((data[5] >> 3) & 0x01);
+        int calibrated = ((data[5] >> 2) & 0x01);
+        int moving = (data[5] & 0x02);
+        int position = data[6];
+        int timers = data[7];
+
+        setPosition(position);
+    }
 }
 
 void DeviceSwitchbotCurtain::bleServiceError(QLowEnergyService::ServiceError e)
