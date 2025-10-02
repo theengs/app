@@ -136,8 +136,6 @@ void DeviceFlowerCare_tuya::bleReadDone(const QLowEnergyCharacteristic &c, const
     //qDebug() << "DeviceFlowerCare_tuya::bleReadDone(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
     //qDebug() << "DATA: 0x" << value.toHex();
 
-    const quint8 *data = reinterpret_cast<const quint8 *>(value.constData());
-
     if (c.uuid().toString() == "{00001a01-0000-1000-8000-00805f9b34fb}")
     {
         if (value.size() > 0)

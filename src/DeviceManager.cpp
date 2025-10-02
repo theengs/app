@@ -971,8 +971,8 @@ void DeviceManager::scanDevices_start()
                         this, &DeviceManager::bleDevice_updated, Qt::UniqueConnection);
 
                 // clean up device lists?
-                if (m_gateways_model) m_gateways_model->clearDevices();
-                if (m_devices_model) m_devices_model->clearDevices();
+                //if (m_gateways_model) m_gateways_model->clearDevices();
+                //if (m_devices_model) m_devices_model->clearDevices();
 
                 // start scanning
                 m_discoveryAgent->setLowEnergyDiscoveryTimeout(ble_scanning_duration*1000);

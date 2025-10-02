@@ -901,6 +901,7 @@ void DeviceSensor::checkDataAvailability()
 bool DeviceSensor::hasDataNamed(const QString &dataName, int days) const
 {
     if (dataName.isEmpty()) return false;
+    Q_UNUSED(days)
 
     QString tableName;
 

@@ -408,6 +408,33 @@ Item {
 
         ////////////////
 
+        IconSvg {
+            id: imageStatus
+            width: 32
+            height: 32
+            anchors.right: parent.right
+            anchors.rightMargin: listMode ? 56 : 36
+            anchors.verticalCenter: parent.verticalCenter
+
+            visible: !boxDevice.hasDataToday
+            color: Theme.colorIcon
+            opacity: 0.8
+
+            SequentialAnimation on opacity {
+                id: refreshAnimation
+                loops: Animation.Infinite
+                running: (visible &&
+                          boxDevice.status === DeviceUtils.DEVICE_CONNECTING ||
+                          boxDevice.status === DeviceUtils.DEVICE_CONNECTED ||
+                          boxDevice.status === DeviceUtils.DEVICE_WORKING)
+                alwaysRunToEnd: true
+                OpacityAnimator { from: 0.8; to: 0; duration: 750 }
+                OpacityAnimator { from: 0; to: 0.8; duration: 750 }
+            }
+        }
+
+        ////////////////
+
         Row {
             id: rowRight
             anchors.top: parent.top
@@ -448,31 +475,6 @@ Item {
         }
 
         ////////////////
-
-        IconSvg {
-            id: imageStatus
-            width: 32
-            height: 32
-            anchors.right: parent.right
-            anchors.rightMargin: listMode ? 56 : 36
-            anchors.verticalCenter: parent.verticalCenter
-
-            visible: !boxDevice.hasDataToday
-            color: Theme.colorIcon
-            opacity: 0.8
-
-            SequentialAnimation on opacity {
-                id: refreshAnimation
-                loops: Animation.Infinite
-                running: (visible &&
-                          boxDevice.status === DeviceUtils.DEVICE_CONNECTING ||
-                          boxDevice.status === DeviceUtils.DEVICE_CONNECTED ||
-                          boxDevice.status === DeviceUtils.DEVICE_WORKING)
-                alwaysRunToEnd: true
-                OpacityAnimator { from: 0.8; to: 0; duration: 750 }
-                OpacityAnimator { from: 0; to: 0.8; duration: 750 }
-            }
-        }
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -1092,10 +1094,10 @@ Item {
             function updateData() {
                 if (boxDevice.state === true) {
                     indicator.color = Theme.colorForeground
-                    legend.text = "ON"
+                    legend.text = qsTr("ON")
                 } else {
                     indicator.color = "transparent"
-                    legend.text = "OFF"
+                    legend.text = qsTr("OFF")
                 }
             }
 

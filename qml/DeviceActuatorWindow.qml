@@ -4,6 +4,8 @@ import QtQuick.Controls
 
 import ComponentLibrary
 import DeviceUtils
+import DeviceUtilsTheengs
+import DeviceUtilsSwitchBot
 import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
 
 Loader {
@@ -63,29 +65,12 @@ Loader {
             function onSensorsUpdated() { updateHeader() }
             function onCapabilitiesUpdated() { updateHeader() }
             function onStatusUpdated() { updateHeader() }
-            function onDataUpdated() {
-                updateData()
-            }
-            function onRefreshUpdated() {
-                updateData()
-                updateGraph()
-            }
-            function onHistoryUpdated() {
-                updateGraph()
-            }
         }
 
         Connections {
             target: settingsManager
-            function onTempUnitChanged() {
-                updateData()
-            }
             function onAppLanguageChanged() {
-                updateData()
                 updateStatusText()
-            }
-            function onGraphThermometerChanged() {
-                loadGraph()
             }
         }
 
@@ -464,18 +449,16 @@ Loader {
                     return singleColumn ? (parent.height - actuatorBox.height) : parent.height
                 }
 
-                // EMPTY
-
                 ////////////////
 
                 Rectangle {
                     id: infoArea
                     anchors.left: parent.left
                     anchors.right: parent.right
-
-                    height: isMobile ? 40 : 48
                     z: 2
-                    visible: true
+
+                    visible: false
+                    height: visible ? (isMobile ? 40 : 48) : 0
                     color: Theme.colorForeground
 
                     RowLayout {
@@ -504,40 +487,272 @@ Loader {
                     anchors.leftMargin: 16
                     anchors.right: parent.right
                     anchors.rightMargin: 16 + (singleColumn ? 0 : parent.width * 0.5)
-                    spacing: 16
 
-                    opacity: currentDevice.connected ? 1 : 0.33
+                    //opacity: currentDevice.connected ? 1 : 0.33
                     enabled: currentDevice.connected
+                    spacing: 20
 
                     ////////
 
                     Column {
-                        spacing: 4
-                        opacity: 0.66
+                        anchors.left: parent.left
+                        anchors.right: parent.right
 
-                        Text {
-                            text: "battery: " + currentDevice.deviceBattery
+                        visible: (currentDevice.deviceModel === "W070160X") // Curtain 2/3
+                        spacing: 20
+
+                        ////
+
+                        SliderValueSolid {
+                            id: actionSlider_curtain
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            hhh: 40
+
+                            from: 0
+                            to: 100
+                            value: currentDevice.position
+
+                            onMoved: {
+                                currentDevice.actionMove(value)
+                                actionSlider_curtain.value = value
+                            }
                         }
-                        Text {
-                            text: "firmware: " + currentDevice.deviceFirmware
+
+                        ////
+
+                        Row {
+                            id: actionRow_curtain
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            spacing: 64
+
+                            property int www: Math.min(112, (parent.width - 16*2 - 64*2) / 3)
+
+                            Column {
+                                width: actionRow_curtain.www
+                                spacing: 12
+
+                                RoundButtonSolid {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    width: actionRow_curtain.www; height: actionRow_curtain.www;
+
+                                    source: "qrc:/assets/icons_material/curtains_closed.svg"
+                                    onClicked: {
+                                        if (currentDevice.actionAction(DeviceUtilsSwitchBot.ACTION_OPEN)) {
+                                            actionSlider_curtain.value = 0
+                                        }
+                                    }
+                                }
+                                Text {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    text: qsTr("Open")
+                                    textFormat: Text.PlainText
+                                    color: Theme.colorText
+                                }
+                            }
+
+                            Column {
+                                width: actionRow_curtain.www
+                                spacing: 12
+
+                                RoundButtonSolid {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    width: actionRow_curtain.www; height: actionRow_curtain.www;
+
+                                    source: "qrc:/IconLibrary/material-symbols/media/pause-fill.svg"
+                                    onClicked: {
+                                        if (currentDevice.actionAction(DeviceUtilsSwitchBot.ACTION_STOP)) {
+                                            actionSlider_curtain.value = currentDevice.position
+                                        }
+                                    }
+                                }
+                                Text {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    text: qsTr("Pause")
+                                    textFormat: Text.PlainText
+                                    color: Theme.colorText
+                                }
+                            }
+
+                            Column {
+                                width: actionRow_curtain.www
+                                spacing: 12
+
+                                RoundButtonSolid {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    width: actionRow_curtain.www; height: actionRow_curtain.www;
+
+                                    source: "qrc:/assets/icons_material/curtains_closed-fill.svg"
+                                    onClicked: {
+                                        onClicked: {
+                                            if (currentDevice.actionAction(DeviceUtilsSwitchBot.ACTION_CLOSE)) {
+                                                actionSlider_curtain.value = 100
+                                            }
+                                        }
+                                    }
+                                }
+                                Text {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    text: qsTr("Close")
+                                    textFormat: Text.PlainText
+                                    color: Theme.colorText
+                                }
+                            }
                         }
-                        Text {
-                            text: "calibrated: " + currentDevice.calibrated
+
+                        ////
+                    }
+
+                    ////////
+
+                    RowLayout {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+
+                        visible: (currentDevice.deviceModel === "W270160X") // Blind Tilt
+                        spacing: 16
+
+                        ////
+
+                        Column {
+                            id: actionRow_blind
+                            Layout.fillWidth: true
+                            Layout.alignment: Qt.AlignVCenter
+                            spacing: 32
+
+                            property int www: Math.min(80, (parent.height - 16*2 - 32*2) / 3)
+
+                            Row {
+                                height: actionRow_blind.www
+                                spacing: 12
+
+                                RoundButtonSolid {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: actionRow_blind.www; height: actionRow_blind.www;
+
+                                    source: "qrc:/assets/icons_material/window_closed-fill.svg"
+                                    onClicked: {
+                                        if (currentDevice.actionAction(DeviceUtilsSwitchBot.ACTION_CLOSE_DOWN)) {
+                                            actionSlider_blind.value = 0
+                                        }
+                                    }
+                                }
+                                Text {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: qsTr("Close Down")
+                                    textFormat: Text.PlainText
+                                    color: Theme.colorText
+                                }
+                            }
+
+                            Row {
+                                height: actionRow_blind.www
+                                spacing: 12
+
+                                RoundButtonSolid {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: actionRow_blind.www; height: actionRow_blind.www;
+
+                                    source: "qrc:/assets/icons_material/window_closed.svg"
+                                    onClicked: {
+                                        if (currentDevice.actionAction(DeviceUtilsSwitchBot.ACTION_OPEN)) {
+                                            actionSlider_blind.value = 50
+                                        }
+                                    }
+                                }
+                                Text {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: qsTr("Fully open")
+                                    textFormat: Text.PlainText
+                                    color: Theme.colorText
+                                }
+                            }
+
+                            Row {
+                                height: actionRow_blind.www
+                                spacing: 12
+
+                                RoundButtonSolid {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: actionRow_blind.www; height: actionRow_blind.www;
+
+                                    source: "qrc:/assets/icons_material/window_closed-fill.svg"
+                                    onClicked: {
+                                        if (currentDevice.actionAction(DeviceUtilsSwitchBot.ACTION_CLOSE_UP)) {
+                                            actionSlider_blind.value = 100
+                                        }
+                                    }
+                                }
+                                Text {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: qsTr("Close Up")
+                                    textFormat: Text.PlainText
+                                    color: Theme.colorText
+                                }
+                            }
                         }
-                        Text {
-                            text: "moving: " + currentDevice.moving
+
+                        ////
+
+                        SliderValueSolid {
+                            id: actionSlider_blind
+                            orientation: Qt.Vertical
+                            Layout.preferredHeight: 320
+                            hhh: 40
+
+                            from: 0
+                            to: 100
+                            value: currentDevice.position
+
+                            onMoved: {
+                                currentDevice.actionMove(value)
+                                actionSlider_blind.value = value
+                            }
                         }
-                        Text {
-                            text: "direction: " + currentDevice.direction
-                        }
-                        Text {
-                            text: "position: " + currentDevice.position
-                        }
-                        Text {
-                            text: "open: " + currentDevice.open
-                        }
-                        Text {
-                            text: "lightlevel: " + currentDevice.lightlevel
+
+                        ////
+                    }
+
+                    ////////
+
+                    Loader {
+                        active: utilsApp.isDebugBuild()
+                        asynchronous: true
+                        sourceComponent: Column {
+                            spacing: 4
+
+                            Text {
+                                text: "battery: " + currentDevice.deviceBattery
+                                color: Theme.colorSubText
+                            }
+                            Text {
+                                text: "firmware: " + currentDevice.deviceFirmware
+                                color: Theme.colorSubText
+                            }
+                            Text {
+                                text: "calibrated: " + currentDevice.calibrated
+                                color: Theme.colorSubText
+                            }
+                            Text {
+                                text: "moving: " + currentDevice.moving
+                                color: Theme.colorSubText
+                            }
+                            Text {
+                                text: "direction: " + currentDevice.direction
+                                color: Theme.colorSubText
+                            }
+                            Text {
+                                text: "position: " + currentDevice.position
+                                color: Theme.colorSubText
+                            }
+                            Text {
+                                text: "open: " + currentDevice.open
+                                color: Theme.colorSubText
+                            }
+                            Text {
+                                text: "lightlevel: " + currentDevice.lightlevel
+                                color: Theme.colorSubText
+                            }
                         }
                     }
 

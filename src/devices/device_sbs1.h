@@ -35,6 +35,7 @@
 
 /*!
  * Switchbot SmartSwitch alias "SBS1" alias "X1"
+ * BLE name: empty, or sometimes "WoHand" (after pairing with official app?)
  *
  * - https://github.com/OpenWonderLabs/SwitchBotAPI-BLE/blob/latest/devicetypes/bot.md
  */
@@ -100,8 +101,8 @@ public:
                                QObject *parent = nullptr);
     ~DeviceSwitchbotSmartSwitch();
 
-    Q_INVOKABLE void actionMode(const int mode = 0, const int inverted = 0);
-    Q_INVOKABLE void actionAction(const int action = 0);
+    Q_INVOKABLE bool actionMode(const int mode = 0, const int inverted = 0);
+    Q_INVOKABLE bool actionAction(const int action = 0);
 };
 
 /* ************************************************************************** */

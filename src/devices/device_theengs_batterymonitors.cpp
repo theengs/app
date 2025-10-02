@@ -311,6 +311,7 @@ void DeviceTheengsBatteryMonitors::getChartData_batteryHistory(QDateTimeAxis *ax
 
     if (!axis) return;
     if (!batt) return;
+    Q_UNUSED(reload)
 
     if (m_dbInternal || m_dbExternal)
     {

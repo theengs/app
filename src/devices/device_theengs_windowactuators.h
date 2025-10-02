@@ -67,10 +67,6 @@ class DeviceTheengsWindowActuators: public DeviceTheengs
 protected:
     void setPosition(const int p);
 
-    bool hasDataFresh() const { return (m_position >= 0); }
-    bool hasDataToday() const { return (m_position >= 0); }
-    bool hasDataHistory() const { return false; }
-
 signals:
     void calibratedUpdated();
     void movingUpdated();
@@ -89,8 +85,8 @@ public:
     ~DeviceTheengsWindowActuators();
 
     // theengs decoder
-    void parseTheengsProps(const QString &json);
-    void parseTheengsAdvertisement(const QString &json);
+    void parseTheengsProps(const QString &json) override;
+    void parseTheengsAdvertisement(const QString &json) override;
 };
 
 /* ************************************************************************** */

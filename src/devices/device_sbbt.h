@@ -35,6 +35,7 @@
 
 /*!
  * Switchbot Blind Tilt alias "SBBT" alias "W270160X"
+ * BLE name: empty, or sometimes "" (after pairing with official app?)
  */
 class DeviceSwitchbotBlindTilt: public DeviceTheengsWindowActuators
 {
@@ -76,7 +77,8 @@ public:
                              QObject *parent = nullptr);
     ~DeviceSwitchbotBlindTilt();
 
-    Q_INVOKABLE void actionAction(const int action = 0);
+    Q_INVOKABLE bool actionAction(const int action = 0);
+    Q_INVOKABLE bool actionMove(const int position);
 };
 
 /* ************************************************************************** */

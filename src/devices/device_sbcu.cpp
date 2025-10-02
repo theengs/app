@@ -17,7 +17,7 @@
 */
 
 #include "device_sbcu.h"
-#include "device_sb_utils.h"
+#include "device_utils_switchbot.h"
 
 #include <QBluetoothUuid>
 #include <QBluetoothServiceInfo>
@@ -235,9 +235,12 @@ void DeviceSwitchbotCurtain::bleReadNotify(const QLowEnergyCharacteristic &c, co
         int calibrated = ((data[5] >> 2) & 0x01);
         int moving = (data[5] & 0x02);
         int position = data[6];
-        int timers = data[7];
+        //int timers = data[7];
 
         setPosition(position);
+
+        m_lastUpdate = QDateTime::currentDateTime();
+        refreshDataFinished(true);
     }
 }
 
@@ -249,15 +252,81 @@ void DeviceSwitchbotCurtain::bleServiceError(QLowEnergyService::ServiceError e)
 /* ************************************************************************** */
 /* ************************************************************************** */
 
-void DeviceSwitchbotCurtain::actionAction(const int action)
+bool DeviceSwitchbotCurtain::actionAction(const int action)
 {
     qDebug() << "DeviceSwitchbotCurtain::actionAction(" << action << ")";
 
-    static uint8_t CLOSE[] = {0x57, 0x0f, 0x45, 0x01, 0x01, 0x01, 0x64};
-    static uint8_t OPEN[] = {0x57, 0x0f, 0x45, 0x01, 0x01, 0x01, 0x00};
-    static uint8_t MOVE[] = {0x57, 0x0f, 0x45, 0x01, 0x01, 0x01, 0x00};
-    static uint8_t STOP[] = {0x57, 0x0f, 0x45, 0x01, 0x00, 0x01};
+    //static uint8_t CLOSE[] = {0x57, 0x0f, 0x45, 0x01, 0x01, 0x01, 0x64};
+    //static uint8_t OPEN[] = {0x57, 0x0f, 0x45, 0x01, 0x01, 0x01, 0x00};
+    //static uint8_t MOVE[] = {0x57, 0x0f, 0x45, 0x01, 0x01, 0x01, 0x00};
+    //static uint8_t STOP[] = {0x57, 0x0f, 0x45, 0x01, 0x00, 0x01};
+
+    if (m_charTX.isValid())
+    {
+        QByteArray cmd;
+
+        // Magic Number
+        cmd.push_back(0x57);
+        // Header / Command
+        cmd.push_back(DeviceUtilsSwitchBot::CMD_ACTION_EXTENDED);
+        // Payload...
+        cmd.push_back(0x45); // 0x45 Curtain settings command / 0x46 Curtain get command
+        cmd.push_back(0x01); // Function Code // 0x01-action / 0x04-Basic attributes / 0x81-Command status
+
+        if (action == DeviceUtilsSwitchBot::ACTION_OPEN || action == DeviceUtilsSwitchBot::ACTION_CLOSE)
+        {
+            char position = (action == DeviceUtilsSwitchBot::ACTION_OPEN) ? 0 : 100;
+
+            cmd.push_back(0x01); // Function Parameter Code // 0x01-Summary information / 0x02-Advanced page / 0x05-unified action of device chain
+            cmd.push_back(0x01); // speed
+            cmd.push_back(position); // position in %
+        }
+        else //if (action == DeviceUtilsSwitchBot::ACTION_STOP)
+        {
+            cmd.push_back(char(0x00)); // ?
+            cmd.push_back(0x01); // ?
+        }
+
+        m_serviceData->writeCharacteristic(m_charTX, cmd,  QLowEnergyService::WriteWithResponse);
+        return true;
+    }
+
+    return false;
 }
 
 /* ************************************************************************** */
+
+bool DeviceSwitchbotCurtain::actionMove(const int position)
+{
+    qDebug() << "DeviceSwitchbotCurtain::actionMove(" << position << ")";
+
+    if (position >= 0 && position <= 100)
+    {
+        if (m_charTX.isValid())
+        {
+            QByteArray cmd;
+
+            // Magic Number
+            cmd.push_back(0x57);
+            // Header / Command
+            cmd.push_back(DeviceUtilsSwitchBot::CMD_ACTION_EXTENDED);
+            // Payload...
+            cmd.push_back(0x45);
+            cmd.push_back(0x01);
+            cmd.push_back(0x01);
+            cmd.push_back(0x01);
+            cmd.push_back(position); // position in %
+
+            m_serviceData->writeCharacteristic(m_charTX, cmd,  QLowEnergyService::WriteWithResponse);
+            return true;
+        }
+    }
+    else
+    {
+        qWarning() << "DeviceSwitchbotCurtain::actionMove(" << position << ") INVALID";
+    }
+
+    return false;
+}
+
 /* ************************************************************************** */

@@ -35,6 +35,7 @@
 
 /*!
  * Switchbot Curtain alias "SBCU" alias "W070160X"
+ * BLE name: empty, or sometimes "WoCtn3" (after pairing with official app?)
  *
  * - https://github.com/OpenWonderLabs/SwitchBotAPI-BLE/blob/latest/devicetypes/curtain3.md
  */
@@ -78,7 +79,8 @@ public:
                              QObject *parent = nullptr);
     ~DeviceSwitchbotCurtain();
 
-    Q_INVOKABLE void actionAction(const int action = 0);
+    Q_INVOKABLE bool actionAction(const int action = 0);
+    Q_INVOKABLE bool actionMove(const int position);
 };
 
 /* ************************************************************************** */

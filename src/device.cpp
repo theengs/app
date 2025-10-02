@@ -641,8 +641,8 @@ void Device::refreshDataFinished(bool status, bool cached)
 
     m_timeoutTimer.stop();
 
-    m_ble_status = DeviceUtils::DEVICE_OFFLINE;
-    Q_EMIT statusUpdated();
+    //m_ble_status = DeviceUtils::DEVICE_OFFLINE;
+    //Q_EMIT statusUpdated();
 
     if (status == true)
     {

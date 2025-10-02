@@ -28,6 +28,7 @@
 #include "TempPresetManager.h"
 #include "TempPreset.h"
 #include "device_utils_theengs.h"
+#include "device_utils_switchbot.h"
 
 #include "utils_app.h"
 #include "utils_screen.h"
@@ -172,6 +173,7 @@ int main(int argc, char *argv[])
     MobileUI::registerQML();
     DeviceUtils::registerQML();
     DeviceUtilsTheengs::registerQML();
+    DeviceUtilsSwitchBot::registerQML();
     BatteryPresetUtils::registerQML();
     TempPresetUtils::registerQML();
 

@@ -49,11 +49,6 @@ class DeviceTheengsActuators: public DeviceTheengs
     QString getMode() const { return m_mode; }
     bool getState() const { return m_state; }
 
-protected:
-    bool hasDataFresh() const { return !m_mode.isEmpty(); }
-    bool hasDataToday() const { return !m_mode.isEmpty(); }
-    bool hasDataHistory() const { return false; }
-
 signals:
     void modeUpdated();
     void stateUpdated();

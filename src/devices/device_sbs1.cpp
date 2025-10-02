@@ -17,7 +17,7 @@
 */
 
 #include "device_sbs1.h"
-#include "device_sb_utils.h"
+#include "device_utils_switchbot.h"
 
 #include <QBluetoothUuid>
 #include <QBluetoothServiceInfo>
@@ -219,7 +219,7 @@ void DeviceSwitchbotSmartSwitch::bleReadNotify(const QLowEnergyCharacteristic &c
         // [00] status
         // [1+] payload sent?
 
-        if (data[0] == RSP_OK)
+        if (data[0] == DeviceUtilsSwitchBot::RSP_OK)
         {
             if (data[1] == 0xff) // CMD_ACTION?
             {
@@ -253,12 +253,15 @@ void DeviceSwitchbotSmartSwitch::bleReadNotify(const QLowEnergyCharacteristic &c
         QString firmware = QString::number(data[2]);
         setFirmware(firmware);
 
-        int timers = data[8];
+        //int timers = data[8];
         int actionmode = data[9];
         int holdtime = data[10];
 
         setSwitchMode(actionmode);
         setSwitchTime(holdtime);
+
+        m_lastUpdate = QDateTime::currentDateTime();
+        refreshDataFinished(true);
     }
 }
 
@@ -326,7 +329,7 @@ void DeviceSwitchbotSmartSwitch::setSwitchInverted(const bool i)
 /* ************************************************************************** */
 /* ************************************************************************** */
 
-void DeviceSwitchbotSmartSwitch::actionMode(const int mode, const int inverted)
+bool DeviceSwitchbotSmartSwitch::actionMode(const int mode, const int inverted)
 {
     qDebug() << "DeviceSwitchbotSmartSwitch::actionMode(" << mode << inverted << ")";
 
@@ -335,24 +338,30 @@ void DeviceSwitchbotSmartSwitch::actionMode(const int mode, const int inverted)
         QByteArray cmd;
 
         char md = 0;
-        if (mode == 0) md = MOD_PRESS;
-        else if (mode == 1) md = MOD_SWITCH;
+        if (mode == DeviceUtilsSwitchBot::MODE_PRESS) md = DeviceUtilsSwitchBot::BOT_MODE_PRESS;
+        else if (mode == DeviceUtilsSwitchBot::MODE_SWITCH) md = DeviceUtilsSwitchBot::BOT_MODE_SWITCH;
         md <<= 4;
         if (inverted) md &= 0x01;
 
         // Magic Number
         cmd.push_back(0x57);
         // Header / Command
-        cmd.push_back(CMD_SET_INFO);
+        cmd.push_back(DeviceUtilsSwitchBot::CMD_SET_INFO);
         // Payload...
         cmd.push_back(0x64); // hardcoded
         cmd.push_back(md); // mode
 
+        setSwitchMode(mode);
+        setSwitchInverted(inverted);
+
         m_serviceData->writeCharacteristic(m_charTX, cmd,  QLowEnergyService::WriteWithResponse);
+        return true;
     }
+
+    return false;
 }
 
-void DeviceSwitchbotSmartSwitch::actionAction(const int action)
+bool DeviceSwitchbotSmartSwitch::actionAction(const int action)
 {
     qDebug() << "DeviceSwitchbotSmartSwitch::actionAction(" << action << ")";
 
@@ -363,17 +372,19 @@ void DeviceSwitchbotSmartSwitch::actionAction(const int action)
         // Magic Number
         cmd.push_back(0x57);
         // Header / Command
-        cmd.push_back(CMD_ACTION);
+        cmd.push_back(DeviceUtilsSwitchBot::CMD_ACTION);
         // Payload...
-        if (action == 0) cmd.push_back(ACT_PUSHPULL);
-        else if (action == 1) cmd.push_back(ACT_ON);
-        else if (action == 2) cmd.push_back(ACT_OFF);
-        else if (action == 3) cmd.push_back(ACT_STOP);
-        else if (action == 4) cmd.push_back(ACT_BACK);
-        else cmd.push_back(ACT_ON); // default?
+        if (action == DeviceUtilsSwitchBot::ACTION_ON) cmd.push_back(DeviceUtilsSwitchBot::BOT_ACT_ON);
+        else if (action == DeviceUtilsSwitchBot::ACTION_OFF) cmd.push_back(DeviceUtilsSwitchBot::BOT_ACT_OFF);
+        else if (action == DeviceUtilsSwitchBot::ACTION_PUSH_PULL) cmd.push_back(DeviceUtilsSwitchBot::BOT_ACT_PUSHPULL);
+        else if (action == DeviceUtilsSwitchBot::ACTION_PUSH_STOP) cmd.push_back(DeviceUtilsSwitchBot::BOT_ACT_STOP);
+        else cmd.push_back(DeviceUtilsSwitchBot::BOT_ACT_BACK); // default?
 
         m_serviceData->writeCharacteristic(m_charTX, cmd,  QLowEnergyService::WriteWithResponse);
+        return true;
     }
+
+    return false;
 }
 
 /* ************************************************************************** */

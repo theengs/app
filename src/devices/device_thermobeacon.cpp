@@ -415,11 +415,13 @@ void DeviceThermoBeacon::parseAdvertisementData(const uint16_t adv_mode,
                                                 const uint16_t adv_id,
                                                 const QByteArray &ba)
 {
-/*
-    qDebug() << "DeviceThermoBeacon::parseAdvertisementData(" << m_deviceAddress
-             << " - " << adv_mode << " - 0x" << adv_id << ")";
-    qDebug() << "DATA (" << ba.size() << "bytes)   >  0x" << ba.toHex();
-*/
+    //qDebug() << "DeviceThermoBeacon::parseAdvertisementData(" << m_deviceAddress
+    //         << " - " << adv_mode << " - 0x" << adv_id << ")";
+    //qDebug() << "DATA (" << ba.size() << "bytes)   >  0x" << ba.toHex();
+
+    Q_UNUSED(adv_mode)
+    Q_UNUSED(adv_id)
+
     // 20 bytes message
     if (ba.size() == 20) return;
 

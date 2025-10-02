@@ -151,8 +151,8 @@ class DeviceTheengs: public DeviceSensor
 
 private:
     // QLowEnergyController related
-    virtual void serviceScanDone();
-    virtual void addLowEnergyService(const QBluetoothUuid &uuid);
+    virtual void serviceScanDone() override;
+    virtual void addLowEnergyService(const QBluetoothUuid &uuid) override;
 
 Q_SIGNALS:
     void genericDataUpdated();
@@ -216,7 +216,7 @@ protected:
     virtual bool getSqlTpmsData(int minutes);
     virtual bool getSqlScaleData(int minutes);
 
-    virtual bool hasData() const;
+    virtual bool hasData() const override;
 
 public:
     DeviceTheengs(const QString &deviceAddr, const QString &deviceName, const QString &deviceModel, QObject *parent = nullptr);
@@ -227,8 +227,8 @@ public:
 
     virtual bool isDataFresh_db() const;
 
-    virtual bool needsUpdateRt() const;
-    virtual bool needsUpdateDb() const;
+    virtual bool needsUpdateRt() const override;
+    virtual bool needsUpdateDb() const override;
 
     // theengs decoder
     virtual void parseTheengsProps(const QString &json);

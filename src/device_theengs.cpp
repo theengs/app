@@ -265,7 +265,7 @@ bool DeviceTheengs::hasData() const
     }
     else if (isActuatorWindow())
     {
-        //
+        //return (m_position >= 0 && m_position <= 100);
     }
     else if (isProbe())
     {

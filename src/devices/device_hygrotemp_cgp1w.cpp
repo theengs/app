@@ -19,7 +19,6 @@
 #include "device_hygrotemp_cgp1w.h"
 
 #include <cstdint>
-#include <cmath>
 
 #include <QBluetoothUuid>
 #include <QLowEnergyService>
@@ -75,11 +74,12 @@ void DeviceHygrotempCGP1W::parseAdvertisementData(const uint16_t adv_mode,
                                                   const uint16_t adv_id,
                                                   const QByteArray &ba)
 {
-/*
-    qDebug() << "DeviceHygrotempCGP1W::parseAdvertisementData(" << m_deviceAddress
-             << " - " << adv_mode << " - 0x" << adv_id << ")";
-    qDebug() << "DATA (" << ba.size() << "bytes)   >  0x" << ba.toHex();
-*/
+    //qDebug() << "DeviceHygrotempCGP1W::parseAdvertisementData(" << m_deviceAddress
+    //         << " - " << adv_mode << " - 0x" << adv_id << ")";
+    //qDebug() << "DATA (" << ba.size() << "bytes)   >  0x" << ba.toHex();
+
+    Q_UNUSED(adv_mode)
+    Q_UNUSED(adv_id)
 
     if (ba.size() >= 21) // Qingping data protocol // 21 bytes messages
     {

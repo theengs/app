@@ -147,8 +147,12 @@ function getDeviceStatusText(deviceStatus) {
 
     if (deviceStatus === DeviceUtils.DeviceUtils.DEVICE_OFFLINE) {
         txt = qsTr("Offline")
+    } else if (deviceStatus === DeviceUtils.DeviceUtils.DEVICE_AVAILABLE) {
+        txt = qsTr("Available")
     } else if (deviceStatus === DeviceUtils.DeviceUtils.DEVICE_QUEUED) {
         txt = qsTr("Queued")
+    } else if (deviceStatus === DeviceUtils.DeviceUtils.DEVICE_DISCONNECTING) {
+        txt = qsTr("Disconnecting...")
     } else if (deviceStatus === DeviceUtils.DeviceUtils.DEVICE_CONNECTING) {
         txt = qsTr("Connecting...")
     } else if (deviceStatus === DeviceUtils.DeviceUtils.DEVICE_CONNECTED) {
@@ -160,7 +164,7 @@ function getDeviceStatusText(deviceStatus) {
     } else if (deviceStatus === DeviceUtils.DeviceUtils.DEVICE_UPDATING_HISTORY) {
         txt = qsTr("Syncing...")
     } else if (deviceStatus === DeviceUtils.DeviceUtils.DEVICE_UPDATING_REALTIME) {
-        txt = qsTr("Realtime data")
+        txt = qsTr("Syncing...")
     }
 
     return txt + " "
@@ -171,9 +175,12 @@ function getDeviceStatusColor(deviceStatus) {
 
     if (deviceStatus === DeviceUtils.DeviceUtils.DEVICE_OFFLINE) {
         clr = ThemeEngine.Theme.colorRed
+    } else if (deviceStatus === DeviceUtils.DeviceUtils.DEVICE_AVAILABLE) {
+        clr = ThemeEngine.Theme.colorGreen
     } else if (deviceStatus === DeviceUtils.DeviceUtils.DEVICE_QUEUED) {
         clr = ThemeEngine.Theme.colorYellow
-    } else if (deviceStatus === DeviceUtils.DeviceUtils.DEVICE_CONNECTING) {
+    } else if (deviceStatus === DeviceUtils.DeviceUtils.DEVICE_DISCONNECTING ||
+               deviceStatus === DeviceUtils.DeviceUtils.DEVICE_CONNECTING) {
         clr = ThemeEngine.Theme.colorYellow
     } else if (deviceStatus === DeviceUtils.DeviceUtils.DEVICE_CONNECTED) {
         clr = ThemeEngine.Theme.colorGreen

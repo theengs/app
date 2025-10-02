@@ -4,6 +4,8 @@ import QtQuick.Controls
 
 import ComponentLibrary
 import DeviceUtils
+import DeviceUtilsTheengs
+import DeviceUtilsSwitchBot
 import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
 
 Loader {
@@ -63,30 +65,13 @@ Loader {
             function onSensorsUpdated() { updateHeader() }
             function onCapabilitiesUpdated() { updateHeader() }
             function onStatusUpdated() { updateHeader() }
-
-            function onDataUpdated() {
-                updateData()
-            }
-            function onRefreshUpdated() {
-                updateData()
-                updateGraph()
-            }
-            function onHistoryUpdated() {
-                updateGraph()
-            }
+            function onSwitchmodeUpdated() { updateHeader() }
         }
 
         Connections {
             target: settingsManager
-            function onTempUnitChanged() {
-                updateData()
-            }
             function onAppLanguageChanged() {
-                updateData()
                 updateStatusText()
-            }
-            function onGraphThermometerChanged() {
-                loadGraph()
             }
         }
 
@@ -217,7 +202,17 @@ Loader {
                     color: Qt.alpha(cccc, 0.1)
                     border.width: 2
                     border.color: Qt.alpha(cccc, 0.33)
-
+/*
+                    Rectangle {
+                        anchors.top: parent.top
+                        anchors.topMargin: 2
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        width: parent.width * 0.1
+                        height: parent.height * 0.3
+                        radius: 4
+                        color: Qt.alpha(cccc, 0.2)
+                    }
+*/
                     IconSvg { // sensorDisconnected
                         width: isMobile ? 96 : 128
                         height: isMobile ? 96 : 128
@@ -239,9 +234,9 @@ Loader {
 
                             text: {
                                 if (currentDevice.deviceModel === "X1") {
-                                    if (currentDevice.mode === "onestate" || currentDevice.switchMode === 0)
+                                    if (currentDevice.mode === "onestate" || currentDevice.switchMode === DeviceUtilsSwitchBot.MODE_PRESS)
                                         return qsTr("Press mode")
-                                    if (currentDevice.mode === "on/off" || currentDevice.switchMode === 1)
+                                    if (currentDevice.mode === "on/off" || currentDevice.switchMode === DeviceUtilsSwitchBot.MODE_SWITCH)
                                         return qsTr("Switch mode")
                                     else
                                         return qsTr("Unknown mode...")
@@ -438,10 +433,10 @@ Loader {
                     id: infoArea
                     anchors.left: parent.left
                     anchors.right: parent.right
-
-                    height: isMobile ? 40 : 48
                     z: 2
-                    visible: true
+
+                    visible: false
+                    height: visible ? (isMobile ? 40 : 48) : 0
                     color: Theme.colorForeground
 
                     RowLayout {
@@ -472,7 +467,7 @@ Loader {
                     anchors.rightMargin: 16 + (singleColumn ? 0 : parent.width * 0.5)
                     spacing: 16
 
-                    opacity: currentDevice.connected ? 1 : 0.33
+                    //opacity: currentDevice.connected ? 1 : 0.33
                     enabled: currentDevice.connected
 
                     ////////
@@ -501,9 +496,9 @@ Loader {
 
                         textFormat: Text.PlainText
                         text: {
-                            if (currentDevice && currentDevice.switchMode === 0)
+                            if (currentDevice && currentDevice.switchMode === DeviceUtilsSwitchBot.MODE_PRESS)
                                 return qsTr("In Press Mode, your Bot will press your switch.")
-                            if (currentDevice && currentDevice.switchMode === 1)
+                            if (currentDevice && currentDevice.switchMode === DeviceUtilsSwitchBot.MODE_SWITCH)
                                 return qsTr("In Switch Mode, your Bot will press and pull your on/off switch.")
                             return ""
                         }
@@ -548,63 +543,77 @@ Loader {
                     SwitchThemed {
                         width: parent.width
                         LayoutMirroring.enabled: true
+                        visible: (currentDevice.switchMode === DeviceUtilsSwitchBot.MODE_SWITCH)
 
                         text: qsTr("Reverse ON/OFF Directions")
                         checked: currentDevice.switchInverted
                         onClicked: currentDevice.switchInverted = checked
                     }
 
-                    ListSeparator { }
+                    ListSeparator { visible: (currentDevice.switchMode === DeviceUtilsSwitchBot.MODE_SWITCH) }
 
                     ////////
 
                     RoundButtonClear {
                         anchors.horizontalCenter: parent.horizontalCenter
-                        width: 96; height: 96;
-                        visible: (currentDevice.switchMode === 0)
+                        width: 128; height: 128;
 
+                        visible: (currentDevice.switchMode === DeviceUtilsSwitchBot.MODE_PRESS)
                         color: Theme.colorGrey
+
                         text: qsTr("Press")
-                        onClicked: currentDevice.actionAction(0)
+                        source: "qrc:/IconLibrary/material-icons/duotone/touch_app.svg"
+                        onClicked: currentDevice.actionAction(DeviceUtilsSwitchBot.ACTION_PUSH_PULL)
                     }
 
                     ////////
 
                     Row {
                         anchors.horizontalCenter: parent.horizontalCenter
-                        visible: (currentDevice.switchMode === 1)
+                        visible: (currentDevice.switchMode === DeviceUtilsSwitchBot.MODE_SWITCH)
                         spacing: 16
 
                         RoundButtonClear {
-                            width: 80; height: 80;
-                            text: qsTr("On")
-                            onClicked: currentDevice.actionAction(1)
+                            width: 112; height: 112;
+                            color: Theme.colorGrey
+
+                            text: qsTr("ON")
+                            onClicked: currentDevice.actionAction(DeviceUtilsSwitchBot.ACTION_ON)
                         }
 
                         RoundButtonClear {
-                            width: 80; height: 80;
-                            text: qsTr("Off")
-                            onClicked: currentDevice.actionAction(2)
+                            width: 112; height: 112;
+                            color: Theme.colorGrey
+
+                            text: qsTr("OFF")
+                            onClicked: currentDevice.actionAction(DeviceUtilsSwitchBot.ACTION_OFF)
                         }
                     }
 
                     ////////
 
-                    Column {
-                        spacing: 4
-                        opacity: 0.66
+                    Loader {
+                        active: utilsApp.isDebugBuild()
+                        asynchronous: true
+                        sourceComponent: Column {
+                            spacing: 4
 
-                        Text {
-                            text: "battery: " + currentDevice.deviceBattery
-                        }
-                        Text {
-                            text: "firmware: " + currentDevice.deviceFirmware
-                        }
-                        Text {
-                            text: "mode: " + currentDevice.switchMode
-                        }
-                        Text {
-                            text: "hold time: " + currentDevice.switchTime
+                            Text {
+                                text: "battery: " + currentDevice.deviceBattery
+                                color: Theme.colorSubText
+                            }
+                            Text {
+                                text: "firmware: " + currentDevice.deviceFirmware
+                                color: Theme.colorSubText
+                            }
+                            Text {
+                                text: "mode: " + currentDevice.switchMode
+                                color: Theme.colorSubText
+                            }
+                            Text {
+                                text: "hold time: " + currentDevice.switchTime
+                                color: Theme.colorSubText
+                            }
                         }
                     }
 

@@ -3,7 +3,6 @@ import QtQuick.Controls
 import QtQuick.Window
 
 import ComponentLibrary
-import DeviceUtils
 
 ApplicationWindow {
     id: appWindow
