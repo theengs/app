@@ -257,6 +257,98 @@ Item {
                 }
             }
 
+            ListSeparator { }
+
+            ////////
+
+            Loader { // list debug info
+                active: utilsApp.isDebugBuild()
+                asynchronous: true
+                sourceComponent: Item {
+                    anchors.left: parent.left
+                    anchors.leftMargin: Theme.componentMargin
+                    anchors.right: parent.right
+                    anchors.rightMargin: Theme.componentMargin
+                    height: 32 + debugColumn.height
+
+                    IconSvg {
+                        anchors.top: debugColumn.top
+                        anchors.topMargin: 0
+                        anchors.left: parent.left
+                        anchors.leftMargin: 4
+                        width: 24
+                        height: 24
+
+                        source: "qrc:/IconLibrary/material-symbols/info.svg"
+                        color: Theme.colorSubText
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onPressAndHold: {
+                            var txt = ""
+                            txt += "App name: %1".arg(utilsApp.appName()) + "\n"
+                            txt += "App version: %1".arg(utilsApp.appVersion()) + "\n"
+                            txt += "Build mode: %1".arg(utilsApp.appBuildModeFull()) + "\n"
+                            txt += "Build architecture: %1".arg(utilsApp.qtArchitecture()) + "\n"
+                            txt += "Build date: %1".arg(utilsApp.appBuildDateTime()) + "\n"
+                            txt += "Qt version: %1".arg(utilsApp.qtVersion()) + "\n"
+                            utilsClipboard.setText(txt)
+                        }
+                    }
+
+                    Column {
+                        id: debugColumn
+                        anchors.left: parent.left
+                        anchors.leftMargin: appHeader.headerPosition - parent.anchors.leftMargin
+                        anchors.right: parent.right
+                        anchors.rightMargin: 8
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        spacing: Theme.componentMargin * 0.33
+
+                        Text {
+                            color: Theme.colorSubText
+                            text: "App name: %1".arg(utilsApp.appName())
+                            textFormat: Text.PlainText
+                            font.pixelSize: Theme.fontSizeContent
+                        }
+                        Text {
+                            color: Theme.colorSubText
+                            text: "App version: %1".arg(utilsApp.appVersion())
+                            textFormat: Text.PlainText
+                            font.pixelSize: Theme.fontSizeContent
+                        }
+                        Text {
+                            color: Theme.colorSubText
+                            text: "Build mode: %1".arg(utilsApp.appBuildModeFull())
+                            textFormat: Text.PlainText
+                            font.pixelSize: Theme.fontSizeContent
+                        }
+                        Text {
+                            color: Theme.colorSubText
+                            text: "Build architecture: %1".arg(utilsApp.qtArchitecture())
+                            textFormat: Text.PlainText
+                            font.pixelSize: Theme.fontSizeContent
+                        }
+                        Text {
+                            color: Theme.colorSubText
+                            text: "Build date: %1".arg(utilsApp.appBuildDateTime())
+                            textFormat: Text.PlainText
+                            font.pixelSize: Theme.fontSizeContent
+                        }
+                        Text {
+                            color: Theme.colorSubText
+                            text: "Qt version: %1".arg(utilsApp.qtVersion())
+                            textFormat: Text.PlainText
+                            font.pixelSize: Theme.fontSizeContent
+                        }
+                    }
+                }
+            }
+
+            ListSeparator { visible: utilsApp.isDebugBuild() }
+
             ////////
         }
     }
