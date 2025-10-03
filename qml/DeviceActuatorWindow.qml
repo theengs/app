@@ -107,7 +107,7 @@ Loader {
         ////////
 
         function loadDevice() {
-            //console.log("deviceActuator // loadDevice() >> " + currentDevice)
+            //console.log("deviceActuatorWindow // loadDevice() >> " + currentDevice)
 
             loadGraph()
             updateHeader()
@@ -117,7 +117,7 @@ Loader {
         function updateHeader() {
             if (typeof currentDevice === "undefined" || !currentDevice) return
             if (!currentDevice.isActuatorWindow) return
-            //console.log("deviceActuator // updateHeader() >> " + currentDevice)
+            //console.log("deviceActuatorWindow // updateHeader() >> " + currentDevice)
 
             updateStatusText()
         }
@@ -125,13 +125,13 @@ Loader {
         function updateData() {
             if (typeof currentDevice === "undefined" || !currentDevice) return
             if (!currentDevice.isActuatorWindow) return
-            //console.log("deviceActuator // updateData() >> " + currentDevice)
+            //console.log("deviceActuatorWindow // updateData() >> " + currentDevice)
         }
 
         function updateStatusText() {
             if (typeof currentDevice === "undefined" || !currentDevice) return
             if (!currentDevice.isActuatorWindow) return
-            //console.log("deviceActuator // updateStatusText() >> " + currentDevice)
+            //console.log("deviceActuatorWindow // updateStatusText() >> " + currentDevice)
 
             textStatus.text = UtilsDeviceSensors.getDeviceStatusText(currentDevice.status)
         }
@@ -188,18 +188,22 @@ Loader {
                 color: Theme.colorHeader
                 z: 5
 
-                MouseArea { anchors.fill: parent } // prevent clicks below this area
+                //MouseArea { anchors.fill: parent } // prevent clicks below this area
+
+                ////////
 
                 Item { // square indicator (mimic a window)
-                    width: singleColumn ? actuatorBox.height * 0.75 : actuatorBox.width * 0.66
+                    width: singleColumn ? actuatorBox.height * 0.85 : actuatorBox.width * 0.75
                     height: width
 
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    anchors.verticalCenterOffset: -(appHeader.height / 3)
+                    anchors.verticalCenterOffset: -(appHeader.height * 0.5)
+
+                    ////
 
                     Rectangle {
-                        id: indicator
+                        id: indicatorBackground
                         anchors.fill: parent
                         anchors.margins: 12
 
@@ -219,10 +223,12 @@ Loader {
 
                             radius: 2
                             opacity: 0.33
-                            width: (indicator.width-4) * (currentDevice.position/100.0)
+                            width: (indicatorBackground.width-4) * (currentDevice.position/100.0)
                             color: Theme.colorPrimary
                         }
                     }
+
+                    ////
 
                     IconSvg { // sensorDisconnected
                         width: isMobile ? 96 : 128
@@ -234,12 +240,14 @@ Loader {
                         color: cccc
                     }
 
+                    ////
+
                     Column {
                         anchors.centerIn: parent
 
                         visible: (currentDevice.available || currentDevice.connected) // currentDevice.hasData
                         spacing: 0
-
+/*
                         Text { // legend
                             anchors.horizontalCenter: parent.horizontalCenter
 
@@ -270,7 +278,7 @@ Loader {
                             color: cccc
                             opacity: 1
                         }
-
+*/
                         Item {
                             width: 12
                             height: 12
@@ -296,18 +304,32 @@ Loader {
                             }
                         }
 
-                        IconSvg {
+                        Row {
                             anchors.horizontalCenter: parent.horizontalCenter
-                            width: 30
-                            height: 32
 
-                            visible: (currentDevice.hasBattery && currentDevice.deviceBattery >= 0)
-                            source: UtilsDeviceSensors.getDeviceBatteryIcon(currentDevice.deviceBattery)
-                            color: cccc
-                            rotation: 90
-                            fillMode: Image.PreserveAspectCrop
+                            IconSvg {
+                                width: 30
+                                height: 32
+
+                                visible: (currentDevice.hasBattery && currentDevice.deviceBattery >= 0)
+                                source: UtilsDeviceSensors.getDeviceBatteryIcon(currentDevice.deviceBattery)
+                                color: cccc
+                                rotation: 90
+                                fillMode: Image.PreserveAspectCrop
+                            }
+                            IconSvg {
+                                width: 24
+                                height: 24
+
+                                visible: (currentDevice.solar)
+                                source: "qrc:/assets/icons_material/solar_power.svg"
+                                color: cccc
+                                fillMode: Image.PreserveAspectCrop
+                            }
                         }
                     }
+
+                    ////
                 }
 
                 ////////
@@ -562,7 +584,7 @@ Loader {
                                     source: "qrc:/IconLibrary/material-symbols/media/pause-fill.svg"
                                     onClicked: {
                                         if (currentDevice.actionAction(DeviceUtilsSwitchBot.ACTION_STOP)) {
-                                            actionSlider_curtain.value = currentDevice.position
+                                            //actionSlider_curtain.value = currentDevice.position
                                         }
                                     }
                                 }
@@ -747,6 +769,10 @@ Loader {
                             }
                             Text {
                                 text: "open: " + currentDevice.open
+                                color: Theme.colorSubText
+                            }
+                            Text {
+                                text: "solar panel: " + currentDevice.solar
                                 color: Theme.colorSubText
                             }
                             Text {

@@ -333,7 +333,7 @@ Item {
             anchors.rightMargin: halfmargin
 
             topPadding: listWidget ? 16 : 16
-            bottomPadding: listWidget ? 1 : halfmargin
+            bottomPadding: (listWidget ? 1 : halfmargin) + (buttonRow.visible ? buttonRow.height*1.66 : 0)
             spacing: listWidget ? 0 : halfmargin
 
             ////////
@@ -421,6 +421,7 @@ Item {
     ////////
 
     Row {
+        id: buttonRow
         anchors.right: parent.right
         anchors.rightMargin: 12
         anchors.bottom: parent.bottom

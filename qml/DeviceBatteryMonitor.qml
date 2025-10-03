@@ -246,7 +246,7 @@ Loader {
                 color: Theme.colorHeader
                 z: 5
 
-                MouseArea { anchors.fill: parent } // prevent clicks below this area
+                //MouseArea { anchors.fill: parent } // prevent clicks below this area
 
                 ////////
 

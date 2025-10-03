@@ -189,7 +189,9 @@ Loader {
                 color: Theme.colorHeader
                 z: 5
 
-                MouseArea { anchors.fill: parent } // prevent clicks below this area
+                //MouseArea { anchors.fill: parent } // prevent clicks below this area
+
+                ////////
 
                 Rectangle { // rectangle indicator // mimic switchbot s1
                     anchors.horizontalCenter: parent.horizontalCenter
