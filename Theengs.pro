@@ -12,7 +12,7 @@ DEFINES += ENABLE_MQTT
 QT      += mqtt
 
 # Validate Qt version
-!versionAtLeast(QT_VERSION, 6.6) : error("You need at least Qt version 6.6 for $${TARGET}")
+!versionAtLeast(QT_VERSION, 6.7) : error("You need at least Qt version 6.7 for $${TARGET}")
 
 # Project features #############################################################
 

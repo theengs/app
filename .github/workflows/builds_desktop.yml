@@ -50,7 +50,8 @@ jobs:
       - name: Build dependencies (from contribs script)
         run: |
              cd contribs/
-             python3 contribs_builder.py --targets=linux --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
+             python3 contribs_builder_qt.py --targets=linux --software qtmqtt --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
+             python3 contribs_builder.py --targets=linux --software mbedtls --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
              cd ..
 
       # Setup env
@@ -109,7 +110,8 @@ jobs:
       - name: Build dependencies (from contribs script)
         run: |
              cd contribs/
-             python3 contribs_builder.py --targets=macos --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
+             python3 contribs_builder_qt.py --targets=macos --software qtmqtt --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
+             python3 contribs_builder.py --targets=macos --software mbedtls --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
              cd ..
 
       # Setup env
@@ -172,7 +174,7 @@ jobs:
       - name: Build dependencies (from contribs script)
         run: |
              cd contribs/
-             python3 contribs_builder.py --targets=msvc2022 --software qtmqtt,qtconnectivity --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
+             python3 contribs_builder.py --targets=msvc2022 --software qtmqtt --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
              cd ..
 
       # Setup env

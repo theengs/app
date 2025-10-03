@@ -30,8 +30,8 @@ import urllib.request
 ## WELCOME #####################################################################
 
 print("")
-print("> Theengs contribs builder script")
-print("> Make sure you consult ./contribs_builder.py --help")
+print("> Qt contribs builder script")
+print("> Make sure you consult ./contribs_builder_qt.py --help")
 print("")
 
 targets = ['linux', 'linux_x86_64', 'linux_arm64',
@@ -40,7 +40,9 @@ targets = ['linux', 'linux_x86_64', 'linux_arm64',
            'android_armv8', 'android_armv7', 'android_x86_64', 'android_x86',
            'ios', 'ios_simulator']
 
-softwares = ['mbedtls']
+softwares = ['qtmqtt', 'qtconnectivity',
+             'maplibre-plugin', 'maplibre-plugin-bin',
+             'avif-plugin', 'heic-plugin', 'jpegxl-plugin']
 
 print("> targets available:")
 print(str(targets))
@@ -50,6 +52,9 @@ print(str(softwares))
 
 ## DEPENDENCIES ################################################################
 # These software dependencies are needed for this script to run!
+
+## Qt module(s) 
+# qtwebsocket (for qtmqtt)
 
 ## linux:
 # python3 cmake ninja libtool automake m4
@@ -292,16 +297,97 @@ for TARGET in TARGETS:
 
 ## DOWNLOAD SOFTWARES ##########################################################
 
-## mbedTLS (version: 3.6.4)
-NAME_mbedtls = "mbedTLS"
-VERSION_mbedtls = "3.6.4"
-FILE_mbedtls = "mbedtls-" + VERSION_mbedtls + "-easy-make-lib.tar.bz2"
-DIR_mbedtls = "mbedtls-" + VERSION_mbedtls
+## QtMqtt (version: QT_VERSION)
+NAME_qtmqtt = "QtMqtt"
+FILE_qtmqtt = "qtmqtt-" + QT_VERSION + ".zip"
+DIR_qtmqtt = "qtmqtt-" + QT_VERSION
 
-if "mbedtls" in softwares_selected:
-    if not os.path.exists(src_dir + FILE_mbedtls):
-        print("> Downloading " + FILE_mbedtls + "...")
-        urllib.request.urlretrieve("https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-" + VERSION_mbedtls + "/" + FILE_mbedtls, src_dir + FILE_mbedtls)
+if "qtmqtt" in softwares_selected:
+    if not os.path.exists(src_dir + FILE_qtmqtt):
+        print("> Downloading " + FILE_qtmqtt + "...")
+        urllib.request.urlretrieve("https://github.com/qt/qtmqtt/archive/refs/tags/v" + QT_VERSION + ".zip", src_dir + FILE_qtmqtt)
+
+## QtConnectivity with Android patch (version: QT_VERSION+patch)
+for TARGET in TARGETS:
+    if TARGET[0] == "android":
+        NAME_qtconnectivity = "QtConnectivity"
+        FILE_qtconnectivity = "qtconnectivity-blescanfiltering_v1_" + QT_VERSION.replace('.', '') + ".zip"
+        DIR_qtconnectivity = "qtconnectivity-blescanfiltering_v1_" + QT_VERSION.replace('.', '')
+
+        if "qtconnectivity" in softwares_selected:
+            if not os.path.exists(src_dir + FILE_qtconnectivity):
+                print("> Downloading " + FILE_qtconnectivity + "...")
+                urllib.request.urlretrieve("https://github.com/emericg/qtconnectivity/archive/refs/heads/blescanfiltering_v1_" + QT_VERSION.replace('.','') + ".zip", src_dir + FILE_qtconnectivity)
+
+## maplibre-native-qt (version: git)
+NAME_maplibre = "maplibre-native-qt"
+DIR_maplibre = "maplibre-native-qt"
+URL_maplibre = "https://github.com/maplibre/maplibre-native-qt.git"
+
+if "maplibre-plugin" in softwares_selected:
+    if not os.path.exists(src_dir + DIR_maplibre):
+        print("> Cloning " + NAME_maplibre + "...")
+        subprocess.check_call(["git", "clone", "--recurse-submodules", URL_maplibre], cwd=src_dir)
+    else:
+        print("> Updating " + NAME_maplibre + "...")
+        subprocess.check_call(["git", "submodule", "update", "--init", "--recursive"], cwd=src_dir + DIR_maplibre)
+
+## maplibre-native-qt (version: BINARY)
+DIR_maplibre_bin = ""
+FILE_maplibre_bin = ""
+MaplibreVersion = "3.0.0"
+MaplibreQtVersion = "6.7.3"
+URL_maplibre_bin = "https://emeric.io/CI/maplibre/"
+#URL_maplibre_bin = "https://github.com/maplibre/maplibre-native-qt/releases/download/v" + MaplibreVersion + "/"
+
+if "maplibre-plugin-bin" in softwares_selected:
+    if "linux" in targets_selected: FILE_maplibre_bin ="maplibre-native-qt_v" + MaplibreVersion + "_Qt" + MaplibreQtVersion + "_Linux.tar.bz2"
+    if "macos" in targets_selected: FILE_maplibre_bin = "maplibre-native-qt_v" + MaplibreVersion + "_Qt" + MaplibreQtVersion + "_macOS.tar.bz2"
+    if "msvc2019" in targets_selected: FILE_maplibre_bin = "maplibre-native-qt_v" + MaplibreVersion + "_Qt" + MaplibreQtVersion + "_Windows.tar.bz2"
+    if "msvc2022" in targets_selected: FILE_maplibre_bin = "maplibre-native-qt_v" + MaplibreVersion + "_Qt" + MaplibreQtVersion + "_Windows.tar.bz2"
+
+    if "android" in targets_selected: FILE_maplibre_bin = "maplibre-native-qt_v" + MaplibreVersion + "_Qt" + MaplibreQtVersion + "_Android.tar.bz2"
+    if "ios" in targets_selected: FILE_maplibre_bin = "maplibre-native-qt_v" + MaplibreVersion + "_Qt" + MaplibreQtVersion + "_iOS.tar.bz2"
+
+    URL_maplibre_bin = URL_maplibre_bin + FILE_maplibre_bin
+    DIR_maplibre_bin = FILE_maplibre_bin[:-8] # remove ".tar.bz2" extension
+
+    if not os.path.exists(src_dir + FILE_maplibre_bin):
+        print("> Downloading " + URL_maplibre_bin + "...")
+        urllib.request.urlretrieve(URL_maplibre_bin, src_dir + FILE_maplibre_bin)
+
+## avif-plugin (version: 0.8.6)
+DIR_avif = "avif"
+FILE_libavif = "libavif-v1.1.1.zip"
+FILE_avifplugin = "avifplugin-v0.8.6.zip"
+
+if "avif-plugin" in softwares_selected:
+    if not os.path.exists(src_dir + FILE_libavif):
+        print("> Downloading " + FILE_libavif + "...")
+        urllib.request.urlretrieve("https://github.com/AOMediaCodec/libavif/archive/refs/tags/v1.1.1.zip", src_dir + FILE_libavif)
+        urllib.request.urlretrieve("https://github.com/novomesk/qt-avif-image-plugin/archive/refs/tags/v0.8.6.zip", src_dir + FILE_avifplugin)
+
+## heic-plugin (version: 0.4.3)
+DIR_heif = "heif"
+FILE_libheif = "libheif-v1.19.5.zip"
+FILE_heicplugin = "heicplugin-v0.4.3.zip"
+
+if "heic-plugin" in softwares_selected:
+    if not os.path.exists(src_dir + FILE_libheif):
+        print("> Downloading " + FILE_libheif + "...")
+        urllib.request.urlretrieve("https://github.com/strukturag/libheif/archive/refs/tags/v1.19.5.zip", src_dir + FILE_libheif)
+        urllib.request.urlretrieve("https://github.com/novomesk/qt-heic-image-plugin/archive/refs/tags/v0.4.3.zip", src_dir + FILE_heicplugin)
+
+## jpegxl-plugin (version: 0.6.5)
+DIR_jpegxl = "jpegxl"
+FILE_libjxl = "libjxl-v0.11.1.zip"
+FILE_jpegxlplugin = "jpegxlplugin-v0.6.5.zip"
+
+if "jpegxl-plugin" in softwares_selected:
+    if not os.path.exists(src_dir + FILE_libjxl):
+        print("> Downloading " + FILE_libjxl + "...")
+        urllib.request.urlretrieve("https://github.com/libjxl/libjxl/archive/refs/tags/v0.11.1.zip", src_dir + FILE_libjxl)
+        urllib.request.urlretrieve("https://github.com/novomesk/qt-jpegxl-image-plugin/archive/refs/tags/v0.6.5.zip", src_dir + FILE_jpegxlplugin)
 
 ## BUILD SOFTWARES #############################################################
 
@@ -414,18 +500,85 @@ for TARGET in TARGETS:
 
     #### EXTRACT, BUILD & INSTALL ####
 
-    ## mbedTLS
-    if "mbedtls" in softwares_selected:
-        if not os.path.isdir(build_dir + DIR_mbedtls):
-            zipMBTLS = tarfile.open(src_dir + FILE_mbedtls)
-            zipMBTLS.extractall(build_dir)
+    ## QtMqtt
+    if "qtmqtt" in softwares_selected:
+        if not os.path.isdir(build_dir + DIR_qtmqtt):
+            zipQtM = zipfile.ZipFile(src_dir + FILE_qtmqtt)
+            zipQtM.extractall(build_dir)
 
-        try: os.makedirs(build_dir + DIR_mbedtls + "/build")
+        try: os.makedirs(build_dir + DIR_qtmqtt + "/build")
         except: print() # who cares
 
-        print("> Building mbedTLS")
-        subprocess.check_call(CMAKE_cmd + ["-G", CMAKE_gen, "-DCMAKE_BUILD_TYPE=Release", "-DUSE_SHARED_MBEDTLS_LIBRARY=On", "-DENABLE_TESTING=Off", "-DCMAKE_INSTALL_PREFIX=" + env_dir + "/usr", ".."], cwd=build_dir + DIR_mbedtls + "/build")
-        subprocess.check_call(["cmake", "--build", ".", "--target", "all"], cwd=build_dir + DIR_mbedtls + "/build")
-        #subprocess.check_call(["cmake", "--install", "."], cwd=build_dir + DIR_mbedtls + "/build")
-        subprocess.check_call(["ninja", "install"], cwd=build_dir + DIR_mbedtls + "/build") # Qt BUG 91647
+        print("> Building QtMqtt")
+        subprocess.check_call([QT_CONF_MODULE_cmd, ".."], cwd=build_dir + DIR_qtmqtt + "/build")
+        subprocess.check_call(["cmake", "--build", ".", "--target", "all"], cwd=build_dir + DIR_qtmqtt + "/build")
+        #subprocess.check_call(["cmake", "--install", "."], cwd=build_dir + DIR_qtmqtt + "/build")
+        subprocess.check_call(["ninja", "install"], cwd=build_dir + DIR_qtmqtt + "/build") # Qt BUG 91647
 
+    ## QtConnectivity (with Android patch)
+    if "qtconnectivity" in softwares_selected:
+        if OS_TARGET == "android":
+            if not os.path.isdir(build_dir + DIR_qtconnectivity):
+                zipQtC = zipfile.ZipFile(src_dir + FILE_qtconnectivity)
+                zipQtC.extractall(build_dir)
+
+            try: os.makedirs(build_dir + DIR_qtconnectivity + "/build")
+            except: print() # who cares
+
+            print("> Building QtConnectivity")
+            subprocess.check_call([QT_CONF_MODULE_cmd, ".."], cwd=build_dir + DIR_qtconnectivity + "/build")
+            subprocess.check_call(["cmake", "--build", ".", "--target", "all"], cwd=build_dir + DIR_qtconnectivity + "/build")
+            #subprocess.check_call(["cmake", "--install", "."], cwd=build_dir + DIR_qtconnectivity + "/build")
+            subprocess.check_call(["ninja", "install"], cwd=build_dir + DIR_qtconnectivity + "/build") # Qt BUG 91647
+
+    ## maplibre-native-qt (build)
+    if "maplibre-plugin" in softwares_selected:
+        try: os.makedirs(build_dir + DIR_maplibre + "/build")
+        except: print() # who cares
+        try: os.makedirs(build_dir + DIR_maplibre + "/install")
+        except: print() # who cares
+
+        pathToQtInstall = qt6_dir
+        #pathToQtInstall = build_dir + DIR_maplibre + "/install" # test
+
+        print("> Building maplibre-native-qt")
+        subprocess.check_call(CMAKE_qt_cmd + [src_dir + DIR_maplibre, "-GNinja", "-DCMAKE_BUILD_TYPE=Release", "-DMLN_QT_WITH_INTERNAL_ICU=ON", "-DCMAKE_INSTALL_PREFIX=" + pathToQtInstall], cwd=build_dir + DIR_maplibre + "/build")
+        subprocess.check_call(["ninja"], cwd=build_dir + DIR_maplibre + "/build")
+        subprocess.check_call(["ninja", "install"], cwd=build_dir + DIR_maplibre + "/build")
+
+    ## maplibre-native-qt (install)
+    if "maplibre-plugin-bin" in softwares_selected:
+
+        pathToQtInstall = qt6_dir
+        #pathToQtInstall = build_dir + DIR_maplibre_bin + "/install" # test
+
+        if not os.path.isdir(build_dir + DIR_maplibre_bin):
+            print("> Extracting maplibre-plugin-bin > to directory > " + build_dir)
+            tarMLQt = tarfile.open(src_dir + FILE_maplibre_bin)
+            tarMLQt.extractall(build_dir)
+
+        if os.path.isdir(build_dir + DIR_maplibre_bin):
+            #if "linux" in targets_selected: # lib64 dir hack
+            #    shutil.copytree(build_dir + DIR_maplibre_bin + "/lib64", build_dir + DIR_maplibre_bin + "/lib")
+
+            print("> Installing maplibre-plugin-bin > to directory > " + pathToQtInstall)
+            shutil.copytree(build_dir + DIR_maplibre_bin, pathToQtInstall, dirs_exist_ok=True)
+            shutil.rmtree(build_dir + DIR_maplibre_bin)
+
+    ## avif-plugin
+    #if "avif-plugin" in softwares_selected:
+    #    if not os.path.isdir(build_dir + DIR_libavif):
+    #        zipAVIF = zipfile.ZipFile(src_dir + FILE_libavif)
+    #        zipAVIF.extractall(build_dir)
+    #    try: os.makedirs(build_dir + DIR_avif + "/build")
+    #    except: print() # who cares
+
+    ## heic-plugin
+    #if "heic-plugin" in softwares_selected:
+    #    try: os.makedirs(build_dir + DIR_heif + "/build")
+    #    except: print() # who cares
+
+    ## jpegxl-plugin
+    #if "jpegxl-plugin" in softwares_selected:
+    #    try: os.makedirs(build_dir + DIR_jpegxl + "/build")
+    #    except: print() # who cares
