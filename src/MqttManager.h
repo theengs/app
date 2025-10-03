@@ -25,7 +25,9 @@
 #include <QVariant>
 #include <QList>
 
+#if defined(ENABLE_MQTT)
 #include <QtMqtt/QtMqtt>
+#endif
 
 /* ************************************************************************** */
 
@@ -97,7 +99,9 @@ class MqttManager: public QObject
 
     Q_PROPERTY(QVariant brokersAvailable READ getBrokersAvailable NOTIFY brokersUpdated)
 
+#if defined(ENABLE_MQTT)
     QMqttClient *m_mqttclient = nullptr;
+#endif
 
     QString m_mqttLog; // DEBUG
 
@@ -116,7 +120,7 @@ Q_SIGNALS:
     void connected();
 
 private slots:
-    void handleMessage(const QMqttMessage &qmsg);
+    void handleMessage(/*const QMqttMessage &qmsg*/);
     void updateStateChange();
     void brokerConnected();
     void brokerDisconnected();
@@ -133,7 +137,8 @@ public:
     bool publishData(QString topic, QString str);
     bool subscribe(QString topic);
 
-    bool getStatus() const { return (m_mqttclient && m_mqttclient->state() == QMqttClient::Connected); }
+    bool getStatus() const;
+
     QString getLog() const { return m_mqttLog; }
 };
 

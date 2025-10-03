@@ -7,7 +7,9 @@ DEFINES+= APP_VERSION=\\\"$$VERSION\\\"
 CONFIG += c++17
 QT     += core bluetooth sql
 QT     += qml quick quickcontrols2 svg widgets charts
-QT     += mqtt
+
+DEFINES += ENABLE_MQTT
+QT      += mqtt
 
 # Validate Qt version
 !versionAtLeast(QT_VERSION, 6.6) : error("You need at least Qt version 6.6 for $${TARGET}")
@@ -17,7 +19,7 @@ QT     += mqtt
 # Use Qt Quick compiler
 ios | android { CONFIG += qtquickcompiler }
 
-#
+# Windows math
 win32 { DEFINES += _USE_MATH_DEFINES }
 
 # Force patched Qt Connectivity for Android Bluetooth background daemon

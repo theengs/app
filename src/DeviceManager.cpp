@@ -43,8 +43,9 @@
 #include <thread>
 #include <chrono>
 
-#include <QList>
+#include <QGuiApplication>
 #include <QDateTime>
+#include <QList>
 #include <QDebug>
 
 #include <QBluetoothLocalDevice>
@@ -57,7 +58,6 @@
 
 #if defined(Q_OS_MACOS) || defined(Q_OS_IOS) || defined(Q_OS_ANDROID)
 #if QT_CONFIG(permissions)
-#include <QGuiApplication>
 #include <QPermissions>
 #endif
 #endif
