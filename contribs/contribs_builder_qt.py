@@ -134,7 +134,7 @@ QT_DIRECTORY = ""
 if os.getenv('QT_DIRECTORY', ''):
     # try autodetection
     QT_DIRECTORY = os.getenv('QT_DIRECTORY', '')
-else if os.getenv('QT_ROOT_DIR', ''):
+elif os.getenv('QT_ROOT_DIR', ''):
     # HACK # from GitHub jurplel/install-qt-action
     QT_DIRECTORY = os.getenv('QT_ROOT_DIR', '') + "/../../"
 
