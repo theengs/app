@@ -247,7 +247,8 @@ void DeviceFlowerCare::serviceDetailsDiscovered_data(QLowEnergyService::ServiceS
                 // Make the LED blink
                 serviceData->writeCharacteristic(chl, QByteArray::fromHex("FDFF"), QLowEnergyService::WriteWithoutResponse);
 
-                m_bleController->disconnectFromDevice();
+                // Disconnect
+                deviceDisconnect();
             }
             else
             {
@@ -494,7 +495,7 @@ void DeviceFlowerCare::bleReadDone(const QLowEnergyCharacteristic &c, const QByt
             if (m_history_entryIndex < 0)
             {
                 // abort sync?
-                m_bleController->disconnectFromDevice();
+                deviceDisconnect();
                 return;
             }
 
@@ -550,7 +551,7 @@ void DeviceFlowerCare::bleReadDone(const QLowEnergyCharacteristic &c, const QByt
             {
                 // Finish it
                 refreshHistoryFinished(true);
-                m_bleController->disconnectFromDevice();
+                deviceDisconnect();
                 return;
             }
         }
@@ -600,7 +601,7 @@ void DeviceFlowerCare::bleReadDone(const QLowEnergyCharacteristic &c, const QByt
                                                 m_temperature, -99.f, m_luminosityLux);
 
                 refreshDataFinished(status);
-                m_bleController->disconnectFromDevice();
+                deviceDisconnect();
             }
 /*
             qDebug() << "* DeviceFlowerCare update:" << getAddress();

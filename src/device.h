@@ -117,11 +117,11 @@ class Device: public QObject
     Q_PROPERTY(bool updating READ isUpdating NOTIFY statusUpdated)
     Q_PROPERTY(bool errored READ isErrored NOTIFY statusUpdated)
 
-    Q_PROPERTY(int lastUpdateMin READ getLastUpdateInt NOTIFY statusUpdated)
-    Q_PROPERTY(QString lastUpdateStr READ getLastUpdateString NOTIFY statusUpdated)
-    Q_PROPERTY(QDateTime lastUpdate READ getLastUpdate NOTIFY statusUpdated)
-    Q_PROPERTY(QDateTime lastHistorySync READ getLastHistorySync NOTIFY statusUpdated)
-    Q_PROPERTY(QDateTime deviceUptime READ getDeviceUptime NOTIFY statusUpdated)
+    Q_PROPERTY(int lastUpdateMin READ getLastUpdateInt NOTIFY lastUpdated)
+    Q_PROPERTY(QString lastUpdateStr READ getLastUpdateString NOTIFY lastUpdated)
+    Q_PROPERTY(QDateTime lastUpdate READ getLastUpdate NOTIFY lastUpdated)
+    Q_PROPERTY(QDateTime lastHistorySync READ getLastHistorySync NOTIFY lastUpdated)
+    Q_PROPERTY(QDateTime deviceUptime READ getDeviceUptime NOTIFY uptimeUpdated)
 
     // UI state(s)
     Q_PROPERTY(bool selected READ isSelected WRITE setSelected NOTIFY selectionUpdated)
@@ -150,6 +150,8 @@ Q_SIGNALS:
     void batteryUpdated();
     void statusUpdated();
     void actionUpdated();
+    void uptimeUpdated();
+    void lastUpdated();
     void dataUpdated();
     void dataAvailableUpdated();
     void advertisementUpdated();

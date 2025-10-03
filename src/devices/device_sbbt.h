@@ -35,7 +35,7 @@
 
 /*!
  * Switchbot Blind Tilt alias "SBBT" alias "W270160X"
- * BLE name: empty, or sometimes "" (after pairing with official app?)
+ * BLE name: empty, or sometimes "WoBlindTilt" (after pairing with official app?)
  */
 class DeviceSwitchbotBlindTilt: public DeviceTheengsWindowActuators
 {

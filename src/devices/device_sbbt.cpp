@@ -205,7 +205,7 @@ void DeviceSwitchbotBlindTilt::bleReadNotify(const QLowEnergyCharacteristic &c, 
 
     const uint8_t *data = reinterpret_cast<const quint8 *>(value.constData());
 
-    if (c.uuid() == uuid_data_char_rx && value.size() == 777)
+    if (c.uuid() == uuid_data_char_rx && value.size() == 8)
     {
         /// response from "CMD_GET_INFO" command
         // [ 1] Bat Per         The battery percentage
@@ -216,6 +216,28 @@ void DeviceSwitchbotBlindTilt::bleReadNotify(const QLowEnergyCharacteristic &c, 
 
         QString firmware = QString::number(data[2]);
         setFirmware(firmware);
+
+        int direction = (data[4] >> 7) & 0x01;
+        int solar = ((data[5] >> 3) & 0x01);
+        int calibrated = ((data[5] >> 2) & 0x01);
+        int moving = (data[5] & 0x02);
+        int position = data[6];
+        int timers = data[7];
+/*
+        qDebug() << "direction" << direction;
+        qDebug() << "solar" << solar;
+        qDebug() << "calibrated" << calibrated;
+        qDebug() << "moving" << moving;
+        qDebug() << "timers" << timers;
+*/
+        setDirection(direction);
+        setSolar(solar);
+        setCalibrated(calibrated);
+        setMoving(moving);
+        setPosition(position);
+
+        m_lastUpdate = QDateTime::currentDateTime();
+        refreshDataFinished(true);
     }
 }
 

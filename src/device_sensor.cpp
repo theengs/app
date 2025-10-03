@@ -84,13 +84,13 @@ void DeviceSensor::refreshDataFinished(bool status, bool cached)
 
     if (status == true)
     {
-        SettingsManager *sm = SettingsManager::getInstance();
-        NotificationManager *nm = NotificationManager::getInstance();
-        if (!sm || !nm) return;
-
         // Plant sensor?
         if (isPlantSensor())
         {
+            SettingsManager *sm = SettingsManager::getInstance();
+            NotificationManager *nm = NotificationManager::getInstance();
+            if (!sm || !nm) return;
+
             // Reorder the device list by water level, if needed
             if (sm->getOrderBy() == "waterlevel")
             {

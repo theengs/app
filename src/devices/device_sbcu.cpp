@@ -235,8 +235,18 @@ void DeviceSwitchbotCurtain::bleReadNotify(const QLowEnergyCharacteristic &c, co
         int calibrated = ((data[5] >> 2) & 0x01);
         int moving = (data[5] & 0x02);
         int position = data[6];
-        //int timers = data[7];
-
+        int timers = data[7];
+/*
+        qDebug() << "direction" << direction;
+        qDebug() << "solar" << solar;
+        qDebug() << "calibrated" << calibrated;
+        qDebug() << "moving" << moving;
+        qDebug() << "timers" << timers;
+*/
+        setDirection(direction);
+        setSolar(solar);
+        setCalibrated(calibrated);
+        setMoving(moving);
         setPosition(position);
 
         m_lastUpdate = QDateTime::currentDateTime();

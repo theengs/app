@@ -66,6 +66,39 @@ DeviceTheengsWindowActuators::~DeviceTheengsWindowActuators()
 /* ************************************************************************** */
 /* ************************************************************************** */
 
+void DeviceTheengsWindowActuators::setCalibrated(const bool c)
+{
+    qDebug() << "DeviceTheengsWindowActuators::setCalibrated(" << c << ")";
+
+    if (c != m_calibrated)
+    {
+        m_calibrated = c;
+        Q_EMIT calibratedUpdated();
+    }
+}
+
+void DeviceTheengsWindowActuators::setMoving(const bool m)
+{
+    qDebug() << "DeviceTheengsWindowActuators::setMoving(" << m << ")";
+
+    if (m != m_moving)
+    {
+        m_moving = m;
+        Q_EMIT movingUpdated();
+    }
+}
+
+void DeviceTheengsWindowActuators::setDirection(const int d)
+{
+    qDebug() << "DeviceTheengsWindowActuators::setDirection(" << d << ")";
+
+    if (QString::number(d) != m_direction)
+    {
+        m_direction = QString::number(d);
+        Q_EMIT directionUpdated();
+    }
+}
+
 void DeviceTheengsWindowActuators::setPosition(const int p)
 {
     qDebug() << "DeviceTheengsWindowActuators::setPosition(" << p << ")";
@@ -81,6 +114,17 @@ void DeviceTheengsWindowActuators::setPosition(const int p)
     else
     {
         qWarning() << "DeviceTheengsWindowActuators::setPosition(" << p << ") INVALID";
+    }
+}
+
+void DeviceTheengsWindowActuators::setSolar(const bool s)
+{
+    qDebug() << "DeviceTheengsWindowActuators::setSolar(" << s << ")";
+
+    if (s != m_solar)
+    {
+        m_solar = s;
+        Q_EMIT solarUpdated();
     }
 }
 

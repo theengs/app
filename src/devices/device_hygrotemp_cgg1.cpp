@@ -252,7 +252,7 @@ void DeviceHygrotempCGG1::bleReadNotify(const QLowEnergyCharacteristic &c, const
             else
             {
                 refreshDataFinished(true);
-                m_bleController->disconnectFromDevice();
+                deviceDisconnect();
             }
 /*
             qDebug() << "* DeviceHygrotempCGG1 update:" << getAddress();

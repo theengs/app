@@ -365,7 +365,7 @@ void Device::actionClearData()
         if (resetDeviceLastSync.exec())
         {
             m_lastHistorySync = QDateTime();
-            Q_EMIT statusUpdated();
+            Q_EMIT lastUpdated();
         }
         else
         {
@@ -654,7 +654,7 @@ void Device::refreshDataFinished(bool status, bool cached)
 
         // Reset last error
         m_lastError = QDateTime();
-        Q_EMIT statusUpdated();
+        Q_EMIT lastUpdated();
 
         if (m_ble_action == DeviceUtils::ACTION_UPDATE)
         {
@@ -671,7 +671,7 @@ void Device::refreshDataFinished(bool status, bool cached)
         if (!cached)
         {
             m_lastError = QDateTime::currentDateTime();
-            Q_EMIT statusUpdated();
+            Q_EMIT lastUpdated();
 
             // Set error timer value
             setUpdateTimer(SettingsManager::s_intervalErrorUpdate);
@@ -700,8 +700,8 @@ void Device::refreshHistoryFinished(bool status)
 
     m_timeoutTimer.stop();
 
-    m_ble_status = DeviceUtils::DEVICE_OFFLINE;
-    Q_EMIT statusUpdated();
+    //m_ble_status = DeviceUtils::DEVICE_OFFLINE;
+    //Q_EMIT statusUpdated();
 
     if (status == true)
     {
@@ -732,8 +732,8 @@ void Device::refreshRealtimeFinished()
 
     m_timeoutTimer.stop();
 
-    m_ble_status = DeviceUtils::DEVICE_OFFLINE;
-    Q_EMIT statusUpdated();
+    //m_ble_status = DeviceUtils::DEVICE_OFFLINE;
+    //Q_EMIT statusUpdated();
 }
 
 void Device::refreshAdvertisement()
@@ -1511,7 +1511,7 @@ void Device::setRssi(const int rssi)
         m_rssiTimer.start();
     }
 
-    if (m_rssi < 0)
+    if (m_rssi < 0 && m_ble_status == DeviceUtils::DEVICE_OFFLINE)
     {
         m_ble_status = DeviceUtils::DEVICE_AVAILABLE;
         Q_EMIT statusUpdated();
@@ -1646,11 +1646,6 @@ void Device::deviceDisconnected()
     {
         refreshRealtimeFinished();
     }
-    else
-    {
-        m_ble_status = DeviceUtils::DEVICE_OFFLINE;
-        Q_EMIT statusUpdated();
-    }
 }
 
 void Device::deviceErrored(QLowEnergyController::Error error)
@@ -1673,8 +1668,13 @@ void Device::deviceErrored(QLowEnergyController::Error error)
     m_keepaliveTimer.stop();
 
     m_lastError = QDateTime::currentDateTime();
-    m_ble_status = DeviceUtils::DEVICE_OFFLINE;
-    Q_EMIT statusUpdated();
+    Q_EMIT lastUpdated();
+
+    if (m_ble_status < DeviceUtils::DEVICE_CONNECTED)
+    {
+        m_ble_status = DeviceUtils::DEVICE_OFFLINE;
+        Q_EMIT statusUpdated();
+    }
 
     refreshDataFinished(false);
 }
