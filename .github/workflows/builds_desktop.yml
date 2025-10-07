@@ -174,7 +174,7 @@ jobs:
       - name: Build dependencies (from contribs script)
         run: |
              cd contribs/
-             python3 contribs_builder.py --targets=msvc2022 --software qtmqtt --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
+             python3 contribs_builder_qt.py --targets=msvc2022 --software qtmqtt --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
              cd ..
 
       # Setup env

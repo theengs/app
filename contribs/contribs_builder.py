@@ -343,7 +343,7 @@ for TARGET in TARGETS:
         if OS_TARGET == "android" or OS_TARGET == "iOS":
             # HACK # GitHub CI + aqt + Qt cross compilation
             if (OS_HOST == "Linux"): os.environ["QT_HOST_PATH"] = str(QT_DIRECTORY + "/" + QT_VERSION + "/gcc_64/")
-            if (OS_HOST == "Darwin"): os.environ["QT_HOST_PATH"] = str(QT_DIRECTORY + "/" + QT_VERSION + "/macOS/")
+            if (OS_HOST == "Darwin"): os.environ["QT_HOST_PATH"] = str(QT_DIRECTORY + "/" + QT_VERSION + "/macos/")
         if OS_TARGET == "android":
             # HACK # env variables?
             os.environ["ANDROID_SDK_ROOT"] = str(ANDROID_SDK_ROOT)
