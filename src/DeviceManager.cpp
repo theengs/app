@@ -1645,9 +1645,11 @@ void DeviceManager::addBleGateway(const QBluetoothDeviceInfo &info)
     // Various sanity checks
     {
         if (info.rssi() >= 0) return; // we probably just hit the device cache
+        if (!info.name().startsWith("OMG_")) return; // not a gateway
+        if ((info.coreConfigurations() & QBluetoothDeviceInfo::LowEnergyCoreConfiguration) == false) return; // not a BLE device
+
         if (m_devices_blacklist.contains(info.address().toString())) return; // device is blacklisted
         if (m_devices_blacklist.contains(info.deviceUuid().toString())) return; // device is blacklisted
-        if ((info.coreConfigurations() & QBluetoothDeviceInfo::LowEnergyCoreConfiguration) == false) return; // not a BLE device
 
         for (auto ed: std::as_const(m_gateways_model->m_devices)) // device is already in the UI
         {
@@ -1661,13 +1663,12 @@ void DeviceManager::addBleGateway(const QBluetoothDeviceInfo &info)
         }
     }
 
-    qDebug() << "DeviceManager::addBleGateway()" << " > NAME" << info.name() << " > RSSI" << info.rssi();
-
     Device *d = nullptr;
 
     // Create the device
     if (info.name().startsWith("OMG_"))
     {
+        qDebug() << "DeviceManager::addBleGateway()" << " > NAME" << info.name() << " > RSSI" << info.rssi();
         d = new DeviceGateway(info, this);
     }
     else

@@ -39,22 +39,13 @@ void DeviceManager::bleDevice_discovered(const QBluetoothDeviceInfo &info)
 
 /* ************************************************************************** */
 
-void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info,
-                                    QBluetoothDeviceInfo::Fields updatedFields)
+void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoothDeviceInfo::Fields updatedFields)
 {
     //qDebug() << "bleDevice_updated() " << info.name() << info.address(); // << info.deviceUuid() // << " updatedFields: " << updatedFields
     Q_UNUSED(updatedFields) // We don't use QBluetoothDeviceInfo::Fields, it's unreliable
 
     bool status_device = false;
     bool status_gateway = false;
-    bool appleOS = false;
-
-#if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
-    // No need to try to handle unknown devices on macOS / iOS, because
-    // we don't have MAC addresses to ID them...
-    // Maybe later if Theengs decoder can output MAC from advertisement packets
-    appleOS = true;
-#endif
 
 #if !defined(DEBUG_FAKE_DEVICES)
     if (info.rssi() >= 0) return; // we probably just hit the device cache
@@ -65,7 +56,7 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info,
     if (m_devices_blacklist.contains(info.deviceUuid().toString())) return; // device UUID is blacklisted
 
     /// KNOWN GATEWAYS /////////////////////////////////////////////////////////
-
+/*
     for (auto d: std::as_const(m_gateways_model->m_devices))
     {
         DeviceGateway *dd = qobject_cast<DeviceGateway *>(d);
@@ -82,10 +73,10 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info,
             const QList<quint16> &manufacturerIds = info.manufacturerIds();
             for (const auto id: manufacturerIds)
             {
-                //qDebug() << info.name() << info.address() << Qt::hex
-                //         << "ID" << id
-                //         << "manufacturer data" << Qt::dec << info.manufacturerData(id).size() << Qt::hex
-                //         << "bytes:" << info.manufacturerData(id).toHex();
+                //qDebug() << info.name() << info.address() << ">  Manufacturer Data >"
+                //         << "/ ID" << Qt::hex << Qt::showbase << id
+                //         << "/" << Qt::dec << info.manufacturerData(id).size() << "bytes"
+                //         << "/" << info.manufacturerData(id).toHex();
 
                 dd->parseAdvertisementData(DeviceUtils::BLE_ADV_MANUFACTURERDATA,
                                            id, info.manufacturerData(id));
@@ -96,7 +87,7 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info,
             break;
         }
     }
-
+*/
     /// KNOWN DEVICES //////////////////////////////////////////////////////////
 
     for (auto d: std::as_const(m_devices_model->m_devices))
@@ -117,29 +108,58 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info,
 
             // Handle advertisement //
 
+            ArduinoJson::DynamicJsonDocument doc(4096);
+            doc["id"] = mac_qstr.toStdString();
+            doc["name"] = info.name().toStdString();
+            doc["rssi"] = info.rssi();
+
+            bool hasAdvData = false;
+
             const QList<quint16> &manufacturerIds = info.manufacturerIds();
             for (const auto id: manufacturerIds)
             {
-                //qDebug() << info.name() << info.address() << Qt::hex
-                //         << "ID" << id
-                //         << "manufacturer data" << Qt::dec << info.manufacturerData(id).size() << Qt::hex
-                //         << "bytes:" << info.manufacturerData(id).toHex();
+                //qDebug() << info.name() << info.address() << ">  Manufacturer Data >"
+                //         << "/ ID" << Qt::hex << Qt::showbase << id
+                //         << "/" << Qt::dec << info.manufacturerData(id).size() << "bytes"
+                //         << "/" << info.manufacturerData(id).toHex();
+
+                if (id == 0x004C) continue; // skip iBeacons
 
                 dd->parseAdvertisementData(DeviceUtils::BLE_ADV_MANUFACTURERDATA,
                                            id, info.manufacturerData(id));
 
-                ArduinoJson::DynamicJsonDocument doc(4096);
-                doc["id"] = mac_qstr.toStdString();
-                doc["name"] = info.name().toStdString();
                 doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + info.manufacturerData(id).toHex().toStdString();
-                doc["rssi"] = info.rssi();
 
+                hasAdvData = true;
+            }
+
+            const QList<QBluetoothUuid> &serviceIds = info.serviceIds();
+            for (const auto id: serviceIds)
+            {
+                //qDebug() << info.name() << info.address() << ">  Service Data >"
+                //         << "/ ID" << Qt::hex << Qt::showbase << id.toUInt16()
+                //         << "/" << Qt::dec << info.serviceData(id).size() << "bytes"
+                //         << "/" << info.serviceData(id).toHex();
+
+                dd->parseAdvertisementData(DeviceUtils::BLE_ADV_SERVICEDATA,
+                                           id.toUInt16(), info.serviceData(id));
+
+                doc["servicedata"] = info.serviceData(id).toHex().toStdString();
+                doc["servicedatauuid"] = QByteArray::number(id.toUInt16(), 16).rightJustified(4, '0').toStdString();
+
+                hasAdvData = true;
+            }
+
+            if (hasAdvData)
+            {
                 TheengsDecoder dec;
                 ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
 
                 if (dec.decodeBLEJson(obj) >= 0)
                 {
                     obj.remove("manufacturerdata");
+                    obj.remove("servicedata");
+                    obj.remove("servicedatauuid");
 
                     std::string output;
                     serializeJson(obj, output);
@@ -153,6 +173,15 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info,
                     DeviceTheengs *ddd = dynamic_cast<DeviceTheengs*>(dd);
                     if (ddd) ddd->parseTheengsAdvertisement(QString::fromStdString(output));
 
+                    // We need a valid MAC address to send MQTT data
+                    // If available, use MAC address decoded from advertisement packets
+                    if (mac_qstr.isEmpty())
+                    {
+                        //mac_qstr = QString::fromLatin1(obj["mac"]);
+                        //mac_qstr_clean = mac_qstr.remove(':');
+                    }
+
+                    // MQTT send
                     SettingsManager *sm = SettingsManager::getInstance();
                     MqttManager *mq = MqttManager::getInstance();
                     if (sm && mq && !mac_qstr_clean.isEmpty())
@@ -165,69 +194,9 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info,
                 }
                 else
                 {
-#if !defined(QT_NO_DEBUG) && !defined(NDEBUG)
-                    //std::string input;
-                    //serializeJson(doc, input);
-                    //qWarning() << "decodeBLEJson(mfd1) error:" << input.c_str();
-#endif
-                }
-            }
-
-            const QList<QBluetoothUuid> &serviceIds = info.serviceIds();
-            for (const auto id: serviceIds)
-            {
-                //qDebug() << info.name() << info.address() << Qt::hex
-                //         << "ID" << id
-                //         << "service data" << Qt::dec << info.serviceData(id).size() << Qt::hex
-                //         << "bytes:" << info.serviceData(id).toHex();
-
-                dd->parseAdvertisementData(DeviceUtils::BLE_ADV_SERVICEDATA,
-                                           id.toUInt16(), info.serviceData(id));
-
-                ArduinoJson::DynamicJsonDocument doc(4096);
-                doc["id"] = mac_qstr.toStdString();
-                doc["name"] = info.name().toStdString();
-                doc["servicedata"] = info.serviceData(id).toHex().toStdString();
-                doc["servicedatauuid"] = QByteArray::number(id.toUInt16(), 16).rightJustified(4, '0').toStdString();
-                doc["rssi"] = info.rssi();
-
-                ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
-
-                TheengsDecoder dec;
-                if (dec.decodeBLEJson(obj) >= 0)
-                {
-                    obj.remove("servicedata");
-                    obj.remove("servicedatauuid");
-
-                    std::string output;
-                    serializeJson(obj, output);
-                    //qDebug() << "output:" << output.c_str();
-
-                    // Do not process devices with random macs
-                    if (doc["type"] == "RMAC" || doc["prmac"]) continue;
-
-                    dd->setTheengsModelId(QString::fromStdString(doc["model"]), QString::fromStdString(doc["model_id"]));
-
-                    DeviceTheengs *ddd = dynamic_cast<DeviceTheengs*>(dd);
-                    if (ddd) ddd->parseTheengsAdvertisement(QString::fromStdString(output));
-
-                    SettingsManager *sm = SettingsManager::getInstance();
-                    MqttManager *mq = MqttManager::getInstance();
-                    if (sm && mq && !mac_qstr_clean.isEmpty())
-                    {
-                        QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr_clean;
-                        status_device = mq->publishData(topic, QString::fromStdString(output));
-                    }
-
-                    status_device = true;
-                }
-                else
-                {
-#if !defined(QT_NO_DEBUG) && !defined(NDEBUG)
-                    //std::string input;
-                    //serializeJson(doc, input);
-                    //qWarning() << "decodeBLEJson(svd1) error:" << input.c_str();
-#endif
+                    std::string input;
+                    serializeJson(doc, input);
+                    qWarning() << "decodeBLEJson(known) error:" << input.c_str();
                 }
             }
 
@@ -258,77 +227,44 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info,
         }
     }
 
-    if (!status_device && !appleOS) // UN-KNOWN DEVICES ///////////////////////////////////////////
+    /// UN-KNOWN DEVICES ///////////////////////////////////////////////////////
+
+    if (!status_device)
     {
         QString mac_qstr = info.address().toString();
         QString mac_qstr_clean = info.address().toString().remove(':');
 
+        ArduinoJson::DynamicJsonDocument doc(4096);
+        doc["id"] = mac_qstr.toStdString();
+        doc["name"] = info.name().toStdString();
+        doc["rssi"] = info.rssi();
+
+        bool hasAdvData = false;
+
         const QList<quint16> &manufacturerIds = info.manufacturerIds();
         for (const auto id: manufacturerIds)
         {
-            //qDebug() << info.name() << info.address() << Qt::hex
-            //         << "ID" << id
-            //         << "manufacturer data" << Qt::dec << info.manufacturerData(id).size() << Qt::hex
-            //         << "bytes:" << info.manufacturerData(id).toHex();
-
-            ArduinoJson::DynamicJsonDocument doc(4096);
-            doc["id"] = mac_qstr.toStdString();
-            doc["name"] = info.name().toStdString();
+            if (id == 0x004C) continue; // skip iBeacons
             doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + info.manufacturerData(id).toHex().toStdString();
-            doc["rssi"] = info.rssi();
+            hasAdvData = true;
+        }
 
+        const QList<QBluetoothUuid> &serviceIds = info.serviceIds();
+        for (const auto id: serviceIds)
+        {
+            doc["servicedata"] = info.serviceData(id).toHex().toStdString();
+            doc["servicedatauuid"] = QByteArray::number(id.toUInt16(), 16).rightJustified(4, '0').toStdString();
+            hasAdvData = true;
+        }
+
+        if (hasAdvData)
+        {
             TheengsDecoder dec;
             ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
 
             if (dec.decodeBLEJson(obj) >= 0)
             {
                 obj.remove("manufacturerdata");
-
-                std::string output;
-                serializeJson(obj, output);
-                //qDebug() << "(UNKNOWN DEVICE) output (mfd) " << output.c_str();
-
-                // Do not process devices with random macs or IBEACONS packets
-                if (doc["type"] == "RMAC" || doc["prmac"] || doc["model_id"] == "IBEACON") continue;
-
-                SettingsManager *sm = SettingsManager::getInstance();
-                MqttManager *mq = MqttManager::getInstance();
-                if (sm && mq && !mac_qstr_clean.isEmpty())
-                {
-                    QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr_clean;
-                    status_device = mq->publishData(topic, QString::fromStdString(output));
-                }
-
-                status_device = true;
-            }
-            else
-            {
-                //std::string input;
-                //serializeJson(doc, input);
-                //qWarning() << "decodeBLEJson(mfd2) error:" << input.c_str();
-            }
-        }
-
-        const QList<QBluetoothUuid> &serviceIds = info.serviceIds();
-        for (const auto id: serviceIds)
-        {
-            //qDebug() << info.name() << info.address() << Qt::hex
-            //         << "ID" << id
-            //         << "service data" << Qt::dec << info.serviceData(id).size() << Qt::hex
-            //         << "bytes:" << info.serviceData(id).toHex();
-
-            ArduinoJson::DynamicJsonDocument doc(4096);
-            doc["id"] = mac_qstr.toStdString();
-            doc["name"] = info.name().toStdString();
-            doc["servicedata"] = info.serviceData(id).toHex().toStdString();
-            doc["servicedatauuid"] = QByteArray::number(id.toUInt16(), 16).rightJustified(4, '0').toStdString();
-            doc["rssi"] = info.rssi();
-
-            TheengsDecoder dec;
-            ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
-
-            if (dec.decodeBLEJson(obj) >= 0)
-            {
                 obj.remove("servicedata");
                 obj.remove("servicedatauuid");
 
@@ -337,8 +273,17 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info,
                 //qDebug() << "(UNKNOWN DEVICE) output (svd)" << output.c_str();
 
                 // Do not process devices with random macs
-                if (doc["type"] == "RMAC" || doc["prmac"]) continue;
+                //if (doc["type"] == "RMAC" || doc["prmac"]) break;
 
+                // We need a valid MAC address to send MQTT data
+                // If available, use MAC address decoded from advertisement packets
+                if (mac_qstr.isEmpty())
+                {
+                    //mac_qstr = QString::fromLatin1(obj["mac"]);
+                    //mac_qstr_clean = mac_qstr.remove(':');
+                }
+
+                // MQTT send
                 SettingsManager *sm = SettingsManager::getInstance();
                 MqttManager *mq = MqttManager::getInstance();
                 if (sm && mq && !mac_qstr_clean.isEmpty())
@@ -353,7 +298,7 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info,
             {
                 //std::string input;
                 //serializeJson(doc, input);
-                //qWarning() << "decodeBLEJson(svd2) error:" << input.c_str();
+                //qWarning() << "decodeBLEJson(unknown) error:" << input.c_str();
             }
         }
     }
@@ -362,12 +307,12 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info,
 
     if (m_scanning)
     {
-        if (info.name().startsWith("OMG_"))
+        if (status_gateway && info.name().startsWith("OMG_"))
         {
             //qDebug() << "addBleGateway(" << info.name() << ") FROM DYNAMIC SCANNING";
             addBleGateway(info);
         }
-        else
+        else if (status_device)
         {
             //qDebug() << "addBleDevice(" << info.name() << ") FROM DYNAMIC SCANNING";
             addBleDevice(info);

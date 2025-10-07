@@ -199,7 +199,7 @@ void DeviceTheengsGeneric::parseTheengsAdvertisement(const QString &json)
     for (auto it = obj.begin(), end = obj.end(); it != end; ++it)
     {
         QString prop_key = it.key();
-        QJsonValue prop_value = it.value();
+        //QJsonValue prop_value = it.value();
         //QJsonObject prop_value = it.value().toObject();
 
         for (auto gd: m_genericData)
