@@ -68,10 +68,10 @@ DeviceTheengsWindowActuators::~DeviceTheengsWindowActuators()
 
 void DeviceTheengsWindowActuators::setCalibrated(const bool c)
 {
-    qDebug() << "DeviceTheengsWindowActuators::setCalibrated(" << c << ")";
-
     if (c != m_calibrated)
     {
+        qDebug() << "DeviceTheengsWindowActuators::setCalibrated(" << c << ")";
+
         m_calibrated = c;
         Q_EMIT calibratedUpdated();
     }
@@ -79,10 +79,10 @@ void DeviceTheengsWindowActuators::setCalibrated(const bool c)
 
 void DeviceTheengsWindowActuators::setMoving(const bool m)
 {
-    qDebug() << "DeviceTheengsWindowActuators::setMoving(" << m << ")";
-
     if (m != m_moving)
     {
+        qDebug() << "DeviceTheengsWindowActuators::setMoving(" << m << ")";
+
         m_moving = m;
         Q_EMIT movingUpdated();
     }
@@ -90,10 +90,10 @@ void DeviceTheengsWindowActuators::setMoving(const bool m)
 
 void DeviceTheengsWindowActuators::setDirection(const int d)
 {
-    qDebug() << "DeviceTheengsWindowActuators::setDirection(" << d << ")";
-
     if (QString::number(d) != m_direction)
     {
+        qDebug() << "DeviceTheengsWindowActuators::setDirection(" << d << ")";
+
         m_direction = QString::number(d);
         Q_EMIT directionUpdated();
     }
@@ -101,12 +101,12 @@ void DeviceTheengsWindowActuators::setDirection(const int d)
 
 void DeviceTheengsWindowActuators::setPosition(const int p)
 {
-    qDebug() << "DeviceTheengsWindowActuators::setPosition(" << p << ")";
-
     if (p >= 0 && p <= 100)
     {
         if (p != m_position)
         {
+            qDebug() << "DeviceTheengsWindowActuators::setPosition(" << p << ")";
+
             m_position = p;
             Q_EMIT positionUpdated();
         }
@@ -119,10 +119,10 @@ void DeviceTheengsWindowActuators::setPosition(const int p)
 
 void DeviceTheengsWindowActuators::setSolar(const bool s)
 {
-    qDebug() << "DeviceTheengsWindowActuators::setSolar(" << s << ")";
-
     if (s != m_solar)
     {
+        qDebug() << "DeviceTheengsWindowActuators::setSolar(" << s << ")";
+
         m_solar = s;
         Q_EMIT solarUpdated();
     }
@@ -178,7 +178,7 @@ void DeviceTheengsWindowActuators::parseTheengsAdvertisement(const QString &json
     // JSON: "{\"id\":\"76:57:43:01:5C:03\",\"name\":\"Switchbot_Curtain 3\",\"rssi\":0,\"brand\":\"SwitchBot\",\"model\":\"Curtain (2/3)\",\"model_id\":\"W070160X\",\"type\":\"WCVR\",\"acts\":true,\"ctrl\":true,\"moving\":false,\"position\":100,\"calibrated\":true,\"lightlevel\":1,\"batt\":79}"
 
     // Venetian blind tilting actor // open, direction, motion, calibrated, light level, battery
-    // JSON: ?
+    // JSON: "{\"id\":\"D0:07:45:A5:B4:25\",\"name\":\"WoBlindTilt\",\"rssi\":-52,\"brand\":\"SwitchBot\",\"model\":\"Blind Tilt\",\"model_id\":\"W270160X\",\"type\":\"WCVR\",\"acts\":true,\"ctrl\":true,\"open\":100,\"direction\":\"—\",\"motion\":false,\"calibrated\":true,\"lightlevel\":2,\"batt\":86,\"mac\":\"D0:07:45:A5:B4:25\"}"
 
     if (obj.contains("calibrated"))
     {
@@ -234,6 +234,20 @@ void DeviceTheengsWindowActuators::parseTheengsAdvertisement(const QString &json
         }
     }
 
+    if (obj["name"] == "WoBlindTilt")
+    {
+        QString direction = obj["direction"].toString();
+        int open = obj["open"].toInt();
+        int position = -1;
+
+        // derive position from open & direction
+        if (direction == "—") position = 50;
+        else if (direction == "up") position = 100 - (open / 2);
+        else if (direction == "down") position = (open / 2);
+
+        setPosition(position);
+    }
+
     {
         m_lastUpdate = QDateTime::currentDateTime();
 
@@ -244,6 +258,16 @@ void DeviceTheengsWindowActuators::parseTheengsAdvertisement(const QString &json
 
         refreshDataFinished(true);
     }
+}
+
+/* ************************************************************************** */
+
+int DeviceTheengsWindowActuators::getOpen_blindtilt() const
+{
+    if (m_direction == "—") return 0;
+    else if (m_direction == "up") return 100 - m_open;
+    else if (m_direction == "down") return -100 + m_open;
+    return 0;
 }
 
 /* ************************************************************************** */

@@ -196,7 +196,7 @@ Loader {
                 Rectangle { // rectangle indicator // mimic switchbot s1
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    anchors.verticalCenterOffset: -(appHeader.height * 0.4)
+                    anchors.verticalCenterOffset: -(appHeader.height * 0.33)
 
                     width: singleColumn ? actuatorBox.height * 0.85 : actuatorBox.width * 0.66
                     height: width*0.75
@@ -466,7 +466,7 @@ Loader {
                     anchors.left: parent.left
                     anchors.leftMargin: 16
                     anchors.right: parent.right
-                    anchors.rightMargin: 16 + (singleColumn ? 0 : parent.width * 0.5)
+                    anchors.rightMargin: 16 + (isDesktop ? parent.width * 0.33 : 0)
                     spacing: 16
 
                     //opacity: currentDevice.connected ? 1 : 0.33
@@ -478,6 +478,7 @@ Loader {
                         id: modeswitch
                         width: parent.width
                         height: 40
+                        fullWidth: true
 
                         model: ListModel {
                             ListElement { idx: 0; txt: qsTr("Press"); src: ""; sz: 16; }
@@ -508,7 +509,7 @@ Loader {
                         wrapMode: Text.WordWrap
                         color: Theme.colorText
                     }
-
+/*
                     ListSeparator { }
 
                     ////////
@@ -553,15 +554,15 @@ Loader {
                     }
 
                     ListSeparator { visible: (currentDevice.switchMode === DeviceUtilsSwitchBot.MODE_SWITCH) }
-
+*/
                     ////////
 
-                    RoundButtonClear {
+                    RoundButtonSolid {
                         anchors.horizontalCenter: parent.horizontalCenter
                         width: 128; height: 128;
 
                         visible: (currentDevice.switchMode === DeviceUtilsSwitchBot.MODE_PRESS)
-                        color: Theme.colorGrey
+                        //color: Theme.colorGrey
 
                         text: qsTr("Press")
                         source: "qrc:/IconLibrary/material-icons/duotone/touch_app.svg"
@@ -575,17 +576,17 @@ Loader {
                         visible: (currentDevice.switchMode === DeviceUtilsSwitchBot.MODE_SWITCH)
                         spacing: 16
 
-                        RoundButtonClear {
+                        RoundButtonSolid {
                             width: 112; height: 112;
-                            color: Theme.colorGrey
+                            //color: Theme.colorGrey
 
                             text: qsTr("ON")
                             onClicked: currentDevice.actionAction(DeviceUtilsSwitchBot.ACTION_ON)
                         }
 
-                        RoundButtonClear {
+                        RoundButtonSolid {
                             width: 112; height: 112;
-                            color: Theme.colorGrey
+                            //color: Theme.colorGrey
 
                             text: qsTr("OFF")
                             onClicked: currentDevice.actionAction(DeviceUtilsSwitchBot.ACTION_OFF)

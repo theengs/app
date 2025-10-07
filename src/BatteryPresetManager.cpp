@@ -159,7 +159,7 @@ bool BatteryPresetManager::isPresetNameValid(const QString &name)
 
 bool BatteryPresetManager::addPreset(const int type, const QString &name)
 {
-    //qDebug() << "BatteryPresetManager::addPreset(" << type << name << ")";
+    qDebug() << "BatteryPresetManager::addPreset(" << type << name << ")";
 /*
     BatteryPreset *newpreset = new BatteryPreset(0, type, false, name, "", this);
     if (newpreset)
@@ -203,9 +203,7 @@ bool BatteryPresetManager::copyPreset(const QString &name, const QString &newNam
 
 bool BatteryPresetManager::removePreset(const QString &name)
 {
-    bool status = false;
-
-    //qDebug() << "BatteryPresetManager::removePreset()" << name;
+    qDebug() << "BatteryPresetManager::removePreset()" << name;
 /*
     for (auto pp: std::as_const(m_presets))
     {
@@ -231,13 +229,11 @@ bool BatteryPresetManager::removePreset(const QString &name)
             delete bp;
 
             Q_EMIT presetsChanged();
-            status = true;
-
-            break;
+            return true;
         }
     }
 */
-    return status;
+    return false;
 }
 
 /* ************************************************************************** */

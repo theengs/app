@@ -172,7 +172,7 @@ void DeviceSwitchbotSmartSwitch::serviceDetailsDiscovered_data(QLowEnergyService
             // Debug
             if (!m_charTX.isValid()) { qWarning() << "m_charTX invalid"; }
             if (!m_charRX.isValid()) { qWarning() << "m_charRX invalid"; }
-            if (!m_notificationDesc.isValid()) { qWarning() << "m_notificationDesc on m_charRX invalid"; }
+            //if (!m_notificationDesc.isValid()) { qWarning() << "m_notificationDesc on m_charRX invalid"; }
         }
     }
 }
@@ -181,12 +181,12 @@ void DeviceSwitchbotSmartSwitch::serviceDetailsDiscovered_data(QLowEnergyService
 
 void DeviceSwitchbotSmartSwitch::bleDescriptorRead(const QLowEnergyDescriptor &, const QByteArray &)
 {
-    qDebug() << "DeviceSwitchbotSmartSwitch::bleDescriptorRead()";
+    //qDebug() << "DeviceSwitchbotSmartSwitch::bleDescriptorRead()";
 }
 
 void DeviceSwitchbotSmartSwitch::bleDescriptorWritten(const QLowEnergyDescriptor &, const QByteArray &)
 {
-    qDebug() << "DeviceSwitchbotSmartSwitch::bleDescriptorWritten()";
+    //qDebug() << "DeviceSwitchbotSmartSwitch::bleDescriptorWritten()";
 
     // Ask for device info
     m_serviceData->writeCharacteristic(m_charTX, QByteArray::fromHex("5702"), QLowEnergyService::WriteWithResponse);
@@ -194,22 +194,22 @@ void DeviceSwitchbotSmartSwitch::bleDescriptorWritten(const QLowEnergyDescriptor
 
 /* ************************************************************************** */
 
-void DeviceSwitchbotSmartSwitch::bleWriteDone(const QLowEnergyCharacteristic &c, const QByteArray &value)
+void DeviceSwitchbotSmartSwitch::bleWriteDone(const QLowEnergyCharacteristic &, const QByteArray &)
 {
-    qDebug() << "DeviceSwitchbotSmartSwitch::bleWriteDone(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
-    qDebug() << "DATA: 0x" << value.toHex();
+    //qDebug() << "DeviceSwitchbotSmartSwitch::bleWriteDone(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
+    //qDebug() << "DATA: 0x" << value.toHex();
 }
 
-void DeviceSwitchbotSmartSwitch::bleReadDone(const QLowEnergyCharacteristic &c, const QByteArray &value)
+void DeviceSwitchbotSmartSwitch::bleReadDone(const QLowEnergyCharacteristic &, const QByteArray &)
 {
-    qDebug() << "DeviceSwitchbotSmartSwitch::bleReadDone(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
-    qDebug() << "DATA: 0x" << value.toHex();
+    //qDebug() << "DeviceSwitchbotSmartSwitch::bleReadDone(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
+    //qDebug() << "DATA: 0x" << value.toHex();
 }
 
 void DeviceSwitchbotSmartSwitch::bleReadNotify(const QLowEnergyCharacteristic &c, const QByteArray &value)
 {
-    qDebug() << "DeviceSwitchbotSmartSwitch::bleReadNotify(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
-    qDebug() << "DATA: 0x" << value.toHex();
+    //qDebug() << "DeviceSwitchbotSmartSwitch::bleReadNotify(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
+    //qDebug() << "DATA: 0x" << value.toHex();
 
     const uint8_t *data = reinterpret_cast<const quint8 *>(value.constData());
 

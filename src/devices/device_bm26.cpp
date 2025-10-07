@@ -51,7 +51,7 @@ DeviceTheengsBM26::DeviceTheengsBM26(const QString &deviceAddr,
     m_deviceType = DeviceUtils::DEVICE_THEENGS_BATTERYMONITOR;
     m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 #if defined(ENABLE_MBEDTLS)
-    m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
+    //m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
 #endif
 
     parseTheengsProps(devicePropsJson);
@@ -70,7 +70,7 @@ DeviceTheengsBM26::DeviceTheengsBM26(const QBluetoothDeviceInfo &d,
     m_deviceType = DeviceUtils::DEVICE_THEENGS_BATTERYMONITOR;
     m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_ADVERTISEMENT;
 #if defined(ENABLE_MBEDTLS)
-    m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
+    //m_deviceBluetoothMode += DeviceUtils::DEVICE_BLE_CONNECTION;
 #endif
 
     parseTheengsProps(devicePropsJson);

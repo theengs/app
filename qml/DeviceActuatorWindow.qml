@@ -7,6 +7,7 @@ import DeviceUtils
 import DeviceUtilsTheengs
 import DeviceUtilsSwitchBot
 import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
+import "qrc:/ComponentLibrary/UtilsNumber.js" as UtilsNumber
 
 Loader {
     id: deviceActuator
@@ -198,7 +199,7 @@ Loader {
 
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    anchors.verticalCenterOffset: -(appHeader.height * 0.5)
+                    anchors.verticalCenterOffset: -(appHeader.height * 0.33)
 
                     ////
 
@@ -508,7 +509,7 @@ Loader {
                     anchors.left: parent.left
                     anchors.leftMargin: 16
                     anchors.right: parent.right
-                    anchors.rightMargin: 16 + (singleColumn ? 0 : parent.width * 0.5)
+                    anchors.rightMargin: 16 + (isDesktop ? parent.width * 0.33 : 0)
 
                     //opacity: currentDevice.connected ? 1 : 0.33
                     enabled: currentDevice.connected
@@ -716,6 +717,22 @@ Loader {
 
                         ////
 
+                        MiddleSliderValueSolid {
+                            id: actionMiddleSlider_blind
+                            orientation: Qt.Vertical
+                            Layout.preferredHeight: 320
+                            hhh: 40
+
+                            from: -100
+                            to: 100
+                            value: currentDevice.open_blindtilt
+
+                            onMoved: {
+                                var letsgo = UtilsNumber.mapNumber(value, -100, 100, 0, 100)
+                                currentDevice.actionMove(letsgo)
+                            }
+                        }
+/*
                         SliderValueSolid {
                             id: actionSlider_blind
                             orientation: Qt.Vertical
@@ -728,10 +745,9 @@ Loader {
 
                             onMoved: {
                                 currentDevice.actionMove(value)
-                                actionSlider_blind.value = value
                             }
                         }
-
+*/
                         ////
                     }
 

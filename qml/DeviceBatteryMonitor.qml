@@ -251,12 +251,12 @@ Loader {
                 ////////
 
                 Item { // indicators
+                    width: singleColumn ? batteryBox.height * 0.8 : batteryBox.width * 0.7
+                    height: width
+
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    anchors.verticalCenterOffset: -(appHeader.height / 3)
-
-                    width: singleColumn ? batteryBox.height * 0.75 : batteryBox.width * 0.66
-                    height: width
+                    anchors.verticalCenterOffset: -(appHeader.height * 0.24)
 
                     ////
 
@@ -305,7 +305,7 @@ Loader {
                             id: batteryIcon
                             anchors.horizontalCenter: indicatorP.horizontalCenter
                             anchors.verticalCenter: indicatorP.verticalCenter
-                            anchors.verticalCenterOffset: 16
+                            //anchors.verticalCenterOffset: indicatorP.height * 0.02
 
                             width: indicatorP.width * 0.50
                             height: indicatorP.height * 0.50
@@ -324,6 +324,7 @@ Loader {
 
                             Text {
                                 anchors.horizontalCenter: parent.horizontalCenter
+                                visible: !isMobile
 
                                 text: currentDevice.deviceName
                                 color: cccc
@@ -662,7 +663,7 @@ Loader {
                             Layout.fillWidth: singleColumn
                             Layout.preferredHeight: 32
                         }
-
+/*
                         ButtonClear {
                             text: "connect"
                             onClicked: {
@@ -675,6 +676,7 @@ Loader {
                                 currentDevice.actionFakeVoltage()
                             }
                         }
+*/
                     }
                 }
 

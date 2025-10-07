@@ -195,7 +195,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
 
     for (const auto id: manufacturerIds)
     {
-        if (id == 0x004C) continue; // skip iBeacons
+        //if (id == 0x004C) continue; // skip iBeacons
         doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + deviceInfo.manufacturerData(id).toHex().toStdString();
     }
     for (const auto id: serviceIds)
@@ -224,13 +224,12 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
     {
         std::string input;
         serializeJson(doc, input);
-
         qDebug() << "createTheengsDevice_fromAdv() decodeBLEJson error:" << input.c_str();
     }
 
-    if ((!deviceModelID.isEmpty() && // Do not process unkown devices
-         !deviceProps.isEmpty() && // Do not process devices with empty properties
-         !(deviceTypes == "RMAC" || doc["prmac"]))) // Do not process devices with random macs
+    if (!deviceModelID.isEmpty() && // Do not process unkown devices
+        !deviceProps.isEmpty() && // Do not process devices with empty properties
+        !(deviceTypes == "RMAC" || doc["prmac"])) // Do not process devices with random macs
     {
         int deviceType = DeviceTheengs::getTheengsTypeFromTag(deviceTags, deviceTypes);
 
@@ -315,7 +314,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
 */
         if (!device)
         {
-            qWarning() << "Couldn't add device:" << deviceInfo.name() << deviceModel << deviceModelID;
+            qWarning() << "Device is empty:" << deviceInfo.name() << deviceModel << deviceModelID;
         }
         else if (!device->isValid())
         {
@@ -348,7 +347,7 @@ QString DeviceManager::getDeviceModelIdTheengs_fromAdv(const QBluetoothDeviceInf
 
     for (const auto id: manufacturerIds)
     {
-        if (id == 0x004C) continue; // skip iBeacons
+        //if (id == 0x004C) continue; // skip iBeacons
         doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + deviceInfo.manufacturerData(id).toHex().toStdString();
         hasAdvData = true;
     }

@@ -174,8 +174,7 @@ Item {
 
                 model: deviceManager.devicesNearby
                 delegate: DeviceNearbyWidget {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
+                    width: ListView.view.width
                 }
 
                 ItemNoDeviceNearby {

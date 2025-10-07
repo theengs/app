@@ -1085,7 +1085,7 @@ Item {
             width: rowRight.height
             height: width
             anchors.verticalCenter: parent.verticalCenter
-            anchors.verticalCenterOffset: 4
+            anchors.verticalCenterOffset: 0
 
             function initData() {
                 updateData()
@@ -1104,7 +1104,7 @@ Item {
             Rectangle {
                 id: indicator
                 anchors.fill: parent
-                anchors.margins: 16
+                anchors.margins: singleColumn ? 8 : 16
                 radius: width
 
                 color: Theme.colorForeground
@@ -1133,7 +1133,7 @@ Item {
             width: rowRight.height
             height: width
             anchors.verticalCenter: parent.verticalCenter
-            anchors.verticalCenterOffset: 4
+            anchors.verticalCenterOffset: 0
 
             function initData() {
                 indicator.rotation = (boxDevice.deviceModel === "W270160X") ? 90 : 0 // vertical/horizontal
@@ -1141,14 +1141,19 @@ Item {
             }
 
             function updateData() {
-                indicatorSlider.width = (indicator.width-4) * (boxDevice.position/100.0)
-                legend.text = boxDevice.position
+                if ((boxDevice.deviceModel === "W270160X")) {
+                    indicatorSlider.width = (indicator.width-4) * (boxDevice.open/100.0)
+                    legend.text = boxDevice.open + "%"
+                } else {
+                    indicatorSlider.width = (indicator.width-4) * (boxDevice.position/100.0)
+                    legend.text = boxDevice.position + "%"
+                }
             }
 
             Rectangle {
                 id: indicator
                 anchors.fill: parent
-                anchors.margins: 12
+                anchors.margins: (singleColumn ? 8 : 12)
 
                 rotation: 0
 

@@ -48,6 +48,7 @@ class DeviceTheengsWindowActuators: public DeviceTheengs
     Q_PROPERTY(QString direction READ getDirection NOTIFY directionUpdated)
     Q_PROPERTY(int position READ getPosition NOTIFY positionUpdated)
     Q_PROPERTY(int open READ getOpen NOTIFY openUpdated)
+    Q_PROPERTY(int open_blindtilt READ getOpen_blindtilt NOTIFY openUpdated)
     Q_PROPERTY(bool solar READ getSolar NOTIFY solarUpdated)
     Q_PROPERTY(int lightlevel READ getLightLevel NOTIFY lightlevelUpdated)
 
@@ -59,15 +60,16 @@ class DeviceTheengsWindowActuators: public DeviceTheengs
     bool m_solar = false;
     int m_lightlevel= -1;
 
+protected:
     bool getCalibrated() const { return m_calibrated; }
     bool getMoving() const { return m_moving; }
     QString getDirection() const { return m_direction; }
     int getPosition() const { return m_position; }
     int getOpen() const { return m_open; }
+    int getOpen_blindtilt() const;
     bool getSolar() const { return m_solar; }
     int getLightLevel() const { return m_lightlevel; }
 
-protected:
     void setCalibrated(const bool c);
     void setMoving(const bool m);
     void setDirection(const int d);

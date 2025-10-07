@@ -164,7 +164,7 @@ void DeviceSwitchbotCurtain::serviceDetailsDiscovered_data(QLowEnergyService::Se
             // Debug
             if (!m_charTX.isValid()) { qWarning() << "m_charTX invalid"; }
             if (!m_charRX.isValid()) { qWarning() << "m_charRX invalid"; }
-            if (!m_notificationDesc.isValid()) { qWarning() << "m_notificationDesc on m_charRX invalid"; }
+            //if (!m_notificationDesc.isValid()) { qWarning() << "m_notificationDesc on m_charRX invalid"; }
         }
     }
 }
@@ -173,12 +173,12 @@ void DeviceSwitchbotCurtain::serviceDetailsDiscovered_data(QLowEnergyService::Se
 
 void DeviceSwitchbotCurtain::bleDescriptorRead(const QLowEnergyDescriptor &, const QByteArray &)
 {
-    qDebug() << "DeviceSwitchbotCurtain::bleDescriptorRead()";
+    //qDebug() << "DeviceSwitchbotCurtain::bleDescriptorRead()";
 }
 
 void DeviceSwitchbotCurtain::bleDescriptorWritten(const QLowEnergyDescriptor &, const QByteArray &)
 {
-    qDebug() << "DeviceSwitchbotCurtain::bleDescriptorWritten()";
+    //qDebug() << "DeviceSwitchbotCurtain::bleDescriptorWritten()";
 
     // Ask for device info
     m_serviceData->writeCharacteristic(m_charTX, QByteArray::fromHex("5702"), QLowEnergyService::WriteWithResponse);
@@ -186,22 +186,22 @@ void DeviceSwitchbotCurtain::bleDescriptorWritten(const QLowEnergyDescriptor &, 
 
 /* ************************************************************************** */
 
-void DeviceSwitchbotCurtain::bleWriteDone(const QLowEnergyCharacteristic &c, const QByteArray &value)
+void DeviceSwitchbotCurtain::bleWriteDone(const QLowEnergyCharacteristic &, const QByteArray &)
 {
-    qDebug() << "DeviceSwitchbotCurtain::bleWriteDone(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
-    qDebug() << "DATA: 0x" << value.toHex();
+    //qDebug() << "DeviceSwitchbotCurtain::bleWriteDone(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
+    //qDebug() << "DATA: 0x" << value.toHex();
 }
 
-void DeviceSwitchbotCurtain::bleReadDone(const QLowEnergyCharacteristic &c, const QByteArray &value)
+void DeviceSwitchbotCurtain::bleReadDone(const QLowEnergyCharacteristic &, const QByteArray &)
 {
-    qDebug() << "DeviceSwitchbotCurtain::bleReadDone(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
-    qDebug() << "DATA: 0x" << value.toHex();
+    //qDebug() << "DeviceSwitchbotCurtain::bleReadDone(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
+    //qDebug() << "DATA: 0x" << value.toHex();
 }
 
 void DeviceSwitchbotCurtain::bleReadNotify(const QLowEnergyCharacteristic &c, const QByteArray &value)
 {
-    qDebug() << "DeviceSwitchbotCurtain::bleReadNotify(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
-    qDebug() << "DATA: 0x" << value.toHex();
+    //qDebug() << "DeviceSwitchbotCurtain::bleReadNotify(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
+    //qDebug() << "DATA: 0x" << value.toHex();
 
     const uint8_t *data = reinterpret_cast<const quint8 *>(value.constData());
 
@@ -243,7 +243,7 @@ void DeviceSwitchbotCurtain::bleReadNotify(const QLowEnergyCharacteristic &c, co
         qDebug() << "moving" << moving;
         qDebug() << "timers" << timers;
 */
-        setDirection(direction);
+        //setDirection(direction);
         setSolar(solar);
         setCalibrated(calibrated);
         setMoving(moving);

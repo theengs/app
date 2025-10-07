@@ -206,7 +206,7 @@ Item {
                 //width: ((isDesktop || isTablet) && !singleColumn) ? 256 : undefined
 
                 text: qsTr("Official information")
-                primaryColor: Theme.colorSubText
+                //color: Theme.colorSubText
                 sourceSize: 20
                 source: "qrc:/IconLibrary/material-icons/duotone/launch.svg"
 

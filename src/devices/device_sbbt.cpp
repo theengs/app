@@ -164,7 +164,7 @@ void DeviceSwitchbotBlindTilt::serviceDetailsDiscovered_data(QLowEnergyService::
             // Debug
             if (!m_charTX.isValid()) { qWarning() << "m_charTX invalid"; }
             if (!m_charRX.isValid()) { qWarning() << "m_charRX invalid"; }
-            if (!m_notificationDesc.isValid()) { qWarning() << "m_notificationDesc on m_charRX invalid"; }
+            //if (!m_notificationDesc.isValid()) { qWarning() << "m_notificationDesc on m_charRX invalid"; }
         }
     }
 }
@@ -173,12 +173,12 @@ void DeviceSwitchbotBlindTilt::serviceDetailsDiscovered_data(QLowEnergyService::
 
 void DeviceSwitchbotBlindTilt::bleDescriptorRead(const QLowEnergyDescriptor &, const QByteArray &)
 {
-    qDebug() << "DeviceSwitchbotBlindTilt::bleDescriptorRead()";
+    //qDebug() << "DeviceSwitchbotBlindTilt::bleDescriptorRead()";
 }
 
 void DeviceSwitchbotBlindTilt::bleDescriptorWritten(const QLowEnergyDescriptor &, const QByteArray &)
 {
-    qDebug() << "DeviceSwitchbotBlindTilt::bleDescriptorWritten()";
+    //qDebug() << "DeviceSwitchbotBlindTilt::bleDescriptorWritten()";
 
     // Ask for device info
     m_serviceData->writeCharacteristic(m_charTX, QByteArray::fromHex("5702"), QLowEnergyService::WriteWithResponse);
@@ -186,22 +186,22 @@ void DeviceSwitchbotBlindTilt::bleDescriptorWritten(const QLowEnergyDescriptor &
 
 /* ************************************************************************** */
 
-void DeviceSwitchbotBlindTilt::bleWriteDone(const QLowEnergyCharacteristic &c, const QByteArray &value)
+void DeviceSwitchbotBlindTilt::bleWriteDone(const QLowEnergyCharacteristic &, const QByteArray &)
 {
-    qDebug() << "DeviceSwitchbotBlindTilt::bleWriteDone(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
-    qDebug() << "DATA: 0x" << value.toHex();
+    //qDebug() << "DeviceSwitchbotBlindTilt::bleWriteDone(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
+    //qDebug() << "DATA: 0x" << value.toHex();
 }
 
-void DeviceSwitchbotBlindTilt::bleReadDone(const QLowEnergyCharacteristic &c, const QByteArray &value)
+void DeviceSwitchbotBlindTilt::bleReadDone(const QLowEnergyCharacteristic &, const QByteArray &)
 {
-    qDebug() << "DeviceSwitchbotBlindTilt::bleReadDone(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
-    qDebug() << "DATA: 0x" << value.toHex();
+    //qDebug() << "DeviceSwitchbotBlindTilt::bleReadDone(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
+    //qDebug() << "DATA: 0x" << value.toHex();
 }
 
 void DeviceSwitchbotBlindTilt::bleReadNotify(const QLowEnergyCharacteristic &c, const QByteArray &value)
 {
-    qDebug() << "DeviceSwitchbotBlindTilt::bleReadNotify(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
-    qDebug() << "DATA: 0x" << value.toHex();
+    //qDebug() << "DeviceSwitchbotBlindTilt::bleReadNotify(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
+    //qDebug() << "DATA: 0x" << value.toHex();
 
     const uint8_t *data = reinterpret_cast<const quint8 *>(value.constData());
 
@@ -217,7 +217,7 @@ void DeviceSwitchbotBlindTilt::bleReadNotify(const QLowEnergyCharacteristic &c, 
         QString firmware = QString::number(data[2]);
         setFirmware(firmware);
 
-        int direction = (data[4] >> 7) & 0x01;
+        int direction = (data[4] >> 7) & 0x01; // ???
         int solar = ((data[5] >> 3) & 0x01);
         int calibrated = ((data[5] >> 2) & 0x01);
         int moving = (data[5] & 0x02);
@@ -228,9 +228,10 @@ void DeviceSwitchbotBlindTilt::bleReadNotify(const QLowEnergyCharacteristic &c, 
         qDebug() << "solar" << solar;
         qDebug() << "calibrated" << calibrated;
         qDebug() << "moving" << moving;
+        qDebug() << "position" << position;
         qDebug() << "timers" << timers;
 */
-        setDirection(direction);
+        //setDirection(direction);
         setSolar(solar);
         setCalibrated(calibrated);
         setMoving(moving);
