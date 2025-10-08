@@ -321,8 +321,6 @@ public:
     bool isPBP() const { return (m_deviceType == DeviceUtils::DEVICE_PBP); }
     bool isPGP() const { return (m_deviceType == DeviceUtils::DEVICE_PGP); }
 
-    virtual bool hasRealTime() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_REALTIME); }
-
     bool isGenericDevice() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_GENERIC); }
     bool isActuator() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_ACTUATOR); }
     bool isActuatorWindow() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_ACTUATOR_WINDOW); }
@@ -332,6 +330,7 @@ public:
     bool isProbe() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_PROBE); }
     bool isScale() const { return (m_deviceType == DeviceUtils::DEVICE_THEENGS_SCALE); }
 
+    virtual bool hasRealTime() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_REALTIME); }
     virtual bool hasHistory() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_HISTORY); }
     bool hasBatteryLevel() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_BATTERY); }
     bool hasClock() const { return (m_deviceCapabilities & DeviceUtils::DEVICE_CLOCK); }

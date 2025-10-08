@@ -43,7 +43,7 @@
 #include <thread>
 #include <chrono>
 
-#include <QGuiApplication>
+#include <QCoreApplication>
 #include <QDateTime>
 #include <QList>
 #include <QDebug>
@@ -58,6 +58,7 @@
 
 #if defined(Q_OS_MACOS) || defined(Q_OS_IOS) || defined(Q_OS_ANDROID)
 #if QT_CONFIG(permissions)
+#include <QGuiApplication>
 #include <QPermissions>
 #endif
 #endif

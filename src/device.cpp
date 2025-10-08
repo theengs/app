@@ -791,7 +791,6 @@ void Device::setTimeoutTimer(int time_s)
 
 void Device::setKeepaliveTimer(int time_s)
 {
-    // StodeusApp use the keepalive timer
     m_keepaliveTimer.setInterval(time_s*1000);
     m_keepaliveTimer.start();
 }
