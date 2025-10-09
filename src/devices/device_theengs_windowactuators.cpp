@@ -70,7 +70,7 @@ void DeviceTheengsWindowActuators::setCalibrated(const bool c)
 {
     if (c != m_calibrated)
     {
-        qDebug() << "DeviceTheengsWindowActuators::setCalibrated(" << c << ")";
+        //qDebug() << "DeviceTheengsWindowActuators::setCalibrated(" << c << ")";
 
         m_calibrated = c;
         Q_EMIT calibratedUpdated();
@@ -81,7 +81,7 @@ void DeviceTheengsWindowActuators::setMoving(const bool m)
 {
     if (m != m_moving)
     {
-        qDebug() << "DeviceTheengsWindowActuators::setMoving(" << m << ")";
+        //qDebug() << "DeviceTheengsWindowActuators::setMoving(" << m << ")";
 
         m_moving = m;
         Q_EMIT movingUpdated();
@@ -92,7 +92,7 @@ void DeviceTheengsWindowActuators::setDirection(const int d)
 {
     if (QString::number(d) != m_direction)
     {
-        qDebug() << "DeviceTheengsWindowActuators::setDirection(" << d << ")";
+        //qDebug() << "DeviceTheengsWindowActuators::setDirection(" << d << ")";
 
         m_direction = QString::number(d);
         Q_EMIT directionUpdated();
@@ -105,7 +105,7 @@ void DeviceTheengsWindowActuators::setPosition(const int p)
     {
         if (p != m_position)
         {
-            qDebug() << "DeviceTheengsWindowActuators::setPosition(" << p << ")";
+            //qDebug() << "DeviceTheengsWindowActuators::setPosition(" << p << ")";
 
             m_position = p;
             Q_EMIT positionUpdated();
@@ -121,7 +121,7 @@ void DeviceTheengsWindowActuators::setSolar(const bool s)
 {
     if (s != m_solar)
     {
-        qDebug() << "DeviceTheengsWindowActuators::setSolar(" << s << ")";
+        //qDebug() << "DeviceTheengsWindowActuators::setSolar(" << s << ")";
 
         m_solar = s;
         Q_EMIT solarUpdated();

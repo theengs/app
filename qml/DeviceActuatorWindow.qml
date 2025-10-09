@@ -224,7 +224,13 @@ Loader {
 
                             radius: 2
                             opacity: 0.33
-                            width: (indicatorBackground.width-4) * (currentDevice.position/100.0)
+                            width: {
+                                if ((currentDevice.deviceModel === "W270160X")) {
+                                    return ((indicatorBackground.width-4) * ((100-currentDevice.open)/100.0))
+                                } else {
+                                    return ((indicatorBackground.width-4) * (currentDevice.position/100.0))
+                                }
+                            }
                             color: Theme.colorPrimary
                         }
                     }
@@ -655,14 +661,14 @@ Loader {
 
                                     source: "qrc:/assets/icons_material/window_closed-fill.svg"
                                     onClicked: {
-                                        if (currentDevice.actionAction(DeviceUtilsSwitchBot.ACTION_CLOSE_DOWN)) {
-                                            actionSlider_blind.value = 0
+                                        if (currentDevice.actionAction(DeviceUtilsSwitchBot.ACTION_CLOSE_UP)) {
+                                            actionMiddleSlider_blind.value = 100
                                         }
                                     }
                                 }
                                 Text {
                                     anchors.verticalCenter: parent.verticalCenter
-                                    text: qsTr("Close Down")
+                                    text: qsTr("Close Up")
                                     textFormat: Text.PlainText
                                     color: Theme.colorText
                                 }
@@ -679,7 +685,7 @@ Loader {
                                     source: "qrc:/assets/icons_material/window_closed.svg"
                                     onClicked: {
                                         if (currentDevice.actionAction(DeviceUtilsSwitchBot.ACTION_OPEN)) {
-                                            actionSlider_blind.value = 50
+                                            actionMiddleSlider_blind.value = 0
                                         }
                                     }
                                 }
@@ -701,14 +707,14 @@ Loader {
 
                                     source: "qrc:/assets/icons_material/window_closed-fill.svg"
                                     onClicked: {
-                                        if (currentDevice.actionAction(DeviceUtilsSwitchBot.ACTION_CLOSE_UP)) {
-                                            actionSlider_blind.value = 100
+                                        if (currentDevice.actionAction(DeviceUtilsSwitchBot.ACTION_CLOSE_DOWN)) {
+                                            actionMiddleSlider_blind.value = -100
                                         }
                                     }
                                 }
                                 Text {
                                     anchors.verticalCenter: parent.verticalCenter
-                                    text: qsTr("Close Up")
+                                    text: qsTr("Close Down")
                                     textFormat: Text.PlainText
                                     color: Theme.colorText
                                 }
@@ -732,22 +738,7 @@ Loader {
                                 currentDevice.actionMove(letsgo)
                             }
                         }
-/*
-                        SliderValueSolid {
-                            id: actionSlider_blind
-                            orientation: Qt.Vertical
-                            Layout.preferredHeight: 320
-                            hhh: 40
 
-                            from: 0
-                            to: 100
-                            value: currentDevice.position
-
-                            onMoved: {
-                                currentDevice.actionMove(value)
-                            }
-                        }
-*/
                         ////
                     }
 

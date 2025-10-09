@@ -1142,7 +1142,7 @@ Item {
 
             function updateData() {
                 if ((boxDevice.deviceModel === "W270160X")) {
-                    indicatorSlider.width = (indicator.width-4) * (boxDevice.open/100.0)
+                    indicatorSlider.width = (indicator.width-4) * ((100-boxDevice.open)/100.0)
                     legend.text = boxDevice.open + "%"
                 } else {
                     indicatorSlider.width = (indicator.width-4) * (boxDevice.position/100.0)
