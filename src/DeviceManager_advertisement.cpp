@@ -157,10 +157,10 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoo
 
                     std::string output;
                     serializeJson(obj, output);
-                    //qDebug() << "output:" << output.c_str();
+                    //qDebug() << "decodeBLEJson(known) output:" << output.c_str();
 
                     // Do not process devices with random macs or IBEACONS packets
-                    if (doc["type"] == "RMAC" || doc["prmac"] || doc["model_id"] == "IBEACON") continue;
+                    if (doc["type"] == "RMAC" || doc["prmac"] || doc["model_id"] == "IBEACON") break;
 
                     dd->setTheengsModelId(QString::fromStdString(doc["model"]), QString::fromStdString(doc["model_id"]));
 
@@ -260,29 +260,30 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoo
 
                 std::string output;
                 serializeJson(obj, output);
-                //qDebug() << "(UNKNOWN DEVICE) output (svd)" << output.c_str();
+                //qDebug() << "decodeBLEJson(unknown) output:" << output.c_str();
 
                 // Do not process devices with random macs
-                //if (doc["type"] == "RMAC" || doc["prmac"]) break;
-
-                // We need a valid MAC address to send MQTT data
-                // If available, use MAC address decoded from advertisement packets
-                if (mac_qstr.isEmpty())
+                if (!(doc["type"] == "RMAC" || doc["prmac"]))
                 {
-                    mac_qstr = QString::fromStdString(obj["mac"]);
-                    mac_qstr_clean = mac_qstr.remove(':');
-                }
+                    // We need a valid MAC address to send MQTT data
+                    // If available, use MAC address decoded from advertisement packets
+                    if (mac_qstr.isEmpty())
+                    {
+                        mac_qstr = QString::fromStdString(obj["mac"]);
+                        mac_qstr_clean = mac_qstr.remove(':');
+                    }
 
-                // MQTT send
-                SettingsManager *sm = SettingsManager::getInstance();
-                MqttManager *mq = MqttManager::getInstance();
-                if (sm && mq && !mac_qstr_clean.isEmpty())
-                {
-                    QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr_clean;
-                    status_device = mq->publishData(topic, QString::fromStdString(output));
-                }
+                    // MQTT send
+                    SettingsManager *sm = SettingsManager::getInstance();
+                    MqttManager *mq = MqttManager::getInstance();
+                    if (sm && mq && !mac_qstr_clean.isEmpty())
+                    {
+                        QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr_clean;
+                        status_device = mq->publishData(topic, QString::fromStdString(output));
+                    }
 
-                status_device = true;
+                    status_device = true;
+                }
             }
             else
             {
