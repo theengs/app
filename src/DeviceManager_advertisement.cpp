@@ -108,47 +108,54 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoo
 
             // Handle advertisement //
 
-            ArduinoJson::DynamicJsonDocument doc(4096);
-            doc["id"] = mac_qstr.toStdString();
-            doc["name"] = info.name().toStdString();
-            doc["rssi"] = info.rssi();
-
             const QList<quint16> &manufacturerIds = info.manufacturerIds();
-            for (const auto id: manufacturerIds)
-            {
-                //qDebug() << info.name() << info.address() << ">  Manufacturer Data >"
-                //         << "/ ID" << Qt::hex << Qt::showbase << id
-                //         << "/" << Qt::dec << info.manufacturerData(id).size() << "bytes"
-                //         << "/" << info.manufacturerData(id).toHex();
-
-                //if (id == 0x004C) continue; // skip iBeacons
-
-                dd->parseAdvertisementData(DeviceUtils::BLE_ADV_MANUFACTURERDATA,
-                                           id, info.manufacturerData(id));
-
-                doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + info.manufacturerData(id).toHex().toStdString();
-            }
-
             const QList<QBluetoothUuid> &serviceIds = info.serviceIds();
-            for (const auto id: serviceIds)
+
+            int maxLoop = std::max(manufacturerIds.size(), serviceIds.size());
+
+            for (int i = 0; i < maxLoop; i++)
             {
-                //qDebug() << info.name() << info.address() << ">  Service Data >"
-                //         << "/ ID" << Qt::hex << Qt::showbase << id.toUInt16()
-                //         << "/" << Qt::dec << info.serviceData(id).size() << "bytes"
-                //         << "/" << info.serviceData(id).toHex();
+                ArduinoJson::DynamicJsonDocument doc(4096);
+                doc["id"] = mac_qstr.toStdString();
+                doc["name"] = info.name().toStdString();
+                doc["rssi"] = info.rssi();
 
-                dd->parseAdvertisementData(DeviceUtils::BLE_ADV_SERVICEDATA,
-                                           id.toUInt16(), info.serviceData(id));
+                //
+                if (manufacturerIds.size() > i)
+                {
+                    const auto id = manufacturerIds.at(i);
 
-                doc["servicedata"] = info.serviceData(id).toHex().toStdString();
-                doc["servicedatauuid"] = QByteArray::number(id.toUInt16(), 16).rightJustified(4, '0').toStdString();
-            }
+                    //qDebug() << info.name() << info.address() << ">  Manufacturer Data >"
+                    //         << "/ ID" << Qt::hex << Qt::showbase << id
+                    //         << "/" << Qt::dec << info.manufacturerData(id).size() << "bytes"
+                    //         << "/" << info.manufacturerData(id).toHex();
 
-            if (manufacturerIds.size() || serviceIds.size())
-            {
+                    dd->parseAdvertisementData(DeviceUtils::BLE_ADV_MANUFACTURERDATA,
+                                               id, info.manufacturerData(id));
+
+                    doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + info.manufacturerData(id).toHex().toStdString();
+                }
+
+                //
+                if (serviceIds.size() > i)
+                {
+                    const auto id = serviceIds.at(i);
+
+                    //qDebug() << info.name() << info.address() << ">  Service Data >"
+                    //         << "/ ID" << Qt::hex << Qt::showbase << id.toUInt16()
+                    //         << "/" << Qt::dec << info.serviceData(id).size() << "bytes"
+                    //         << "/" << info.serviceData(id).toHex();
+
+                    dd->parseAdvertisementData(DeviceUtils::BLE_ADV_SERVICEDATA,
+                                               id.toUInt16(), info.serviceData(id));
+
+                    doc["servicedata"] = info.serviceData(id).toHex().toStdString();
+                    doc["servicedatauuid"] = QByteArray::number(id.toUInt16(), 16).rightJustified(4, '0').toStdString();
+                }
+
+                //
                 TheengsDecoder dec;
                 ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
-
                 if (dec.decodeBLEJson(obj) >= 0)
                 {
                     obj.remove("manufacturerdata");
@@ -181,7 +188,12 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoo
                     if (sm && mq && !mac_qstr_clean.isEmpty())
                     {
                         QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr_clean;
-                        status_device = mq->publishData(topic, QString::fromStdString(output));
+                        bool status_mqtt = mq->publishData(topic, QString::fromStdString(output));
+                        if (!status_mqtt)
+                        {
+                            qWarning() << "MQTT publishData(" << topic << ") FAILED";
+                            qDebug() << "- data:" << output;
+                        }
                     }
 
                     status_device = true;
@@ -228,27 +240,31 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoo
         QString mac_qstr = info.address().toString();
         QString mac_qstr_clean = info.address().toString().remove(':');
 
-        ArduinoJson::DynamicJsonDocument doc(4096);
-        doc["id"] = mac_qstr.toStdString();
-        doc["name"] = info.name().toStdString();
-        doc["rssi"] = info.rssi();
-
         const QList<quint16> &manufacturerIds = info.manufacturerIds();
-        for (const auto id: manufacturerIds)
-        {
-            //if (id == 0x004C) continue; // skip iBeacons
-            doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + info.manufacturerData(id).toHex().toStdString();
-        }
-
         const QList<QBluetoothUuid> &serviceIds = info.serviceIds();
-        for (const auto id: serviceIds)
-        {
-            doc["servicedata"] = info.serviceData(id).toHex().toStdString();
-            doc["servicedatauuid"] = QByteArray::number(id.toUInt16(), 16).rightJustified(4, '0').toStdString();
-        }
 
-        if (manufacturerIds.size() || serviceIds.size())
+        int maxLoop = std::max(manufacturerIds.size(), serviceIds.size());
+
+        for (int i = 0; i < maxLoop; i++)
         {
+            ArduinoJson::DynamicJsonDocument doc(4096);
+            doc["id"] = mac_qstr.toStdString();
+            doc["name"] = info.name().toStdString();
+            doc["rssi"] = info.rssi();
+
+            if (manufacturerIds.size() > i)
+            {
+                const auto id = manufacturerIds.at(i);
+                doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + info.manufacturerData(id).toHex().toStdString();
+            }
+
+            if (serviceIds.size() > i)
+            {
+                const auto id = serviceIds.at(i);
+                doc["servicedata"] = info.serviceData(id).toHex().toStdString();
+                doc["servicedatauuid"] = QByteArray::number(id.toUInt16(), 16).rightJustified(4, '0').toStdString();
+            }
+
             TheengsDecoder dec;
             ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
 
