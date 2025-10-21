@@ -149,6 +149,7 @@ Item {
                 width: parent.width
                 text: qsTr("Manufacturer agnostic BLE sensors reading application with MQTT integration.")
                 source: "qrc:/IconLibrary/material-symbols/info.svg"
+                sourceSize: 24
             }
 
             Item { height: 4; width: 4; } // spacer
@@ -160,12 +161,43 @@ Item {
             ListItemClickable { // release notes
                 width: parent.width
 
-                text: qsTr("Release notes")
+                text: qsTr("Theengs App")
                 source: "qrc:/IconLibrary/material-symbols/new_releases.svg"
                 sourceSize: 24
                 indicatorSource: "qrc:/IconLibrary/material-icons/duotone/launch.svg"
 
                 onClicked: Qt.openUrlExternally("https://github.com/theengs/app/releases")
+
+                ItemBadge {
+                    anchors.right: parent.right
+                    anchors.rightMargin: 48
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    text: "1.5"
+                }
+            }
+
+            ////////
+
+            ListSeparator { }
+
+            ListItemClickable { // release notes
+                width: parent.width
+
+                text: qsTr("Theengs Decoder")
+                source: "qrc:/IconLibrary/material-symbols/new_releases.svg"
+                sourceSize: 24
+                indicatorSource: "qrc:/IconLibrary/material-icons/duotone/launch.svg"
+
+                onClicked: Qt.openUrlExternally("https://github.com/theengs/decoder/releases/tag/v2.0.0")
+
+                ItemBadge {
+                    anchors.right: parent.right
+                    anchors.rightMargin: 48
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    text: "2.0.0"
+                }
             }
 
             ////////

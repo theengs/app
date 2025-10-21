@@ -466,7 +466,7 @@ Loader {
                     anchors.left: parent.left
                     anchors.leftMargin: 16
                     anchors.right: parent.right
-                    anchors.rightMargin: 16 + (isDesktop ? parent.width * 0.33 : 0)
+                    anchors.rightMargin: 16 + (singleColumn ? 0 : parent.width * 0.33)
                     spacing: 16
 
                     //opacity: currentDevice.connected ? 1 : 0.33
