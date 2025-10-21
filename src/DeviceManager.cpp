@@ -1894,6 +1894,39 @@ void DeviceManager::disconnectDevices()
     }
 }
 
+void DeviceManager::removeGateway(const QString &address)
+{
+    for (auto d: std::as_const(m_gateways_model->m_devices))
+    {
+        Device *dd = qobject_cast<Device*>(d);
+
+        if (dd->getAddress() == address)
+        {
+            qDebug() << "- Removing gateway: " << dd->getName() << "/" << dd->getAddress() << "from local database";
+
+            // Remove from database
+            if (m_dbInternal || m_dbExternal)
+            {
+                QSqlQuery removeGateway;
+                removeGateway.prepare("DELETE FROM gateways WHERE deviceAddr = :deviceAddr");
+                removeGateway.bindValue(":deviceAddr", dd->getAddress());
+
+                if (removeGateway.exec() == false)
+                {
+                    qWarning() << "> removeGateway.exec() ERROR"
+                               << removeGateway.lastError().type() << ":" << removeGateway.lastError().text();
+                }
+            }
+
+            // Remove from model
+            m_gateways_model->removeDevice(dd, true);
+            Q_EMIT gatewayListUpdated();
+
+            break;
+        }
+    }
+}
+
 void DeviceManager::removeDevice(const QString &address)
 {
     for (auto d: std::as_const(m_devices_model->m_devices))
@@ -1924,7 +1957,7 @@ void DeviceManager::removeDevice(const QString &address)
                 }
             }
 
-            // Remove device
+            // Remove from model
             m_devices_model->removeDevice(dd, true);
             Q_EMIT devicesListUpdated();
 
@@ -1973,6 +2006,8 @@ QVariant DeviceManager::getDeviceByProxyIndex(const int index, const DeviceUtils
     if (deviceType > 0)
     {
         // if we split the device list by type
+        if (deviceType == DeviceUtils::DEVICE_THEENGS_GATEWAY) filter = m_gateways_filter;
+        else filter = m_devices_filter;
     }
 
     QModelIndex proxyIndex = filter->index(index, 0);

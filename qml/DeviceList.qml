@@ -68,23 +68,23 @@ Item {
     property var selectionList: []
     property int selectionCount: 0
 
-    function selectDevice(index) {
+    function selectDevice(index, type) {
         // make sure it's not already selected
-        if (deviceManager.getDeviceByProxyIndex(index).selected) return
+        if (deviceManager.getDeviceByProxyIndex(index, type).selected) return
 
         // then add
         selectionMode = true
         selectionList.push(index)
         selectionCount++
 
-        deviceManager.getDeviceByProxyIndex(index).selected = true
+        deviceManager.getDeviceByProxyIndex(index, type).selected = true
     }
-    function deselectDevice(index) {
+    function deselectDevice(index, type) {
         var i = selectionList.indexOf(index)
         if (i > -1) { selectionList.splice(i, 1); selectionCount--; }
         if (selectionList.length <= 0 || selectionCount <= 0) { exitSelectionMode() }
 
-        deviceManager.getDeviceByProxyIndex(index).selected = false
+        deviceManager.getDeviceByProxyIndex(index, type).selected = false
     }
 
     function isSelected() {
@@ -95,13 +95,13 @@ Item {
         selectionList = []
         selectionCount = 0
 
-        for (var i = 0; i < devicesView.count; i++) {
-            deviceManager.getDeviceByProxyIndex(i).selected = false
+        for (var i = 0; i < deviceManager.deviceCount; i++) {
+            deviceManager.getDeviceByProxyIndex(i, 0).selected = false
         }
     }
 
     function updateSelectedDevice() {
-        for (var i = 0; i < devicesView.count; i++) {
+        for (var i = 0; i < deviceManager.deviceCount; i++) {
             if (deviceManager.getDeviceByProxyIndex(i).selected) {
                 deviceManager.updateDevice(deviceManager.getDeviceByProxyIndex(i).deviceAddress)
             }
@@ -109,7 +109,7 @@ Item {
         exitSelectionMode()
     }
     function syncSelectedDevice() {
-        for (var i = 0; i < devicesView.count; i++) {
+        for (var i = 0; i < deviceManager.deviceCount; i++) {
             if (deviceManager.getDeviceByProxyIndex(i).selected) {
                 deviceManager.syncDevice(deviceManager.getDeviceByProxyIndex(i).deviceAddress)
             }
@@ -117,8 +117,9 @@ Item {
         exitSelectionMode()
     }
     function removeSelectedDevice() {
+        console.log("removeSelectedDevice")
         var devicesAddr = []
-        for (var i = 0; i < devicesView.count; i++) {
+        for (var i = 0; i < deviceManager.deviceCount; i++) {
             if (deviceManager.getDeviceByProxyIndex(i).selected) {
                 devicesAddr.push(deviceManager.getDeviceByProxyIndex(i).deviceAddress)
             }
@@ -129,13 +130,18 @@ Item {
         exitSelectionMode()
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-
     PopupDeleteDevice {
         id: confirmDeleteDevice
         onConfirmed: screenDeviceList.removeSelectedDevice()
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+/*
+    PopupDeleteDevice {
+        id: confirmDeleteGateway
+        onConfirmed: screenDeviceList.removeSelectedGateway()
+    }
+*/
     ////////////////////////////////////////////////////////////////////////////
 
     Column {

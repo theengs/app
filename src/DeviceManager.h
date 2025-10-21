@@ -279,16 +279,6 @@ public:
     Q_INVOKABLE void whitelistBleDevice(const QString &addr);
     Q_INVOKABLE bool isBleDeviceBlacklisted(const QString &addr);
 
-    // Gateway list management
-
-    Q_INVOKABLE void selectGateway(const QString &address);
-    Q_INVOKABLE void selectGateway_fromwifi(const QString &address);
-    Q_INVOKABLE void deselectGateway();
-
-    int getGatewayCount() const { return m_gateways_model->getDeviceCount(); }
-    DeviceFilter *getGatewaysFiltered() const { return m_gateways_filter; }
-    //DeviceFilter *getGatewaysNearby() const { return m_gateways_nearby_filter; }
-
     // Devices list management
     Q_INVOKABLE bool areDevicesAvailable() const { return m_devices_model->hasDevices(); }
     Q_INVOKABLE bool areGatewaysAvailable() const { return m_gateways_model->hasDevices(); }
@@ -297,6 +287,18 @@ public:
     int getDeviceCount() const { return m_devices_model->getDeviceCount(); }
     DeviceFilter *getDevicesFiltered() const { return m_devices_filter; }
     DeviceFilter *getDevicesNearby() const { return m_devices_nearby_filter; }
+
+    // Gateway management
+    Q_INVOKABLE void removeGateway(const QString &address);
+
+    // Gateway list management
+    Q_INVOKABLE void selectGateway(const QString &address);
+    Q_INVOKABLE void selectGateway_fromwifi(const QString &address);
+    Q_INVOKABLE void deselectGateway();
+
+    int getGatewayCount() const { return m_gateways_model->getDeviceCount(); }
+    DeviceFilter *getGatewaysFiltered() const { return m_gateways_filter; }
+    //DeviceFilter *getGatewaysNearby() const { return m_gateways_nearby_filter; }
 
     // Sorting and filtering
     Q_INVOKABLE void orderby_manual();
