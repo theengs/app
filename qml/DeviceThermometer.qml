@@ -3,7 +3,6 @@ import QtQuick.Controls
 
 import ComponentLibrary
 import DeviceUtils
-import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
 
 Loader {
     id: deviceThermometer
@@ -212,8 +211,8 @@ Loader {
         }
 
         function loadGraph() {
-            var reload = !(settingsManager.graphThermometer === "lines" && graphLoader.source === "ChartPlantDataAio.qml") ||
-                         !(settingsManager.graphThermometer === "minmax" && graphLoader.source === "ChartThermometerMinMax.qml")
+            var reload = !(settingsManager.graphThermometer === "lines" && graphLoader.source === "charts/ChartPlantDataAio.qml") ||
+                         !(settingsManager.graphThermometer === "minmax" && graphLoader.source === "charts/ChartThermometerMinMax.qml")
 
             if (reload) {
                 graphLoader.source = ""
@@ -222,9 +221,9 @@ Loader {
 
             if (graphLoader.status !== Loader.Ready) {
                 if (settingsManager.graphThermometer === "lines") {
-                    graphLoader.source = "ChartPlantDataAio.qml"
+                    graphLoader.source = "charts/ChartPlantDataAio.qml"
                 } else {
-                    graphLoader.source = "ChartThermometerMinMax.qml"
+                    graphLoader.source = "charts/ChartThermometerMinMax.qml"
                 }
             }
 

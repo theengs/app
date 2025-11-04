@@ -1,7 +1,6 @@
 import QtQuick
 
 import ComponentLibrary
-import "qrc:/ComponentLibrary/UtilsNumber.js" as UtilsNumber
 
 Item {
     id: indicatorAirQuality

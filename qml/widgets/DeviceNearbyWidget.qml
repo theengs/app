@@ -1,7 +1,6 @@
 import QtQuick
 
 import ComponentLibrary
-import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
 
 Rectangle {
     id: deviceNearbyWidget

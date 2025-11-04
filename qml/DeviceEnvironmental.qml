@@ -3,7 +3,6 @@ import QtQuick.Controls
 
 import ComponentLibrary
 import DeviceUtils
-import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
 
 Loader {
     id: deviceEnvironmental
@@ -370,7 +369,7 @@ Loader {
             if (isAirMonitor) {
                 if (currentDevice.hasVocSensor || currentDevice.hasHchoSensor || currentDevice.hasCo2Sensor) {
                     if (chartEnvLoader.status !== Loader.Ready) {
-                        chartEnvLoader.source = "ChartEnvironmentalVoc.qml"
+                        chartEnvLoader.source = "charts/ChartEnvironmentalVoc.qml"
                     } else {
                         historyChart.loadGraph()
                         historyChart.updateGraph()

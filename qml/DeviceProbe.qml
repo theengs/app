@@ -5,10 +5,7 @@ import QtQuick.Controls
 import ComponentLibrary
 
 import DeviceUtils
-import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
-
 import TempPresetUtils
-import "qrc:/js/UtilsPresets.js" as UtilsPresets
 
 Loader {
     id: deviceProbe
@@ -174,8 +171,8 @@ Loader {
             if (currentDevice.hasProbesTPMS) return
 
             if (graphLoader.status !== Loader.Ready) {
-                graphLoader.source = "ChartProbeRealTime.qml"
-                //graphLoader.source = "ChartProbeDataAio.qml" // disabled
+                graphLoader.source = "charts/ChartProbeRealTime.qml"
+                //graphLoader.source = "charts/ChartProbeDataAio.qml" // disabled
             }
 
             if (graphLoader.status === Loader.Ready && graphLoader.asynchronous === false) {

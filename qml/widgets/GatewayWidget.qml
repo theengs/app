@@ -2,8 +2,6 @@ import QtQuick
 
 import ComponentLibrary
 import DeviceUtils
-import "qrc:/ComponentLibrary/UtilsNumber.js" as UtilsNumber
-import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
 
 Item {
     id: gatewayWidget

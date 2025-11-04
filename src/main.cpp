@@ -38,9 +38,9 @@
 #include "utils_os_macos_dock.h"
 #endif
 
-#include <MobileUI/MobileUI.h>
-#include <MobileSharing/MobileSharing.h>
-#include <SingleApplication/SingleApplication.h>
+#include <MobileUI>
+#include <MobileSharing>
+#include <SingleApplication>
 
 #include <QtGlobal>
 #include <QLibraryInfo>
@@ -167,9 +167,7 @@ int main(int argc, char *argv[])
     // Translate the application
     utilsLanguage->loadLanguage(sm->getAppLanguage());
 
-    // ThemeEngine
-    qmlRegisterSingletonType(QUrl("qrc:/ComponentLibrary/ThemeEngine.qml"), "ComponentLibrary", 1, 0, "Theme");
-
+    //
     MobileUI::registerQML();
     DeviceUtils::registerQML();
     DeviceUtilsTheengs::registerQML();
@@ -179,10 +177,6 @@ int main(int argc, char *argv[])
 
     // Then we start the UI
     QQmlApplicationEngine engine;
-    engine.addImportPath(":/");
-    engine.addImportPath(":/Theengs");
-    engine.addImportPath(":/ComponentLibrary");
-
     QQmlContext *engine_context = engine.rootContext();
 
     engine_context->setContextProperty("deviceManager", dm);
@@ -203,9 +197,9 @@ int main(int argc, char *argv[])
 #if defined(Q_OS_ANDROID) || defined(Q_OS_IOS) || defined(FORCE_MOBILE_UI)
     ShareUtils *utilsShare = new ShareUtils();
     engine_context->setContextProperty("utilsShare", utilsShare);
-    engine.load(QUrl(QStringLiteral("qrc:/qml/MobileApplication.qml")));
+    engine.loadFromModule("Theengs", "MobileApplication");
 #else
-    engine.load(QUrl(QStringLiteral("qrc:/qml/DesktopApplication.qml")));
+    engine.loadFromModule("TheengsApp", "DesktopApplication");
 #endif
     if (engine.rootObjects().isEmpty())
     {

@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Controls
 
 import TempPresetUtils
-import "qrc:/js/UtilsPresets.js" as UtilsPresets
 
 import ComponentLibrary
 

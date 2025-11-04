@@ -3,8 +3,6 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 import TempPresetUtils
-import "qrc:/js/UtilsPresets.js" as UtilsPresets
-import "qrc:/ComponentLibrary/UtilsNumber.js" as UtilsNumber
 
 import ComponentLibrary
 

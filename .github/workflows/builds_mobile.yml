@@ -65,6 +65,7 @@ jobs:
         run: |
              sudo apt-get install cmake ninja-build libtool automake m4 gettext -y
              qmake --version
+             cmake --version
              ninja --version
 
       # Build dependencies (from contribs script)
@@ -78,8 +79,20 @@ jobs:
       # Build application
       - name: Build application
         run: |
-             qmake ${{env.APP_NAME}}.pro CONFIG+=release
-             make -j$(nproc)
+             ${{env.QT_TARGET_PATH}}/bin/qt-cmake --version
+             ${{env.QT_TARGET_PATH}}/bin/qt-cmake -B build/ -G Ninja \
+               -DCMAKE_SYSTEM_NAME=Android \
+               -DCMAKE_BUILD_TYPE=Release \
+               -DCMAKE_FIND_ROOT_PATH:PATH=${{env.QT_TARGET_PATH}} \
+               -DCMAKE_PREFIX_PATH:PATH=${{env.QT_TARGET_PATH}} \
+               -DANDROID_SDK_ROOT=$ANDROID_SDK_ROOT \
+               -DANDROID_NDK_ROOT=$ANDROID_NDK_ROOT \
+               -DANDROID_PLATFORM=android-28 \
+               -DANDROID_ABI="arm64-v8a" \
+               -DQT_HOST_PATH:PATH=${{env.QT_HOST_PATH}} \
+               -DQT_ANDROID_BUILD_ALL_ABIS=OFF \
+               -DQT_ANDROID_ABIS="arm64-v8a"
+             cmake --build build/ --config Release
 
   ## iOS build #################################################################
   build-ios:
@@ -102,11 +115,17 @@ jobs:
           modules: qtconnectivity qtwebsockets qtcharts
           extra: '--autodesktop'
 
+      # Install dependencies (from package manager)
+      - name: Install dependencies (from package manager)
+        run: |
+             brew install cmake ninja automake autoconf libtool pkg-config
+
       # Setup env
       - name: Setup env
         run: |
-             brew install cmake ninja automake autoconf libtool pkg-config
              qmake --version
+             cmake --version
+             ninja --version
 
       # Build dependencies (from contribs script)
       - name: Build dependencies (from contribs script)
@@ -118,5 +137,12 @@ jobs:
       # Build application
       - name: Build application
         run: |
-             qmake ${{env.APP_NAME}}.pro CONFIG+=release
-             make -j`sysctl -n hw.logicalcpu`
+             ${{env.QT_TARGET_PATH}}/bin/qt-cmake --version
+             ${{env.QT_TARGET_PATH}}/bin/qt-cmake -B build/ -G Xcode \
+               -DCMAKE_SYSTEM_NAME=iOS \
+               -DCMAKE_BUILD_TYPE=Release \
+               -DCMAKE_FIND_ROOT_PATH:PATH=${{env.QT_TARGET_PATH}} \
+               -DCMAKE_PREFIX_PATH:PATH=${{env.QT_TARGET_PATH}} \
+               -DQT_HOST_PATH:PATH=${{env.QT_HOST_PATH}} \
+               -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED="NO"
+             cmake --build build/ --config Release -- CODE_SIGNING_ALLOWED=NO

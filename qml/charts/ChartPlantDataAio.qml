@@ -2,7 +2,6 @@ import QtQuick
 import QtCharts
 
 import ComponentLibrary
-import "qrc:/ComponentLibrary/UtilsNumber.js" as UtilsNumber
 
 Item {
     id: chartPlantDataAio

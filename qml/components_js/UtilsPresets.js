@@ -1,6 +1,8 @@
 // UtilsPresets.js
 // Version 0
 
+.pragma library
+
 .import BatteryPresetUtils as BatteryPresetUtils
 .import TempPresetUtils as TempPresetUtils
 .import ComponentLibrary as ThemeEngine

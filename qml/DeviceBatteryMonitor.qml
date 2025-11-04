@@ -5,10 +5,7 @@ import QtQuick.Controls
 import ComponentLibrary
 
 import DeviceUtils
-import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
-
 import BatteryPresetUtils
-import "qrc:/js/UtilsPresets.js" as UtilsPresets
 
 Loader {
     id: deviceBM
@@ -186,9 +183,9 @@ Loader {
 
             if (graphLoader.status !== Loader.Ready) {
                 if (currentDevice.batteryPercent > 0) {
-                    graphLoader.source = "ChartBatteryHistory.qml"
+                    graphLoader.source = "charts/ChartBatteryHistory.qml"
                 } else {
-                    graphLoader.source = "ChartBatteryRealTime.qml"
+                    graphLoader.source = "charts/ChartBatteryRealTime.qml"
                 }
             }
 

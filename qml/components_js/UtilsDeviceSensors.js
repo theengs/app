@@ -1,6 +1,8 @@
 // UtilsDeviceSensors.js
 // Version 4
 
+.pragma library
+
 .import DeviceUtils as DeviceUtils
 .import ComponentLibrary as ThemeEngine
 

@@ -71,6 +71,7 @@ list(APPEND MODULE_QML_FILES
     generic/ItemBadge.qml
     generic/ProgressArc.qml
     generic/ProgressCircle.qml
+    generic/ProgressChip.qml
     generic/SelectorMenu.qml
     generic/SelectorMenuSunken.qml
     generic/SelectorMenuItem.qml

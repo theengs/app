@@ -6,8 +6,6 @@ import ComponentLibrary
 import DeviceUtils
 import DeviceUtilsTheengs
 import DeviceUtilsSwitchBot
-import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
-import "qrc:/ComponentLibrary/UtilsNumber.js" as UtilsNumber
 
 Loader {
     id: deviceActuator

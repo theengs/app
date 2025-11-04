@@ -3,7 +3,6 @@ import QtQuick.Controls
 
 import ComponentLibrary
 import DeviceUtils
-import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
 
 Item {
     id: devicePlantSensorData
@@ -35,7 +34,7 @@ Item {
 
     function loadGraph() {
         if (chartAioLoader.status !== Loader.Ready) {
-            chartAioLoader.source = "ChartPlantDataAio.qml"
+            chartAioLoader.source = "charts/ChartPlantDataAio.qml"
         } else {
             dataChart.loadGraph()
             dataChart.updateGraph()
@@ -45,9 +44,9 @@ Item {
     function loadIndicators() {
         if (indicatorsLoader.status !== Loader.Ready) {
             if (settingsManager.bigIndicator)
-                indicatorsLoader.source = "IndicatorsSolid.qml"
+                indicatorsLoader.source = "charts/IndicatorsSolid.qml"
             else
-                indicatorsLoader.source = "IndicatorsCompact.qml"
+                indicatorsLoader.source = "charts/IndicatorsCompact.qml"
         } else {
             dataIndicators.updateLegendSize()
             dataIndicators.updateData()
@@ -55,9 +54,9 @@ Item {
     }
     function reloadIndicators() {
         if (settingsManager.bigIndicator)
-            indicatorsLoader.source = "IndicatorsSolid.qml"
+            indicatorsLoader.source = "charts/IndicatorsSolid.qml"
         else
-            indicatorsLoader.source = "IndicatorsCompact.qml"
+            indicatorsLoader.source = "charts/IndicatorsCompact.qml"
 
         if (indicatorsLoader.status === Loader.Ready) {
             dataIndicators.updateLegendSize()

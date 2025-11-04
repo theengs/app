@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
-import "qrc:/js/UtilsPresets.js" as UtilsPresets
 import ComponentLibrary
 
 SwipeDelegate {

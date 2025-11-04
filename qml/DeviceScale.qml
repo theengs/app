@@ -3,7 +3,6 @@ import QtQuick.Controls
 
 import ComponentLibrary
 import DeviceUtils
-import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
 
 Loader {
     id: deviceScale
@@ -161,7 +160,7 @@ Loader {
 
         function loadGraph() {
             if (graphLoader.status !== Loader.Ready) {
-                graphLoader.source = "ChartScaleDataAio.qml"
+                graphLoader.source = "charts/ChartScaleDataAio.qml"
             }
 
             if (graphLoader.status === Loader.Ready) {

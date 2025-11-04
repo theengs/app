@@ -3,7 +3,6 @@ import QtQuick.Controls
 
 import ComponentLibrary
 import DeviceUtils
-import "qrc:/js/UtilsDeviceSensors.js" as UtilsDeviceSensors
 
 Loader {
     id: deviceGeneric

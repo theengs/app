@@ -20,10 +20,10 @@ For more information view the [documentation](https://app.theengs.io/)
 #### Supported platforms
 
 - Linux (Ubuntu 22.04+)
-- macOS 11+
+- macOS 12+
 - Windows 10+
-- Android 8+
-- iOS 14+
+- Android 9+
+- iOS 16+
 
 #### Third party projects used by Theengs app
 

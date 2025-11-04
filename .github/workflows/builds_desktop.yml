@@ -46,6 +46,13 @@ jobs:
              sudo apt-get install libgl1-mesa-dev libxkbcommon-x11-dev libx11-xcb-dev libxcb-cursor0 libzstd-dev -y;
              sudo apt-get install cmake ninja-build pkgconf libtool appstream -y;
 
+      # Setup env
+      - name: Setup env
+        run: |
+             qmake --version
+             cmake --version
+             sudo rm ${{github.workspace}}/../Qt/${{env.QT_VERSION}}/gcc_64/plugins/sqldrivers/libqsqlmimer.so
+
       # Build dependencies (from contribs script)
       - name: Build dependencies (from contribs script)
         run: |
@@ -54,17 +61,11 @@ jobs:
              python3 contribs_builder.py --targets=linux --software mbedtls --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
              cd ..
 
-      # Setup env
-      - name: Setup env
-        run: |
-             qmake --version
-             sudo rm ${{github.workspace}}/../Qt/${{env.QT_VERSION}}/gcc_64/plugins/sqldrivers/libqsqlmimer.so
-
       # Build application
       - name: Build application
         run: |
-             qmake ${{env.APP_NAME}}.pro CONFIG+=release PREFIX=/usr
-             make -j$(nproc)
+             cmake -B build/ -DCMAKE_BUILD_TYPE=Release -G Ninja
+             cmake --build build/ --config Release
 
       # Deploy application
       - name: Deploy application
@@ -106,6 +107,12 @@ jobs:
         run: |
              brew install ninja automake autoconf libtool pkg-config
 
+      # Setup env
+      - name: Setup env
+        run: |
+             qmake --version
+             cmake --version
+
       # Build dependencies (from contribs script)
       - name: Build dependencies (from contribs script)
         run: |
@@ -114,16 +121,11 @@ jobs:
              python3 contribs_builder.py --targets=macos --software mbedtls --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
              cd ..
 
-      # Setup env
-      - name: Setup env
-        run: |
-             qmake --version
-
       # Build application
       - name: Build application
         run: |
-             qmake ${{env.APP_NAME}}.pro CONFIG+=release
-             make -j`sysctl -n hw.logicalcpu`
+             cmake -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+             cmake --build build/ --config Release
 
       # Deploy application
       - name: Deploy application
@@ -170,6 +172,12 @@ jobs:
       #       scoop bucket add extras
       #       scoop install nsis
 
+      # Setup env
+      - name: Setup env
+        run: |
+             qmake --version
+             cmake --version
+
       # Build dependencies (from contribs script)
       - name: Build dependencies (from contribs script)
         run: |
@@ -177,15 +185,11 @@ jobs:
              python3 contribs_builder_qt.py --targets=msvc2022 --software qtmqtt --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
              cd ..
 
-      # Setup env
-      - name: Setup env
-        run: |
-             qmake --version
-
       # Build application
       - name: Build application
         run: |
-             qmake ${{env.APP_NAME}}.pro CONFIG+=release
+             cmake -B build/ -DCMAKE_BUILD_TYPE=Release -G "NMake Makefiles"
+             cd build/
              nmake
 
       # Deploy application

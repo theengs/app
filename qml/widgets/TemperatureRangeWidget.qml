@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
-import "qrc:/ComponentLibrary/UtilsNumber.js" as UtilsNumber
 import ComponentLibrary
 
 Rectangle {

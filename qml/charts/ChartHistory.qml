@@ -3,7 +3,6 @@ import QtQuick.Controls
 import QtQuick.Shapes
 
 import ComponentLibrary
-import "qrc:/ComponentLibrary/UtilsNumber.js" as UtilsNumber
 
 Item {
     id: chartHistory

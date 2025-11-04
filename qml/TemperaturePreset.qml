@@ -4,8 +4,6 @@ import QtQuick.Controls
 
 import ComponentLibrary
 
-import "qrc:/js/UtilsPresets.js" as UtilsPresets
-
 Item {
     id: temperaturePreset
     anchors.fill: parent

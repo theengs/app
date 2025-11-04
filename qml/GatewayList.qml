@@ -57,11 +57,11 @@ Item {
             rectangleBluetoothStatus.hide()
 
             if (!deviceManager.bluetoothPermissions) {
-                itemStatus.source = "ItemNoPermissions.qml"
+                itemStatus.source = "components/ItemNoPermissions.qml"
             } else if (!deviceManager.bluetoothAdapter || !deviceManager.bluetoothEnabled) {
-                itemStatus.source = "ItemNoBluetooth.qml"
+                itemStatus.source = "components/ItemNoBluetooth.qml"
             } else {
-                itemStatus.source = "ItemNoGateway.qml"
+                itemStatus.source = "components/ItemNoGateway.qml"
             }
         }
     }
