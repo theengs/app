@@ -32,7 +32,7 @@ QString UtilsIOSWiFi::getWifiSSID()
 {
     NSString *ssid = nil;
     NSArray *interfaces = (__bridge_transfer id)CNCopySupportedInterfaces();
-/*
+
     for (NSString *interfaceName in interfaces)
     {
         NSDictionary *networkInfo = (__bridge_transfer id)CNCopyCurrentNetworkInfo((__bridge CFStringRef)interfaceName);
@@ -42,7 +42,7 @@ QString UtilsIOSWiFi::getWifiSSID()
             break;
         }
     }
-*/
+
     return QString::fromNSString(ssid);
 }
 

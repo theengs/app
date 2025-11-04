@@ -152,7 +152,7 @@ T.Button {
 
                     visible: control.rightIconBackground
                     color: control.color
-                    opacity: 0.20
+                    opacity: 0.1
                 }
 
                 IconSvg {

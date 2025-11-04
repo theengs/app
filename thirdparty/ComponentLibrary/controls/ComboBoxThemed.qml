@@ -34,12 +34,14 @@ T.ComboBox {
     ////////////////
 
     contentItem: Text {
+        rightPadding: indicator.width
+        verticalAlignment: Text.AlignVCenter
+
         text: control.displayText
         textFormat: Text.PlainText
 
         font: control.font
         elide: Text.ElideRight
-        verticalAlignment: Text.AlignVCenter
 
         opacity: control.enabled ? 1 : 0.66
         color: Theme.colorComponentContent
@@ -106,7 +108,7 @@ T.ComboBox {
     popup: T.Popup {
         y: control.height - 1
         width: control.width
-        implicitHeight: (contentItem.implicitHeight) ? contentItem.implicitHeight + 2 : 0
+        implicitHeight: contentItem.implicitHeight ? contentItem.implicitHeight + 2 : 0
         padding: 1
 
         topMargin: Math.max(screenPaddingStatusbar, screenPaddingTop)
