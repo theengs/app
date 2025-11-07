@@ -125,22 +125,25 @@ int main(int argc, char *argv[])
     app.setOrganizationName("Theengs");
     app.setOrganizationDomain("Theengs");
 
-#if !defined(Q_OS_ANDROID) && !defined(Q_OS_IOS) && !defined(Q_OS_MACOS)
+#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
+    ShareUtils *utilsShare = new ShareUtils();
+#else
     // Application icon
     QIcon appIcon(":/assets/logos/logo.png");
     app.setWindowIcon(appIcon);
+
+    SystrayManager *st = SystrayManager::getInstance();
+    MenubarManager *mb = MenubarManager::getInstance();
 #endif
 
     // Init components
     SettingsManager *sm = SettingsManager::getInstance();
-    SystrayManager *st = SystrayManager::getInstance();
-    MenubarManager *mb = MenubarManager::getInstance();
     MqttManager *mq = MqttManager::getInstance();
     BatteryPresetManager *bpm = BatteryPresetManager::getInstance();
     TempPresetManager *tpm = TempPresetManager::getInstance();
     NotificationManager *nm = NotificationManager::getInstance();
     DeviceManager *dm = new DeviceManager;
-    if (!sm || !st || !mb || !mq || !nm || !dm)
+    if (!sm || !mq || !nm || !dm)
     {
         qWarning() << "Cannot init Theengs components!";
         return EXIT_FAILURE;
@@ -181,25 +184,26 @@ int main(int argc, char *argv[])
 
     engine_context->setContextProperty("deviceManager", dm);
     engine_context->setContextProperty("settingsManager", sm);
-    engine_context->setContextProperty("systrayManager", st);
-    engine_context->setContextProperty("menubarManager", mb);
     engine_context->setContextProperty("mqttManager", mq);
     engine_context->setContextProperty("notificationManager", nm);
     engine_context->setContextProperty("batteryPresetsManager", bpm);
     engine_context->setContextProperty("tempPresetsManager", tpm);
+
     engine_context->setContextProperty("utilsApp", utilsApp);
     engine_context->setContextProperty("utilsWifi", utilsWifi);
     engine_context->setContextProperty("utilsScreen", utilsScreen);
     engine_context->setContextProperty("utilsLanguage", utilsLanguage);
+
     engine_context->setContextProperty("startMinimized", (start_minimized || sm->getMinimized()));
 
     // Load the main view
 #if defined(Q_OS_ANDROID) || defined(Q_OS_IOS) || defined(FORCE_MOBILE_UI)
-    ShareUtils *utilsShare = new ShareUtils();
     engine_context->setContextProperty("utilsShare", utilsShare);
     engine.loadFromModule("Theengs", "MobileApplication");
 #else
-    engine.loadFromModule("TheengsApp", "DesktopApplication");
+    engine_context->setContextProperty("systrayManager", st);
+    engine_context->setContextProperty("menubarManager", mb);
+    engine.loadFromModule("Theengs", "DesktopApplication");
 #endif
     if (engine.rootObjects().isEmpty())
     {
