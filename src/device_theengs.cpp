@@ -509,8 +509,8 @@ bool DeviceTheengs::createDiscoveryMQTT(const QString &deviceAddr, const QString
             if (prop_value.contains("name")) value_name = prop_value["name"].toString();
             if (prop_value.contains("unit")) value_unit = prop_value["unit"].toString();
 
-            if (!availableHASSClasses.contains(value_name)) continue;
-            if (!availableHASSUnits.contains(value_unit)) continue;
+            //if (!availableHASSClasses.contains(value_name)) continue;
+            //if (!availableHASSUnits.contains(value_unit)) continue;
 
             // create discovery object
             QJsonObject discovery;

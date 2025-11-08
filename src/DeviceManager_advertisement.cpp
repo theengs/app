@@ -191,8 +191,7 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoo
                         bool status_mqtt = mq->publishData(topic, QString::fromStdString(output));
                         if (!status_mqtt)
                         {
-                            qWarning() << "MQTT publishData(" << topic << ") FAILED";
-                            qDebug() << "- data:" << output;
+                            //qWarning() << "MQTT publishData(" << topic << ")  FAILED  >> " << output;
                         }
                     }
 
