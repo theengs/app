@@ -10,6 +10,7 @@ set(CMAKE_AUTORCC ON)
 set(APP_NAME ${CMAKE_PROJECT_NAME})
 set(APP_VERSION ${CMAKE_PROJECT_VERSION})
 
+option(ENABLE_MQTT "MQTT broker support" ON)
 option(ENABLE_MBEDTLS "mbedTLS for various encryption needs" OFF)
 
 ################################################################################
@@ -255,7 +256,12 @@ if(NOT IOS AND NOT ANDROID)
     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Qt6::Widgets)
 endif()
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+if(ENABLE_MQTT)
+    find_package(Qt6 REQUIRED COMPONENTS Mqtt)
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Qt6::Mqtt)
+    add_definitions(-DENABLE_MQTT)
+endif()
+if(ENABLE_MBEDTLS)
     add_definitions(-DENABLE_MBEDTLS)
     target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC "-lmbedtls -lmbedx509 -lmbedcrypto")
 endif()
