@@ -33,6 +33,13 @@ jobs:
         with:
           submodules: recursive
 
+      # Install dependencies (from package manager)
+      - name: Install dependencies (from package manager)
+        run: |
+             sudo apt-get install libgl1-mesa-dev libxkbcommon-x11-dev libx11-xcb-dev libzstd-dev -y;
+             sudo apt-get install cmake ninja-build pkgconf libtool -y;
+             sudo apt-get install libfuse2 appstream -y;
+
       # Install Qt
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
@@ -40,18 +47,12 @@ jobs:
           version: ${{env.QT_VERSION}}
           modules: qtconnectivity qtwebsockets qtcharts
 
-      # Install dependencies (from package manager)
-      - name: Install dependencies (from package manager)
-        run: |
-             sudo apt-get install libgl1-mesa-dev libxkbcommon-x11-dev libx11-xcb-dev libxcb-cursor0 libzstd-dev -y;
-             sudo apt-get install cmake ninja-build pkgconf libtool appstream -y;
-
       # Setup env
       - name: Setup env
         run: |
              qmake --version
              cmake --version
-             sudo rm ${{github.workspace}}/../Qt/${{env.QT_VERSION}}/gcc_64/plugins/sqldrivers/libqsqlmimer.so
+             ninja --version
 
       # Build dependencies (from contribs script)
       - name: Build dependencies (from contribs script)
@@ -59,7 +60,6 @@ jobs:
              cd contribs/
              python3 contribs_builder_qt.py --targets=linux --software qtmqtt --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
              python3 contribs_builder.py --targets=linux --software mbedtls --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
-             cd ..
 
       # Build application
       - name: Build application
@@ -69,7 +69,7 @@ jobs:
 
       # Deploy application
       - name: Deploy application
-        run: ./deploy_linux.sh -c -i -p
+        run: ./deploy_linux.sh -c -p -i
 
       # Upload AppImage
       - name: Upload AppImage
@@ -77,7 +77,7 @@ jobs:
         with:
           name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-linux64.AppImage
           path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-linux64.AppImage
-          retention-days: 1
+          retention-days: 7
 
   ## macOS build ###############################################################
   build-mac:
@@ -93,7 +93,7 @@ jobs:
       # Install dependencies (from package manager)
       #- name: Install dependencies (from package manager)
       #  run: |
-      #       brew install qt6 cmake
+      #       brew install qt6 cmake ninja
 
       # Install Qt
       - name: Install Qt
@@ -102,16 +102,13 @@ jobs:
           version: ${{env.QT_VERSION}}
           modules: qtconnectivity qtwebsockets qtcharts
 
-      # Install dependencies (from package manager)
-      - name: Install dependencies (from package manager)
-        run: |
-             brew install ninja automake autoconf libtool pkg-config
-
       # Setup env
       - name: Setup env
         run: |
+             echo "CMAKE_BUILD_PARALLEL_LEVEL=`sysctl -n hw.logicalcpu`" >> $GITHUB_ENV
              qmake --version
              cmake --version
+             ninja --version
 
       # Build dependencies (from contribs script)
       - name: Build dependencies (from contribs script)
@@ -119,7 +116,6 @@ jobs:
              cd contribs/
              python3 contribs_builder_qt.py --targets=macos --software qtmqtt --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
              python3 contribs_builder.py --targets=macos --software mbedtls --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
-             cd ..
 
       # Build application
       - name: Build application
@@ -131,13 +127,13 @@ jobs:
       - name: Deploy application
         run: ./deploy_macos.sh -c -p
 
-      # Upload app ZIP
-      - name: Upload app ZIP
+      # Upload application ZIP
+      - name: Upload application ZIP
         uses: actions/upload-artifact@v4
         with:
           name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS.zip
           path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS.zip
-          retention-days: 1
+          retention-days: 7
 
   ## Windows build #############################################################
   build-windows:
@@ -154,8 +150,14 @@ jobs:
       - name: Configure MSVC
         uses: ilammy/msvc-dev-cmd@v1
         with:
-          arch: x64
-          spectre: true
+          arch: x86_64
+
+      # Install NSIS (already installed in 'windows-2022')
+      #- name: Install NSIS
+      #  run: |
+      #       Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+      #       scoop bucket add extras
+      #       scoop install nsis
 
       # Install Qt
       - name: Install Qt
@@ -165,25 +167,18 @@ jobs:
           modules: qtconnectivity qtwebsockets qtcharts
           arch: 'win64_msvc2022_64'
 
-      # Install NSIS (already installed in 'windows-2022')
-      #- name: Install NSIS
-      #  run: |
-      #       Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
-      #       scoop bucket add extras
-      #       scoop install nsis
-
       # Setup env
       - name: Setup env
         run: |
              qmake --version
              cmake --version
+             ninja --version
 
       # Build dependencies (from contribs script)
       - name: Build dependencies (from contribs script)
         run: |
              cd contribs/
              python3 contribs_builder_qt.py --targets=msvc2022 --software qtmqtt --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
-             cd ..
 
       # Build application
       - name: Build application
@@ -196,13 +191,13 @@ jobs:
       - name: Deploy application
         run: sh deploy_windows.sh -c -p
 
-      # Upload app ZIP
-      - name: Upload app ZIP
+      # Upload application ZIP
+      - name: Upload application ZIP
         uses: actions/upload-artifact@v4
         with:
           name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.zip
           path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.zip
-          retention-days: 1
+          retention-days: 7
 
       # Upload NSIS installer
       - name: Upload NSIS installer
@@ -210,4 +205,4 @@ jobs:
         with:
           name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.exe
           path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.exe
-          retention-days: 1
+          retention-days: 7

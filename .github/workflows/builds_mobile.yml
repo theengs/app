@@ -34,13 +34,13 @@ jobs:
           submodules: recursive
 
       # Java environment (already installed in 'ubuntu-24.04')
-      - name: Setup Java environment
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
+      #- name: Setup Java environment
+      #  uses: actions/setup-java@v4
+      #  with:
+      #    distribution: 'temurin'
+      #    java-version: '17'
 
-      # Android environment (already installed in 'ubuntu-24.04')
+      # Android environment
       - name: Setup Android environment
         uses: android-actions/setup-android@v3
       - name: Install Android SDK / NDK / tools
@@ -49,8 +49,8 @@ jobs:
              sdkmanager "ndk;28.2.13676358"
              sdkmanager "build-tools;36.1.0"
 
-      # Install Qt (Android & desktop)
-      - name: Install Qt (Android & desktop)
+      # Install Qt (desktop & Android)
+      - name: Install Qt (desktop & Android)
         uses: jurplel/install-qt-action@v4
         with:
           version: ${{env.QT_VERSION}}
@@ -60,10 +60,16 @@ jobs:
           modules: qtconnectivity qtwebsockets qtcharts
           extra: '--autodesktop'
 
+      # Install dependencies (from package manager)
+      - name: Install dependencies (from package manager)
+        run: |
+             sudo apt-get install cmake ninja-build -y;
+
       # Setup env
       - name: Setup env
         run: |
-             sudo apt-get install cmake ninja-build libtool automake m4 gettext -y
+             echo "QT_HOST_PATH=/home/runner/work/${{env.APP_NAME}}/Qt/${{env.QT_VERSION}}/gcc_64" >> $GITHUB_ENV
+             echo "QT_TARGET_PATH=/home/runner/work/${{env.APP_NAME}}/Qt/${{env.QT_VERSION}}/android_arm64_v8a" >> $GITHUB_ENV
              qmake --version
              cmake --version
              ninja --version
@@ -74,7 +80,6 @@ jobs:
              cd contribs/
              python3 contribs_builder_qt.py --targets=android_armv8 --software qtmqtt,qtconnectivity --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
              python3 contribs_builder.py --targets=android_armv8 --software mbedtls --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
-             cd ..
 
       # Build application
       - name: Build application
@@ -105,24 +110,26 @@ jobs:
         with:
           submodules: recursive
 
-      # Install Qt (iOS & desktop)
-      - name: Install Qt (iOS & desktop)
+      # Install Qt (desktop & iOS)
+      - name: Install Qt (desktop & iOS)
         uses: jurplel/install-qt-action@v4
         with:
           version: ${{env.QT_VERSION}}
           host: 'mac'
           target: 'ios'
-          modules: qtconnectivity qtwebsockets qtcharts
           extra: '--autodesktop'
+          modules: qtconnectivity qtwebsockets qtcharts
 
       # Install dependencies (from package manager)
-      - name: Install dependencies (from package manager)
-        run: |
-             brew install cmake ninja automake autoconf libtool pkg-config
+      #- name: Install dependencies (from package manager)
+      #  run: |
+      #       brew install cmake ninja
 
       # Setup env
       - name: Setup env
         run: |
+             echo "QT_HOST_PATH=/Users/runner/work/${{env.APP_NAME}}/Qt/${{env.QT_VERSION}}/macos" >> $GITHUB_ENV
+             echo "QT_TARGET_PATH=/Users/runner/work/${{env.APP_NAME}}/Qt/${{env.QT_VERSION}}/ios" >> $GITHUB_ENV
              qmake --version
              cmake --version
              ninja --version
@@ -132,7 +139,6 @@ jobs:
         run: |
              cd contribs/
              python3 contribs_builder_qt.py --targets=ios_armv8 --software qtmqtt --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
-             cd ..
 
       # Build application
       - name: Build application
