@@ -8,8 +8,8 @@ echo "> $APP_NAME packager (Windows x86_64) [v$APP_VERSION]"
 
 ## CHECKS ######################################################################
 
-#if [ ${PWD##*/} != "Theengs" ]; then
-#  echo "This script MUST be run from the Theengs/ directory"
+#if [ ${PWD##*/} != $APP_NAME ]; then
+#  echo "This script MUST be run from the $APP_NAME/ directory"
 #  exit 1
 #fi
 
@@ -52,13 +52,27 @@ if [[ $make_install = true ]] ; then
   #find bin/
 fi
 
-## DEPLOY ######################################################################
+## APP DEPLOY ##################################################################
 
 echo '---- Running windeployqt'
 windeployqt bin/ --qmldir qml/
 
 #echo '---- Installation directory content recap (after windeployqt):'
 #find bin/
+
+#echo '---- Clean installation directory'
+#rm bin/.gitkeep
+#rm bin/qmltooling
+#rm bin/generic
+#rm bin/Qt6QuickControls2WindowsStyleImpl.dll
+#rm bin/Qt6QuickControls2UniversalStyleImpl.dll
+#rm bin/Qt6QuickControls2Universal.dll
+#rm bin/Qt6QuickControls2ImagineStyleImpl.dll
+#rm bin/Qt6QuickControls2Imagine.dll
+#rm bin/Qt6QuickControls2FusionStyleImpl.dll
+#rm bin/Qt6QuickControls2Fusion.dll
+#rm bin/Qt6QuickControls2BasicStyleImpl.dll
+#rm bin/Qt6QuickControls2Basic.dll
 
 mv bin $APP_NAME
 

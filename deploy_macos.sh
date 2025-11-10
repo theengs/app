@@ -13,8 +13,8 @@ if [ "$(id -u)" == "0" ]; then
   exit 1
 fi
 
-#if [ ${PWD##*/} != "Theengs" ]; then
-#  echo "This script MUST be run from the Theengs/ directory"
+#if [ ${PWD##*/} != $APP_NAME ]; then
+#  echo "This script MUST be run from the $APP_NAME/ directory"
 #  exit 1
 #fi
 
@@ -57,7 +57,7 @@ if [[ $make_install = true ]] ; then
   #find bin/
 fi
 
-## DEPLOY ######################################################################
+## APP DEPLOY ##################################################################
 
 if [[ $use_contribs = true ]] ; then
   export LD_LIBRARY_PATH=$(pwd)/contribs/src/env/macOS_x86_64/usr/lib/
