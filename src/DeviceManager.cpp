@@ -21,10 +21,6 @@
 #include "SettingsManager.h"
 #include "MqttManager.h"
 
-#if defined(Q_OS_ANDROID)
-#include "utils_app.h"
-#endif
-
 #include "device.h"
 #include "device_theengs.h"
 #include "devices/device_theengs_gateway.h"
@@ -61,6 +57,10 @@
 #include <QGuiApplication>
 #include <QPermissions>
 #endif
+#endif
+
+#if defined(Q_OS_ANDROID)
+#include "utils_app.h"
 #endif
 
 /* ************************************************************************** */
@@ -293,13 +293,14 @@ bool DeviceManager::checkBluetooth()
         else
         {
             m_bleEnabled = false;
-            qDebug() << "Bluetooth adapter host mode:" << m_bluetoothAdapter->hostMode();
+            qWarning() << "Bluetooth adapter host mode:" << m_bluetoothAdapter->hostMode();
         }
     }
     else
     {
         m_bleAdapter = false;
         m_bleEnabled = false;
+        qWarning() << "Bluetooth adapter INVALID";
     }
 
     // Check OS permissions

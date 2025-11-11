@@ -67,7 +67,15 @@ Item {
                     sourceSize: 24
 
                     onClicked: {
-                        deviceManager.requestBluetoothPermissions()
+                        if (!deviceManager.bluetoothPermissions) {
+                            if (permissionManager.requestBluetoothPermission()) {
+                                permissionManager.requestLocationPermission()
+                            }
+                        }
+                        if (!deviceManager.bluetoothEnabled || !deviceManager.bluetoothAdapter) {
+                            deviceManager.enableBluetooth()
+                        }
+                        deviceManager.checkBluetooth()
                     }
                 }
             }

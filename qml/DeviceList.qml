@@ -15,6 +15,27 @@ Item {
         target: deviceManager
         function onBluetoothChanged() { checkBluetoothStatus() }
     }
+    Connections {
+        target: permissionManager
+        function onBluetoothPermissionChanged() {
+            if (permissionManager.requestBluetoothPermission()) {
+                permissionManager.requestLocationPermission()
+            }
+            if (!deviceManager.bluetoothEnabled || !deviceManager.bluetoothAdapter) {
+                deviceManager.enableBluetooth()
+            }
+            checkBluetoothStatus()
+        }
+        function onLocationPermissionChanged() {
+            if (permissionManager.requestBluetoothPermission()) {
+                permissionManager.requestLocationPermission()
+            }
+            if (!deviceManager.bluetoothEnabled || !deviceManager.bluetoothAdapter) {
+                deviceManager.enableBluetooth()
+            }
+            checkBluetoothStatus()
+        }
+    }
 
     function loadScreen() {
         checkBluetoothStatus()
@@ -199,9 +220,11 @@ Item {
                 }
                 onClicked: {
                     if (!deviceManager.bluetoothPermissions) {
-                        deviceManager.requestBluetoothPermissions()
+                        if (permissionManager.requestBluetoothPermission()) {
+                            permissionManager.requestLocationPermission()
+                        }
                     }
-                    if (!deviceManager.bluetoothEnabled) {
+                    if (!deviceManager.bluetoothEnabled || !deviceManager.bluetoothAdapter) {
                         deviceManager.enableBluetooth()
                     }
                     deviceManager.checkBluetooth()

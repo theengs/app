@@ -123,9 +123,11 @@ Item {
                 }
                 onClicked: {
                     if (!deviceManager.bluetoothPermissions) {
-                        deviceManager.requestBluetoothPermissions()
+                        if (permissionManager.requestBluetoothPermission()) {
+                            permissionManager.requestLocationPermission()
+                        }
                     }
-                    if (!deviceManager.bluetoothEnabled) {
+                    if (!deviceManager.bluetoothEnabled || !deviceManager.bluetoothAdapter) {
                         deviceManager.enableBluetooth()
                     }
                     deviceManager.checkBluetooth()

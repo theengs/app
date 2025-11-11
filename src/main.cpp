@@ -17,6 +17,7 @@
 */
 
 #include "SettingsManager.h"
+#include "PermissionManager.h"
 #include "DeviceManager.h"
 #include "SystrayManager.h"
 #include "NotificationManager.h"
@@ -137,6 +138,7 @@ int main(int argc, char *argv[])
 #endif
 
     // Init components
+    PermissionManager *pm = PermissionManager::getInstance();
     SettingsManager *sm = SettingsManager::getInstance();
     MqttManager *mq = MqttManager::getInstance();
     BatteryPresetManager *bpm = BatteryPresetManager::getInstance();
@@ -182,8 +184,9 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     QQmlContext *engine_context = engine.rootContext();
 
-    engine_context->setContextProperty("deviceManager", dm);
     engine_context->setContextProperty("settingsManager", sm);
+    engine_context->setContextProperty("permissionManager", pm);
+    engine_context->setContextProperty("deviceManager", dm);
     engine_context->setContextProperty("mqttManager", mq);
     engine_context->setContextProperty("notificationManager", nm);
     engine_context->setContextProperty("batteryPresetsManager", bpm);

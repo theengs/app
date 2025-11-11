@@ -42,6 +42,7 @@ set(SOURCES
     src/main.cpp
     src/SettingsManager.cpp src/SettingsManager.h
     src/DatabaseManager.cpp src/DatabaseManager.h
+    src/PermissionManager.cpp src/PermissionManager.h
     src/NotificationManager.cpp src/NotificationManager.h
     src/MqttManager.cpp src/MqttManager.h
 
