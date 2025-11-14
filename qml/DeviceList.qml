@@ -14,6 +14,7 @@ Item {
     Connections {
         target: deviceManager
         function onBluetoothChanged() { checkBluetoothStatus() }
+        function onPermissionsChanged() { checkBluetoothStatus() }
     }
 
     function loadScreen() {

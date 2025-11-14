@@ -71,7 +71,7 @@ class DeviceManager: public QObject
     Q_PROPERTY(bool bluetooth READ hasBluetooth NOTIFY bluetoothChanged)
     Q_PROPERTY(bool bluetoothAdapter READ hasBluetoothAdapter NOTIFY bluetoothChanged)
     Q_PROPERTY(bool bluetoothEnabled READ hasBluetoothEnabled NOTIFY bluetoothChanged)
-    Q_PROPERTY(bool bluetoothPermissions READ hasBluetoothPermissions NOTIFY bluetoothChanged)
+    Q_PROPERTY(bool bluetoothPermissions READ hasBluetoothPermissions NOTIFY permissionsChanged)
 
     Q_PROPERTY(bool permissionBluetooth READ hasPermissionBluetooth NOTIFY permissionsChanged)
     Q_PROPERTY(bool permissionLocationForeground READ hasPermissionLocationForeground NOTIFY permissionsChanged)
@@ -90,7 +90,7 @@ class DeviceManager: public QObject
     bool m_dbInternal = false;  //!< do we have an internal SQLite database?
     bool m_dbExternal = false;  //!< do we have a remote MySQL database?
 
-    bool m_daemonMode = false;  //!< did we start without UI?
+    bool m_daemonMode = false;  //!< did we start without an UI?
 
     ////
 
@@ -98,7 +98,6 @@ class DeviceManager: public QObject
     bool m_bleEnabled = false;      //!< is the BLE adapter enabled?
     bool m_blePermission = false;   //!< do we have necessary BLE permissions?
 
-    //bool m_permission_ble = false;   //!< do we have necessary BLE permissions?
     bool m_permission_location = false;             //!< do we have location permission? (Android)
     bool m_permission_locationBackground = false;   //!< do we have background location permission? (Android)
     bool m_gpsEnabled = false;      //!< is the GPS enabled? (Android)

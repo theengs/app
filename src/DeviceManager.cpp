@@ -94,6 +94,7 @@ DeviceManager::DeviceManager(bool daemon)
     }
 
     // BLE init
+    checkBluetoothPermissions();
     enableBluetooth(true); // Enables adapter // ONLY if off and permission given
     connect(this, &DeviceManager::bluetoothChanged, this, &DeviceManager::bluetoothStatusChanged);
 
@@ -278,11 +279,12 @@ bool DeviceManager::checkBluetooth()
     return m_bleEnabled;
 #endif
 
-    bool btA_was = m_bleAdapter;
+    bool btA_was = m_bleAdapter && m_bluetoothAdapter->isValid();
     bool btE_was = m_bleEnabled;
     bool btP_was = hasBluetoothPermissions();
 
-    enableBluetooth(false); // if permissions just changed, we need to recreate m_bluetoothAdapter
+    // Check permissions
+    checkBluetoothPermissions();
 
     // Check adapter availability
     if (m_bluetoothAdapter && m_bluetoothAdapter->isValid())
@@ -306,13 +308,13 @@ bool DeviceManager::checkBluetooth()
         qWarning() << "Bluetooth adapter INVALID";
     }
 
-    // Check OS permissions
-    checkBluetoothPermissions();
-
     if (btA_was != m_bleAdapter || btE_was != m_bleEnabled || btP_was != hasBluetoothPermissions())
     {
         // this function did changed the Bluetooth adapter status
         Q_EMIT bluetoothChanged();
+
+        // let's see if we can turn on the adapter now
+        enableBluetooth(true);
     }
 
     return (m_bleAdapter && m_bleEnabled && hasBluetoothPermissions());
@@ -327,7 +329,7 @@ bool DeviceManager::enableBluetooth(bool enforceUserPermissionCheck)
     return false;
 #endif
 
-    bool btA_was = m_bleAdapter;
+    bool btA_was = m_bleAdapter && m_bluetoothAdapter->isValid();
     bool btE_was = m_bleEnabled;
     bool btP_was = hasBluetoothPermissions();
 
@@ -397,16 +399,13 @@ bool DeviceManager::enableBluetooth(bool enforceUserPermissionCheck)
         m_bleEnabled = false;
     }
 
-    // Check OS permissions
-    checkBluetoothPermissions();
-
     if (btA_was != m_bleAdapter || btE_was != m_bleEnabled || btP_was != hasBluetoothPermissions())
     {
         // this function did changed the Bluetooth adapter status
         Q_EMIT bluetoothChanged();
     }
 
-    //qDebug() << "DeviceManager::enableBluetooth() recap";
+    //qDebug() << "DeviceManager::enableBluetooth() >> RECAP";
     //qDebug() << " - bluetooth" << hasBluetooth();
     //qDebug() << " - bleAdapter" << m_bleAdapter;
     //qDebug() << " - bleEnabled" << m_bleEnabled;
@@ -445,22 +444,27 @@ bool DeviceManager::checkBluetoothPermissions()
         // this function did change the Bluetooth permission
         Q_EMIT permissionsChanged();
 
-        enableBluetooth();
+        // let's see if we can turn on the adapter now
+        enableBluetooth(true);
     }
     if (loc_fg_was != m_permission_location || loc_bg_was != m_permission_locationBackground || gps_was != m_gpsEnabled)
     {
         // this function did change the Bluetooth permission
         Q_EMIT permissionsChanged();
 
-        enableBluetooth();
+        // let's see if we can turn on the adapter now
+        enableBluetooth(true);
     }
     if (ble_was != m_blePermission)
     {
         // this function did changed the Bluetooth adapter status
         Q_EMIT bluetoothChanged();
+
+        // let's see if we can turn on the adapter now
+        enableBluetooth(true);
     }
 
-    //qDebug() << "DeviceManager::checkBluetoothPermissions() recap";
+    //qDebug() << "DeviceManager::checkBluetoothPermissions() >> RECAP";
     //qDebug() << " - bluetooth" << hasBluetooth();
     //qDebug() << " - bleAdapter" << m_bleAdapter;
     //qDebug() << " - bleEnabled" << m_bleEnabled;
@@ -548,7 +552,7 @@ void DeviceManager::requestBluetoothPermission_results(const QPermission &permis
     // evaluate the results
     switch (permission.status())
     {
-    case Qt::PermissionStatus::Granted:{
+    case Qt::PermissionStatus::Granted: {
         setBluetoothPermission(true);
 
 #if defined(Q_OS_ANDROID)
@@ -558,8 +562,9 @@ void DeviceManager::requestBluetoothPermission_results(const QPermission &permis
             requestLocationPermission();
         }
 #endif
-
-        break;}
+        enableBluetooth(true);
+        break;
+        }
     case Qt::PermissionStatus::Denied:
     case Qt::PermissionStatus::Undetermined:
         setBluetoothPermission(false);
@@ -597,6 +602,7 @@ void DeviceManager::requestLocationPermission_results(const QPermission &permiss
     {
     case Qt::PermissionStatus::Granted:
         setLocationPermission_foreground(true);
+        enableBluetooth(true);
         break;
     case Qt::PermissionStatus::Denied:
     case Qt::PermissionStatus::Undetermined:
