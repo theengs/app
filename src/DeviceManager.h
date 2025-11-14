@@ -162,6 +162,10 @@ class DeviceManager: public QObject
     bool hasPermissionLocationBackground() const { return m_permission_locationBackground; }
     bool hasPermissionGPS() const { return m_gpsEnabled; }
 
+    void setBluetoothPermission(bool perm);
+    void setLocationPermission_foreground(bool perm);
+    void setLocationPermission_background(bool perm);
+
     int getBluetoothHostMode() const { return m_bluetoothHostMode; }
 
     void startBleAgent();
@@ -239,11 +243,16 @@ public:
 
     // Bluetooth management
     Q_INVOKABLE bool checkBluetooth();
-    Q_INVOKABLE bool checkBluetoothPermissions();
     Q_INVOKABLE bool enableBluetooth(bool enforceUserPermissionCheck = false);
 
+    Q_INVOKABLE bool checkBluetoothPermissions();
     Q_INVOKABLE bool requestBluetoothPermissions();
-    void requestBluetoothPermissions_results();
+
+    Q_INVOKABLE bool requestBluetoothPermission();
+    void requestBluetoothPermission_results(const QPermission &permission);
+
+    Q_INVOKABLE bool requestLocationPermission();
+    void requestLocationPermission_results(const QPermission &permission);
 
     // Scanning management
     static int getLastRun();

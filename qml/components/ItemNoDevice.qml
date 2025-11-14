@@ -50,12 +50,10 @@ Item {
                 onClicked: {
                     // Just to be sure...
                     if (!deviceManager.bluetoothPermissions) {
-                        // Ask permission
-                        utilsApp.getMobileBleLocationPermission()
+                        deviceManager.requestBluetoothPermissions()
                     }
-                    if (!deviceManager.bluetoothAdapter || !deviceManager.bluetoothEnabled) {
-                        // Enable
-                        deviceManager.enableBluetooth(true)
+                    if (!deviceManager.bluetoothEnabled || !deviceManager.bluetoothAdapter) {
+                        deviceManager.enableBluetooth()
                     }
 
                     // Now we scan...

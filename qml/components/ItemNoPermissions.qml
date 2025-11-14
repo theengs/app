@@ -68,9 +68,7 @@ Item {
 
                     onClicked: {
                         if (!deviceManager.bluetoothPermissions) {
-                            if (permissionManager.requestBluetoothPermission()) {
-                                permissionManager.requestLocationPermission()
-                            }
+                            deviceManager.requestBluetoothPermissions()
                         }
                         if (!deviceManager.bluetoothEnabled || !deviceManager.bluetoothAdapter) {
                             deviceManager.enableBluetooth()
