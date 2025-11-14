@@ -34,10 +34,10 @@ Item {
         //console.log(">> deviceManager.bluetoothEnabled : " + deviceManager.bluetoothEnabled)
         //console.log(">> deviceManager.bluetoothPermissions : " + deviceManager.bluetoothPermissions)
 
-        //console.log(">> deviceManager.permissionOS : " + deviceManager.permissionOS)
-        //console.log(">> deviceManager.permissionLocationBLE : " + deviceManager.permissionLocationBLE)
+        //console.log(">> deviceManager.permissionBluetooth : " + deviceManager.permissionBluetooth)
+        //console.log(">> deviceManager.permissionLocationForeground : " + deviceManager.permissionLocationForeground)
         //console.log(">> deviceManager.permissionLocationBackground : " + deviceManager.permissionLocationBackground)
-        //console.log(">> deviceManager.permissionLocationGPS : " + deviceManager.permissionLocationGPS)
+        //console.log(">> deviceManager.gpsEnabled : " + deviceManager.gpsEnabled)
 
         if (deviceManager.hasGateways) {
             // The device list is shown

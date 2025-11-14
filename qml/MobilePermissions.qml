@@ -186,7 +186,7 @@ Item {
                     anchors.leftMargin: Theme.componentMargin
                     anchors.verticalCenter: parent.verticalCenter
 
-                    property bool validperm: deviceManager.permissionOS
+                    property bool validperm: deviceManager.permissionBluetooth
 
                     source: (validperm) ? "qrc:/IconLibrary/material-symbols/check.svg" : "qrc:/IconLibrary/material-symbols/close.svg"
                     iconColor: (validperm) ? "white" : "white"
@@ -195,8 +195,7 @@ Item {
 
                     onClicked: {
                         utilsApp.vibrate(25)
-                        if (Qt.platform.os === "ios") deviceManager.requestBluetoothPermissions()
-                        else utilsApp.getMobileBluetoothPermission()
+                        deviceManager.requestBluetoothPermission()
                         refreshPermissions.start()
                     }
                 }
@@ -250,7 +249,7 @@ Item {
                     anchors.leftMargin: Theme.componentMargin
                     anchors.verticalCenter: parent.verticalCenter
 
-                    property bool validperm: deviceManager.permissionLocationBLE
+                    property bool validperm: deviceManager.permissionLocationForeground
 
                     source: (validperm) ? "qrc:/IconLibrary/material-symbols/check.svg" : "qrc:/IconLibrary/material-symbols/close.svg"
                     iconColor: (validperm) ? "white" : "white"
@@ -331,7 +330,7 @@ Item {
                     anchors.leftMargin: Theme.componentMargin
                     anchors.verticalCenter: parent.verticalCenter
 
-                    property bool validperm: deviceManager.permissionLocationGPS
+                    property bool validperm: deviceManager.gpsEnabled
 
                     source: (validperm) ? "qrc:/IconLibrary/material-symbols/check.svg" : "qrc:/IconLibrary/material-symbols/close.svg"
                     iconColor: (validperm) ? "white" : "white"

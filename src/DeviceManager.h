@@ -73,10 +73,10 @@ class DeviceManager: public QObject
     Q_PROPERTY(bool bluetoothEnabled READ hasBluetoothEnabled NOTIFY bluetoothChanged)
     Q_PROPERTY(bool bluetoothPermissions READ hasBluetoothPermissions NOTIFY bluetoothChanged)
 
-    Q_PROPERTY(bool permissionOS READ hasPermissionOS NOTIFY permissionsChanged)
-    Q_PROPERTY(bool permissionLocationBLE READ hasPermissionLocationBLE NOTIFY permissionsChanged)
+    Q_PROPERTY(bool permissionBluetooth READ hasPermissionBluetooth NOTIFY permissionsChanged)
+    Q_PROPERTY(bool permissionLocationForeground READ hasPermissionLocationForeground NOTIFY permissionsChanged)
     Q_PROPERTY(bool permissionLocationBackground READ hasPermissionLocationBackground NOTIFY permissionsChanged)
-    Q_PROPERTY(bool permissionLocationGPS READ hasPermissionGPS NOTIFY permissionsChanged)
+    Q_PROPERTY(bool gpsEnabled READ hasGpsEnabled NOTIFY permissionsChanged)
 
     Q_PROPERTY(int bluetoothHostMode READ getBluetoothHostMode NOTIFY hostModeChanged)
 
@@ -96,13 +96,12 @@ class DeviceManager: public QObject
 
     bool m_bleAdapter = false;      //!< do we have a BLE adapter?
     bool m_bleEnabled = false;      //!< is the BLE adapter enabled?
-    bool m_blePermissions = false;  //!< do we have necessary BLE permissions? (brings together all other permsissions)
+    bool m_blePermission = false;   //!< do we have necessary BLE permissions?
 
-    bool m_gpsEnabled = false;      //!< is the GPS enabled? (Android)
-
-    bool m_permission_ble = false;                  //!< do we have BLE permission? (macOS, iOS, Android)
+    //bool m_permission_ble = false;   //!< do we have necessary BLE permissions?
     bool m_permission_location = false;             //!< do we have location permission? (Android)
     bool m_permission_locationBackground = false;   //!< do we have background location permission? (Android)
+    bool m_gpsEnabled = false;      //!< is the GPS enabled? (Android)
 
     QBluetoothLocalDevice *m_bluetoothAdapter = nullptr;
     QBluetoothDeviceDiscoveryAgent *m_bluetoothDiscoveryAgent = nullptr;
@@ -152,15 +151,15 @@ class DeviceManager: public QObject
     bool m_syncing = false;
     bool isSyncing() const;
 
-    bool hasBluetooth() const { return (m_bleAdapter && m_bleEnabled && m_blePermissions); }
     bool hasBluetoothAdapter() const { return m_bleAdapter; }
     bool hasBluetoothEnabled() const { return m_bleEnabled; }
-    bool hasBluetoothPermissions() const { return m_blePermissions; }
+    bool hasBluetoothPermissions() const;
+    bool hasBluetooth() const;
 
-    bool hasPermissionOS() const { return m_permission_ble; }
-    bool hasPermissionLocationBLE() const { return m_permission_location; }
+    bool hasPermissionBluetooth() const { return m_blePermission; }
+    bool hasPermissionLocationForeground() const { return m_permission_location; }
     bool hasPermissionLocationBackground() const { return m_permission_locationBackground; }
-    bool hasPermissionGPS() const { return m_gpsEnabled; }
+    bool hasGpsEnabled() const { return m_gpsEnabled; }
 
     void setBluetoothPermission(bool perm);
     void setLocationPermission_foreground(bool perm);
