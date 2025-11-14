@@ -276,7 +276,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE SingleApplication)
 
 # AppUtils
 set(UTILS_DOCK_ENABLED true)
-set(UTILS_WIFI_ENABLED true)
+set(UTILS_WIFI_ENABLED false)
 set(UTILS_NOTIFICATIONS_ENABLED true)
 add_subdirectory(thirdparty/AppUtils)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE AppUtils)
