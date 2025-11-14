@@ -33,6 +33,7 @@
 
 class QBluetoothDeviceInfo;
 class QLowEnergyController;
+class QPermission;
 
 /* ************************************************************************** */
 
@@ -97,14 +98,15 @@ class DeviceManager: public QObject
     bool m_bleEnabled = false;      //!< is the BLE adapter enabled?
     bool m_blePermissions = false;  //!< do we have necessary BLE permissions? (brings together all other permsissions)
 
-    bool m_permOS = false;          //!< do we have OS permissions for BLE? (macOS, iOS, Android)
-    bool m_permLocationBLE = false; //!< do we location permission? (Android)
-    bool m_permLocationBKG = false; //!< do we background location permission? (Android)
-    bool m_permGPS = false;         //!< is the GPS enabled? (Android)
+    bool m_gpsEnabled = false;      //!< is the GPS enabled? (Android)
+
+    bool m_permission_ble = false;                  //!< do we have BLE permission? (macOS, iOS, Android)
+    bool m_permission_location = false;             //!< do we have location permission? (Android)
+    bool m_permission_locationBackground = false;   //!< do we have background location permission? (Android)
 
     QBluetoothLocalDevice *m_bluetoothAdapter = nullptr;
-    QBluetoothDeviceDiscoveryAgent *m_discoveryAgent = nullptr;
-    QBluetoothLocalDevice::HostMode m_ble_hostmode = QBluetoothLocalDevice::HostPoweredOff;
+    QBluetoothDeviceDiscoveryAgent *m_bluetoothDiscoveryAgent = nullptr;
+    QBluetoothLocalDevice::HostMode m_bluetoothHostMode = QBluetoothLocalDevice::HostPoweredOff;
 
     QList <QObject *> m_bluetoothAdapters;
 
@@ -155,12 +157,12 @@ class DeviceManager: public QObject
     bool hasBluetoothEnabled() const { return m_bleEnabled; }
     bool hasBluetoothPermissions() const { return m_blePermissions; }
 
-    bool hasPermissionOS() const { return m_permOS; }
-    bool hasPermissionLocationBLE() const { return m_permLocationBLE; }
-    bool hasPermissionLocationBackground() const { return m_permLocationBKG; }
-    bool hasPermissionGPS() const { return m_permGPS; }
+    bool hasPermissionOS() const { return m_permission_ble; }
+    bool hasPermissionLocationBLE() const { return m_permission_location; }
+    bool hasPermissionLocationBackground() const { return m_permission_locationBackground; }
+    bool hasPermissionGPS() const { return m_gpsEnabled; }
 
-    int getBluetoothHostMode() const { return m_ble_hostmode; }
+    int getBluetoothHostMode() const { return m_bluetoothHostMode; }
 
     void startBleAgent();
 
@@ -239,6 +241,7 @@ public:
     Q_INVOKABLE bool checkBluetooth();
     Q_INVOKABLE bool checkBluetoothPermissions();
     Q_INVOKABLE bool enableBluetooth(bool enforceUserPermissionCheck = false);
+
     Q_INVOKABLE bool requestBluetoothPermissions();
     void requestBluetoothPermissions_results();
 

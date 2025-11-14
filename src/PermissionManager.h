@@ -58,7 +58,7 @@ class PermissionManager: public QObject
     PermissionManager();
     ~PermissionManager();
 
-    static const int s_waittimeout = 12000; // in ms
+    static const int s_waittimeout = 10000; // in ms
     static const int s_waittimeout_interval = 33; // in ms
 
     bool m_bluetoothPermission = false;

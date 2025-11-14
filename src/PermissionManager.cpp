@@ -124,7 +124,6 @@ bool PermissionManager::requestBluetoothPermission()
     case Qt::PermissionStatus::Undetermined:
         qDebug() << "Requesting BLUETOOTH permission...";
         qApp->requestPermission(bluetoothPermission, this, &PermissionManager::requestBluetoothPermission_results);
-        //qApp->requestPermission(bluetoothPermission, [this](const QPermission &permission) { checkBluetoothPermission(); });
         break;
     }
 
