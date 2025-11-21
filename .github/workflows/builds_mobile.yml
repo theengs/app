@@ -15,7 +15,7 @@ on:
 env:
   APP_NAME: "Theengs"
   APP_VERSION: "1.5.0"
-  QT_VERSION: "6.9.3"
+  QT_VERSION: "6.10.1"
 
 #-------------------------------------------------------------------------------
 # Workflow jobs
