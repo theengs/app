@@ -44,6 +44,11 @@
 
 /* ************************************************************************** */
 
+// Static member definition
+const int Device::s_retryCount;
+
+/* ************************************************************************** */
+
 Device::Device(const QString &deviceAddr, const QString &deviceName, QObject *parent) : QObject(parent)
 {
 #if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
