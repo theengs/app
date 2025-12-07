@@ -1,5 +1,8 @@
 # Binaries and build artifacts
 build/*
+build_ios/*
+build_macos/*
+build_android/*
 bin/*
 contribs/*
 appdir/*
