@@ -44,8 +44,8 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
-          version: ${{env.QT_VERSION}}
-          modules: qtconnectivity qtwebsockets qtcharts
+          version: ${{ env.QT_VERSION }}
+          modules: qtconnectivity qtcharts qtwebsockets
 
       # Setup env
       - name: Setup env
@@ -69,14 +69,14 @@ jobs:
 
       # Deploy application
       - name: Deploy application
-        run: ./deploy_linux.sh -c -p -i
+        run: ./deploy_linux.sh -c -p
 
       # Upload AppImage
       - name: Upload AppImage
         uses: actions/upload-artifact@v4
         with:
-          name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-linux64.AppImage
-          path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-linux64.AppImage
+          name: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-linux64.AppImage
+          path: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-linux64.AppImage
           retention-days: 7
 
   ## macOS build ###############################################################
@@ -99,13 +99,12 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
-          version: ${{env.QT_VERSION}}
-          modules: qtconnectivity qtwebsockets qtcharts
+          version: ${{ env.QT_VERSION }}
+          modules: qtconnectivity qtcharts qtwebsockets
 
       # Setup env
       - name: Setup env
         run: |
-             echo "CMAKE_BUILD_PARALLEL_LEVEL=`sysctl -n hw.logicalcpu`" >> $GITHUB_ENV
              qmake --version
              cmake --version
              ninja --version
@@ -120,19 +119,22 @@ jobs:
       # Build application
       - name: Build application
         run: |
+             export CMAKE_BUILD_PARALLEL_LEVEL=`sysctl -n hw.logicalcpu`
              cmake -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
              cmake --build build/ --config Release
 
       # Deploy application
       - name: Deploy application
-        run: ./deploy_macos.sh -c -p
+        env:
+          MACOS_CERTIFICATE_NAME: ${{ secrets.MACOS_CERTIFICATE_NAME }}
+        run: ./deploy_macos.sh -c
 
-      # Upload application ZIP
-      - name: Upload application ZIP
+      # Upload application bundle
+      - name: Upload application bundle
         uses: actions/upload-artifact@v4
         with:
-          name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS.zip
-          path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS.zip
+          name: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-macOS.zip
+          path: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-macOS.zip
           retention-days: 7
 
   ## Windows build #############################################################
@@ -163,8 +165,8 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
-          version: ${{env.QT_VERSION}}
-          modules: qtconnectivity qtwebsockets qtcharts
+          version: ${{ env.QT_VERSION }}
+          modules: qtconnectivity qtcharts qtwebsockets
           arch: 'win64_msvc2022_64'
 
       # Setup env
@@ -172,7 +174,6 @@ jobs:
         run: |
              qmake --version
              cmake --version
-             ninja --version
 
       # Build dependencies (from contribs script)
       - name: Build dependencies (from contribs script)
@@ -195,14 +196,14 @@ jobs:
       - name: Upload application ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.zip
-          path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.zip
+          name: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-win64.zip
+          path: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-win64.zip
           retention-days: 7
 
       # Upload NSIS installer
       - name: Upload NSIS installer
         uses: actions/upload-artifact@v4
         with:
-          name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.exe
-          path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.exe
+          name: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-win64.exe
+          path: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-win64.exe
           retention-days: 7

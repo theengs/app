@@ -11,6 +11,7 @@ set(APP_NAME ${CMAKE_PROJECT_NAME})
 set(APP_VERSION ${CMAKE_PROJECT_VERSION})
 
 option(ENABLE_MQTT "MQTT broker support" ON)
+option(ENABLE_OPENSSL "OpenSSL for various encryption needs" ON)
 option(ENABLE_MBEDTLS "mbedTLS for various encryption needs" OFF)
 
 ################################################################################
