@@ -175,17 +175,22 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoo
                     if (ddd) ddd->parseTheengsAdvertisement(QString::fromStdString(output));
 
                     // We need a valid MAC address to send MQTT data
-                    // If available, use MAC address decoded from advertisement packets
-                    if (mac_qstr.isEmpty())
+                    if (mac_qstr.isEmpty() && obj.containsKey("mac"))
                     {
+                        // If available, use MAC address decoded from advertisement packets
                         mac_qstr = QString::fromStdString(obj["mac"]);
                         mac_qstr_clean = mac_qstr.remove(':');
+                    }
+                    if (mac_qstr_clean.isEmpty() || mac_qstr_clean == "null")
+                    {
+                        // Sanetize
+                        mac_qstr_clean = "000000000000";
                     }
 
                     // MQTT send
                     SettingsManager *sm = SettingsManager::getInstance();
                     MqttManager *mq = MqttManager::getInstance();
-                    if (sm && mq && !mac_qstr_clean.isEmpty())
+                    if (sm && mq)
                     {
                         QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr_clean;
                         bool status_mqtt = mq->publishData(topic, QString::fromStdString(output));
