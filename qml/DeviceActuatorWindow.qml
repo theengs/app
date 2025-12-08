@@ -741,7 +741,7 @@ Loader {
                     }
 
                     ////////
-
+/*
                     Loader {
                         active: utilsApp.isDebugBuild()
                         asynchronous: true
@@ -786,7 +786,7 @@ Loader {
                             }
                         }
                     }
-
+*/
                     ////////
                 }
 

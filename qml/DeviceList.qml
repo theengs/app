@@ -361,7 +361,7 @@ Item {
             property int cellHeight: (bigWidget ? 144 : 100)
 
             ////////
-
+/*
             ListTitle {
                 anchors.leftMargin: devicesView.listWidget ? -devicesView.halfmargin : devicesView.halfmargin
                 anchors.rightMargin: devicesView.listWidget ? -devicesView.halfmargin : devicesView.halfmargin
@@ -370,7 +370,7 @@ Item {
                 text: qsTr("Sensor(s)", "", deviceManager.deviceCount)
                 textSize: Theme.fontSizeContentVeryBig
             }
-
+*/
             Flow {
                 id: sensorsView
                 anchors.left: parent.left
@@ -387,7 +387,7 @@ Item {
             }
 
             ////////
-
+/*
             ListTitle {
                 anchors.leftMargin: devicesView.listWidget ? -devicesView.halfmargin : devicesView.halfmargin
                 anchors.rightMargin: devicesView.listWidget ? -devicesView.halfmargin : devicesView.halfmargin
@@ -411,7 +411,7 @@ Item {
                     }
                 }
             }
-
+*/
             ////////
         }
     }

@@ -256,7 +256,7 @@ DrawerThemed {
                         appDrawer.close()
                     }
                 }
-
+/*
                 DrawerButton {
                     text: qsTr("Add gateways")
 
@@ -282,7 +282,7 @@ DrawerThemed {
                         text: deviceManager.gatewayCount
                     }
                 }
-
+*/
                 ////////
             }
         }
