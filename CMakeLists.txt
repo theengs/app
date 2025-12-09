@@ -259,13 +259,13 @@ if(NOT IOS AND NOT ANDROID)
 endif()
 
 if(ENABLE_MQTT)
+    add_definitions(-DENABLE_MQTT)
     find_package(Qt6 REQUIRED COMPONENTS Mqtt)
     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Qt6::Mqtt)
-    add_definitions(-DENABLE_MQTT)
 endif()
 if(ENABLE_MBEDTLS)
     add_definitions(-DENABLE_MBEDTLS)
-    target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC "-lmbedtls -lmbedx509 -lmbedcrypto")
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE "-lmbedtls -lmbedx509 -lmbedcrypto")
 endif()
 
 ################################################################################

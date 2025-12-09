@@ -41,7 +41,7 @@ Loader {
             deviceBM.item.backAction()
 
         // disconnect device
-        //if (currentDevice) currentDevice.actionDisconnect()
+        if (currentDevice) currentDevice.actionDisconnect()
     }
 
     ////////////////////////////////////////////////////////////////////////////

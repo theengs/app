@@ -327,11 +327,11 @@ ApplicationWindow {
         onActivated: deviceManager.refreshDevices_check()
     }
     Shortcut {
-        sequence: "Ctrl+F5"
+        sequences: ["Ctrl+F5"]
         onActivated: deviceManager.refreshDevices_start()
     }
     Shortcut {
-        sequence: StandardKey.Preferences
+        sequences: [StandardKey.Preferences]
         onActivated: appContent.state = "Settings"
     }
     Shortcut {
