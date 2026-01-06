@@ -12,8 +12,13 @@ Item {
     property bool showGraphDots: false
     property color legendColor: Theme.colorSubText
 
-    property real valueMin: 0
-    property real valueMax: 100
+    property real valueMin_p: 0
+    property real valueMax_p: 100
+
+    property real valueMin_v: 0
+    property real valueMax_v: 20
+    property real limitMin_v: 0
+    property real limitMax_v: 0
 
     ////////////////////////////////////////////////////////////////////////////
 
@@ -22,9 +27,17 @@ Item {
         //console.log("chartBatteryRealTime // loadGraph() >> " + currentDevice)
 
         //// DATA
-        battery1Data.clear()
+        batteryData_p.clear()
+        batteryData_v.clear()
 
-        legendColor = Qt.rgba(legendColor.r, legendColor.g, legendColor.b, 0.8)
+        //// AXIS
+        //axisVolts.min = currentDevice.voltMin*0.85
+        //axisVolts.max = currentDevice.voltMax*1.15
+
+        //// LEGEND
+        chartBatteryRealTime.limitMin_v = (currentPreset) ? currentPreset.voltageMin : 0
+        chartBatteryRealTime.limitMax_v = (currentPreset) ? currentPreset.voltageMax : 0
+        chartBatteryRealTime.legendColor = Qt.rgba(legendColor.r, legendColor.g, legendColor.b, 0.8)
     }
 
     function reloadGraph() {
@@ -32,7 +45,7 @@ Item {
         if (appContent.state !== "DeviceBatteryMonitor") return
         //console.log("chartBatteryRealTime // reloadGraph() >> " + currentDevice)
 
-        currentDevice.getChartData_batteryRT(axisTime, battery1Data, true)
+        currentDevice.getChartData_batteryRT(axisTime, batteryData_p, batteryData_v, true)
     }
 
     function updateGraph() {
@@ -41,7 +54,21 @@ Item {
         //console.log("chartBatteryRealTime // updateGraph() >> " + currentDevice)
 
         // update
-        currentDevice.getChartData_batteryRT(axisTime, battery1Data, false)
+        currentDevice.getChartData_batteryRT(axisTime, batteryData_p, batteryData_v, false)
+    }
+
+    function updatePreset() {
+        if (typeof currentDevice === "undefined" || !currentDevice) return
+
+        if (currentPreset) {
+            console.log("DeviceBatteryMonitor // onPresetUpdated() >> " + currentPreset.name)
+            chartBatteryRealTime.limitMin_v = currentPreset.voltageMin
+            chartBatteryRealTime.limitMax_v = currentPreset.voltageMax
+        } else {
+            console.log("DeviceBatteryMonitor // onPresetUpdated() >> empty preset")
+            chartBatteryRealTime.limitMin_v = 0
+            chartBatteryRealTime.limitMax_v = 0
+        }
     }
 
     function isIndicator() { return false }
@@ -66,6 +93,7 @@ Item {
 
     ChartView {
         id: rtGraph
+
         anchors.fill: parent
         anchors.topMargin: -40
         anchors.leftMargin: -32
@@ -85,17 +113,56 @@ Item {
                     color: legendColor;
                     gridLineColor: Theme.colorSeparator; }
 
+        ValueAxis { id: axisVolts; visible: true; gridVisible: false;
+                    labelFormat: "%i";
+                    labelsFont.pixelSize: Theme.fontSizeContentSmall-1; labelsColor: legendColor;
+                    min: 0; max: 20; }
+
         DateTimeAxis { id: axisTime; visible: true; gridVisible: true;
                        labelsFont.pixelSize: Theme.fontSizeContentSmall-1; labelsColor: legendColor;
                        color: legendColor;
                        gridLineColor: Theme.colorSeparator; }
 
         LineSeries {
-            id: battery1Data
+            id: batteryData_p
             useOpenGL: useOpenGL
             pointsVisible: showGraphDots
             color: Theme.colorMaterialBlue; width: 2;
             axisY: axisPercent; axisX: axisTime;
+        }
+        LineSeries {
+            id: batteryData_v
+            useOpenGL: useOpenGL
+            pointsVisible: showGraphDots
+            color: Theme.colorGreen; width: 2;
+            axisY: axisVolts; axisX: axisTime;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+
+    Item {
+        id: legend_area
+
+        width: rtGraph.plotArea.width
+        height: rtGraph.plotArea.height
+        x: rtGraph.plotArea.x + rtGraph.anchors.leftMargin
+        y: rtGraph.plotArea.y + rtGraph.anchors.topMargin
+
+        visible: rtGraph.visible
+        clip: true
+
+        Rectangle {
+            anchors.left: parent.left
+            anchors.right: parent.right
+
+            y: UtilsNumber.mapNumber(Math.min(limitMax_v, valueMax_v), // value
+                                     valueMin_p, valueMax_v, // from
+                                     rtGraph.plotArea.height, 0) // to
+            height: ((Math.min(limitMax_v, valueMax_v) - limitMin_v) / (valueMax_v - valueMin_v)) * rtGraph.plotArea.height
+
+            color: Theme.colorGreen
+            opacity: 0.20
         }
     }
 

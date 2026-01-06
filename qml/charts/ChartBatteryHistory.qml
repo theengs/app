@@ -12,11 +12,13 @@ Item {
     property bool showGraphDots: settingsManager.graphShowDots
     property color legendColor: Theme.colorSubText
 
-    property real limitMin: 0
-    property real limitMax: 0
+    property real valueMin_p: 0
+    property real valueMax_p: 100
 
-    property real valueMin: 0
-    property real valueMax: 20
+    property real valueMin_v: 0
+    property real valueMax_v: 20
+    property real limitMin_v: 0
+    property real limitMax_v: 0
 
     ////////////////////////////////////////////////////////////////////////////
 
@@ -24,16 +26,23 @@ Item {
         if (typeof currentDevice === "undefined" || !currentDevice) return
         //console.log("chartBatteryHistory // loadGraph() >> " + currentDevice)
 
-        battery2Data.visible = true // currentDevice.hasBatteryVoltage
-        battery2Data.clear()
+        //// DATA
+        batteryData_p.clear()
+        batteryData_v.clear()
 
+        batteryData_p.visible = true
+        batteryData_v.visible = false // currentDevice.hasBatteryVoltage
+
+        //// AXIS
         axisPercents.min = 0
         axisPercents.max = 100
-        axisVolts.min = valueMin
-        axisVolts.max = valueMax
 
-        chartBatteryHistory.limitMin = (currentPreset) ? currentPreset.voltageMin : 0
-        chartBatteryHistory.limitMax = (currentPreset) ? currentPreset.voltageMax : 0
+        axisVolts.min = valueMin_v
+        axisVolts.max = valueMax_v
+
+        //// LEGEND
+        chartBatteryHistory.limitMin_v = (currentPreset) ? currentPreset.voltageMin : 0
+        chartBatteryHistory.limitMax_v = (currentPreset) ? currentPreset.voltageMax : 0
         chartBatteryHistory.legendColor = Qt.rgba(legendColor.r, legendColor.g, legendColor.b, 0.8)
     }
 
@@ -45,16 +54,16 @@ Item {
         var count = 0 // currentDevice.countDataNamed("battery2", days)
 
         //// DATA
-        battery2Data.clear()
+        batteryData_v.clear()
 
-        currentDevice.getChartData_batteryHistory(axisTime, battery2Data, false, days)
+        currentDevice.getChartData_batteryHistory(axisTime, batteryData_v, false, days)
 
         //// AXIS
         //axisVolts.min = currentDevice.voltMin*0.85
         //axisVolts.max = currentDevice.voltMax*1.15
 
         /// Graph visibility
-        count = battery2Data.count
+        count = batteryData_v.count
         aioGraph.visible = (count > 1)
         noDataIndicator.visible = (count <= 0)
         showGraphDots = (settingsManager.graphShowDots && count < 16)
@@ -65,21 +74,23 @@ Item {
 
         if (currentPreset) {
             //console.log("DeviceBatteryMonitor // onPresetUpdated() >> " + currentPreset.name)
-            chartBatteryHistory.limitMin = currentPreset.voltageMin
-            chartBatteryHistory.limitMax = currentPreset.voltageMax
+            chartBatteryHistory.limitMin_v = currentPreset.voltageMin
+            chartBatteryHistory.limitMax_v = currentPreset.voltageMax
         } else {
             //console.log("DeviceBatteryMonitor // onPresetUpdated() >> empty preset")
-            chartBatteryHistory.limitMin = 0
-            chartBatteryHistory.limitMax = 0
+            chartBatteryHistory.limitMin_v = 0
+            chartBatteryHistory.limitMax_v = 0
         }
     }
 
-    function qpoint_lerp(p0, p1, x) { return (p0.y + (x - p0.x) * ((p1.y - p0.y) / (p1.x - p0.x))) }
+    function isIndicator() { return false }
+    function resetIndicator() { }
 
     ////////////////////////////////////////////////////////////////////////////
 
     ChartView {
         id: aioGraph
+
         anchors.fill: parent
         anchors.topMargin: -28
         anchors.leftMargin: -24
@@ -101,10 +112,17 @@ Item {
                        gridLineColor: Theme.colorSeparator; }
 
         LineSeries {
-            id: battery2Data
+            id: batteryData_p
             useOpenGL: useOpenGL
             pointsVisible: showGraphDots
             color: Theme.colorBlue; width: 2;
+            axisY: axisPercents; axisX: axisTime;
+        }
+        LineSeries {
+            id: batteryData_v
+            useOpenGL: useOpenGL
+            pointsVisible: showGraphDots
+            color: Theme.colorGreen; width: 2;
             axisY: axisVolts; axisX: axisTime;
         }
 
@@ -126,47 +144,7 @@ Item {
         }
 
         function moveIndicator(mouse, isMoving) {
-            var mmm = Qt.point(mouse.x, mouse.y)
-/*
-            // we adjust coordinates with graph area margins
-            var ppp = Qt.point(mouse.x, mouse.y)
-            ppp.x = ppp.x + aioGraph.anchors.rightMargin
-            ppp.y = ppp.y - aioGraph.anchors.topMargin
-
-            // map mouse position to graph value // mpmp.x is the timestamp
-            var mpmp = aioGraph.mapToValue(mmm, batteryData)
-
-            //console.log("clicked " + mouse.x + " " + mouse.y)
-            //console.log("clicked adjusted " + ppp.x + " " + ppp.y)
-            //console.log("clicked mapped " + mpmp.x + " " + mpmp.y)
-
-            if (isMoving) {
-                // dragging outside the graph area?
-                if (mpmp.x < batteryData.at(0).x){
-                    ppp.x = aioGraph.mapToPosition(batteryData.at(0), batteryData).x + aioGraph.anchors.rightMargin
-                    mpmp.x = batteryData.at(0).x
-                }
-                if (mpmp.x > batteryData.at(batteryData.count-1).x){
-                    ppp.x = aioGraph.mapToPosition(batteryData.at(batteryData.count-1), batteryData).x + aioGraph.anchors.rightMargin
-                    mpmp.x = batteryData.at(batteryData.count-1).x
-                }
-            } else {
-                // did we clicked outside the graph area?
-                if (mpmp.x < batteryData.at(0).x || mpmp.x > batteryData.at(batteryData.count-1).x) {
-                    resetIndicator()
-                    return
-                }
-            }
-
-            // indicators is now visible
-            dateIndicator.visible = true
-            verticalIndicator.visible = true
-            verticalIndicator.x = ppp.x
-            verticalIndicator.clickedCoordinates = mpmp
-
-            // update the indicator data
-            updateIndicator()
-*/
+            //
         }
     }
 
@@ -187,10 +165,10 @@ Item {
             anchors.left: parent.left
             anchors.right: parent.right
 
-            y: UtilsNumber.mapNumber(Math.min(limitMax, valueMax), // value
-                                     valueMin, valueMax, // from
+            y: UtilsNumber.mapNumber(Math.min(limitMax_v, valueMax_v), // value
+                                     valueMin_p, valueMax_v, // from
                                      aioGraph.plotArea.height, 0) // to
-            height: ((Math.min(limitMax, valueMax) - limitMin) / (valueMax - valueMin)) * aioGraph.plotArea.height
+            height: ((Math.min(limitMax_v, valueMax_v) - limitMin_v) / (valueMax_v - valueMin_v)) * aioGraph.plotArea.height
 
             color: Theme.colorGreen
             opacity: 0.20

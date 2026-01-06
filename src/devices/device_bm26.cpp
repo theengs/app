@@ -208,8 +208,8 @@ void DeviceTheengsBM26::bleReadDone(const QLowEnergyCharacteristic &c, const QBy
 
 void DeviceTheengsBM26::bleReadNotify(const QLowEnergyCharacteristic &c, const QByteArray &value)
 {
-    qDebug() << "DeviceTheengsBM26::bleReadNotify(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
-    qDebug() << "DATA: 0x" << value.toHex();
+    //qDebug() << "DeviceTheengsBM26::bleReadNotify(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
+    //qDebug() << "DATA: 0x" << value.toHex();
 
     // Volt UUID // 16 bytes frames
     if (c.uuid() == uuid_volt_char_notify && value.size() == 16)
@@ -228,6 +228,7 @@ void DeviceTheengsBM26::bleReadNotify(const QLowEnergyCharacteristic &c, const Q
         mbedtls_aes_free(&aes);
 
         float volt = ((output[2] | (output[1] << 8)) >> 4) / 100.0f;
+        //qDebug() << "volt : " << volt;
 
         if (areValuesValid_voltage(volt))
         {
@@ -240,10 +241,13 @@ void DeviceTheengsBM26::bleReadNotify(const QLowEnergyCharacteristic &c, const Q
                 Q_EMIT dataUpdated();
             }
 
-            // save?
+            // rt data
+            addRealtimeRecord_voltage(QDateTime::currentDateTime(), volt);
+
+            // save in db?
             if (needsUpdateDb())
             {
-                addDatabaseRecord_voltage(m_lastUpdate, m_batteryVoltage);
+                addDatabaseRecord_voltage(m_lastUpdate, volt);
             }
         }
         else
@@ -292,7 +296,10 @@ void DeviceTheengsBM26::actionFakeVoltage()
             Q_EMIT dataUpdated();
         }
 
-        // save?
+        // rt graph
+        addRealtimeRecord_voltage(QDateTime::currentDateTime(), m_batteryVoltage);
+
+        // database
         if (needsUpdateDb())
         {
             addDatabaseRecord_voltage(m_lastUpdate, m_batteryVoltage);

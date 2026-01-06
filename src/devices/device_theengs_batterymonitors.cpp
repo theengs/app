@@ -99,6 +99,8 @@ void DeviceTheengsBatteryMonitors::setRtWindow(const int w)
     }
 }
 
+/* ************************************************************************** */
+
 bool DeviceTheengsBatteryMonitors::areValuesValid_percent(const int p) const
 {
     return (p >= 0 && p <= 100);
@@ -108,6 +110,8 @@ bool DeviceTheengsBatteryMonitors::areValuesValid_voltage(const float v) const
 {
     return (v > -20.f && v < 20.f);
 }
+
+/* ************************************************************************** */
 
 bool DeviceTheengsBatteryMonitors::addDatabaseRecord_percent(const QDateTime &timestamp, const int p)
 {
@@ -192,6 +196,50 @@ bool DeviceTheengsBatteryMonitors::addDatabaseRecord_voltage(const QDateTime &ti
 }
 
 /* ************************************************************************** */
+
+bool DeviceTheengsBatteryMonitors::addRealtimeRecord_percent(const QDateTime &timestamp, const int p)
+{
+    //qDebug() << "DeviceTheengsBatteryMonitors::addRealtimeRecord_percent()" << p;
+    bool status = true;
+
+    if (areValuesValid_percent(p))
+    {
+        // rt data
+        while (m_rt_batt_percent.size() > 600) { m_rt_batt_percent.pop_front(); } // sanetize
+        m_rt_batt_percent.push_back(std::make_pair(timestamp, p));
+        Q_EMIT rtGraphUpdated();
+    }
+    else
+    {
+        qWarning() << "areValuesValid_percent(" << m_deviceName << p << ") values are INVALID";
+        status = false;
+    }
+
+    return status;
+}
+
+bool DeviceTheengsBatteryMonitors::addRealtimeRecord_voltage(const QDateTime &timestamp, const float v)
+{
+    //qDebug() << "DeviceTheengsBatteryMonitors::addRealtimeRecord_voltage()" << v;
+    bool status = true;
+
+    if (areValuesValid_voltage(v))
+    {
+        // rt data
+        while (m_rt_batt_voltage.size() > 600) { m_rt_batt_voltage.pop_front(); } // sanetize
+        m_rt_batt_voltage.push_back(std::make_pair(timestamp, v));
+        Q_EMIT rtGraphUpdated();
+    }
+    else
+    {
+        qWarning() << "areValuesValid_voltage(" << m_deviceName << v << ") values are INVALID";
+        status = false;
+    }
+
+    return status;
+}
+
+/* ************************************************************************** */
 /* ************************************************************************** */
 
 void DeviceTheengsBatteryMonitors::parseTheengsProps(const QString &json)
@@ -253,14 +301,12 @@ void DeviceTheengsBatteryMonitors::parseTheengsAdvertisement(const QString &json
             refreshDataFinished(true);
 
             // rt data
-            while (m_rt_batt.size() > 600) { m_rt_batt.pop_front(); } // sanetize
-            m_rt_batt.push_back(std::make_pair(m_lastUpdate, m_batteryPercent));
-            Q_EMIT rtGraphUpdated();
+            addRealtimeRecord_percent(m_lastUpdate, battery);
 
-            // save?
+            // save in db?
             if (needsUpdateDb())
             {
-                //addDatabaseRecord_percent(m_lastUpdate, m_batteryPercent);
+                //addDatabaseRecord_percent(m_lastUpdate, battery);
             }
         }
     }
@@ -269,7 +315,7 @@ void DeviceTheengsBatteryMonitors::parseTheengsAdvertisement(const QString &json
 /* ************************************************************************** */
 /* ************************************************************************** */
 
-void DeviceTheengsBatteryMonitors::getChartData_batteryRT(QDateTimeAxis *axis, QLineSeries *batt, bool reload)
+void DeviceTheengsBatteryMonitors::getChartData_batteryRT(QDateTimeAxis *axis, QLineSeries *batt_p, QLineSeries *batt_v, bool reload)
 {
     //qDebug() << "DeviceTheengsBatteryMonitors::getChartData_batteryRT()" << getAddress() << getName();
     //qDebug() << "min " << QDateTime::currentDateTime().addSecs(m_realtime_window * -60).toString("hh:mm:ss");
@@ -277,7 +323,6 @@ void DeviceTheengsBatteryMonitors::getChartData_batteryRT(QDateTimeAxis *axis, Q
 
     //if (!m_capture_started) startRtCapture(true);
     if (!axis) return;
-    if (!batt) return;
 
     int seconds = m_realtime_window * -60;
     axis->setFormat("hh:mm");
@@ -295,11 +340,25 @@ void DeviceTheengsBatteryMonitors::getChartData_batteryRT(QDateTimeAxis *axis, Q
     }
 
     //
-    batt->clear();
-    for (const auto &p: std::as_const(m_rt_batt))
+    if (batt_p)
     {
-        if (p.first.secsTo(QDateTime::currentDateTime()) > -seconds) continue;
-        batt->append(p.first.toMSecsSinceEpoch(), p.second);
+        batt_p->clear();
+        for (const auto &p: std::as_const(m_rt_batt_percent))
+        {
+            if (p.first.secsTo(QDateTime::currentDateTime()) > -seconds) continue;
+            batt_p->append(p.first.toMSecsSinceEpoch(), p.second);
+        }
+    }
+
+    //
+    if (batt_v)
+    {
+        batt_v->clear();
+        for (const auto &v: std::as_const(m_rt_batt_voltage))
+        {
+            if (v.first.secsTo(QDateTime::currentDateTime()) > -seconds) continue;
+            batt_v->append(v.first.toMSecsSinceEpoch(), v.second);
+        }
     }
 }
 

@@ -24,7 +24,7 @@ Loader {
         if (currentDevice !== clickedDevice) currentDevice = clickedDevice
 
         // connect device
-        //currentDevice.actionConnect(true)
+        currentDevice.actionConnect(true)
 
         // load screen
         if (!deviceBM.active) deviceBM.active = true
