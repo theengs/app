@@ -109,6 +109,26 @@ jobs:
              cmake --version
              ninja --version
 
+      # Setup certificate(s)
+      - name: Setup certificate(s)
+        if: env.MACOS_CERTIFICATE
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_NAME: ${{ secrets.MACOS_CERTIFICATE_NAME }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+          MACOS_CI_KEYCHAIN_PASSWORD: ${{ secrets.MACOS_CI_KEYCHAIN_PASSWORD }}
+        run: |
+            # Turn our base64-encoded certificate(s) back to a regular file(s)
+            echo "$MACOS_CERTIFICATE" | base64 --decode > certificate.p12
+            # Create a temporary headless keychain, import certificate, ...
+            security create-keychain -p "$MACOS_CI_KEYCHAIN_PASSWORD" build.keychain
+            security set-keychain-settings -lut 21600 build.keychain
+            security unlock-keychain -p "$MACOS_CI_KEYCHAIN_PASSWORD" build.keychain
+            security import certificate.p12 -k build.keychain -P "$MACOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+            security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MACOS_CI_KEYCHAIN_PASSWORD" build.keychain
+            security list-keychains -s build.keychain "$(security list-keychains | tr -d '\"')"
+            security default-keychain -s build.keychain
+
       # Build dependencies (from contribs script)
       - name: Build dependencies (from contribs script)
         run: |

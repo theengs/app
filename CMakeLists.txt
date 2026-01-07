@@ -234,6 +234,43 @@ qt_standard_project_setup(
 
 ################################################################################
 
+# thirdparty contribs
+if(ANDROID)
+    message(STATUS "arch = ${CMAKE_HOST_SYSTEM_PROCESSOR}")
+    if(CMAKE_ANDROID_ARCH_ABI STREQUAL "arm64-v8a")
+        set(CONTRIBS_ARCH "android_armv8")
+    elseif(CMAKE_ANDROID_ARCH_ABI STREQUAL "armeabi-v7a")
+        set(CONTRIBS_ARCH "android_armv7")
+    elseif(CMAKE_ANDROID_ARCH_ABI STREQUAL "x86_64")
+        set(CONTRIBS_ARCH "android_x86_64")
+    elseif(CMAKE_ANDROID_ARCH_ABI STREQUAL "x86")
+        set(CONTRIBS_ARCH "android_x86")
+    endif()
+elseif(IOS)
+    set(CONTRIBS_ARCH "iOS_unified")
+else()
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        set(CONTRIBS_ARCH "linux")
+        message(STATUS "arch = ${CMAKE_HOST_SYSTEM_PROCESSOR}")
+    endif()
+    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        set(CONTRIBS_ARCH "macOS_unified")
+        message(STATUS "arch = ${CMAKE_HOST_SYSTEM_PROCESSOR}")
+        message(STATUS "arch = ${CMAKE_OSX_ARCHITECTURES}")
+    endif()
+    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+        set(CONTRIBS_ARCH "msvc2022_64")
+        message(STATUS "arch = ${CMAKE_HOST_SYSTEM_PROCESSOR}")
+    endif()
+endif()
+
+message(STATUS "SELECTED ARCHITECTURE FOR CONTRIBS > ${CONTRIBS_ARCH}")
+
+include_directories(${CMAKE_SOURCE_DIR}/contribs/env/${CONTRIBS_ARCH}/usr/include)
+link_directories(${CMAKE_SOURCE_DIR}/contribs/env/${CONTRIBS_ARCH}/usr/lib)
+
+################################################################################
+
 # Qt libraries
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
     Qt6::Core
@@ -263,9 +300,14 @@ if(ENABLE_MQTT)
     find_package(Qt6 REQUIRED COMPONENTS Mqtt)
     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Qt6::Mqtt)
 endif()
+
 if(ENABLE_MBEDTLS)
     add_definitions(-DENABLE_MBEDTLS)
-    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE "-lmbedtls -lmbedx509 -lmbedcrypto")
+    #target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE "-lmbedtls -lmbedx509 -lmbedcrypto")
+
+    set(MbedTLS_DIR ${CMAKE_SOURCE_DIR}/contribs/env/${CONTRIBS_ARCH}/usr/lib/cmake/MbedTLS)
+    target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC MbedTLS::mbedtls)
+    find_package(MbedTLS REQUIRED)
 endif()
 
 ################################################################################
@@ -384,6 +426,9 @@ if(CMAKE_BUILD_TYPE STREQUAL Release)
         QT_NO_DEBUG_OUTPUT
     )
 endif()
+
+## Debug option (for local testing)
+#add_definitions(-DDEBUG_FAKE_DEVICES)
 
 ################################################################################
 

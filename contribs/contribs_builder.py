@@ -292,10 +292,10 @@ for TARGET in TARGETS:
 
 ## DOWNLOAD SOFTWARES ##########################################################
 
-## mbedTLS (version: 3.6.4)
+## mbedTLS (version: 3.6.5)
 NAME_mbedtls = "mbedTLS"
-VERSION_mbedtls = "3.6.4"
-FILE_mbedtls = "mbedtls-" + VERSION_mbedtls + "-easy-make-lib.tar.bz2"
+VERSION_mbedtls = "3.6.5"
+FILE_mbedtls = "mbedtls-" + VERSION_mbedtls + ".tar.bz2"
 DIR_mbedtls = "mbedtls-" + VERSION_mbedtls
 
 if "mbedtls" in softwares_selected:
