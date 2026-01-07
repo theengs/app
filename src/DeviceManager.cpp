@@ -923,6 +923,17 @@ void DeviceManager::deviceDiscoveryFinished()
 void DeviceManager::deviceDiscoveryStopped()
 {
     qDebug() << "DeviceManager::deviceDiscoveryStopped()";
+
+    if (m_scanning)
+    {
+        m_scanning = false;
+        Q_EMIT scanningChanged();
+    }
+    if (m_listening)
+    {
+        m_listening = false;
+        Q_EMIT listeningChanged();
+    }
 }
 
 /* ************************************************************************** */
@@ -1095,6 +1106,7 @@ void DeviceManager::listenDevices_start()
             if (m_bluetoothDiscoveryAgent->isActive() && m_scanning)
             {
                 m_bluetoothDiscoveryAgent->stop();
+
                 m_scanning = false;
                 Q_EMIT scanningChanged();
             }

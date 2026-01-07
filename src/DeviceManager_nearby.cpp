@@ -52,6 +52,7 @@ void DeviceManager::scanNearby_start()
             if (m_bluetoothDiscoveryAgent->isActive() && m_scanning)
             {
                 m_bluetoothDiscoveryAgent->stop();
+
                 m_scanning = false;
                 Q_EMIT scanningChanged();
             }
