@@ -424,8 +424,11 @@ for TARGET in TARGETS:
         except: print() # who cares
 
         print("> Building mbedTLS")
-        subprocess.check_call(CMAKE_cmd + ["-G", CMAKE_gen, "-DCMAKE_BUILD_TYPE=Release", "-DUSE_SHARED_MBEDTLS_LIBRARY=On", "-DENABLE_TESTING=Off", "-DCMAKE_INSTALL_PREFIX=" + env_dir + "/usr", ".."], cwd=build_dir + DIR_mbedtls + "/build")
-        subprocess.check_call(["cmake", "--build", ".", "--target", "all"], cwd=build_dir + DIR_mbedtls + "/build")
-        #subprocess.check_call(["cmake", "--install", "."], cwd=build_dir + DIR_mbedtls + "/build")
-        subprocess.check_call(["ninja", "install"], cwd=build_dir + DIR_mbedtls + "/build") # Qt BUG 91647
+        subprocess.check_call(CMAKE_cmd + ["-G", CMAKE_gen, "-DCMAKE_BUILD_TYPE=Release", "-DUSE_SHARED_MBEDTLS_LIBRARY=On", "-DMBEDTLS_FATAL_WARNINGS=Off", "-DUNSAFE_BUILD=Off", "-DENABLE_TESTING=Off", "-DCMAKE_INSTALL_PREFIX=" + env_dir + "/usr", ".."], cwd=build_dir + DIR_mbedtls + "/build")
+        if OS_TARGET == "iOS":
+            subprocess.check_call(["cmake", "--build", ".", "--config", "Release"], cwd=build_dir + DIR_mbedtls + "/build")
+            subprocess.check_call(["cmake", "--install", "."], cwd=build_dir + DIR_mbedtls + "/build")
+        else:
+            subprocess.check_call(["cmake", "--build", ".", "--target", "all"], cwd=build_dir + DIR_mbedtls + "/build")
+            subprocess.check_call(["ninja", "install"], cwd=build_dir + DIR_mbedtls + "/build") # Qt BUG 91647
 

@@ -303,11 +303,20 @@ endif()
 
 if(ENABLE_MBEDTLS)
     add_definitions(-DENABLE_MBEDTLS)
+
+    # Using CMake include directory
+    set(ENABLE_TESTING Off)
+    set(ENABLE_PROGRAMS Off)
+    add_subdirectory(thirdparty/mbedtls)
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE MbedTLS::mbedtls)
+
+    # Using precompiled library + manual linking
     #target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE "-lmbedtls -lmbedx509 -lmbedcrypto")
 
-    set(MbedTLS_DIR ${CMAKE_SOURCE_DIR}/contribs/env/${CONTRIBS_ARCH}/usr/lib/cmake/MbedTLS)
-    target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC MbedTLS::mbedtls)
-    find_package(MbedTLS REQUIRED)
+    # Using precompiled library + ".cmake" files
+    #set(MbedTLS_DIR ${CMAKE_SOURCE_DIR}/contribs/env/${CONTRIBS_ARCH}/usr/lib/cmake/MbedTLS)
+    #find_package(MbedTLS REQUIRED)
+    #target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE MbedTLS::mbedtls)
 endif()
 
 ################################################################################
