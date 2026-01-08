@@ -556,12 +556,12 @@ void DeviceGateway::bleReadNotify(const QLowEnergyCharacteristic &c, const QByte
 
 void DeviceGateway::bleDescriptorRead(const QLowEnergyDescriptor &, const QByteArray &)
 {
-    qDebug() << "DeviceGateway::bleDescriptorRead()";
+    //qDebug() << "DeviceGateway::bleDescriptorRead()";
 }
 
 void DeviceGateway::bleDescriptorWritten(const QLowEnergyDescriptor &, const QByteArray &)
 {
-    qDebug() << "DeviceGateway::bleDescriptorWritten()";
+    //qDebug() << "DeviceGateway::bleDescriptorWritten()";
 }
 
 /* ************************************************************************** */

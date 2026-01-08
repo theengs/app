@@ -1032,12 +1032,16 @@ Item {
 
             function initData() {
                 gaugeLegend.text = boxDevice.batteryPercent + "%"
+                gaugeLegend.visible = (boxDevice.batteryPercent >= 0)
                 gaugeValue.value = boxDevice.batteryPercent
+                gaugeValue.visible = (boxDevice.batteryPercent >= 0)
             }
 
             function updateData() {
                 gaugeLegend.text = boxDevice.batteryPercent + "%"
+                gaugeLegend.visible = (boxDevice.batteryPercent >= 0)
                 gaugeValue.value = boxDevice.batteryPercent
+                gaugeValue.visible = (boxDevice.batteryPercent >= 0)
             }
 
             Text {

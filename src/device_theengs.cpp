@@ -257,7 +257,8 @@ bool DeviceTheengs::hasData() const
 
     if (isBatteryMonitor())
     {
-        return (m_battery1 > -99);
+        return (m_battery1 > -99 || m_battery2 > -99 ||
+                m_batteryPercent >= 0 || m_batteryVoltage >= 0);
     }
     else if (isActuator())
     {

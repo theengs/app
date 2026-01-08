@@ -34,9 +34,11 @@ Item {
         batteryData_v.visible = false // currentDevice.hasBatteryVoltage
 
         //// AXIS
+        axisPercents.visible = true
         axisPercents.min = 0
         axisPercents.max = 100
 
+        axisVolts.visible = false
         axisVolts.min = valueMin_v
         axisVolts.max = valueMax_v
 
@@ -53,14 +55,8 @@ Item {
         var days = 30
         var count = 0 // currentDevice.countDataNamed("battery2", days)
 
-        //// DATA
-        batteryData_v.clear()
-
+        // update
         currentDevice.getChartData_batteryHistory(axisTime, batteryData_v, false, days)
-
-        //// AXIS
-        //axisVolts.min = currentDevice.voltMin*0.85
-        //axisVolts.max = currentDevice.voltMax*1.15
 
         /// Graph visibility
         count = batteryData_v.count
@@ -104,7 +100,7 @@ Item {
         animationOptions: ChartView.NoAnimation
 
         ValueAxis { id: axisPercents; visible: true; gridVisible: false; }
-        ValueAxis { id: axisVolts; visible: true; gridVisible: false; }
+        ValueAxis { id: axisVolts; visible: false; gridVisible: false; }
 
         DateTimeAxis { id: axisTime; visible: true;
                        labelsFont.pixelSize: Theme.fontSizeContentSmall-1; labelsColor: legendColor;

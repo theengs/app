@@ -134,7 +134,7 @@ void DeviceTheengsBM26::serviceScanDone()
             connect(m_serviceVolt, &QLowEnergyService::errorOccurred, this, &DeviceTheengsBM26::bleServiceError);
 
             // Windows hack, see: QTBUG-80770 and QTBUG-78488
-            QTimer::singleShot(0, this, [=] () { m_serviceVolt->discoverDetails(QLowEnergyService::SkipValueDiscovery); });
+            QTimer::singleShot(0, this, [=] () { m_serviceVolt->discoverDetails(QLowEnergyService::FullDiscovery); });
         }
     }
 }
@@ -184,12 +184,12 @@ void DeviceTheengsBM26::serviceDetailsDiscovered_volt(QLowEnergyService::Service
 
 void DeviceTheengsBM26::bleDescriptorRead(const QLowEnergyDescriptor &, const QByteArray &)
 {
-    qDebug() << "DeviceTheengsBM26::bleDescriptorRead()";
+    //qDebug() << "DeviceTheengsBM26::bleDescriptorRead()";
 }
 
 void DeviceTheengsBM26::bleDescriptorWritten(const QLowEnergyDescriptor &, const QByteArray &)
 {
-    qDebug() << "DeviceTheengsBM26::bleDescriptorWritten()";
+    //qDebug() << "DeviceTheengsBM26::bleDescriptorWritten()";
 }
 
 /* ************************************************************************** */
@@ -249,6 +249,8 @@ void DeviceTheengsBM26::bleReadNotify(const QLowEnergyCharacteristic &c, const Q
             {
                 addDatabaseRecord_voltage(m_lastUpdate, volt);
             }
+
+            refreshDataFinished(true);
         }
         else
         {
@@ -304,6 +306,8 @@ void DeviceTheengsBM26::actionFakeVoltage()
         {
             addDatabaseRecord_voltage(m_lastUpdate, m_batteryVoltage);
         }
+
+        refreshDataFinished(true);
     }
 }
 

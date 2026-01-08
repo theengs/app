@@ -30,9 +30,17 @@ Item {
         batteryData_p.clear()
         batteryData_v.clear()
 
+        batteryData_p.visible = true
+        batteryData_v.visible = true
+
         //// AXIS
-        //axisVolts.min = currentDevice.voltMin*0.85
-        //axisVolts.max = currentDevice.voltMax*1.15
+        axisPercents.visible = false
+        axisPercents.min = 0
+        axisPercents.max = 100
+
+        axisVolts.visible = true
+        axisVolts.min = valueMin_v
+        axisVolts.max = valueMax_v
 
         //// LEGEND
         chartBatteryRealTime.limitMin_v = (currentPreset) ? currentPreset.voltageMin : 0
@@ -55,6 +63,10 @@ Item {
 
         // update
         currentDevice.getChartData_batteryRT(axisTime, batteryData_p, batteryData_v, false)
+
+        // Graph visibility
+        batteryData_p.visible = !batteryData_v.count
+        batteryData_v.visible = batteryData_v.count
     }
 
     function updatePreset() {
@@ -106,7 +118,7 @@ Item {
         backgroundColor: "transparent"
         animationOptions: ChartView.NoAnimation
 
-        ValueAxis { id: axisPercent; visible: true; gridVisible: false;
+        ValueAxis { id: axisPercents; visible: true; gridVisible: false;
                     min: 0; max: 100;
                     labelFormat: "%i";
                     labelsFont.pixelSize: Theme.fontSizeContentSmall-1; labelsColor: legendColor;
@@ -128,7 +140,7 @@ Item {
             useOpenGL: useOpenGL
             pointsVisible: showGraphDots
             color: Theme.colorMaterialBlue; width: 2;
-            axisY: axisPercent; axisX: axisTime;
+            axisY: axisPercents; axisX: axisTime;
         }
         LineSeries {
             id: batteryData_v

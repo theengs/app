@@ -298,7 +298,6 @@ void DeviceTheengsBatteryMonitors::parseTheengsAdvertisement(const QString &json
                 m_batteryPercent = battery;
                 Q_EMIT dataUpdated();
             }
-            refreshDataFinished(true);
 
             // rt data
             addRealtimeRecord_percent(m_lastUpdate, battery);
@@ -308,6 +307,8 @@ void DeviceTheengsBatteryMonitors::parseTheengsAdvertisement(const QString &json
             {
                 //addDatabaseRecord_percent(m_lastUpdate, battery);
             }
+
+            refreshDataFinished(true);
         }
     }
 }
