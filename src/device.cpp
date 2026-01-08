@@ -1767,7 +1767,7 @@ void Device::setTheengsModelId(const QString &model, const QString &modelID)
     //qDebug() << "Device::setTheengsModelId() model" << model << "  -  modelID" << id;
 
     Q_UNUSED(model)
-    setModel(modelID);
+    setModel(modelID, false);
 }
 
 void Device::changeTheengsModelId(const QString &model, const QString &modelID)

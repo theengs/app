@@ -323,6 +323,18 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
             device = nullptr;
         }
     }
+    else
+    {
+#if defined(Q_OS_IOS)
+        // Theengs BM2 hack for iOS & missing iBeacon
+        if (deviceInfo.name() == "Battery Monitor")
+        {
+            deviceModelID = "BM2";
+            deviceProps.clear();
+            device = new DeviceTheengsBM26(deviceInfo, deviceModelID, deviceProps, this);
+        }
+#endif
+    }
 
     if (!device)
     {
