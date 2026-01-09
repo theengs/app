@@ -4,6 +4,7 @@ project(Theengs VERSION 1.5.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
@@ -32,7 +33,8 @@ message(STATUS "[PROJECT] QT_HOST_PATH              = ${QT_HOST_PATH}")
 find_package(Qt6 REQUIRED COMPONENTS Core Bluetooth Network Sql)
 find_package(Qt6 REQUIRED COMPONENTS Gui Svg Qml Quick QuickControls2 Charts)
 
-qt_standard_project_setup(REQUIRES 6.8)
+qt_standard_project_setup(REQUIRES 6.8
+                          I18N_SOURCE_LANGUAGE en)
 
 qt_policy(SET QTP0001 NEW)
 qt_policy(SET QTP0002 NEW)
@@ -130,12 +132,14 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE thirdparty/TheengsDecod
 
 qt_add_qml_module(${CMAKE_PROJECT_NAME}
     URI ${CMAKE_PROJECT_NAME}
+    NO_PLUGIN
     QML_FILES
         qml/MobileApplication.qml
         qml/MobileHeader.qml
         qml/MobileDrawer.qml
-        qml/MobileMenu.qml
         qml/MobilePermissions.qml
+        qml/MobileMenu.qml
+
         qml/DesktopApplication.qml
         qml/DesktopHeader.qml
         qml/About.qml
@@ -228,46 +232,22 @@ qt_add_qml_module(${CMAKE_PROJECT_NAME}
 
 ################################################################################
 
-qt_standard_project_setup(
-    I18N_SOURCE_LANGUAGE en
+# 'Other Files" macro
+function(add_other_files target)
+    foreach(file IN LISTS ARGN)
+        target_sources(${target} PRIVATE ${file})
+        source_group("Other Files" FILES ${file})
+    endforeach()
+endfunction()
+
+add_other_files(${CMAKE_PROJECT_NAME}
+    README.md
+    deploy_linux.sh deploy_macos.sh deploy_windows.sh
+    .github/workflows/builds_desktop.yml
+    .github/workflows/builds_mobile.yml
+    .github/workflows/flatpak.yml
+    .gitignore
 )
-
-################################################################################
-
-# thirdparty contribs
-if(ANDROID)
-    message(STATUS "arch = ${CMAKE_HOST_SYSTEM_PROCESSOR}")
-    if(CMAKE_ANDROID_ARCH_ABI STREQUAL "arm64-v8a")
-        set(CONTRIBS_ARCH "android_armv8")
-    elseif(CMAKE_ANDROID_ARCH_ABI STREQUAL "armeabi-v7a")
-        set(CONTRIBS_ARCH "android_armv7")
-    elseif(CMAKE_ANDROID_ARCH_ABI STREQUAL "x86_64")
-        set(CONTRIBS_ARCH "android_x86_64")
-    elseif(CMAKE_ANDROID_ARCH_ABI STREQUAL "x86")
-        set(CONTRIBS_ARCH "android_x86")
-    endif()
-elseif(IOS)
-    set(CONTRIBS_ARCH "iOS_unified")
-else()
-    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-        set(CONTRIBS_ARCH "linux")
-        message(STATUS "arch = ${CMAKE_HOST_SYSTEM_PROCESSOR}")
-    endif()
-    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-        set(CONTRIBS_ARCH "macOS_unified")
-        message(STATUS "arch = ${CMAKE_HOST_SYSTEM_PROCESSOR}")
-        message(STATUS "arch = ${CMAKE_OSX_ARCHITECTURES}")
-    endif()
-    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-        set(CONTRIBS_ARCH "msvc2022_64")
-        message(STATUS "arch = ${CMAKE_HOST_SYSTEM_PROCESSOR}")
-    endif()
-endif()
-
-message(STATUS "SELECTED ARCHITECTURE FOR CONTRIBS > ${CONTRIBS_ARCH}")
-
-include_directories(${CMAKE_SOURCE_DIR}/contribs/env/${CONTRIBS_ARCH}/usr/include)
-link_directories(${CMAKE_SOURCE_DIR}/contribs/env/${CONTRIBS_ARCH}/usr/lib)
 
 ################################################################################
 
@@ -352,6 +332,68 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ComponentLibraryplugin)
 
 ################################################################################
 
+# thirdparty contribs
+if(ANDROID)
+    message(STATUS "arch = ${CMAKE_HOST_SYSTEM_PROCESSOR}")
+    if(CMAKE_ANDROID_ARCH_ABI STREQUAL "arm64-v8a")
+        set(CONTRIBS_ARCH "android_armv8")
+    elseif(CMAKE_ANDROID_ARCH_ABI STREQUAL "armeabi-v7a")
+        set(CONTRIBS_ARCH "android_armv7")
+    elseif(CMAKE_ANDROID_ARCH_ABI STREQUAL "x86_64")
+        set(CONTRIBS_ARCH "android_x86_64")
+    elseif(CMAKE_ANDROID_ARCH_ABI STREQUAL "x86")
+        set(CONTRIBS_ARCH "android_x86")
+    endif()
+elseif(IOS)
+    set(CONTRIBS_ARCH "iOS_unified")
+else()
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        set(CONTRIBS_ARCH "linux")
+        message(STATUS "arch = ${CMAKE_HOST_SYSTEM_PROCESSOR}")
+    endif()
+    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        set(CONTRIBS_ARCH "macOS_unified")
+        message(STATUS "arch = ${CMAKE_HOST_SYSTEM_PROCESSOR}")
+        message(STATUS "arch = ${CMAKE_OSX_ARCHITECTURES}")
+    endif()
+    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+        set(CONTRIBS_ARCH "msvc2022_64")
+        message(STATUS "arch = ${CMAKE_HOST_SYSTEM_PROCESSOR}")
+    endif()
+endif()
+
+message(STATUS "SELECTED ARCHITECTURE FOR CONTRIBS > ${CONTRIBS_ARCH}")
+
+include_directories(${CMAKE_SOURCE_DIR}/contribs/env/${CONTRIBS_ARCH}/usr/include)
+link_directories(${CMAKE_SOURCE_DIR}/contribs/env/${CONTRIBS_ARCH}/usr/lib)
+
+################################################################################
+
+## Release build? Set "no debug" macros
+if(CMAKE_BUILD_TYPE STREQUAL Release)
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
+        NDEBUG
+        QT_NO_DEBUG
+        QT_NO_DEBUG_OUTPUT
+    )
+endif()
+
+## Debug option (for local testing)
+#add_definitions(-DDEBUG_FAKE_DEVICES)
+
+################################################################################
+
+## Linux
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    # System install rules
+    install(TARGETS ${CMAKE_PROJECT_NAME} RUNTIME DESTINATION bin/)
+    install(FILES ${CMAKE_SOURCE_DIR}/assets/linux/theengs.desktop DESTINATION share/applications/)
+    install(FILES ${CMAKE_SOURCE_DIR}/assets/linux/theengs.appdata.xml DESTINATION share/appdata/)
+    install(FILES ${CMAKE_SOURCE_DIR}/assets/linux/theengs.svg DESTINATION share/pixmaps/)
+    install(FILES ${CMAKE_SOURCE_DIR}/assets/linux/theengs.svg DESTINATION share/icons/hicolor/scalable/apps/)
+    install(FILES ${CMAKE_SOURCE_DIR}/LICENSE.md DESTINATION share/licenses/theengs/)
+endif()
+
 ## Android
 if(CMAKE_SYSTEM_NAME STREQUAL "Android")
     set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
@@ -362,7 +404,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android")
         QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/assets/android/"
     )
 
-    # Download & ibclude SSL Libraries
+    # Download SSL Libraries
     include(FetchContent)
     FetchContent_Declare(
         android_openssl
@@ -371,6 +413,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android")
     )
     FetchContent_MakeAvailable(android_openssl)
     include(${android_openssl_SOURCE_DIR}/android_openssl.cmake)
+    # Include SSL Libraries
     add_android_openssl_libraries(${CMAKE_PROJECT_NAME})
 
     # Patched QtConnectivity
@@ -427,20 +470,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         WIN32_EXECUTABLE ON
     )
 endif()
-
-################################################################################
-
-## Release build? Set "no debug" macros
-if(CMAKE_BUILD_TYPE STREQUAL Release)
-    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
-        NDEBUG
-        QT_NO_DEBUG
-        QT_NO_DEBUG_OUTPUT
-    )
-endif()
-
-## Debug option (for local testing)
-#add_definitions(-DDEBUG_FAKE_DEVICES)
 
 ################################################################################
 
