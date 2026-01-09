@@ -12,7 +12,7 @@ set(APP_VERSION ${CMAKE_PROJECT_VERSION})
 
 option(ENABLE_MQTT "MQTT broker support" ON)
 option(ENABLE_OPENSSL "OpenSSL for various encryption needs" ON)
-option(ENABLE_MBEDTLS "mbedTLS for various encryption needs" OFF)
+option(ENABLE_MBEDTLS "mbedTLS for various encryption needs" ON)
 
 ################################################################################
 
@@ -305,8 +305,8 @@ if(ENABLE_MBEDTLS)
     add_definitions(-DENABLE_MBEDTLS)
 
     # Using CMake include directory
-    set(ENABLE_TESTING Off)
-    set(ENABLE_PROGRAMS Off)
+    set(ENABLE_TESTING OFF)
+    set(ENABLE_PROGRAMS OFF)
     add_subdirectory(thirdparty/mbedtls)
     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE MbedTLS::mbedtls)
 

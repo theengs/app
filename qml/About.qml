@@ -272,6 +272,7 @@ Item {
                             "Theengs decoder (LGPL v3)",
                             "Qt6 (LGPL v3)",
                             "QtMqtt (GPL v3)",
+                            "Mbed TLS (Apache 2.0)",
                             "MobileUI (MIT)",
                             "MobileSharing (MIT)",
                             "SingleApplication (MIT)",
