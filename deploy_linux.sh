@@ -58,7 +58,7 @@ if [[ $use_contribs = true ]] ; then
   export LD_LIBRARY_PATH=$(pwd)/contribs/src/env/linux_x86_64/usr/lib/:$LD_LIBRARY_PATH
 fi
 
-if [[ -v QT_ROOT_DIR ]]; then
+if [[ -v QT_ROOT_DIR ]] ; then
   # cleanup undeployable Qt plugins (present, but missing their own dependencies)
   # only if we are on a GitHub Action server, because this remove the plugins from the Qt directory
   echo '---- Remove undeployable Qt plugins'
@@ -125,7 +125,8 @@ if [[ $create_package = true ]] ; then
   ./contribs/deploy/linuxdeploy-x86_64.AppImage --appdir bin --plugin qt --output appimage
   mv $APP_NAME_LOWERCASE-x86_64.AppImage $APP_NAME-$APP_VERSION-linux64.AppImage
 
-  #echo '---- Installation directory content recap (after linuxdeploy):'
+  echo '---- Installation directory content recap (after linuxdeploy):'
+  find .
   #find bin/
 fi
 

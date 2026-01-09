@@ -57,7 +57,7 @@ if [[ $use_contribs = true ]] ; then
   export LD_LIBRARY_PATH=$(pwd)/contribs/src/env/macOS_x86_64/usr/lib/:$(pwd)/contribs/src/env/macOS_arm64/usr/lib/:$LD_LIBRARY_PATH
 fi
 
-if [[ -v QT_ROOT_DIR ]]; then
+if [[ -n "${QT_ROOT_DIR:-}" ]]; then
   # cleanup undeployable Qt plugins (present, but missing their own dependencies)
   # only if we are on a GitHub Action server, because this remove the plugins from the Qt directory
   echo '---- Remove undeployable Qt plugins'

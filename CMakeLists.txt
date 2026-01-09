@@ -305,9 +305,9 @@ if(ENABLE_MBEDTLS)
     add_definitions(-DENABLE_MBEDTLS)
 
     # Using CMake include directory
-    set(ENABLE_TESTING OFF)
-    set(ENABLE_PROGRAMS OFF)
-    set(MBEDTLS_FATAL_WARNINGS OFF)
+    set(ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+    set(ENABLE_PROGRAMS OFF CACHE BOOL "" FORCE)
+    set(MBEDTLS_FATAL_WARNINGS OFF CACHE BOOL "" FORCE)
     add_subdirectory(thirdparty/mbedtls)
     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE MbedTLS::mbedtls)
 
@@ -328,9 +328,9 @@ add_subdirectory(thirdparty/SingleApplication)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE SingleApplication)
 
 # AppUtils
-set(UTILS_DOCK_ENABLED true)
-set(UTILS_WIFI_ENABLED false)
-set(UTILS_NOTIFICATIONS_ENABLED true)
+set(UTILS_DOCK_ENABLED ON CACHE BOOL "" FORCE)
+set(UTILS_WIFI_ENABLED OFF CACHE BOOL "" FORCE)
+set(UTILS_NOTIFICATIONS_ENABLED ON CACHE BOOL "" FORCE)
 add_subdirectory(thirdparty/AppUtils)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE AppUtils)
 
