@@ -179,161 +179,169 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
     QString deviceTypes;
     QString deviceProps;
 
-    ArduinoJson::DynamicJsonDocument doc(4096);
-    doc["id"] = deviceInfo.address().toString().toStdString();
-    doc["name"] = deviceInfo.name().toStdString();
-    doc["rssi"] = deviceInfo.rssi();
-
     const QList<quint16> &manufacturerIds = deviceInfo.manufacturerIds();
     const QList<QBluetoothUuid> &serviceIds = deviceInfo.serviceIds();
 
     if (manufacturerIds.isEmpty() && serviceIds.isEmpty())
     {
-        //qDebug() << "createTheengsDevice_fromAdv(" << deviceInfo.name() << ") error no advertisement";
+        qWarning() << "createTheengsDevice_fromAdv(" << deviceInfo.name() << ") error no advertisement";
         return nullptr;
     }
 
-    for (const auto id: manufacturerIds)
-    {
-        //if (id == 0x004C) continue; // skip iBeacons
-        doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + deviceInfo.manufacturerData(id).toHex().toStdString();
-    }
-    for (const auto id: serviceIds)
-    {
-        doc["servicedata"] = deviceInfo.serviceData(id).toHex().toStdString();
-        doc["servicedatauuid"] = QByteArray::number(id.toUInt16(), 16).rightJustified(4, '0').toStdString();
-    }
+    int maxLoop = std::max(manufacturerIds.size(), serviceIds.size());
 
-    TheengsDecoder dec;
-    ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
-    if (dec.decodeBLEJson(obj) >= 0)
+    for (int i = 0; i < maxLoop; i++)
     {
-        obj.remove("manufacturerdata");
-        obj.remove("servicedata");
-        obj.remove("servicedatauuid");
+        ArduinoJson::DynamicJsonDocument doc(4096);
+        doc["id"] = deviceInfo.address().toString().toStdString();
+        doc["name"] = deviceInfo.name().toStdString();
+        doc["rssi"] = deviceInfo.rssi();
 
-        deviceModel = QString::fromStdString(doc["model"]);
-        deviceModelID = QString::fromStdString(doc["model_id"]);
-        deviceTags = QString::fromStdString(doc["tag"]);
-        deviceTypes = QString::fromStdString(doc["type"]);
-        deviceProps = QString::fromStdString(dec.getTheengProperties(deviceModelID.toLatin1()));
-
-        qDebug() << "createTheengsDevice_fromAdv() FOUND :" << deviceModel << deviceModelID << deviceTags << deviceTypes << deviceProps;
-    }
-    else
-    {
-        std::string input;
-        serializeJson(doc, input);
-        qDebug() << "createTheengsDevice_fromAdv() decodeBLEJson error:" << input.c_str();
-    }
-
-    if (!deviceModelID.isEmpty() && // Do not process unkown devices
-        !deviceProps.isEmpty() && // Do not process devices with empty properties
-        !(deviceTypes == "RMAC" || doc["prmac"])) // Do not process devices with random macs
-    {
-        int deviceType = DeviceTheengs::getTheengsTypeFromTag(deviceTags, deviceTypes);
-
-        if (deviceType == DeviceUtils::DEVICE_THEENGS_PROBE)
+        if (manufacturerIds.size() > i)
         {
-            device = new DeviceTheengsProbes(deviceInfo, deviceModelID, deviceProps, this);
+            const auto id = manufacturerIds.at(i);
+            doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + deviceInfo.manufacturerData(id).toHex().toStdString();
         }
-        else if (deviceType == DeviceUtils::DEVICE_THEENGS_SCALE)
+
+        if (serviceIds.size() > i)
         {
-            device = new DeviceTheengsScales(deviceInfo, deviceModelID, deviceProps, this);
+            const auto id = serviceIds.at(i);
+            doc["servicedata"] = deviceInfo.serviceData(id).toHex().toStdString();
+            doc["servicedatauuid"] = QByteArray::number(id.toUInt16(), 16).rightJustified(4, '0').toStdString();
         }
-        else if (deviceType == DeviceUtils::DEVICE_THEENGS_THERMOMETER)
+
+        TheengsDecoder dec;
+        ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
+        if (dec.decodeBLEJson(obj) >= 0)
         {
-            device = new DeviceTheengsThermometers(deviceInfo, deviceModelID, deviceProps, this);
+            obj.remove("manufacturerdata");
+            obj.remove("servicedata");
+            obj.remove("servicedatauuid");
+
+            deviceModel = QString::fromStdString(doc["model"]);
+            deviceModelID = QString::fromStdString(doc["model_id"]);
+            deviceTags = QString::fromStdString(doc["tag"]);
+            deviceTypes = QString::fromStdString(doc["type"]);
+            deviceProps = QString::fromStdString(dec.getTheengProperties(deviceModelID.toLatin1()));
+
+            qDebug() << "createTheengsDevice_fromAdv() FOUND :" << deviceModel << deviceModelID << deviceTags << deviceTypes << deviceProps;
         }
-        else if (deviceType == DeviceUtils::DEVICE_THEENGS_MOTIONSENSOR)
+        else
         {
-            device = new DeviceTheengsMotionSensors(deviceInfo, deviceModelID, deviceProps, this);
+            std::string output;
+            serializeJson(doc, output);
+            qWarning() << "createTheengsDevice_fromAdv() decodeBLEJson(unknown) error:" << output.c_str();
         }
-        else if (deviceType == DeviceUtils::DEVICE_THEENGS_BATTERYMONITOR)
+        if (!deviceModelID.isEmpty() && // Do not process unkown devices
+            !deviceProps.isEmpty() && // Do not process devices with empty properties
+            !(deviceTypes == "RMAC" || doc["prmac"])) // Do not process devices with random macs
         {
-            if (deviceInfo.name() == "Battery Monitor" || deviceModelID == "BM2" || deviceModelID == "BM6")
+            int deviceType = DeviceTheengs::getTheengsTypeFromTag(deviceTags, deviceTypes);
+
+            if (deviceType == DeviceUtils::DEVICE_THEENGS_PROBE)
             {
-                device = new DeviceTheengsBM26(deviceInfo, deviceModelID, deviceProps, this);
+                device = new DeviceTheengsProbes(deviceInfo, deviceModelID, deviceProps, this);
+            }
+            else if (deviceType == DeviceUtils::DEVICE_THEENGS_SCALE)
+            {
+                device = new DeviceTheengsScales(deviceInfo, deviceModelID, deviceProps, this);
+            }
+            else if (deviceType == DeviceUtils::DEVICE_THEENGS_THERMOMETER)
+            {
+                device = new DeviceTheengsThermometers(deviceInfo, deviceModelID, deviceProps, this);
+            }
+            else if (deviceType == DeviceUtils::DEVICE_THEENGS_MOTIONSENSOR)
+            {
+                device = new DeviceTheengsMotionSensors(deviceInfo, deviceModelID, deviceProps, this);
+            }
+            else if (deviceType == DeviceUtils::DEVICE_THEENGS_BATTERYMONITOR)
+            {
+                if (deviceInfo.name() == "Battery Monitor" || deviceModelID == "BM2" || deviceModelID == "BM6")
+                {
+                    device = new DeviceTheengsBM26(deviceInfo, deviceModelID, deviceProps, this);
+                }
+                else
+                {
+                    device = new DeviceTheengsBatteryMonitors(deviceInfo, deviceModelID, deviceProps, this);
+                }
+            }
+            else if (deviceType == DeviceUtils::DEVICE_THEENGS_ACTUATOR)
+            {
+                if (deviceModelID == "X1")
+                {
+                    device = new DeviceSwitchbotSmartSwitch(deviceInfo, deviceModelID, deviceProps, this);
+                }
+                else
+                {
+                    device = new DeviceTheengsActuators(deviceInfo, deviceModelID, deviceProps, this);
+                }
+            }
+            else if (deviceType == DeviceUtils::DEVICE_THEENGS_ACTUATOR_WINDOW)
+            {
+                if (deviceModelID == "W270160X")
+                {
+                    device = new DeviceSwitchbotBlindTilt(deviceInfo, deviceModelID, deviceProps, this);
+                }
+                else if (deviceModelID == "W070160X")
+                {
+                    device = new DeviceSwitchbotCurtain(deviceInfo, deviceModelID, deviceProps, this);
+                }
+                else
+                {
+                    device = new DeviceTheengsWindowActuators(deviceInfo, deviceModelID, deviceProps, this);
+                }
             }
             else
             {
-                device = new DeviceTheengsBatteryMonitors(deviceInfo, deviceModelID, deviceProps, this);
+                device = new DeviceTheengsGeneric(deviceInfo, deviceModelID, deviceProps, this);
             }
-        }
-        else if (deviceType == DeviceUtils::DEVICE_THEENGS_ACTUATOR)
-        {
-            if (deviceModelID == "X1")
+/*
+            else if (deviceType == DeviceUtils::DEVICE_THEENGS_SMARTWATCH)
             {
-                device = new DeviceSwitchbotSmartSwitch(deviceInfo, deviceModelID, deviceProps, this);
+                device = new DeviceTheengsWatches(deviceAddr, deviceName,
+                                                  deviceModel_theengs, device_props, this);
             }
-            else
+            else if (deviceType == DeviceUtils::DEVICE_THEENGS_BEACON)
             {
-                device = new DeviceTheengsActuators(deviceInfo, deviceModelID, deviceProps, this);
+                device = new DeviceTheengsBeacons(deviceAddr, deviceName,
+                                                  deviceModel_theengs, device_props, this);
             }
-        }
-        else if (deviceType == DeviceUtils::DEVICE_THEENGS_ACTUATOR_WINDOW)
-        {
-            if (deviceModelID == "W270160X")
+            else if (deviceType == DeviceUtils::DEVICE_ENVIRONMENTAL)
             {
-                device = new DeviceSwitchbotBlindTilt(deviceInfo, deviceModelID, deviceProps, this);
+                device = new DeviceTheengsGeneric(deviceInfo, device_modelid_theengs, device_props, this);
+                device->setEnvironmental();
             }
-            else if (deviceModelID == "W070160X")
+            else if (deviceType == DeviceUtils::DEVICE_PLANTSENSOR)
             {
-                device = new DeviceSwitchbotCurtain(deviceInfo, deviceModelID, deviceProps, this);
+                device = new DeviceTheengsGeneric(deviceInfo, device_modelid_theengs, device_props, this);
+                device->setPlantSensor();
             }
-            else
+*/
+            if (!device)
             {
-                device = new DeviceTheengsWindowActuators(deviceInfo, deviceModelID, deviceProps, this);
+                qWarning() << "Device is empty:" << deviceInfo.name() << deviceModel << deviceModelID;
+            }
+            else if (!device->isValid())
+            {
+                qWarning() << "Device is invalid:" << deviceInfo.name() << deviceModel << deviceModelID;
+                delete device;
+                device = nullptr;
             }
         }
         else
         {
-            device = new DeviceTheengsGeneric(deviceInfo, deviceModelID, deviceProps, this);
-        }
-/*
-        else if (deviceType == DeviceUtils::DEVICE_THEENGS_SMARTWATCH)
-        {
-            device = new DeviceTheengsWatches(deviceAddr, deviceName,
-                                              deviceModel_theengs, device_props, this);
-        }
-        else if (deviceType == DeviceUtils::DEVICE_THEENGS_BEACON)
-        {
-            device = new DeviceTheengsBeacons(deviceAddr, deviceName,
-                                              deviceModel_theengs, device_props, this);
-        }
-        else if (deviceType == DeviceUtils::DEVICE_ENVIRONMENTAL)
-        {
-            device = new DeviceTheengsGeneric(deviceInfo, device_modelid_theengs, device_props, this);
-            device->setEnvironmental();
-        }
-        else if (deviceType == DeviceUtils::DEVICE_PLANTSENSOR)
-        {
-            device = new DeviceTheengsGeneric(deviceInfo, device_modelid_theengs, device_props, this);
-            device->setPlantSensor();
-        }
-*/
-        if (!device)
-        {
-            qWarning() << "Device is empty:" << deviceInfo.name() << deviceModel << deviceModelID;
-        }
-        else if (!device->isValid())
-        {
-            qWarning() << "Device is invalid:" << deviceInfo.name() << deviceModel << deviceModelID;
-            delete device;
-            device = nullptr;
-        }
-    }
-    else
-    {
 #if defined(Q_OS_IOS)
-        // Theengs BM2 hack for iOS & missing iBeacon
-        if (deviceInfo.name() == "Battery Monitor")
-        {
-            deviceModelID = "BM2";
-            deviceProps.clear();
-            device = new DeviceTheengsBM26(deviceInfo, deviceModelID, deviceProps, this);
-        }
+            // Theengs BM2 hack for iOS & missing iBeacon
+            if (deviceInfo.name() == "Battery Monitor")
+            {
+                deviceModelID = "BM2";
+                deviceProps.clear();
+                device = new DeviceTheengsBM26(deviceInfo, deviceModelID, deviceProps, this);
+            }
 #endif
+        }
+
+        if (device) break; // we have a device, no need to loop on adv data
     }
 
     if (!device)
