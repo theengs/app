@@ -133,8 +133,13 @@ void DeviceTheengsBM26::serviceScanDone()
 
             connect(m_serviceVolt, &QLowEnergyService::errorOccurred, this, &DeviceTheengsBM26::bleServiceError);
 
+#if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
             // Windows hack, see: QTBUG-80770 and QTBUG-78488
             QTimer::singleShot(0, this, [=] () { m_serviceVolt->discoverDetails(QLowEnergyService::FullDiscovery); });
+#else
+            // Windows hack, see: QTBUG-80770 and QTBUG-78488
+            QTimer::singleShot(0, this, [=] () { m_serviceVolt->discoverDetails(QLowEnergyService::SkipValueDiscovery); });
+#endif
         }
     }
 }
