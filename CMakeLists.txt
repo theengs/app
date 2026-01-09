@@ -428,6 +428,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     )
 endif()
 
+################################################################################
+
 ## Release build? Set "no debug" macros
 if(CMAKE_BUILD_TYPE STREQUAL Release)
     target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
@@ -450,9 +452,12 @@ set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
 )
 
 # Output (install)
-install(TARGETS ${CMAKE_PROJECT_NAME}
-    BUNDLE DESTINATION "${CMAKE_INSTALL_BINDIR}"
-    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-)
+#include(GNUInstallDirs)
+#install(TARGETS ${CMAKE_PROJECT_NAME}
+#    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+#    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+#    BUNDLE DESTINATION "${CMAKE_INSTALL_BINDIR}"
+#    BUNDLE DESTINATION "${CMAKE_SOURCE_DIR}/bin"
+#)
 
 ################################################################################

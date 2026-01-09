@@ -63,8 +63,8 @@ if [[ -n "${QT_ROOT_DIR:-}" ]]; then
   echo '---- Remove undeployable Qt plugins'
   sudo rm $QT_ROOT_DIR/plugins/position/libqtposition_nmea.dylib
   sudo rm $QT_ROOT_DIR/plugins/sqldrivers/libqsqlmimer.dylib
-  sudo rm $QT_ROOT_DIR/plugins/sqldrivers/libqsqlodbc.so
-  sudo rm $QT_ROOT_DIR/plugins/sqldrivers/libqsqlpsql.so
+  sudo rm $QT_ROOT_DIR/plugins/sqldrivers/libqsqlodbc.dylib
+  sudo rm $QT_ROOT_DIR/plugins/sqldrivers/libqsqlpsql.dylib
 fi
 
 ## APP INSTALL #################################################################

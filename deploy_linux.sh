@@ -126,8 +126,7 @@ if [[ $create_package = true ]] ; then
   mv $APP_NAME_LOWERCASE-x86_64.AppImage $APP_NAME-$APP_VERSION-linux64.AppImage
 
   echo '---- Installation directory content recap (after linuxdeploy):'
-  find .
-  #find bin/
+  find bin/
 fi
 
 ## PACKAGE (archive) ###########################################################
