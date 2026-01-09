@@ -82,9 +82,7 @@ ApplicationWindow {
     Connections {
         target: appHeader
         function onBackButtonClicked() {
-            if (appContent.state !== "DeviceList") {
-                appContent.state = "DeviceList"
-            }
+            backAction()
         }
 
         function onDeviceMacButtonClicked() {
@@ -228,7 +226,7 @@ ApplicationWindow {
 
     function backAction() {
         if (appContent.state === "DeviceList") {
-            if (screenDeviceList.selectionList.length !== 0) {
+            if (screenDeviceList.isSelected()) {
                 screenDeviceList.exitSelectionMode()
             }
         } else if (appContent.state === "DevicePlantSensor") {

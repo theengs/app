@@ -490,6 +490,7 @@ Loader {
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
 
+                    active: deviceThermometer.visible
                     asynchronous: true
                     onLoaded: {
                         thermoChart.loadGraph()
