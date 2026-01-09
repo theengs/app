@@ -57,6 +57,8 @@ class Device: public QObject
     Q_PROPERTY(bool deviceFirmwareUpToDate READ isFirmwareUpToDate NOTIFY sensorUpdated)
     Q_PROPERTY(int deviceBattery READ getBatteryLevel NOTIFY batteryUpdated)
 
+    // Sensor
+
     Q_PROPERTY(bool isPlantSensor READ isPlantSensor NOTIFY sensorUpdated)
     Q_PROPERTY(bool isThermometer READ isThermometer NOTIFY sensorUpdated)
     Q_PROPERTY(bool isEnvironmentalSensor READ isEnvironmentalSensor NOTIFY sensorUpdated)
@@ -96,15 +98,16 @@ class Device: public QObject
     Q_PROPERTY(bool deviceIsOutside READ isOutside WRITE setOutside NOTIFY settingsUpdated)
 
     // BLE
+
     Q_PROPERTY(int mtu READ getMTU NOTIFY mtuUpdated)
+    Q_PROPERTY(int rssi READ getRssi NOTIFY rssiUpdated)
+    Q_PROPERTY(int rssiMean READ getRssiMean NOTIFY rssiMeanUpdated)
+    Q_PROPERTY(bool available READ isAvailable NOTIFY rssiUpdated)
+
     Q_PROPERTY(int minorClass READ getMinorClass NOTIFY advertisementUpdated)
     Q_PROPERTY(int majorClass READ getMajorClass NOTIFY advertisementUpdated)
     Q_PROPERTY(int serviceClass READ getServiceClass NOTIFY advertisementUpdated)
     Q_PROPERTY(int bluetoothConfiguration READ getBluetoothConfiguration NOTIFY advertisementUpdated)
-
-    Q_PROPERTY(int rssi READ getRssi NOTIFY rssiUpdated)
-    Q_PROPERTY(int rssiMean READ getRssiMean NOTIFY rssiMeanUpdated)
-    Q_PROPERTY(bool available READ isAvailable NOTIFY rssiUpdated)
 
     Q_PROPERTY(int status READ getStatus NOTIFY statusUpdated)
     Q_PROPERTY(int action READ getAction NOTIFY actionUpdated)
@@ -124,6 +127,7 @@ class Device: public QObject
     Q_PROPERTY(QDateTime deviceUptime READ getDeviceUptime NOTIFY uptimeUpdated)
 
     // UI state(s)
+
     Q_PROPERTY(bool selected READ isSelected WRITE setSelected NOTIFY selectionUpdated)
     bool selected = false;
     bool isSelected() const { return selected; }
@@ -247,8 +251,8 @@ protected:
     virtual void deviceConnParamChanged(const QLowEnergyConnectionParameters &newParameters);
 
     virtual void addLowEnergyService(const QBluetoothUuid &uuid);
-    virtual void serviceDetailsDiscovered(QLowEnergyService::ServiceState newState);
     virtual void serviceScanDone();
+    virtual void serviceDiscoveryDone();
 
     virtual void bleWriteDone(const QLowEnergyCharacteristic &c, const QByteArray &value);
     virtual void bleReadDone(const QLowEnergyCharacteristic &c, const QByteArray &value);
@@ -426,13 +430,13 @@ public:
     Q_INVOKABLE void actionWatering();
     Q_INVOKABLE void actionCalibrate();
 
+    Q_INVOKABLE void refreshStart();
+    Q_INVOKABLE void refreshStartHistory();
+    Q_INVOKABLE void refreshStartRealtime();
+
     // Internal actions
     void refreshQueued();
     void refreshDequeued();
-
-    void refreshStart();
-    void refreshStartHistory();
-    void refreshStartRealtime();
     void refreshRetry();
     void refreshStop();
 

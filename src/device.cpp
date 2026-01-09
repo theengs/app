@@ -70,7 +70,7 @@ Device::Device(const QString &deviceAddr, const QString &deviceName, QObject *pa
     // Check address validity
     if (m_bleDevice.isValid() == false)
     {
-        qWarning() << "Device() '" << m_deviceAddress << "' is an invalid QBluetoothDeviceInfo...";
+        qWarning() << "Device() '" << getAddress() << "' is an invalid QBluetoothDeviceInfo...";
     }
 
     // Device name hacks // Remove MAC address from device names
@@ -97,9 +97,6 @@ Device::Device(const QString &deviceAddr, const QString &deviceName, QObject *pa
     m_timeoutTimer.setSingleShot(true);
     connect(&m_timeoutTimer, &QTimer::timeout, this, &Device::actionTimedOut);
 
-    // Configure update timer (only started on desktop)
-    connect(&m_updateTimer, &QTimer::timeout, this, &Device::refreshStart);
-
     // Configure RSSI timer
     m_rssiTimer.setSingleShot(true);
     m_rssiTimer.setInterval(s_rssiTimeoutInterval*1000);
@@ -111,6 +108,12 @@ Device::Device(const QBluetoothDeviceInfo &d, QObject *parent) : QObject(parent)
     m_bleDevice = d;
     m_deviceName = m_bleDevice.name();
 
+    m_major = d.majorDeviceClass();
+    m_minor = d.minorDeviceClass();
+    m_service = d.serviceClasses();
+
+    setRssi(d.rssi());
+
 #if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
     m_deviceAddress = m_bleDevice.deviceUuid().toString();
 #else
@@ -120,7 +123,7 @@ Device::Device(const QBluetoothDeviceInfo &d, QObject *parent) : QObject(parent)
     // Check address validity
     if (m_bleDevice.isValid() == false)
     {
-        qWarning() << "Device() '" << m_deviceAddress << "' is an invalid QBluetoothDeviceInfo...";
+        qWarning() << "Device() '" << getAddress() << "' is an invalid QBluetoothDeviceInfo...";
     }
 
     // Device name hacks // Remove MAC address from device names
@@ -147,9 +150,6 @@ Device::Device(const QBluetoothDeviceInfo &d, QObject *parent) : QObject(parent)
     m_timeoutTimer.setSingleShot(true);
     m_timeoutTimer.setInterval(s_timeoutInterval*1000);
     connect(&m_timeoutTimer, &QTimer::timeout, this, &Device::actionTimedOut);
-
-    // Configure update timer (only started on desktop)
-    connect(&m_updateTimer, &QTimer::timeout, this, &Device::refreshStart);
 
     // Configure RSSI timer
     m_rssiTimer.setSingleShot(true);
@@ -184,6 +184,9 @@ void Device::deviceConnect(const bool stayConnected)
             if (m_bleController->role() == QLowEnergyController::CentralRole)
             {
                 m_bleController->setRemoteAddressType(QLowEnergyController::PublicAddress);
+
+                m_mtu = m_bleController->mtu();
+                Q_EMIT mtuUpdated();
 
                 // Connecting signals and slots for connecting to LE services.
                 connect(m_bleController, &QLowEnergyController::connected, this, &Device::deviceConnected);
@@ -525,6 +528,11 @@ void Device::actionErrored()
         m_ble_status = DeviceUtils::DEVICE_CONNECTED;
         Q_EMIT statusUpdated();
     }
+
+    if (!m_stayConnected)
+    {
+        deviceDisconnect();
+    }
 }
 
 void Device::actionCanceled()
@@ -543,7 +551,10 @@ void Device::actionCanceled()
         Q_EMIT statusUpdated();
     }
 
-    deviceDisconnect();
+    if (!m_stayConnected)
+    {
+        deviceDisconnect();
+    }
 }
 
 void Device::actionTimedOut()
@@ -565,6 +576,11 @@ void Device::actionTimedOut()
     {
         m_ble_status = DeviceUtils::DEVICE_OFFLINE;
         Q_EMIT statusUpdated();
+    }
+
+    if (!m_stayConnected)
+    {
+        deviceDisconnect();
     }
 }
 
@@ -646,16 +662,10 @@ void Device::refreshDataFinished(bool status, bool cached)
 
     m_timeoutTimer.stop();
 
-    //m_ble_status = DeviceUtils::DEVICE_OFFLINE;
-    //Q_EMIT statusUpdated();
-
     if (status == true)
     {
         // Only update data on success
         Q_EMIT dataUpdated();
-
-        // Reset update timer
-        setUpdateTimer();
 
         // Reset last error
         m_lastError = QDateTime();
@@ -677,9 +687,6 @@ void Device::refreshDataFinished(bool status, bool cached)
         {
             m_lastError = QDateTime::currentDateTime();
             Q_EMIT lastUpdated();
-
-            // Set error timer value
-            setUpdateTimer(SettingsManager::s_intervalErrorUpdate);
         }
     }
 
@@ -704,9 +711,6 @@ void Device::refreshHistoryFinished(bool status)
     //qDebug() << "Device::refreshHistoryFinished()" << getAddress() << getName();
 
     m_timeoutTimer.stop();
-
-    //m_ble_status = DeviceUtils::DEVICE_OFFLINE;
-    //Q_EMIT statusUpdated();
 
     if (status == true)
     {
@@ -736,9 +740,6 @@ void Device::refreshRealtimeFinished()
     //qDebug() << "Device::refreshRealtimeFinished()" << getAddress() << getName();
 
     m_timeoutTimer.stop();
-
-    //m_ble_status = DeviceUtils::DEVICE_OFFLINE;
-    //Q_EMIT statusUpdated();
 }
 
 void Device::refreshAdvertisement()
@@ -746,47 +747,11 @@ void Device::refreshAdvertisement()
     //qDebug() << "Device::refreshAdvertisement()" << getAddress() << getName();
 
     Q_EMIT dataUpdated();
-    Q_EMIT realtimeUpdated();
+    Q_EMIT advertisementUpdated();
 }
 
 /* ************************************************************************** */
 /* ************************************************************************** */
-
-void Device::setUpdateTimer(int updateIntervalMin)
-{
-#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
-    return; // we do not update every x hours on mobile, we update everytime the app is on the foreground
-#endif
-
-    // If no interval is provided, load the one from settings
-    if (updateIntervalMin <= 0)
-    {
-        SettingsManager *sm = SettingsManager::getInstance();
-
-        if (getDeviceType() == DeviceUtils::DEVICE_PLANTSENSOR)
-            updateIntervalMin = sm->getUpdateIntervalPlant();
-        else
-            updateIntervalMin = sm->getUpdateIntervalThermo();
-    }
-
-    // Validate the interval
-    if (updateIntervalMin < 5 || updateIntervalMin > 120)
-    {
-        if (getDeviceType() == DeviceUtils::DEVICE_PLANTSENSOR)
-            updateIntervalMin = SettingsManager::s_intervalPlantUpdate;
-        else if (getDeviceType() == DeviceUtils::DEVICE_THERMOMETER)
-            updateIntervalMin = SettingsManager::s_intervalThermometerUpdate;
-        else
-            updateIntervalMin = SettingsManager::s_intervalEnvironmentalUpdate;
-    }
-
-    // Is our timer already set to this particular interval?
-    if (m_updateTimer.interval() != updateIntervalMin*60*1000)
-    {
-        m_updateTimer.setInterval(updateIntervalMin*60*1000);
-        m_updateTimer.start();
-    }
-}
 
 void Device::setTimeoutTimer(int time_s)
 {
@@ -805,7 +770,7 @@ void Device::setKeepaliveTimer(int time_s)
 
 bool Device::getSqlDeviceInfos()
 {
-    //qDebug() << "Device::getSqlDeviceInfos(" << m_deviceAddress << ")";
+    //qDebug() << "Device::getSqlDeviceInfos(" << getAddress() << ")";
     bool status = false;
 
     if (m_dbInternal || m_dbExternal)
@@ -1553,13 +1518,13 @@ void Device::deviceConnected()
 {
     qDebug() << "Device::deviceConnected(" << getAddress() << ")";
 
+    m_ble_status = DeviceUtils::DEVICE_CONNECTED;
+
     if (m_mtu != m_bleController->mtu())
     {
         m_mtu = m_bleController->mtu();
         Q_EMIT mtuUpdated();
     }
-
-    m_ble_status = DeviceUtils::DEVICE_CONNECTED;
 
     if (m_ble_action == DeviceUtils::ACTION_UPDATE_REALTIME ||
         m_ble_action == DeviceUtils::ACTION_UPDATE_HISTORY)
@@ -1726,14 +1691,14 @@ void Device::addLowEnergyService(const QBluetoothUuid &)
     //qDebug() << "Device::addLowEnergyService(" << uuid.toString() << ")";
 }
 
-void Device::serviceDetailsDiscovered(QLowEnergyService::ServiceState)
-{
-    //qDebug() << "Device::serviceDetailsDiscovered(" << getAddress() << ")";
-}
-
 void Device::serviceScanDone()
 {
     //qDebug() << "Device::serviceScanDone(" << getAddress() << ")";
+}
+
+void Device::serviceDiscoveryDone()
+{
+    //qDebug() << "Device::serviceDiscoveryDone(" << getAddress() << ")";
 }
 
 /* ************************************************************************** */

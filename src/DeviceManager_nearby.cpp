@@ -29,19 +29,26 @@ void DeviceManager::scanNearby_start()
 {
     //qDebug() << "DeviceManager::scanNearby_start()";
 
+    // init nearby device list
+    if (!m_devices_nearby_model)
+    {
+        m_devices_nearby_model = new DeviceModel(this);
+        m_devices_nearby_filter = new DeviceFilter(this);
+        m_devices_nearby_filter->setSourceModel(m_devices_nearby_model);
+
+        m_devices_nearby_filter->setSortRole(DeviceModel::DeviceRssiRole);
+        m_devices_nearby_filter->sort(0, Qt::AscendingOrder);
+        m_devices_nearby_filter->invalidate();
+    }
+
+    // clean up nearby device list?
+    if (m_devices_nearby_model)
+    {
+        //m_devices_nearby_model->clearDevices();
+    }
+
     if (hasBluetooth())
     {
-        if (!m_devices_nearby_model)
-        {
-            m_devices_nearby_model = new DeviceModel(this);
-            m_devices_nearby_filter = new DeviceFilter(this);
-            m_devices_nearby_filter->setSourceModel(m_devices_nearby_model);
-
-            m_devices_nearby_filter->setSortRole(DeviceModel::DeviceRssiRole);
-            m_devices_nearby_filter->sort(0, Qt::AscendingOrder);
-            m_devices_nearby_filter->invalidate();
-        }
-
         if (!m_bluetoothDiscoveryAgent)
         {
             startBleAgent();
@@ -49,44 +56,34 @@ void DeviceManager::scanNearby_start()
 
         if (m_bluetoothDiscoveryAgent)
         {
-            if (m_bluetoothDiscoveryAgent->isActive() && m_scanning)
+            if (m_bluetoothDiscoveryAgent->isActive())
             {
-                m_bluetoothDiscoveryAgent->stop();
-
-                m_scanning = false;
-                Q_EMIT scanningChanged();
+                refreshDevices_stop();
             }
-
-            disconnect(m_bluetoothDiscoveryAgent, &QBluetoothDeviceDiscoveryAgent::finished,
-                       this, &DeviceManager::deviceDiscoveryFinished);
 
             connect(m_bluetoothDiscoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
                     this, &DeviceManager::addNearbyBleDevice, Qt::UniqueConnection);
             connect(m_bluetoothDiscoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceUpdated,
                     this, &DeviceManager::updateNearbyBleDevice, Qt::UniqueConnection);
 
-            connect(m_bluetoothDiscoveryAgent, &QBluetoothDeviceDiscoveryAgent::finished,
-                    this, &DeviceManager::deviceDiscoveryStopped, Qt::UniqueConnection);
-            connect(m_bluetoothDiscoveryAgent, &QBluetoothDeviceDiscoveryAgent::canceled,
-                    this, &DeviceManager::deviceDiscoveryStopped, Qt::UniqueConnection);
-
+            // start scanning
             m_bluetoothDiscoveryAgent->setLowEnergyDiscoveryTimeout(ble_listening_duration_nearby*1000);
+            m_bluetoothDiscoveryAgent->start(QBluetoothDeviceDiscoveryAgent::LowEnergyMethod);
 
-            if (hasBluetoothPermissions())
+            if (m_bluetoothDiscoveryAgent->isActive())
             {
-                m_bluetoothDiscoveryAgent->start(QBluetoothDeviceDiscoveryAgent::LowEnergyMethod);
-
-                if (m_bluetoothDiscoveryAgent->isActive())
-                {
-                    m_listening = true;
-                    Q_EMIT listeningChanged();
-                    qDebug() << "Listening (Bluetooth) for devices...";
-                }
+                m_scanning_nearby = true;
+                Q_EMIT scanningNearbyChanged();
+                qDebug() << "Listening for BLE nearby devices...";
             }
             else
             {
-                qWarning() << "Cannot scan or listen without BLE permissions";
+                qWarning() << "DeviceManager::scanNearby_start() DID NOT START";
             }
+        }
+        else
+        {
+            qWarning() << "Cannot start BLE agent";
         }
     }
     else
@@ -101,25 +98,20 @@ void DeviceManager::scanNearby_stop()
 
     if (m_bluetoothDiscoveryAgent)
     {
+        disconnect(m_bluetoothDiscoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
+                   this, &DeviceManager::addNearbyBleDevice);
+        disconnect(m_bluetoothDiscoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceUpdated,
+                   this, &DeviceManager::updateNearbyBleDevice);
+
         if (m_bluetoothDiscoveryAgent->isActive())
         {
-            disconnect(m_bluetoothDiscoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
-                       this, &DeviceManager::addNearbyBleDevice);
-            disconnect(m_bluetoothDiscoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceUpdated,
-                       this, &DeviceManager::updateNearbyBleDevice);
-
             m_bluetoothDiscoveryAgent->stop();
+        }
 
-            if (m_scanning)
-            {
-                m_scanning = false;
-                Q_EMIT scanningChanged();
-            }
-            if (m_listening)
-            {
-                m_listening = false;
-                Q_EMIT listeningChanged();
-            }
+        if (m_scanning_nearby)
+        {
+            m_scanning_nearby = false;
+            Q_EMIT scanningNearbyChanged();
         }
     }
 }

@@ -65,6 +65,7 @@ class DeviceManager: public QObject
     Q_PROPERTY(bool advertising READ isAdvertising NOTIFY advertisingChanged)
     Q_PROPERTY(bool listening READ isListening NOTIFY listeningChanged)
     Q_PROPERTY(bool scanning READ isScanning NOTIFY scanningChanged)
+    Q_PROPERTY(bool scanningNearby READ isScanningNearby NOTIFY scanningNearbyChanged)
     Q_PROPERTY(bool updating READ isUpdating NOTIFY updatingChanged)
     Q_PROPERTY(bool syncing READ isSyncing NOTIFY syncingChanged)
 
@@ -110,14 +111,16 @@ class DeviceManager: public QObject
 
     ////
 
+    QList <QString> m_devices_blacklist;
+
     DeviceModel *m_devices_nearby_model = nullptr;
     DeviceFilter *m_devices_nearby_filter = nullptr;
 
-    DeviceModel *m_devices_model = nullptr;
-    DeviceFilter *m_devices_filter = nullptr;
-
     //DeviceModel *m_gateways_nearby_model = nullptr;
     //DeviceFilter *m_gateways_nearby_filter = nullptr;
+
+    DeviceModel *m_devices_model = nullptr;
+    DeviceFilter *m_devices_filter = nullptr;
 
     DeviceModel *m_gateways_model = nullptr;
     DeviceFilter *m_gateways_filter = nullptr;
@@ -125,15 +128,13 @@ class DeviceManager: public QObject
     DeviceGateway *m_gateway_selected = nullptr;
     DeviceGateway *getGatewaySelected() { return m_gateway_selected; }
 
-    ////
-
-    QList <QString> m_devices_blacklist;
-
     QList <QObject *> m_devices_updating_queue;
     QList <QObject *> m_devices_updating;
 
     QList <QObject *> m_devices_syncing_queue;
     QList <QObject *> m_devices_syncing;
+
+    ////
 
     bool m_advertising = false;
     bool isAdvertising() const { return m_advertising; }
@@ -143,6 +144,9 @@ class DeviceManager: public QObject
 
     bool m_scanning = false;
     bool isScanning() const { return m_scanning; }
+
+    bool m_scanning_nearby = false;
+    bool isScanningNearby() const { return m_scanning_nearby; }
 
     bool m_updating = false;
     bool isUpdating() const;
@@ -199,6 +203,7 @@ Q_SIGNALS:
     void advertisingChanged();
     void listeningChanged();
     void scanningChanged();
+    void scanningNearbyChanged();
     void updatingChanged();
     void syncingChanged();
 
@@ -229,10 +234,6 @@ public:
     ~DeviceManager();
 
     bool isDaemon() const { return m_daemonMode; }
-
-    Q_INVOKABLE bool areDevicesConnected() const;
-    Q_INVOKABLE void disconnectDevices() const;
-    Q_INVOKABLE void disconnectAndExit() const;
 
     // Adapters management
     Q_INVOKABLE bool areAdaptersAvailable() const { return m_bluetoothAdapters.size(); }
@@ -291,8 +292,9 @@ public:
 
     // Devices list management
     Q_INVOKABLE bool areDevicesAvailable() const { return m_devices_model->hasDevices(); }
-    Q_INVOKABLE bool areGatewaysAvailable() const { return m_gateways_model->hasDevices(); }
-    Q_INVOKABLE void disconnectDevices();
+    Q_INVOKABLE bool areDevicesConnected() const;
+    Q_INVOKABLE void disconnectDevices() const;
+    Q_INVOKABLE void disconnectAndExit() const;
 
     int getDeviceCount() const { return m_devices_model->getDeviceCount(); }
     DeviceFilter *getDevicesFiltered() const { return m_devices_filter; }
@@ -302,6 +304,8 @@ public:
     Q_INVOKABLE void removeGateway(const QString &address);
 
     // Gateway list management
+    Q_INVOKABLE bool areGatewaysAvailable() const { return m_gateways_model->hasDevices(); }
+
     Q_INVOKABLE void selectGateway(const QString &address);
     Q_INVOKABLE void selectGateway_fromwifi(const QString &address);
     Q_INVOKABLE void deselectGateway();
