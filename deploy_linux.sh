@@ -50,15 +50,27 @@ esac
 shift # skip argument or value
 done
 
-## linuxdeploy INSTALL #########################################################
+## PREP WORK ###################################################################
 
-#unset LD_LIBRARY_PATH; #unset QT_PLUGIN_PATH; #unset QTDIR;
+#unset LD_LIBRARY_PATH; #unset QT_PLUGIN_PATH;
 
 if [[ $use_contribs = true ]] ; then
-  export LD_LIBRARY_PATH=$(pwd)/contribs/src/env/linux_x86_64/usr/lib/:/usr/lib
-else
-  export LD_LIBRARY_PATH=/usr/lib/
+  export LD_LIBRARY_PATH=$(pwd)/contribs/src/env/linux_x86_64/usr/lib/:$LD_LIBRARY_PATH
 fi
+
+if [[ -v QT_ROOT_DIR ]]; then
+  # cleanup undeployable Qt plugins (present, but missing their own dependencies)
+  # only if we are on a GitHub Action server, because this remove the plugins from the Qt directory
+  echo '---- Remove undeployable Qt plugins'
+  sudo rm $QT_ROOT_DIR/plugins/position/libqtposition_nmea.so
+  sudo rm $QT_ROOT_DIR/plugins/sqldrivers/libqsqlmimer.so
+  sudo rm $QT_ROOT_DIR/plugins/sqldrivers/libqsqlmysql.so
+  sudo rm $QT_ROOT_DIR/plugins/sqldrivers/libqsqloci.so
+  sudo rm $QT_ROOT_DIR/plugins/sqldrivers/libqsqlodbc.so
+  sudo rm $QT_ROOT_DIR/plugins/sqldrivers/libqsqlpsql.so
+fi
+
+## linuxdeploy INSTALL #########################################################
 
 echo '---- Prepare linuxdeploy + plugins'
 
@@ -72,14 +84,15 @@ chmod a+x contribs/deploy/linuxdeploy-x86_64.AppImage
 chmod a+x contribs/deploy/linuxdeploy-plugin-appimage-x86_64.AppImage
 chmod a+x contribs/deploy/linuxdeploy-plugin-qt-x86_64.AppImage
 
-# linuxdeploy qt hacks
+# linuxdeploy-plugin-qt hacks
 #export QMAKE="qmake6" # force Qt6, if you have Qt5 installed
 #export NO_STRIP=true  # workaround, strip not working on modern binutils
 
-# linuxdeploy qt settings
-export EXTRA_PLATFORM_PLUGINS="libqwayland.so;"
-export EXTRA_QT_PLUGINS="wayland-shell-integration;waylandclient;wayland-graphics-integration-client;"
-export EXTRA_QT_MODULES="svg;"
+# linuxdeploy-plugin-qt settings
+export EXTRA_QT_MODULES="svg;waylandcompositor;"
+export EXTRA_QT_PLUGINS=""
+export EXTRA_PLATFORM_PLUGINS="libqwayland.so" # Qt 6.10+
+#export EXTRA_PLATFORM_PLUGINS="libqwayland-egl.so;libqwayland-generic.so" # Qt 5+
 export QML_SOURCES_PATHS="$(pwd)/qml/"
 export QML_MODULES_PATHS=""
 
@@ -91,22 +104,6 @@ if [[ $make_install = true ]] ; then
 
   #echo '---- Installation directory content recap (after make install):'
   #find bin/
-fi
-
-## PACKAGES ####################################################################
-
-if [[ $create_package = true ]] ; then
-  if [[ -v QT_ROOT_DIR ]]; then
-    # cleanup undeployable Qt plugins (present, but missing their own dependencies)
-    # only if we are on a GitHub Action server, because this remove the plugins from the Qt directory
-    echo '---- Remove undeployable Qt plugins'
-    sudo rm $QT_ROOT_DIR/plugins/position/libqtposition_nmea.so
-    sudo rm $QT_ROOT_DIR/plugins/sqldrivers/libqsqlmimer.so
-    sudo rm $QT_ROOT_DIR/plugins/sqldrivers/libqsqlmysql.so
-    sudo rm $QT_ROOT_DIR/plugins/sqldrivers/libqsqloci.so
-    sudo rm $QT_ROOT_DIR/plugins/sqldrivers/libqsqlodbc.so
-    sudo rm $QT_ROOT_DIR/plugins/sqldrivers/libqsqlpsql.so
-  fi
 fi
 
 ## PACKAGE (AppImage) ##########################################################
@@ -126,7 +123,7 @@ if [[ $create_package = true ]] ; then
 
   echo '---- Running AppImage packager'
   ./contribs/deploy/linuxdeploy-x86_64.AppImage --appdir bin --plugin qt --output appimage
-  mv $APP_NAME-x86_64.AppImage $APP_NAME-$APP_VERSION-linux64.AppImage
+  mv $APP_NAME_LOWERCASE-x86_64.AppImage $APP_NAME-$APP_VERSION-linux64.AppImage
 
   #echo '---- Installation directory content recap (after linuxdeploy):'
   #find bin/

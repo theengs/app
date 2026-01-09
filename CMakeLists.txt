@@ -307,6 +307,7 @@ if(ENABLE_MBEDTLS)
     # Using CMake include directory
     set(ENABLE_TESTING OFF)
     set(ENABLE_PROGRAMS OFF)
+    set(MBEDTLS_FATAL_WARNINGS OFF)
     add_subdirectory(thirdparty/mbedtls)
     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE MbedTLS::mbedtls)
 
