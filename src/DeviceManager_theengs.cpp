@@ -232,6 +232,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
             serializeJson(doc, output);
             qWarning() << "createTheengsDevice_fromAdv() decodeBLEJson(unknown) error:" << output.c_str();
         }
+
         if (!deviceModelID.isEmpty() && // Do not process unkown devices
             !deviceProps.isEmpty() && // Do not process devices with empty properties
             !(deviceTypes == "RMAC" || doc["prmac"])) // Do not process devices with random macs

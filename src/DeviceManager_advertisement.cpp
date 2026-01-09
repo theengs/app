@@ -189,7 +189,7 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoo
                     // MQTT send
                     SettingsManager *sm = SettingsManager::getInstance();
                     MqttManager *mq = MqttManager::getInstance();
-                    if (sm && mq)
+                    if (sm && mq && !mac_qstr_clean.isEmpty())
                     {
                         QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr_clean;
                         bool status_mqtt = mq->publishData(topic, QString::fromStdString(output));
@@ -302,10 +302,12 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoo
                     if (sm && mq && !mac_qstr_clean.isEmpty())
                     {
                         QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr_clean;
-                        status_device = mq->publishData(topic, QString::fromStdString(output));
+                        bool status_mqtt = mq->publishData(topic, QString::fromStdString(output));
+                        if (!status_mqtt)
+                        {
+                            //qWarning() << "MQTT publishData(" << topic << ")  FAILED  >> " << output;
+                        }
                     }
-
-                    status_device = true;
                 }
             }
             else
@@ -321,12 +323,12 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoo
 
     if (m_scanning)
     {
-        if (status_gateway && info.name().startsWith("OMG_"))
+        if (!status_gateway && info.name().startsWith("OMG_"))
         {
             //qDebug() << "addBleGateway(" << info.name() << ") FROM DYNAMIC SCANNING";
             addBleGateway(info);
         }
-        else if (status_device)
+        else if (!status_device)
         {
             //qDebug() << "addBleDevice(" << info.name() << ") FROM DYNAMIC SCANNING";
             addBleDevice(info);
