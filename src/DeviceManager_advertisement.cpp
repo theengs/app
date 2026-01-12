@@ -212,22 +212,22 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoo
             // Dynamic updates
             if (m_listening)
             {
-                if (!dd->isEnabled()) return;
-                if (!dd->hasBluetoothConnection()) return;
-
-                //qDebug() << "adding from bleDevice_updated()";
-                //qDebug() << "last upd" << dd->getLastUpdateInt() << dd->needsUpdateRt();
-                //qDebug() << "last err" << dd->getLastErrorInt() << dd->isErrored();
-
-                // old or no data: go for refresh
-                // also, check if we didn't already fail to update in the last couple minutes
-                if (dd->needsUpdateRt() && !dd->isErrored())
+                if (dd->isEnabled() && dd->hasBluetoothConnection())
                 {
-                    if (!m_devices_updating_queue.contains(dd) && !m_devices_updating.contains(dd))
+                    //qDebug() << "adding from bleDevice_updated()";
+                    //qDebug() << "last upd" << dd->getLastUpdateInt() << dd->needsUpdateRt();
+                    //qDebug() << "last err" << dd->getLastErrorInt() << dd->isErrored();
+
+                    // old or no data: go for refresh
+                    // also, check if we didn't already fail to update in the last couple minutes
+                    if (dd->needsUpdateRt() && !dd->isErrored())
                     {
-                        m_devices_updating_queue.push_back(dd);
-                        dd->refreshQueued();
-                        refreshDevices_continue();
+                        if (!m_devices_updating_queue.contains(dd) && !m_devices_updating.contains(dd))
+                        {
+                            m_devices_updating_queue.push_back(dd);
+                            dd->refreshQueued();
+                            refreshDevices_continue();
+                        }
                     }
                 }
             }

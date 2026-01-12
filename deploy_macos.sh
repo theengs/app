@@ -73,8 +73,8 @@ if [[ $make_install = true ]] ; then
   echo '---- Running make install'
   make INSTALL_ROOT=bin/ install
 
-  echo '---- Installation directory content recap (after make install):'
-  find bin/
+  #echo '---- Installation directory content recap (after make install):'
+  #find bin/
 fi
 
 ## APP DEPLOY ##################################################################
@@ -86,8 +86,8 @@ else
   macdeployqt bin/$APP_NAME.app -qmldir=qml/
 fi
 
-echo '---- Installation directory content recap (after macdeployqt):'
-find bin/
+#echo '---- Installation directory content recap (after macdeployqt):'
+#find bin/
 
 ## PACKAGE (zip) ###############################################################
 

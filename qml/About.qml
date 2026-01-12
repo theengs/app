@@ -376,6 +376,25 @@ Item {
                             textFormat: Text.PlainText
                             font.pixelSize: Theme.fontSizeContent
                         }
+
+                        Text {
+                            color: Theme.colorSubText
+                            text: "Qt connectivity patched: %1".arg(qtConnectivityPatched)
+                            textFormat: Text.PlainText
+                            font.pixelSize: Theme.fontSizeContent
+                        }
+                        Text {
+                            color: Theme.colorSubText
+                            text: "MQTT enabled: %1".arg(mqttEnabled)
+                            textFormat: Text.PlainText
+                            font.pixelSize: Theme.fontSizeContent
+                        }
+                        Text {
+                            color: Theme.colorSubText
+                            text: "MbedTLS enabled: %1".arg(mbedtlsEnabled)
+                            textFormat: Text.PlainText
+                            font.pixelSize: Theme.fontSizeContent
+                        }
                     }
                 }
             }
