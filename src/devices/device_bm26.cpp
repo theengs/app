@@ -261,6 +261,9 @@ void DeviceTheengsBM26::bleReadNotify(const QLowEnergyCharacteristic &c, const Q
         {
             qWarning() << "DeviceTheengsBM26::bleReadNotify() !!! INVALID VOLTAGE !!! " << volt << "v";
         }
+#else
+        qWarning() << "DeviceTheengsBM26::bleReadNotify(" << m_deviceAddress << ") on"
+                   << c.name() << " / uuid" << c.uuid() << value.size() << "UNABLE TO DECRYPT !!!";
 #endif // ENABLE_MBEDTLS
     }
 }

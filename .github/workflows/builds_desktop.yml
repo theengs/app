@@ -59,7 +59,6 @@ jobs:
         run: |
              cd contribs/
              python3 contribs_builder_qt.py --targets=linux --software qtmqtt --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
-             python3 contribs_builder.py --targets=linux --software mbedtls --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
 
       # Build application
       - name: Build application
@@ -69,7 +68,7 @@ jobs:
 
       # Deploy application
       - name: Deploy application
-        run: ./deploy_linux.sh -c -p
+        run: ./deploy_linux.sh -p
 
       # Upload AppImage
       - name: Upload AppImage
@@ -134,7 +133,6 @@ jobs:
         run: |
              cd contribs/
              python3 contribs_builder_qt.py --targets=macos --software qtmqtt --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
-             python3 contribs_builder.py --targets=macos --software mbedtls --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
 
       # Build application
       - name: Build application
@@ -147,7 +145,7 @@ jobs:
       - name: Deploy application
         env:
           MACOS_CERTIFICATE_NAME: ${{ secrets.MACOS_CERTIFICATE_NAME }}
-        run: ./deploy_macos.sh -c
+        run: ./deploy_macos.sh -c -p
 
       # Upload application bundle
       - name: Upload application bundle

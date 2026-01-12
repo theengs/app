@@ -191,6 +191,22 @@ int main(int argc, char *argv[])
     engine_context->setContextProperty("utilsLanguage", utilsLanguage);
 
     engine_context->setContextProperty("startMinimized", (start_minimized || sm->getMinimized()));
+#if defined(QT_CONNECTIVITY_PATCHED)
+    engine_context->setContextProperty("qtConnectivityPatched", true);
+#else
+    engine_context->setContextProperty("qtConnectivityPatched", false);
+#endif
+#if defined(ENABLE_MBEDTLS)
+    engine_context->setContextProperty("mbedtlsEnabled", true);
+#else
+    engine_context->setContextProperty("mbedtlsEnabled", false);
+#endif
+#if defined(ENABLE_MQTT)
+    engine_context->setContextProperty("mqttEnabled", true);
+#else
+    engine_context->setContextProperty("mqttEnabled", false);
+#endif
+
 
     // Load the main view
 #if defined(Q_OS_ANDROID) || defined(Q_OS_IOS) || defined(FORCE_MOBILE_UI)

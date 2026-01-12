@@ -94,10 +94,10 @@ set(SOURCES
     src/blufi/BluFiFrame.cpp src/blufi/BluFiFrame.h src/blufi/BluFiUtils.h
 
     thirdparty/TheengsDecoder/src/decoder.cpp thirdparty/TheengsDecoder/src/decoder.h
+    thirdparty/IconLibrary/IconLibrary_material.qrc
 
     assets/assets.qrc
     assets/devices.qrc
-    thirdparty/IconLibrary/IconLibrary_material.qrc
 )
 
 if(IOS OR ANDROID)
@@ -108,7 +108,7 @@ if(IOS OR ANDROID)
 endif()
 
 if(NOT IOS AND NOT ANDROID)
-    # Set app icons
+    # Set app desktop icons
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         set(app_icon_windows "${CMAKE_SOURCE_DIR}/assets/windows/${CMAKE_PROJECT_NAME}.rc")
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
@@ -117,14 +117,17 @@ if(NOT IOS AND NOT ANDROID)
 
     # Desktop only source files
     set(SOURCES_DESKTOP
-        src/MenubarManager.cpp src/MenubarManager.h
         src/SystrayManager.cpp src/SystrayManager.h
+        src/MenubarManager.cpp src/MenubarManager.h
         ${app_icon_windows}
         ${app_icon_macos}
     )
 endif()
 
-qt_add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${SOURCES_DESKTOP} ${SOURCES_MOBILE})
+qt_add_executable(${CMAKE_PROJECT_NAME}
+    ${SOURCES}
+    ${SOURCES_MOBILE}
+    ${SOURCES_DESKTOP})
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE src/)
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE thirdparty/TheengsDecoder/src/)
@@ -241,7 +244,7 @@ function(add_other_files target)
 endfunction()
 
 add_other_files(${CMAKE_PROJECT_NAME}
-    README.md
+    README.md LICENSE
     deploy_linux.sh deploy_macos.sh deploy_windows.sh
     .github/workflows/builds_desktop.yml
     .github/workflows/builds_mobile.yml
@@ -276,20 +279,20 @@ if(NOT IOS AND NOT ANDROID)
 endif()
 
 if(ENABLE_MQTT)
-    add_definitions(-DENABLE_MQTT)
     find_package(Qt6 REQUIRED COMPONENTS Mqtt)
     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Qt6::Mqtt)
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE ENABLE_MQTT)
+
 endif()
 
 if(ENABLE_MBEDTLS)
-    add_definitions(-DENABLE_MBEDTLS)
-
     # Using CMake include directory
     set(ENABLE_TESTING OFF CACHE BOOL "" FORCE)
     set(ENABLE_PROGRAMS OFF CACHE BOOL "" FORCE)
     set(MBEDTLS_FATAL_WARNINGS OFF CACHE BOOL "" FORCE)
     add_subdirectory(thirdparty/mbedtls)
     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE MbedTLS::mbedtls)
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE ENABLE_MBEDTLS)
 
     # Using precompiled library + manual linking
     #target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE "-lmbedtls -lmbedx509 -lmbedcrypto")
@@ -379,7 +382,7 @@ if(CMAKE_BUILD_TYPE STREQUAL Release)
 endif()
 
 ## Debug option (for local testing)
-#add_definitions(-DDEBUG_FAKE_DEVICES)
+#target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE DEBUG_FAKE_DEVICES)
 
 ################################################################################
 
@@ -387,11 +390,11 @@ endif()
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     # System install rules
     install(TARGETS ${CMAKE_PROJECT_NAME} RUNTIME DESTINATION bin/)
-    install(FILES ${CMAKE_SOURCE_DIR}/assets/linux/theengs.desktop DESTINATION share/applications/)
-    install(FILES ${CMAKE_SOURCE_DIR}/assets/linux/theengs.appdata.xml DESTINATION share/appdata/)
-    install(FILES ${CMAKE_SOURCE_DIR}/assets/linux/theengs.svg DESTINATION share/pixmaps/)
-    install(FILES ${CMAKE_SOURCE_DIR}/assets/linux/theengs.svg DESTINATION share/icons/hicolor/scalable/apps/)
-    install(FILES ${CMAKE_SOURCE_DIR}/LICENSE.md DESTINATION share/licenses/theengs/)
+    install(FILES ${CMAKE_SOURCE_DIR}/assets/linux/${CMAKE_PROJECT_NAME}.desktop DESTINATION share/applications/)
+    install(FILES ${CMAKE_SOURCE_DIR}/assets/linux/${CMAKE_PROJECT_NAME}.appdata.xml DESTINATION share/appdata/)
+    install(FILES ${CMAKE_SOURCE_DIR}/assets/linux/${CMAKE_PROJECT_NAME}.svg DESTINATION share/pixmaps/)
+    install(FILES ${CMAKE_SOURCE_DIR}/assets/linux/${CMAKE_PROJECT_NAME}.svg DESTINATION share/icons/hicolor/scalable/apps/)
+    install(FILES ${CMAKE_SOURCE_DIR}/LICENSE.md DESTINATION share/licenses/${CMAKE_PROJECT_NAME}/)
 endif()
 
 ## Android
@@ -403,6 +406,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android")
         QT_ANDROID_TARGET_SDK_VERSION 36
         QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/assets/android/"
     )
+
+    # Support 16 KB page sizes / pre NDK28
+    target_link_options(${CMAKE_PROJECT_NAME} PRIVATE "-Wl,-z,max-page-size=16384")
 
     # Download SSL Libraries
     include(FetchContent)

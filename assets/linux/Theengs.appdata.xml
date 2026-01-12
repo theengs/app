@@ -4,7 +4,7 @@
 <component type="desktop-application">
   <id>com.theengs.app</id>
   <name>Theengs</name>
-  <launchable type="desktop-id">theengs.desktop</launchable>
+  <launchable type="desktop-id">Theengs.desktop</launchable>
 
   <summary>Theengs app is a multi platforms, multi devices application and BLE to MQTT gateway that leverages the Theengs Decoder library.</summary>
   <description>

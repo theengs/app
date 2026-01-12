@@ -18,7 +18,7 @@
 	<string>com.theengs.app</string>
 
 	<key>CFBundleIconFile</key>
-	<string>theengs.icns</string>
+	<string>Theengs.icns</string>
 
 	<key>CFBundleVersion</key>
 	<string>01050001</string>

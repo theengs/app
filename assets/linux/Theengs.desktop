@@ -2,6 +2,6 @@
 Type=Application
 Name=Theengs
 Comment=Efficient, portable and lightweight library for Internet of Things payload decoding
-Exec=theengs
-Icon=theengs
+Exec=Theengs
+Icon=Theengs
 Categories=Utility;DataVisualization;Qt;
