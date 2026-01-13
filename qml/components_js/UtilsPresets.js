@@ -22,8 +22,6 @@ function getBatteryPresetIcon(presetType) {
         src = "qrc:/assets/icons_custom/battery_car.svg"
     } else if (presetType === BatteryPresetUtils.BatteryPresetUtils.PRESET_GEL) {
         src = "qrc:/assets/icons_custom/battery_car.svg"
-    } else if (presetType === BatteryPresetUtils.BatteryPresetUtils.PRESET_LION) {
-        src = "qrc:/assets/icons_custom/battery_car.svg"
     }
 
     return src
@@ -44,8 +42,6 @@ function getBatteryPresetType(presetType) {
         type = qsTr("Enhanced Flooded Battery")
     } else if (presetType === BatteryPresetUtils.BatteryPresetUtils.PRESET_GEL) {
         type = qsTr("Gel")
-    } else if (presetType === BatteryPresetUtils.BatteryPresetUtils.PRESET_LION) {
-        type = qsTr("Lithium-Ion")
     }
 
     return type

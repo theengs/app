@@ -1031,17 +1031,45 @@ Item {
             anchors.verticalCenterOffset: 4
 
             function initData() {
-                gaugeLegend.text = boxDevice.batteryPercent + "%"
-                gaugeLegend.visible = (boxDevice.batteryPercent >= 0)
-                gaugeValue.value = boxDevice.batteryPercent
-                gaugeValue.visible = (boxDevice.batteryPercent >= 0)
+                if (boxDevice.connected) {
+                    // voltage
+                    gaugeLegend.visible = true
+                    gaugeValue.visible = true
+                    gaugeLegend.text = boxDevice.batteryVoltage + "V"
+                    gaugeValue.value = boxDevice.batteryVoltage
+                    gaugeValue.valueMin = 5
+                    gaugeValue.valueMax = 15
+                } else {
+                    // percent
+                    gaugeLegend.text = boxDevice.batteryPercent.toFixed(0) + "%"
+                    gaugeLegend.visible = (boxDevice.batteryPercent >= 0)
+
+                    gaugeValue.visible = (boxDevice.batteryPercent >= 0)
+                    gaugeValue.value = boxDevice.batteryPercent
+                    gaugeValue.valueMin = 0
+                    gaugeValue.valueMax = 100
+                }
             }
 
             function updateData() {
-                gaugeLegend.text = boxDevice.batteryPercent + "%"
-                gaugeLegend.visible = (boxDevice.batteryPercent >= 0)
-                gaugeValue.value = boxDevice.batteryPercent
-                gaugeValue.visible = (boxDevice.batteryPercent >= 0)
+                if (boxDevice.connected) {
+                    // voltage
+                    gaugeLegend.visible = true
+                    gaugeValue.visible = true
+                    gaugeLegend.text = boxDevice.batteryVoltage.toFixed(1) + "V"
+                    gaugeValue.value = boxDevice.batteryVoltage
+                    gaugeValue.valueMin = 5
+                    gaugeValue.valueMax = 15
+                } else {
+                    // percent
+                    gaugeLegend.text = boxDevice.batteryPercent.toFixed(0) + "%"
+                    gaugeLegend.visible = (boxDevice.batteryPercent >= 0)
+
+                    gaugeValue.visible = (boxDevice.batteryPercent >= 0)
+                    gaugeValue.value = boxDevice.batteryPercent
+                    gaugeValue.valueMin = 0
+                    gaugeValue.valueMax = 100
+                }
             }
 
             Text {

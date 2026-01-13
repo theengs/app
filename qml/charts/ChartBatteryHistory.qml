@@ -9,14 +9,14 @@ Item {
     anchors.margins: 12
 
     property bool useOpenGL: true
-    property bool showGraphDots: settingsManager.graphShowDots
+    property bool showGraphDots: false
     property color legendColor: Theme.colorSubText
 
     property real valueMin_p: 0
     property real valueMax_p: 100
 
     property real valueMin_v: 0
-    property real valueMax_v: 20
+    property real valueMax_v: 15
     property real limitMin_v: 0
     property real limitMax_v: 0
 

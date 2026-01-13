@@ -67,24 +67,20 @@ bool BatteryPresetManager::load()
     // Load APP presets
     {
         BatteryPreset *b1 = new BatteryPreset(-1, BatteryPresetUtils::PRESET_LEADACID, true,
-                                              "Lead Acid", 9.6, 12.4, this);
+                                              "Lead Acid", 10.5, 12.8, this);
         m_presets.push_back(b1);
 
         BatteryPreset *b2 = new BatteryPreset(-2, BatteryPresetUtils::PRESET_AGM, true,
-                                              "Absorbent Glass Mat", 10, 12, this);
+                                              "Absorbent Glass Mat", 10.8, 12.9, this);
         m_presets.push_back(b2);
 
         BatteryPreset *b3 = new BatteryPreset(-3, BatteryPresetUtils::PRESET_EFB, true,
-                                              "Enhanced Flooded Battery", 10, 12, this);
+                                              "Enhanced Flooded Battery", 10.8, 12.8, this);
         m_presets.push_back(b3);
 
         BatteryPreset *b4 = new BatteryPreset(-4, BatteryPresetUtils::PRESET_GEL, true,
-                                              "Gel", 9, 13, this);
+                                              "Gel", 10.5, 13.0, this);
         m_presets.push_back(b4);
-
-        BatteryPreset *b5 = new BatteryPreset(-5, BatteryPresetUtils::PRESET_LION, true,
-                                              "Lithium Ion", 10, 12, this);
-        m_presets.push_back(b5);
     }
 
     // USER presets?

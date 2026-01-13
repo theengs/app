@@ -45,10 +45,9 @@ public:
         PRESET_LEADACID,
         PRESET_AGM, // Absorbent Glass Mat
         PRESET_EFB, // Enhanced Flooded Battery
-        PRESET_GEL,
-        PRESET_LION, // lithium-ion
+        PRESET_GEL, // ?
 
-        PRESET_LAST = PRESET_LION,
+        PRESET_LAST = PRESET_GEL,
     };
     Q_ENUM(PresetType)
 };
