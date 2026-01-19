@@ -20,6 +20,8 @@ Item {
     property real limitMin_v: 0
     property real limitMax_v: 0
 
+    property int maxDays: 30
+
     ////////////////////////////////////////////////////////////////////////////
 
     function loadGraph() {
@@ -31,14 +33,14 @@ Item {
         batteryData_v.clear()
 
         batteryData_p.visible = true
-        batteryData_v.visible = false // currentDevice.hasBatteryVoltage
+        batteryData_v.visible = true
 
         //// AXIS
-        axisPercents.visible = true
+        axisPercents.visible = false
         axisPercents.min = 0
         axisPercents.max = 100
 
-        axisVolts.visible = false
+        axisVolts.visible = true
         axisVolts.min = valueMin_v
         axisVolts.max = valueMax_v
 
@@ -52,17 +54,23 @@ Item {
         if (typeof currentDevice === "undefined" || !currentDevice) return
         //console.log("chartBatteryHistory // updateGraph() >> " + currentDevice)
 
-        var days = 30
+        var days = chartBatteryHistory.maxDays
         var count = 0 // currentDevice.countDataNamed("battery2", days)
 
         // update
-        currentDevice.getChartData_batteryHistory(axisTime, batteryData_v, false, days)
-
-        /// Graph visibility
+        currentDevice.getChartData_batteryHistory(axisTime, batteryData_p, batteryData_v, false, days)
         count = batteryData_v.count
-        aioGraph.visible = (count > 1)
+
+        // series
+        axisPercents.visible = (count <= 0)
+        batteryData_p.visible = (count <= 0)
+        axisVolts.visible = (count > 0)
+        batteryData_v.visible = (count > 0)
+
+        /// graph visibility
+        historyGraph.visible = (count > 1)
         noDataIndicator.visible = (count <= 0)
-        showGraphDots = (settingsManager.graphShowDots && count < 16)
+        //showGraphDots = (settingsManager.graphShowDots && count < 16)
     }
 
     function updatePreset() {
@@ -79,13 +87,20 @@ Item {
         }
     }
 
+    function updateMaxDays(maxDays) {
+        if (chartBatteryHistory.maxDays !== maxDays) {
+            chartBatteryHistory.maxDays = maxDays
+            chartBatteryHistory.updateGraph()
+        }
+    }
+
     function isIndicator() { return false }
     function resetIndicator() { }
 
     ////////////////////////////////////////////////////////////////////////////
 
     ChartView {
-        id: aioGraph
+        id: historyGraph
 
         anchors.fill: parent
         anchors.topMargin: -28
@@ -124,13 +139,13 @@ Item {
 
         MouseArea {
             id: clickableGraphArea
-            anchors.fill: aioGraph
+            anchors.fill: historyGraph
 
             acceptedButtons: Qt.LeftButton | Qt.RightButton
 
             onClicked: (mouse) => {
                 if (mouse.button === Qt.LeftButton) {
-                    aioGraph.moveIndicator(mouse, false)
+                    historyGraph.moveIndicator(mouse, false)
                     mouse.accepted = true
                 }
                 else if (mouse.button === Qt.RightButton) {
@@ -149,12 +164,12 @@ Item {
     Item {
         id: legend_area
 
-        width: aioGraph.plotArea.width
-        height: aioGraph.plotArea.height
-        x: aioGraph.plotArea.x + aioGraph.anchors.leftMargin
-        y: aioGraph.plotArea.y + aioGraph.anchors.topMargin
+        width: historyGraph.plotArea.width
+        height: historyGraph.plotArea.height
+        x: historyGraph.plotArea.x + historyGraph.anchors.leftMargin
+        y: historyGraph.plotArea.y + historyGraph.anchors.topMargin
 
-        visible: aioGraph.visible
+        visible: historyGraph.visible
         clip: true
 
         Rectangle {
@@ -163,8 +178,8 @@ Item {
 
             y: UtilsNumber.mapNumber(Math.min(limitMax_v, valueMax_v), // value
                                      valueMin_p, valueMax_v, // from
-                                     aioGraph.plotArea.height, 0) // to
-            height: ((Math.min(limitMax_v, valueMax_v) - limitMin_v) / (valueMax_v - valueMin_v)) * aioGraph.plotArea.height
+                                     historyGraph.plotArea.height, 0) // to
+            height: ((Math.min(limitMax_v, valueMax_v) - limitMin_v) / (valueMax_v - valueMin_v)) * historyGraph.plotArea.height
 
             color: Theme.colorGreen
             opacity: 0.20

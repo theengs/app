@@ -29,6 +29,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
+#include <QDateTime>
 #include <QListIterator>
 #include <QDebug>
 
@@ -113,7 +114,7 @@ bool DeviceTheengsBatteryMonitors::areValuesValid_voltage(const float v) const
 
 /* ************************************************************************** */
 
-bool DeviceTheengsBatteryMonitors::addDatabaseRecord_percent(const QDateTime &timestamp, const int p)
+bool DeviceTheengsBatteryMonitors::addDatabaseRecord_percent(const int64_t timestamp, const int p)
 {
     //qDebug() << "DeviceTheengsBatteryMonitors::addDatabaseRecord_percent()" << p;
     bool status = false;
@@ -123,25 +124,68 @@ bool DeviceTheengsBatteryMonitors::addDatabaseRecord_percent(const QDateTime &ti
         if (areValuesValid_percent(p))
         {
             // SQL date format YYYY-MM-DD HH:MM:SS
-            // We only save one record every 20m
 
-            // hijack battery1
-            QSqlQuery addData;
-            addData.prepare("REPLACE INTO sensorTheengs (deviceAddr, timestamp, battery1)"
-                            " VALUES (:deviceAddr, :timestamp, :battery1)");
-            addData.bindValue(":deviceAddr", getAddress());
-            addData.bindValue(":timestamp", timestamp.toString("yyyy-MM-dd hh:mm:ss"));
-            addData.bindValue(":battery1", m_batteryPercent);
-            status = addData.exec();
+            // We only save one record every 15 minutes
+            int round_seconds = 15*60;
+            QDateTime tmcd_rounded = QDateTime::fromSecsSinceEpoch(timestamp + (round_seconds - timestamp % round_seconds) - round_seconds);
+            QDateTime tmcd = QDateTime::fromSecsSinceEpoch(timestamp);
 
-            if (status)
+            QSqlQuery ifData;
+            ifData.prepare("SELECT 1 FROM sensorTheengs"
+                           " WHERE deviceAddr = :deviceAddr AND timestamp_rounded = :timestamp_rounded"
+                           " LIMIT 1;");
+            ifData.bindValue(":deviceAddr", getAddress());
+            ifData.bindValue(":timestamp_rounded", tmcd_rounded.toString("yyyy-MM-dd hh:mm:00"));
+            if (ifData.exec())
             {
-                m_lastUpdateDatabase = timestamp;
+                if (ifData.first())
+                {
+                    // We have a record, update data
+                    QSqlQuery updateData;
+                    updateData.prepare("UPDATE sensorTheengs SET battery1 = :battery1"
+                                       " WHERE deviceAddr = :deviceAddr AND timestamp_rounded = :timestamp_rounded");
+                    updateData.bindValue(":battery1", p); // hijack battery2
+                    updateData.bindValue(":deviceAddr", getAddress());
+                    updateData.bindValue(":timestamp_rounded", tmcd_rounded.toString("yyyy-MM-dd hh:mm:00"));
+
+                    if (updateData.exec())
+                    {
+                        status = true;
+                        m_lastUpdateDatabase = tmcd;
+                    }
+                    else
+                    {
+                        qWarning() << "> DeviceTheengsBatteryMonitors updateData.exec(v) ERROR"
+                                   << updateData.lastError().type() << ":" << updateData.lastError().text();
+                    }
+                }
+                else
+                {
+                    // We DON'T have a record, add data
+                    QSqlQuery addData;
+                    addData.prepare("REPLACE INTO sensorTheengs (deviceAddr, timestamp_rounded, timestamp, battery1)"
+                                    " VALUES (:deviceAddr, :timestamp_rounded, :timestamp, :battery1)");
+                    addData.bindValue(":deviceAddr", getAddress());
+                    addData.bindValue(":timestamp_rounded", tmcd_rounded.toString("yyyy-MM-dd hh:mm:00"));
+                    addData.bindValue(":timestamp", tmcd.toString("yyyy-MM-dd hh:mm:ss"));
+                    addData.bindValue(":battery1", m_batteryPercent); // hijack battery1
+
+                    if (addData.exec())
+                    {
+                        status = true;
+                        m_lastUpdateDatabase = tmcd;
+                    }
+                    else
+                    {
+                        qWarning() << "> DeviceTheengsBatteryMonitors addData.exec(p) ERROR"
+                                   << addData.lastError().type() << ":" << addData.lastError().text();
+                    }
+                }
             }
             else
             {
-                qWarning() << "> DeviceTheengsBatteryMonitors addData.exec(v) ERROR"
-                           << addData.lastError().type() << ":" << addData.lastError().text();
+                qWarning() << "> DeviceTheengsBatteryMonitors ifData.exec(p) ERROR"
+                           << ifData.lastError().type() << ":" << ifData.lastError().text();
             }
         }
         else
@@ -153,7 +197,7 @@ bool DeviceTheengsBatteryMonitors::addDatabaseRecord_percent(const QDateTime &ti
     return status;
 }
 
-bool DeviceTheengsBatteryMonitors::addDatabaseRecord_voltage(const QDateTime &timestamp, const float v)
+bool DeviceTheengsBatteryMonitors::addDatabaseRecord_voltage(const int64_t timestamp, const float v)
 {
     //qDebug() << "DeviceTheengsBatteryMonitors::addDatabaseRecord_voltage()" << v;
     bool status = false;
@@ -163,27 +207,71 @@ bool DeviceTheengsBatteryMonitors::addDatabaseRecord_voltage(const QDateTime &ti
         if (areValuesValid_voltage(v))
         {
             // SQL date format YYYY-MM-DD HH:MM:SS
-            // We only save one record every 20m
+
+            // We only save one record every 15 minutes
+            int round_seconds = 15*60;
+            QDateTime tmcd_rounded = QDateTime::fromSecsSinceEpoch(timestamp + (round_seconds - timestamp % round_seconds) - round_seconds);
+            QDateTime tmcd = QDateTime::fromSecsSinceEpoch(timestamp);
 
             // hijack battery2 // stored as int, so voltage*100
             int vvv = v*100.f;
 
-            QSqlQuery addData;
-            addData.prepare("REPLACE INTO sensorTheengs (deviceAddr, timestamp, battery2)"
-                            " VALUES (:deviceAddr, :timestamp, :battery2)");
-            addData.bindValue(":deviceAddr", getAddress());
-            addData.bindValue(":timestamp", timestamp.toString("yyyy-MM-dd hh:mm:ss"));
-            addData.bindValue(":battery2", vvv);
-            status = addData.exec();
-
-            if (status)
+            QSqlQuery ifData;
+            ifData.prepare("SELECT 1 FROM sensorTheengs"
+                           " WHERE deviceAddr = :deviceAddr AND timestamp_rounded = :timestamp_rounded"
+                           " LIMIT 1;");
+            ifData.bindValue(":deviceAddr", getAddress());
+            ifData.bindValue(":timestamp_rounded", tmcd_rounded.toString("yyyy-MM-dd hh:mm:00"));
+            if (ifData.exec())
             {
-                m_lastUpdateDatabase = timestamp;
+                if (ifData.first())
+                {
+                    // We have a record, update data
+                    QSqlQuery updateData;
+                    updateData.prepare("UPDATE sensorTheengs SET battery2 = :battery2"
+                                       " WHERE deviceAddr = :deviceAddr AND timestamp_rounded = :timestamp_rounded");
+                    updateData.bindValue(":battery2", vvv); // hijack battery2
+                    updateData.bindValue(":deviceAddr", getAddress());
+                    updateData.bindValue(":timestamp_rounded", tmcd_rounded.toString("yyyy-MM-dd hh:mm:00"));
+
+                    if (updateData.exec())
+                    {
+                        status = true;
+                        m_lastUpdateDatabase = tmcd;
+                    }
+                    else
+                    {
+                        qWarning() << "> DeviceTheengsBatteryMonitors updateData.exec(v) ERROR"
+                                   << updateData.lastError().type() << ":" << updateData.lastError().text();
+                    }
+                }
+                else
+                {
+                    // We DON'T have a record, add data
+                    QSqlQuery addData;
+                    addData.prepare("REPLACE INTO sensorTheengs (deviceAddr, timestamp_rounded, timestamp, battery2)"
+                                    " VALUES (:deviceAddr, :timestamp_rounded, :timestamp, :battery2)");
+                    addData.bindValue(":deviceAddr", getAddress());
+                    addData.bindValue(":timestamp_rounded", tmcd_rounded.toString("yyyy-MM-dd hh:mm:00"));
+                    addData.bindValue(":timestamp", tmcd.toString("yyyy-MM-dd hh:mm:ss"));
+                    addData.bindValue(":battery2", vvv); // hijack battery2
+
+                    if (addData.exec())
+                    {
+                        status = true;
+                        m_lastUpdateDatabase = tmcd;
+                    }
+                    else
+                    {
+                        qWarning() << "> DeviceTheengsBatteryMonitors addData.exec(v) ERROR"
+                                   << addData.lastError().type() << ":" << addData.lastError().text();
+                    }
+                }
             }
             else
             {
-                qWarning() << "> DeviceTheengsBatteryMonitors addData.exec(v) ERROR"
-                           << addData.lastError().type() << ":" << addData.lastError().text();
+                qWarning() << "> DeviceTheengsBatteryMonitors ifData.exec(v) ERROR"
+                           << ifData.lastError().type() << ":" << ifData.lastError().text();
             }
         }
         else
@@ -305,7 +393,7 @@ void DeviceTheengsBatteryMonitors::parseTheengsAdvertisement(const QString &json
             // save in db?
             if (needsUpdateDb())
             {
-                //addDatabaseRecord_percent(m_lastUpdate, battery);
+                addDatabaseRecord_percent(m_lastUpdate.toSecsSinceEpoch(), battery);
             }
 
             refreshDataFinished(true);
@@ -316,19 +404,42 @@ void DeviceTheengsBatteryMonitors::parseTheengsAdvertisement(const QString &json
 /* ************************************************************************** */
 /* ************************************************************************** */
 
-void DeviceTheengsBatteryMonitors::getChartData_batteryRT(QDateTimeAxis *axis, QLineSeries *batt_p, QLineSeries *batt_v, bool reload)
+void DeviceTheengsBatteryMonitors::getChartData_batteryRT(QDateTimeAxis *axis,
+                                                          QLineSeries *batt_p, QLineSeries *batt_v,
+                                                          bool reload)
 {
     //qDebug() << "DeviceTheengsBatteryMonitors::getChartData_batteryRT()" << getAddress() << getName();
-    //qDebug() << "min " << QDateTime::currentDateTime().addSecs(m_realtime_window * -60).toString("hh:mm:ss");
-    //qDebug() << "max " << QDateTime::currentDateTime().toString("hh:mm:ss");
 
-    //if (!m_capture_started) startRtCapture(true);
     if (!axis) return;
 
-    int seconds = m_realtime_window * -60;
+    QDateTime min = QDateTime::currentDateTime().addSecs(m_realtime_window * -60);
+    QDateTime min_actual = min;
+    QDateTime max = QDateTime::currentDateTime();
+    int realtime_window_actual = m_realtime_window;
+
+    if (m_rt_batt_voltage.size())
+    {
+        min_actual = m_rt_batt_voltage.first().first;
+
+        realtime_window_actual = (max.toSecsSinceEpoch() - min_actual.toSecsSinceEpoch()) /60;
+        if (realtime_window_actual < 5) realtime_window_actual = 5;
+        if (realtime_window_actual > m_realtime_window) realtime_window_actual = m_realtime_window;
+        min_actual = QDateTime::currentDateTime().addSecs(realtime_window_actual * -60);;
+    }
+
+    int seconds = realtime_window_actual * -60;
+
+    //qDebug() << "min " << min.toString("hh:mm:ss");
+    //qDebug() << "min_actual " << min_actual.toString("hh:mm:ss");
+    //qDebug() << "max " << max.toString("hh:mm:ss");
+
+    //qDebug() << "realtime_window " << m_realtime_window;
+    //qDebug() << "realtime_window_actual " << realtime_window_actual;
+    //qDebug() << "seconds " << seconds;
+
     axis->setFormat("hh:mm");
-    axis->setMin(QDateTime::currentDateTime().addSecs(seconds));
-    axis->setMax(QDateTime::currentDateTime());
+    axis->setMin(min_actual);
+    axis->setMax(max);
 
     //
     if (!reload && m_rt_lastupdate.isValid() && m_rt_lastupdate.elapsed() < 500)
@@ -365,12 +476,15 @@ void DeviceTheengsBatteryMonitors::getChartData_batteryRT(QDateTimeAxis *axis, Q
 
 /* ************************************************************************** */
 
-void DeviceTheengsBatteryMonitors::getChartData_batteryHistory(QDateTimeAxis *axis, QLineSeries *batt, bool reload, int maxDays)
+void DeviceTheengsBatteryMonitors::getChartData_batteryHistory(QDateTimeAxis *axis,
+                                                               QLineSeries *batt_p, QLineSeries *batt_v,
+                                                               bool reload, int maxDays)
 {
-    //qDebug() << "DeviceTheengsBatteryMonitors::getChartData_batteryHistory()" << getAddress() << getName();
+    //qDebug() << "DeviceTheengsBatteryMonitors::getChartData_batteryHistory()" << getAddress() << getName() << maxDays;
 
     if (!axis) return;
-    if (!batt) return;
+    if (batt_p) batt_p->clear();
+    if (batt_v) batt_v->clear();
     Q_UNUSED(reload)
 
     if (m_dbInternal || m_dbExternal)
@@ -379,7 +493,7 @@ void DeviceTheengsBatteryMonitors::getChartData_batteryHistory(QDateTimeAxis *ax
         if (m_dbExternal) time = "DATE_SUB(NOW(), INTERVAL " + QString::number(maxDays) + " DAY)";
 
         QSqlQuery graphData;
-        graphData.prepare("SELECT timestamp, battery2 " \
+        graphData.prepare("SELECT timestamp, battery1, battery2 " \
                           "FROM sensorTheengs " \
                           "WHERE deviceAddr = :deviceAddr AND timestamp >= " + time + ";");
         graphData.bindValue(":deviceAddr", getAddress());
@@ -399,14 +513,30 @@ void DeviceTheengsBatteryMonitors::getChartData_batteryHistory(QDateTimeAxis *ax
         while (graphData.next())
         {
             QDateTime date = QDateTime::fromString(graphData.value(0).toString(), "yyyy-MM-dd hh:mm:ss");
+            qint64 timecode = date.toMSecsSinceEpoch();
+
             if (!minSet)
             {
                 axis->setMin(date);
                 minSet = true;
             }
-            qint64 timecode = date.toMSecsSinceEpoch();
 
-            batt->append(timecode, graphData.value(1).toReal() / 100.f);
+            if (batt_p)
+            {
+                float p = graphData.value(1).toReal();
+                if (p > 0.f)
+                {
+                    batt_p->append(timecode, p);
+                }
+            }
+            if (batt_v)
+            {
+                float v = graphData.value(2).toReal() / 100.f;
+                if (v > 0.f)
+                {
+                    batt_v->append(timecode, v);
+                }
+            }
 
             // min/max // TODO?
         }

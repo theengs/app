@@ -83,6 +83,10 @@ Item {
         }
     }
 
+    function updateMaxDays(maxDays) {
+        //
+    }
+
     function isIndicator() { return false }
     function resetIndicator() { }
 

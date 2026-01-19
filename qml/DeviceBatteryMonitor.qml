@@ -121,15 +121,11 @@ Loader {
         function loadDevice() {
             console.log("DeviceBatteryMonitor // loadDevice() >> " + currentDevice)
 
+            currentPreset = batteryPresetsManager.getPreset(currentDevice.preset)
+            currentInterval = 3
+
             graphLoader.source = "" // force graph reload
             loadGraph()
-
-            currentPreset = batteryPresetsManager.getPreset(currentDevice.preset)
-            currentInterval = currentDevice.realtimeWindow
-            //if (currentInterval === 60) selectorInterval.currentSelection = 3
-            //else if (currentInterval === 30) selectorInterval.currentSelection = 2
-            //else if (currentInterval === 10) selectorInterval.currentSelection = 1
-            //else selectorInterval.currentSelection = 0
 
             updateHeader()
             updateData()
@@ -182,10 +178,12 @@ Loader {
             if (!currentDevice.isBatteryMonitor) return
 
             if (graphLoader.status !== Loader.Ready) {
-                if (currentDevice.batteryPercent > 0) {
-                    graphLoader.source = "charts/ChartBatteryHistory.qml"
-                } else {
+                if (currentInterval === 0 || currentDevice.batteryVoltage > 0) {
+                    currentInterval = 0
                     graphLoader.source = "charts/ChartBatteryRealTime.qml"
+                } else {
+                    // respect currentInterval
+                    graphLoader.source = "charts/ChartBatteryHistory.qml"
                 }
             }
 
@@ -614,7 +612,7 @@ Loader {
 
                         Rectangle {
                             Layout.preferredHeight: parent.height
-                            Layout.preferredWidth: legendPreset.contentWidth + 12
+                            Layout.preferredWidth: legendPreset.contentWidth + 16
 
                             visible: !singleColumn
                             color: Qt.darker(Theme.colorForeground, 1.03)
@@ -656,8 +654,73 @@ Loader {
                             }
                         }
 
-                        Item {
+                        Item { // spacer
                             Layout.fillWidth: singleColumn
+                            Layout.preferredHeight: 32
+                        }
+
+                        Rectangle {
+                            Layout.preferredWidth: legendInterval.contentWidth + 16
+                            Layout.preferredHeight: parent.height
+
+                            visible: !singleColumn
+                            color: Qt.darker(Theme.colorForeground, 1.03)
+
+                            Text {
+                                id: legendInterval
+                                anchors.centerIn: parent
+                                text: qsTr("INTERVAL")
+                                textFormat: Text.PlainText
+                                color: Theme.colorText
+                            }
+                        }
+
+                        SelectorMenu {
+                            id: selectorInterval
+                            Layout.preferredWidth: width
+                            Layout.preferredHeight: 32
+
+                            model: ListModel {
+                                id: intervalModel
+                                ListElement { idx: 0; txt: qsTr("realtime"); itv: 1; src: ""; sz: 16; }
+                                ListElement { idx: 1; txt: qsTr("day"); itv: 1; src: ""; sz: 16; }
+                                ListElement { idx: 2; txt: qsTr("week"); itv: 7; src: ""; sz: 16; }
+                                ListElement { idx: 3; txt: qsTr("month"); itv: 30; src: ""; sz: 16; }
+                            }
+
+                            currentSelection: currentInterval
+                            onMenuSelected: (index) => {
+                                currentInterval = index
+                                var changed = false
+                                var maxDays = 30;
+
+                                if (index === 0) {
+                                    if (graphLoader.source !== "charts/ChartBatteryRealTime.qml") {
+                                        graphLoader.source = "charts/ChartBatteryRealTime.qml"
+                                        changed = true
+                                    }
+                                } else {
+                                    maxDays = model.get(index).itv
+                                    if (graphLoader.source !== "charts/ChartBatteryHistory.qml") {
+                                        graphLoader.source = ""
+                                        graphLoader.source = "charts/ChartBatteryHistory.qml"
+                                        changed = true
+                                    } else {
+                                        batteryChart.updateMaxDays(maxDays)
+                                        batteryChart.updateGraph()
+                                    }
+                                }
+
+                                if (changed && graphLoader.asynchronous === false) {
+                                    batteryChart.updateMaxDays(maxDays)
+                                    batteryChart.loadGraph()
+                                    batteryChart.updateGraph()
+                                }
+                            }
+                        }
+
+                        Item { // spacer
+                            Layout.fillWidth: !singleColumn
                             Layout.preferredHeight: 32
                         }
 /*
@@ -691,6 +754,8 @@ Loader {
                     onLoaded: {
                         console.log("graphLoader::onLoaded()")
                         if (graphLoader.asynchronous) {
+                            var maxDays = selectorInterval.model.get(currentInterval).itv
+                            batteryChart.updateMaxDays(maxDays)
                             batteryChart.loadGraph()
                             batteryChart.updateGraph()
                         }

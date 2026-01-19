@@ -50,7 +50,7 @@ class DeviceTheengsBatteryMonitors: public DeviceTheengs
 
     // battery monitor settings
     QString m_preset;
-    int m_realtime_window = 10;
+    int m_realtime_window = 60;
 
     QString getPreset() const { return m_preset; }
     void setPreset(const QString &p);
@@ -62,8 +62,8 @@ protected:
     bool areValuesValid_percent(const int p) const;
     bool areValuesValid_voltage(const float v) const;
 
-    bool addDatabaseRecord_percent(const QDateTime &timestamp, const int p);
-    bool addDatabaseRecord_voltage(const QDateTime &timestamp, const float v);
+    bool addDatabaseRecord_percent(const int64_t timestamp, const int p);
+    bool addDatabaseRecord_voltage(const int64_t timestamp, const float v);
 
     bool addRealtimeRecord_percent(const QDateTime &timestamp, const int p);
     bool addRealtimeRecord_voltage(const QDateTime &timestamp, const float v);
@@ -88,8 +88,10 @@ public:
     void parseTheengsAdvertisement(const QString &json);
 
     // Chart battery monitoring
-    Q_INVOKABLE void getChartData_batteryRT(QDateTimeAxis *axis, QLineSeries *batt, QLineSeries *batt_v, bool reload = false);
-    Q_INVOKABLE void getChartData_batteryHistory(QDateTimeAxis *axis, QLineSeries *batt, bool reload = false, int days = 30);
+    Q_INVOKABLE void getChartData_batteryRT(QDateTimeAxis *axis, QLineSeries *batt_p, QLineSeries *batt_v,
+                                            bool reload = false);
+    Q_INVOKABLE void getChartData_batteryHistory(QDateTimeAxis *axis, QLineSeries *batt_p, QLineSeries *batt_v,
+                                                 bool reload = false, int days = 30);
 };
 
 /* ************************************************************************** */

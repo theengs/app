@@ -250,9 +250,9 @@ void DeviceTheengsBM26::bleReadNotify(const QLowEnergyCharacteristic &c, const Q
             addRealtimeRecord_voltage(QDateTime::currentDateTime(), volt);
 
             // save in db?
-            if (needsUpdateDb())
+            //if (needsUpdateDb())
             {
-                addDatabaseRecord_voltage(m_lastUpdate, volt);
+                addDatabaseRecord_voltage(m_lastUpdate.toSecsSinceEpoch(), volt);
             }
 
             refreshDataFinished(true);
@@ -310,9 +310,9 @@ void DeviceTheengsBM26::actionFakeVoltage()
         addRealtimeRecord_voltage(QDateTime::currentDateTime(), m_batteryVoltage);
 
         // database
-        if (needsUpdateDb())
+        //if (needsUpdateDb())
         {
-            addDatabaseRecord_voltage(m_lastUpdate, m_batteryVoltage);
+            addDatabaseRecord_voltage(m_lastUpdate.toSecsSinceEpoch(), m_batteryVoltage);
         }
 
         refreshDataFinished(true);

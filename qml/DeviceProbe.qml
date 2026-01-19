@@ -119,17 +119,17 @@ Loader {
         function loadDevice() {
             console.log("DeviceProbe // loadDevice() >> " + currentDevice)
 
-            if (currentDevice.hasProbesBBQ) currentDevice.startRtCapture(true)
-
-            graphLoader.source = "" // force graph reload
-            loadGraph()
-
             currentPreset = tempPresetsManager.getPreset(currentDevice.preset)
             currentInterval = currentDevice.realtimeWindow
             if (currentInterval === 60) selectorInterval.currentSelection = 3
             else if (currentInterval === 30) selectorInterval.currentSelection = 2
             else if (currentInterval === 10) selectorInterval.currentSelection = 1
             else selectorInterval.currentSelection = 0
+
+            if (currentDevice.hasProbesBBQ) currentDevice.startRtCapture(true)
+
+            graphLoader.source = "" // force graph reload
+            loadGraph()
 
             updateHeader()
             updateData()
@@ -1260,7 +1260,7 @@ Loader {
 
                             Rectangle {
                                 Layout.preferredHeight: parent.height
-                                Layout.preferredWidth: legendPreset.contentWidth + 12
+                                Layout.preferredWidth: legendPreset.contentWidth + 16
 
                                 visible: !singleColumn
                                 color: Qt.darker(Theme.colorForeground, 1.03)
@@ -1303,13 +1303,13 @@ Loader {
                                 }
                             }
 
-                            Item {
+                            Item { // spacer
                                 Layout.fillWidth: singleColumn
                                 Layout.preferredHeight: 32
                             }
 
                             Rectangle {
-                                Layout.preferredWidth: legendPreset.contentWidth + 12
+                                Layout.preferredWidth: legendInterval.contentWidth + 16
                                 Layout.preferredHeight: parent.height
 
                                 visible: !singleColumn
@@ -1354,6 +1354,11 @@ Loader {
                                     }
                                 }
                             }
+
+                            Item { // spacer
+                                Layout.fillWidth: !singleColumn
+                                Layout.preferredHeight: 32
+                            }
                         }
                     }
 
@@ -1383,7 +1388,7 @@ Loader {
 
                                 Item {
                                     height: 24
-                                    width: txt.contentWidth + 12
+                                    width: txt.contentWidth + 16
 
                                     Rectangle {
                                         anchors.fill: parent
