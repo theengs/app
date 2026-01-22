@@ -596,23 +596,31 @@ Loader {
                     anchors.left: parent.left
                     anchors.right: parent.right
 
-                    height: isMobile ? 40 : 48
-                    z: 2
                     visible: true
+                    height: isMobile ? 40 : 48
                     color: Theme.colorForeground
+                    z: 2
 
                     RowLayout {
+                        id: presetRow
                         anchors.left: parent.left
-                        anchors.leftMargin: Theme.componentMargin
+                        anchors.leftMargin: 0
                         anchors.right: parent.right
-                        anchors.rightMargin: Theme.componentMargin
+                        anchors.rightMargin: 0
 
                         height: parent.height
-                        spacing: 12
+                        spacing: 0
+
+                        property int mmm: Theme.componentMargin * (isPhone ? 0.66 : 2.0)
+
+                        Item { // spacer
+                            Layout.preferredWidth: presetRow.mmm
+                            Layout.preferredHeight: 32
+                        }
 
                         Rectangle {
                             Layout.preferredHeight: parent.height
-                            Layout.preferredWidth: legendPreset.contentWidth + 16
+                            Layout.preferredWidth: legendPreset.contentWidth + presetRow.mmm
 
                             visible: !singleColumn
                             color: Qt.darker(Theme.colorForeground, 1.03)
@@ -624,6 +632,12 @@ Loader {
                                 textFormat: Text.PlainText
                                 color: Theme.colorText
                             }
+                        }
+
+                        Item { // spacer
+                            visible: !singleColumn
+                            Layout.preferredWidth: presetRow.mmm
+                            Layout.preferredHeight: 32
                         }
 
                         SelectorMenuItem {
@@ -656,11 +670,12 @@ Loader {
 
                         Item { // spacer
                             Layout.fillWidth: singleColumn
+                            Layout.preferredWidth: presetRow.mmm
                             Layout.preferredHeight: 32
                         }
 
                         Rectangle {
-                            Layout.preferredWidth: legendInterval.contentWidth + 16
+                            Layout.preferredWidth: legendInterval.contentWidth + presetRow.mmm
                             Layout.preferredHeight: parent.height
 
                             visible: !singleColumn
@@ -673,6 +688,12 @@ Loader {
                                 textFormat: Text.PlainText
                                 color: Theme.colorText
                             }
+                        }
+
+                        Item { // spacer
+                            visible: !singleColumn
+                            Layout.preferredWidth: presetRow.mmm
+                            Layout.preferredHeight: 32
                         }
 
                         SelectorMenu {
@@ -721,22 +742,9 @@ Loader {
 
                         Item { // spacer
                             Layout.fillWidth: !singleColumn
+                            Layout.preferredWidth: presetRow.mmm
                             Layout.preferredHeight: 32
                         }
-/*
-                        ButtonClear {
-                            text: "connect"
-                            onClicked: {
-                                currentDevice.actionConnect()
-                            }
-                        }
-                        ButtonClear {
-                            text: "fakedata"
-                            onClicked: {
-                                currentDevice.actionFakeVoltage()
-                            }
-                        }
-*/
                     }
                 }
 

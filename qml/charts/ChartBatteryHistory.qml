@@ -114,10 +114,19 @@ Item {
         backgroundColor: Theme.colorBackground
         animationOptions: ChartView.NoAnimation
 
-        ValueAxis { id: axisPercents; visible: true; gridVisible: false; }
-        ValueAxis { id: axisVolts; visible: false; gridVisible: false; }
+        ValueAxis { id: axisPercents; visible: false; gridVisible: false;
+                    min: 0; max: 100;
+                    labelFormat: "%i";
+                    labelsFont.pixelSize: Theme.fontSizeContentSmall-1; labelsColor: legendColor;
+                    color: legendColor;
+                    gridLineColor: Theme.colorSeparator; }
 
-        DateTimeAxis { id: axisTime; visible: true;
+        ValueAxis { id: axisVolts; visible: true; gridVisible: false;
+                    labelFormat: "%i";
+                    labelsFont.pixelSize: Theme.fontSizeContentSmall-1; labelsColor: legendColor;
+                    min: 0; max: 20; }
+
+        DateTimeAxis { id: axisTime; visible: true; gridVisible: true;
                        labelsFont.pixelSize: Theme.fontSizeContentSmall-1; labelsColor: legendColor;
                        color: legendColor;
                        gridLineColor: Theme.colorSeparator; }

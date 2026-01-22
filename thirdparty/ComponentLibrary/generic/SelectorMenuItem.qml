@@ -12,8 +12,8 @@ T.Button {
     implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
                              implicitContentHeight + topPadding + bottomPadding)
 
-    leftPadding: 16
-    rightPadding: 16
+    leftPadding: Theme.componentMargin
+    rightPadding: Theme.componentMargin
 
     focusPolicy: Qt.NoFocus
     hoverEnabled: enabled && !readOnly

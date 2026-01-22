@@ -122,7 +122,7 @@ Item {
         backgroundColor: "transparent"
         animationOptions: ChartView.NoAnimation
 
-        ValueAxis { id: axisPercents; visible: true; gridVisible: false;
+        ValueAxis { id: axisPercents; visible: false; gridVisible: false;
                     min: 0; max: 100;
                     labelFormat: "%i";
                     labelsFont.pixelSize: Theme.fontSizeContentSmall-1; labelsColor: legendColor;
