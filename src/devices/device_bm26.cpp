@@ -56,8 +56,8 @@ DeviceTheengsBM26::DeviceTheengsBM26(const QString &deviceAddr,
 
     parseTheengsProps(devicePropsJson);
 
-    if (!hasBatteryPercent()) m_deviceSensors += DeviceUtilsTheengs::SENSOR_BATTERY_PERCENT;
-    if (!hasBatteryVoltage()) m_deviceSensors += DeviceUtilsTheengs::SENSOR_BATTERY_VOLTAGE;
+    //if (!hasBatteryPercent()) m_deviceSensors += DeviceUtilsTheengs::SENSOR_BATTERY_PERCENT;
+    //if (!hasBatteryVoltage()) m_deviceSensors += DeviceUtilsTheengs::SENSOR_BATTERY_VOLTAGE;
 }
 
 DeviceTheengsBM26::DeviceTheengsBM26(const QBluetoothDeviceInfo &d,
@@ -75,8 +75,8 @@ DeviceTheengsBM26::DeviceTheengsBM26(const QBluetoothDeviceInfo &d,
 
     parseTheengsProps(devicePropsJson);
 
-    if (!hasBatteryPercent()) m_deviceSensors += DeviceUtilsTheengs::SENSOR_BATTERY_PERCENT;
-    if (!hasBatteryVoltage()) m_deviceSensors += DeviceUtilsTheengs::SENSOR_BATTERY_VOLTAGE;
+    //if (!hasBatteryPercent()) m_deviceSensors += DeviceUtilsTheengs::SENSOR_BATTERY_PERCENT;
+    //if (!hasBatteryVoltage()) m_deviceSensors += DeviceUtilsTheengs::SENSOR_BATTERY_VOLTAGE;
 }
 
 /* ************************************************************************** */
@@ -173,6 +173,27 @@ void DeviceTheengsBM26::serviceDetailsDiscovered_volt(QLowEnergyService::Service
 
         if (m_serviceVolt)
         {
+            if (m_deviceModel == "BM6")
+            {
+                // BM6 requires sending an encrypted command before making notify available
+
+                const uint8_t data[16] = { 0xd1, 0x55, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+                uint8_t output[16];
+                uint8_t iv[16] = { };
+
+                mbedtls_aes_context aes;
+                mbedtls_aes_init(&aes);
+                mbedtls_aes_setkey_enc(&aes, m_key_bm6, 128);
+                mbedtls_aes_crypt_cbc(&aes, MBEDTLS_AES_ENCRYPT, 16, iv, data, output);
+                mbedtls_aes_free(&aes);
+
+                // Characteristic "write"
+                m_charWrite = m_serviceVolt->characteristic(uuid_volt_char_write);
+                m_serviceVolt->writeCharacteristic(m_charWrite, QByteArray(reinterpret_cast<const char*>(output), 16),
+                                                   QLowEnergyService::WriteWithResponse);
+            }
+
             // Characteristic "read / notify"
             m_charNotif = m_serviceVolt->characteristic(uuid_volt_char_notify);
             m_notificationDesc = m_charNotif.clientCharacteristicConfiguration();
@@ -220,11 +241,10 @@ void DeviceTheengsBM26::bleReadNotify(const QLowEnergyCharacteristic &c, const Q
     if (c.uuid() == uuid_volt_char_notify && value.size() == 16)
     {
 #if defined(ENABLE_MBEDTLS)
-        const uint8_t *data = reinterpret_cast<const quint8 *>(value.constData());
-
-        unsigned char output[16];
-        unsigned char iv[16] = { };
-        unsigned char key[16] = { 108, 101, 97, 103, 101, 110, 100, 255, 254, 49, 56, 56, 50, 52, 54, 54, };
+        const uint8_t *data = reinterpret_cast<const uint8_t *>(value.constData());
+        const uint8_t *key = (m_deviceModel == "BM6") ? m_key_bm6 : m_key_bm2;
+        uint8_t output[16];
+        uint8_t iv[16] = { };
 
         mbedtls_aes_context aes;
         mbedtls_aes_init(&aes);
@@ -232,28 +252,57 @@ void DeviceTheengsBM26::bleReadNotify(const QLowEnergyCharacteristic &c, const Q
         mbedtls_aes_crypt_cbc(&aes, MBEDTLS_AES_DECRYPT, 16, iv, data, output);
         mbedtls_aes_free(&aes);
 
-        float volt = ((output[2] | (output[1] << 8)) >> 4) / 100.0f;
-        //qDebug() << "volt : " << volt;
+        float volt = -99.f;
+        float temp = -99.f;
+        int batt = 0;
 
-        if (areValuesValid_voltage(volt))
+        if (m_deviceModel == "BM6")
         {
-            // update?
+            temp = output[4];
+            if (output[3] == 1) temp = -temp;
+            qDebug() << "(BM6) temp : " << temp;
+
+            batt = output[5];
+            qDebug() << "(BM6) batt : " << batt;
+
+            volt = static_cast<int16_t>(data[8] + (data[7] << 8)) / 10.f;
+            qDebug() << "(BM6) volt : " << volt;
+        }
+        else if (m_deviceModel == "BM2")
+        {
+            volt = ((output[2] | (output[1] << 8)) >> 4) / 100.0f;
+            qDebug() << "(BM2) volt : " << volt;
+
+            batt = output[3];
+            qDebug() << "(BM2) batt : " << batt;
+        }
+        else
+        {
+            qWarning() << "DeviceTheengsBM26::bleReadNotify() BatteryMonitor device model" << m_deviceModel << "is INVALID";
+        }
+
+        if (areValuesValid_voltagepercent(volt, batt))
+        {
+            QDateTime cdt = QDateTime::currentDateTime();
+
+            // updates?
             if (volt != m_batteryVoltage)
             {
-                m_lastUpdate = QDateTime::currentDateTime();
+                m_lastUpdate = cdt;
 
                 m_batteryVoltage = volt;
                 Q_EMIT dataUpdated();
             }
-
-            // rt data
-            addRealtimeRecord_voltage(QDateTime::currentDateTime(), volt);
-
-            // save in db?
-            //if (needsUpdateDb())
+            if (batt != m_batteryPercent)
             {
-                addDatabaseRecord_voltage(m_lastUpdate.toSecsSinceEpoch(), volt);
+                m_lastUpdate = cdt;
+
+                m_batteryPercent = batt;
+                Q_EMIT dataUpdated();
             }
+
+            addRealtimeRecord_voltagepercent(cdt, volt, batt);
+            addDatabaseRecord_voltagepercent(cdt.toSecsSinceEpoch(), volt, batt);
 
             refreshDataFinished(true);
         }

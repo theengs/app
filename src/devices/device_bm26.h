@@ -43,11 +43,16 @@ class DeviceTheengsBM26: public DeviceTheengsBatteryMonitors
     Q_OBJECT
 
     QBluetoothUuid uuid_volt_srv = QBluetoothUuid(QStringLiteral("0000fff0-0000-1000-8000-00805f9b34fb"));
+    QBluetoothUuid uuid_volt_char_write = QBluetoothUuid(QStringLiteral("0000fff3-0000-1000-8000-00805f9b34fb"));
     QBluetoothUuid uuid_volt_char_notify = QBluetoothUuid(QStringLiteral("0000fff4-0000-1000-8000-00805f9b34fb"));
 
     QLowEnergyService *m_serviceVolt = nullptr;
+    QLowEnergyCharacteristic m_charWrite;
     QLowEnergyCharacteristic m_charNotif;
     QLowEnergyDescriptor m_notificationDesc;
+
+    const uint8_t m_key_bm2[16] = { 108, 101, 97, 103, 101, 110, 100, 255, 254, 49, 56, 56, 50, 52, 54, 54, };
+    const uint8_t m_key_bm6[16] = { 108, 101, 97, 103, 101, 110, 100, 255, 254, 48, 49, 48, 48, 48, 48, 57, };
 
     void serviceScanDone();
     void addLowEnergyService(const QBluetoothUuid &uuid);

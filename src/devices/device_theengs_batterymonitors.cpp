@@ -102,9 +102,9 @@ void DeviceTheengsBatteryMonitors::setRtWindow(const int w)
 
 /* ************************************************************************** */
 
-bool DeviceTheengsBatteryMonitors::areValuesValid_percent(const int p) const
+bool DeviceTheengsBatteryMonitors::areValuesValid_voltagepercent(const float v, const int p) const
 {
-    return (p >= 0 && p <= 100);
+    return areValuesValid_voltage(v) && areValuesValid_percent(p);
 }
 
 bool DeviceTheengsBatteryMonitors::areValuesValid_voltage(const float v) const
@@ -112,85 +112,55 @@ bool DeviceTheengsBatteryMonitors::areValuesValid_voltage(const float v) const
     return (v > -20.f && v < 20.f);
 }
 
+bool DeviceTheengsBatteryMonitors::areValuesValid_percent(const int p) const
+{
+    return (p >= 0 && p <= 100);
+}
+
 /* ************************************************************************** */
 
-bool DeviceTheengsBatteryMonitors::addDatabaseRecord_percent(const int64_t timestamp, const int p)
+bool DeviceTheengsBatteryMonitors::addDatabaseRecord_voltagepercent(const int64_t timestamp, const float v, const int p)
 {
-    //qDebug() << "DeviceTheengsBatteryMonitors::addDatabaseRecord_percent()" << p;
+    //qDebug() << "DeviceTheengsBatteryMonitors::addDatabaseRecord_voltagepercent()" << v << p;
     bool status = false;
 
     if (m_dbInternal || m_dbExternal)
     {
-        if (areValuesValid_percent(p))
+        if (areValuesValid_voltagepercent(v, p))
         {
             // SQL date format YYYY-MM-DD HH:MM:SS
 
-            // We only save one record every 15 minutes
-            int round_seconds = 15*60;
+            // We only save one record every 20 minutes
+            int round_seconds = 20*60;
             QDateTime tmcd_rounded = QDateTime::fromSecsSinceEpoch(timestamp + (round_seconds - timestamp % round_seconds) - round_seconds);
             QDateTime tmcd = QDateTime::fromSecsSinceEpoch(timestamp);
 
-            QSqlQuery ifData;
-            ifData.prepare("SELECT 1 FROM sensorTheengs"
-                           " WHERE deviceAddr = :deviceAddr AND timestamp_rounded = :timestamp_rounded"
-                           " LIMIT 1;");
-            ifData.bindValue(":deviceAddr", getAddress());
-            ifData.bindValue(":timestamp_rounded", tmcd_rounded.toString("yyyy-MM-dd hh:mm:00"));
-            if (ifData.exec())
+            // hijack battery2 // stored as int, so voltage*100
+            int vvv = v*100.f;
+
+            QSqlQuery addData;
+            addData.prepare("REPLACE INTO sensorTheengs (deviceAddr, timestamp_rounded, timestamp, battery1, battery2)"
+                            " VALUES (:deviceAddr, :timestamp_rounded, :timestamp, :battery1, :battery2)");
+            addData.bindValue(":deviceAddr", getAddress());
+            addData.bindValue(":timestamp_rounded", tmcd_rounded.toString("yyyy-MM-dd hh:mm:00"));
+            addData.bindValue(":timestamp", tmcd.toString("yyyy-MM-dd hh:mm:ss"));
+            addData.bindValue(":battery1", p); // hijack battery1
+            addData.bindValue(":battery2", vvv); // hijack battery2
+
+            if (addData.exec())
             {
-                if (ifData.first())
-                {
-                    // We have a record, update data
-                    QSqlQuery updateData;
-                    updateData.prepare("UPDATE sensorTheengs SET battery1 = :battery1"
-                                       " WHERE deviceAddr = :deviceAddr AND timestamp_rounded = :timestamp_rounded");
-                    updateData.bindValue(":battery1", p); // hijack battery2
-                    updateData.bindValue(":deviceAddr", getAddress());
-                    updateData.bindValue(":timestamp_rounded", tmcd_rounded.toString("yyyy-MM-dd hh:mm:00"));
-
-                    if (updateData.exec())
-                    {
-                        status = true;
-                        m_lastUpdateDatabase = tmcd;
-                    }
-                    else
-                    {
-                        qWarning() << "> DeviceTheengsBatteryMonitors updateData.exec(v) ERROR"
-                                   << updateData.lastError().type() << ":" << updateData.lastError().text();
-                    }
-                }
-                else
-                {
-                    // We DON'T have a record, add data
-                    QSqlQuery addData;
-                    addData.prepare("REPLACE INTO sensorTheengs (deviceAddr, timestamp_rounded, timestamp, battery1)"
-                                    " VALUES (:deviceAddr, :timestamp_rounded, :timestamp, :battery1)");
-                    addData.bindValue(":deviceAddr", getAddress());
-                    addData.bindValue(":timestamp_rounded", tmcd_rounded.toString("yyyy-MM-dd hh:mm:00"));
-                    addData.bindValue(":timestamp", tmcd.toString("yyyy-MM-dd hh:mm:ss"));
-                    addData.bindValue(":battery1", m_batteryPercent); // hijack battery1
-
-                    if (addData.exec())
-                    {
-                        status = true;
-                        m_lastUpdateDatabase = tmcd;
-                    }
-                    else
-                    {
-                        qWarning() << "> DeviceTheengsBatteryMonitors addData.exec(p) ERROR"
-                                   << addData.lastError().type() << ":" << addData.lastError().text();
-                    }
-                }
+                status = true;
+                m_lastUpdateDatabase = tmcd;
             }
             else
             {
-                qWarning() << "> DeviceTheengsBatteryMonitors ifData.exec(p) ERROR"
-                           << ifData.lastError().type() << ":" << ifData.lastError().text();
+                qWarning() << "> DeviceTheengsBatteryMonitors addData.exec(vp) ERROR"
+                           << addData.lastError().type() << ":" << addData.lastError().text();
             }
         }
         else
         {
-            qWarning() << "areValuesValid_percent(" << m_deviceName << p << ") values are INVALID";
+            qWarning() << "areValuesValid_voltagepercent(" << m_deviceName << v << p << ") values are INVALID";
         }
     }
 
@@ -208,8 +178,8 @@ bool DeviceTheengsBatteryMonitors::addDatabaseRecord_voltage(const int64_t times
         {
             // SQL date format YYYY-MM-DD HH:MM:SS
 
-            // We only save one record every 15 minutes
-            int round_seconds = 15*60;
+            // We only save one record every 20 minutes
+            int round_seconds = 20*60;
             QDateTime tmcd_rounded = QDateTime::fromSecsSinceEpoch(timestamp + (round_seconds - timestamp % round_seconds) - round_seconds);
             QDateTime tmcd = QDateTime::fromSecsSinceEpoch(timestamp);
 
@@ -283,27 +253,95 @@ bool DeviceTheengsBatteryMonitors::addDatabaseRecord_voltage(const int64_t times
     return status;
 }
 
-/* ************************************************************************** */
-
-bool DeviceTheengsBatteryMonitors::addRealtimeRecord_percent(const QDateTime &timestamp, const int p)
+bool DeviceTheengsBatteryMonitors::addDatabaseRecord_percent(const int64_t timestamp, const int p)
 {
-    //qDebug() << "DeviceTheengsBatteryMonitors::addRealtimeRecord_percent()" << p;
-    bool status = true;
+    //qDebug() << "DeviceTheengsBatteryMonitors::addDatabaseRecord_percent()" << p;
+    bool status = false;
 
-    if (areValuesValid_percent(p))
+    if (m_dbInternal || m_dbExternal)
     {
-        // rt data
-        while (m_rt_batt_percent.size() > 600) { m_rt_batt_percent.pop_front(); } // sanetize
-        m_rt_batt_percent.push_back(std::make_pair(timestamp, p));
-        Q_EMIT rtGraphUpdated();
-    }
-    else
-    {
-        qWarning() << "areValuesValid_percent(" << m_deviceName << p << ") values are INVALID";
-        status = false;
+        if (areValuesValid_percent(p))
+        {
+            // SQL date format YYYY-MM-DD HH:MM:SS
+
+            // We only save one record every 20 minutes
+            int round_seconds = 20*60;
+            QDateTime tmcd_rounded = QDateTime::fromSecsSinceEpoch(timestamp + (round_seconds - timestamp % round_seconds) - round_seconds);
+            QDateTime tmcd = QDateTime::fromSecsSinceEpoch(timestamp);
+
+            QSqlQuery ifData;
+            ifData.prepare("SELECT 1 FROM sensorTheengs"
+                           " WHERE deviceAddr = :deviceAddr AND timestamp_rounded = :timestamp_rounded"
+                           " LIMIT 1;");
+            ifData.bindValue(":deviceAddr", getAddress());
+            ifData.bindValue(":timestamp_rounded", tmcd_rounded.toString("yyyy-MM-dd hh:mm:00"));
+            if (ifData.exec())
+            {
+                if (ifData.first())
+                {
+                    // We have a record, update data
+                    QSqlQuery updateData;
+                    updateData.prepare("UPDATE sensorTheengs SET battery1 = :battery1"
+                                       " WHERE deviceAddr = :deviceAddr AND timestamp_rounded = :timestamp_rounded");
+                    updateData.bindValue(":battery1", p); // hijack battery2
+                    updateData.bindValue(":deviceAddr", getAddress());
+                    updateData.bindValue(":timestamp_rounded", tmcd_rounded.toString("yyyy-MM-dd hh:mm:00"));
+
+                    if (updateData.exec())
+                    {
+                        status = true;
+                        m_lastUpdateDatabase = tmcd;
+                    }
+                    else
+                    {
+                        qWarning() << "> DeviceTheengsBatteryMonitors updateData.exec(v) ERROR"
+                                   << updateData.lastError().type() << ":" << updateData.lastError().text();
+                    }
+                }
+                else
+                {
+                    // We DON'T have a record, add data
+                    QSqlQuery addData;
+                    addData.prepare("REPLACE INTO sensorTheengs (deviceAddr, timestamp_rounded, timestamp, battery1)"
+                                    " VALUES (:deviceAddr, :timestamp_rounded, :timestamp, :battery1)");
+                    addData.bindValue(":deviceAddr", getAddress());
+                    addData.bindValue(":timestamp_rounded", tmcd_rounded.toString("yyyy-MM-dd hh:mm:00"));
+                    addData.bindValue(":timestamp", tmcd.toString("yyyy-MM-dd hh:mm:ss"));
+                    addData.bindValue(":battery1", m_batteryPercent); // hijack battery1
+
+                    if (addData.exec())
+                    {
+                        status = true;
+                        m_lastUpdateDatabase = tmcd;
+                    }
+                    else
+                    {
+                        qWarning() << "> DeviceTheengsBatteryMonitors addData.exec(p) ERROR"
+                                   << addData.lastError().type() << ":" << addData.lastError().text();
+                    }
+                }
+            }
+            else
+            {
+                qWarning() << "> DeviceTheengsBatteryMonitors ifData.exec(p) ERROR"
+                           << ifData.lastError().type() << ":" << ifData.lastError().text();
+            }
+        }
+        else
+        {
+            qWarning() << "areValuesValid_percent(" << m_deviceName << p << ") values are INVALID";
+        }
     }
 
     return status;
+}
+
+/* ************************************************************************** */
+
+bool DeviceTheengsBatteryMonitors::addRealtimeRecord_voltagepercent(const QDateTime &timestamp, const float v, const int p)
+{
+    //qDebug() << "DeviceTheengsBatteryMonitors::addRealtimeRecord_voltagepercent()" << v << p;
+    return addRealtimeRecord_voltage(timestamp, v) && addRealtimeRecord_percent(timestamp, p);
 }
 
 bool DeviceTheengsBatteryMonitors::addRealtimeRecord_voltage(const QDateTime &timestamp, const float v)
@@ -321,6 +359,27 @@ bool DeviceTheengsBatteryMonitors::addRealtimeRecord_voltage(const QDateTime &ti
     else
     {
         qWarning() << "areValuesValid_voltage(" << m_deviceName << v << ") values are INVALID";
+        status = false;
+    }
+
+    return status;
+}
+
+bool DeviceTheengsBatteryMonitors::addRealtimeRecord_percent(const QDateTime &timestamp, const int p)
+{
+    //qDebug() << "DeviceTheengsBatteryMonitors::addRealtimeRecord_percent()" << p;
+    bool status = true;
+
+    if (areValuesValid_percent(p))
+    {
+        // rt data
+        while (m_rt_batt_percent.size() > 600) { m_rt_batt_percent.pop_front(); } // sanetize
+        m_rt_batt_percent.push_back(std::make_pair(timestamp, p));
+        Q_EMIT rtGraphUpdated();
+    }
+    else
+    {
+        qWarning() << "areValuesValid_percent(" << m_deviceName << p << ") values are INVALID";
         status = false;
     }
 

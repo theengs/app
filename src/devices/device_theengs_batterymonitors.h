@@ -59,14 +59,17 @@ class DeviceTheengsBatteryMonitors: public DeviceTheengs
     void setRtWindow(const int w);
 
 protected:
-    bool areValuesValid_percent(const int p) const;
+    bool areValuesValid_voltagepercent(const float v, const int p) const;
     bool areValuesValid_voltage(const float v) const;
+    bool areValuesValid_percent(const int p) const;
 
-    bool addDatabaseRecord_percent(const int64_t timestamp, const int p);
+    bool addDatabaseRecord_voltagepercent(const int64_t timestamp, const float v, const int p);
     bool addDatabaseRecord_voltage(const int64_t timestamp, const float v);
+    bool addDatabaseRecord_percent(const int64_t timestamp, const int p);
 
-    bool addRealtimeRecord_percent(const QDateTime &timestamp, const int p);
+    bool addRealtimeRecord_voltagepercent(const QDateTime &timestamp, const float v, const int p);
     bool addRealtimeRecord_voltage(const QDateTime &timestamp, const float v);
+    bool addRealtimeRecord_percent(const QDateTime &timestamp, const int p);
 
 signals:
     void presetUpdated();

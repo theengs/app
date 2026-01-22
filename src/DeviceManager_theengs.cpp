@@ -103,7 +103,8 @@ Device * DeviceManager::createTheengsDevice_fromDb(const QString &deviceName_blu
         }
         else if (deviceType == DeviceUtils::DEVICE_THEENGS_BATTERYMONITOR)
         {
-            if (deviceName_bluetooth == "Battery Monitor" || deviceModelID_theengs == "BM2" || deviceModelID_theengs == "BM6")
+            if (deviceName_bluetooth == "Battery Monitor" ||
+                deviceModelID_theengs == "BM2" || deviceModelID_theengs == "BM6")
             {
                 device = new DeviceTheengsBM26(deviceAddr, deviceName_bluetooth,
                                                deviceModelID_theengs, deviceProps_theengs, this);
@@ -257,7 +258,8 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
             }
             else if (deviceType == DeviceUtils::DEVICE_THEENGS_BATTERYMONITOR)
             {
-                if (deviceInfo.name() == "Battery Monitor" || deviceModelID == "BM2" || deviceModelID == "BM6")
+                if (deviceInfo.name() == "Battery Monitor" ||
+                    deviceModelID == "BM2" || deviceModelID == "BM6")
                 {
                     device = new DeviceTheengsBM26(deviceInfo, deviceModelID, deviceProps, this);
                 }
@@ -332,7 +334,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
         else
         {
 #if defined(Q_OS_IOS)
-            // Theengs BM2 hack for iOS & missing iBeacon
+            // Theengs BM2/BM6 hack for iOS & missing iBeacon
             if (deviceInfo.name() == "Battery Monitor")
             {
                 deviceModelID = "BM2";
