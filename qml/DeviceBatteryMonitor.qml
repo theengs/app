@@ -758,7 +758,7 @@ Loader {
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
 
-                    asynchronous: true
+                    asynchronous: false
                     onLoaded: {
                         console.log("graphLoader::onLoaded()")
                         if (graphLoader.asynchronous) {
