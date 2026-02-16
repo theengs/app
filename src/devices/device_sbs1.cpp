@@ -100,7 +100,7 @@ void DeviceSwitchbotSmartSwitch::deviceDisconnected()
 
 void DeviceSwitchbotSmartSwitch::deviceErrored(QLowEnergyController::Error error)
 {
-    qDebug() << "DeviceSwitchbotSmartSwitch::deviceErrored(" << error << ")";
+    qWarning() << "DeviceSwitchbotSmartSwitch::deviceErrored(" << error << ")";
     Device::deviceErrored(error);
 }
 
@@ -267,7 +267,7 @@ void DeviceSwitchbotSmartSwitch::bleReadNotify(const QLowEnergyCharacteristic &c
 
 void DeviceSwitchbotSmartSwitch::bleServiceError(QLowEnergyService::ServiceError e)
 {
-    qDebug() << "DeviceSwitchbotSmartSwitch::bleServiceError(" << e << ")";
+    qWarning() << "DeviceSwitchbotSmartSwitch::bleServiceError(" << e << ")";
 }
 
 /* ************************************************************************** */

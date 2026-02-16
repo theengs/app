@@ -247,7 +247,7 @@ void DeviceGateway::deviceDisconnected()
 
 void DeviceGateway::deviceErrored(QLowEnergyController::Error error)
 {
-    qDebug() << "DeviceGateway::deviceErrored(" << error << ")";
+    qWarning() << "DeviceGateway::deviceErrored(" << error << ")";
     Device::deviceErrored(error);
 /*
     if (m_ble_action == DeviceUtils::ACTION_THEENGS_ONBOARDING ||
@@ -568,7 +568,7 @@ void DeviceGateway::bleDescriptorWritten(const QLowEnergyDescriptor &, const QBy
 
 void DeviceGateway::bleServiceError(QLowEnergyService::ServiceError e)
 {
-    qDebug() << "DeviceGateway::bleServiceError(" << e << ")";
+    qWarning() << "DeviceGateway::bleServiceError(" << e << ")";
 }
 
 /* ************************************************************************** */

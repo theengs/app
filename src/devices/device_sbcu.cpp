@@ -256,7 +256,7 @@ void DeviceSwitchbotCurtain::bleReadNotify(const QLowEnergyCharacteristic &c, co
 
 void DeviceSwitchbotCurtain::bleServiceError(QLowEnergyService::ServiceError e)
 {
-    qDebug() << "DeviceSwitchbotCurtain::bleServiceError(" << e << ")";
+    qWarning() << "DeviceSwitchbotCurtain::bleServiceError(" << e << ")";
 }
 
 /* ************************************************************************** */

@@ -93,6 +93,8 @@ void DeviceTheengsBM26::deviceConnected()
 {
     qDebug() << "DeviceTheengsBM26::deviceConnected(" << m_deviceAddress << ")";
     Device::deviceConnected();
+
+    m_serviceVolt_bm6_firstwrite = false;
 }
 
 /* ************************************************************************** */
@@ -116,7 +118,7 @@ void DeviceTheengsBM26::deviceErrored(QLowEnergyController::Error error)
 
 void DeviceTheengsBM26::serviceScanDone()
 {
-    qDebug() << "DeviceTheengsBM26::serviceScanDone(" << m_deviceAddress << ")";
+    qWarning() << "DeviceTheengsBM26::serviceScanDone(" << m_deviceAddress << ")";
 
     if (m_serviceVolt)
     {
@@ -175,6 +177,8 @@ void DeviceTheengsBM26::serviceDetailsDiscovered_volt(QLowEnergyService::Service
         {
             if (m_deviceModel == "BM6")
             {
+                qWarning() << "DeviceTheengsBM26::serviceDetailsDiscovered_volt(" << m_deviceAddress << ") > ServiceDiscovered";
+
                 // BM6 requires sending an encrypted command before making notify available
 
                 const uint8_t data[16] = { 0xd1, 0x55, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -192,16 +196,23 @@ void DeviceTheengsBM26::serviceDetailsDiscovered_volt(QLowEnergyService::Service
                 m_charWrite = m_serviceVolt->characteristic(uuid_volt_char_write);
                 m_serviceVolt->writeCharacteristic(m_charWrite, QByteArray(reinterpret_cast<const char*>(output), 16),
                                                    QLowEnergyService::WriteWithResponse);
+                m_serviceVolt_bm6_firstwrite = true;
             }
+            else if (m_deviceModel == "BM2")
+            {
+                // Characteristic "read / notify"
+                m_charNotif = m_serviceVolt->characteristic(uuid_volt_char_notify);
+                m_notificationDesc = m_charNotif.clientCharacteristicConfiguration();
+                m_serviceVolt->writeDescriptor(m_notificationDesc, QByteArray::fromHex("0100"));
 
-            // Characteristic "read / notify"
-            m_charNotif = m_serviceVolt->characteristic(uuid_volt_char_notify);
-            m_notificationDesc = m_charNotif.clientCharacteristicConfiguration();
-            m_serviceVolt->writeDescriptor(m_notificationDesc, QByteArray::fromHex("0100"));
-
-            // Debug
-            if (!m_charNotif.isValid()) { qWarning() << "m_charNotif invalid"; }
-            if (!m_notificationDesc.isValid()) { qWarning() << "m_notificationDesc invalid"; }
+                // Debug
+                if (!m_charNotif.isValid()) { qWarning() << "m_charNotif invalid"; }
+                if (!m_notificationDesc.isValid()) { qWarning() << "m_notificationDesc invalid"; }
+            }
+            else
+            {
+                qWarning() << "DeviceTheengsBM26::serviceDetailsDiscovered_volt() BatteryMonitor device model" << m_deviceModel << "is INVALID";
+            }
         }
     }
 }
@@ -210,32 +221,45 @@ void DeviceTheengsBM26::serviceDetailsDiscovered_volt(QLowEnergyService::Service
 
 void DeviceTheengsBM26::bleDescriptorRead(const QLowEnergyDescriptor &, const QByteArray &)
 {
-    //qDebug() << "DeviceTheengsBM26::bleDescriptorRead()";
+    qWarning() << "DeviceTheengsBM26::bleDescriptorRead()";
 }
 
 void DeviceTheengsBM26::bleDescriptorWritten(const QLowEnergyDescriptor &, const QByteArray &)
 {
-    //qDebug() << "DeviceTheengsBM26::bleDescriptorWritten()";
+    qWarning() << "DeviceTheengsBM26::bleDescriptorWritten()";
 }
 
 /* ************************************************************************** */
 
 void DeviceTheengsBM26::bleWriteDone(const QLowEnergyCharacteristic &c, const QByteArray &value)
 {
-    qDebug() << "DeviceTheengsBM26::bleWriteDone(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
-    qDebug() << "DATA: 0x" << value.toHex();
+    qWarning() << "DeviceTheengsBM26::bleWriteDone(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
+    qWarning() << "DATA: 0x" << value.toHex();
+
+    if (m_deviceModel == "BM6" && m_serviceVolt_bm6_firstwrite == true)
+    {
+        // Characteristic "read / notify"
+        m_charNotif = m_serviceVolt->characteristic(uuid_volt_char_notify);
+        m_notificationDesc = m_charNotif.clientCharacteristicConfiguration();
+        m_serviceVolt->writeDescriptor(m_notificationDesc, QByteArray::fromHex("0100"));
+        m_serviceVolt_bm6_firstwrite = false;
+
+        // Debug
+        if (!m_charNotif.isValid()) { qWarning() << "m_charNotif invalid"; }
+        if (!m_notificationDesc.isValid()) { qWarning() << "m_notificationDesc invalid"; }
+    }
 }
 
 void DeviceTheengsBM26::bleReadDone(const QLowEnergyCharacteristic &c, const QByteArray &value)
 {
-    qDebug() << "DeviceTheengsBM26::bleReadDone(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
-    qDebug() << "DATA: 0x" << value.toHex();
+    qWarning() << "DeviceTheengsBM26::bleReadDone(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
+    qWarning() << "DATA: 0x" << value.toHex();
 }
 
 void DeviceTheengsBM26::bleReadNotify(const QLowEnergyCharacteristic &c, const QByteArray &value)
 {
-    //qDebug() << "DeviceTheengsBM26::bleReadNotify(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
-    //qDebug() << "DATA: 0x" << value.toHex();
+    qWarning() << "DeviceTheengsBM26::bleReadNotify(" << m_deviceAddress << ") on" << c.name() << " / uuid" << c.uuid() << value.size();
+    qWarning() << "DATA: 0x" << value.toHex();
 
     // Volt UUID // 16 bytes frames
     if (c.uuid() == uuid_volt_char_notify && value.size() == 16)
@@ -252,6 +276,8 @@ void DeviceTheengsBM26::bleReadNotify(const QLowEnergyCharacteristic &c, const Q
         mbedtls_aes_crypt_cbc(&aes, MBEDTLS_AES_DECRYPT, 16, iv, data, output);
         mbedtls_aes_free(&aes);
 
+        qWarning() << "DECRYPTED DATA: 0x" << QByteArray(reinterpret_cast<const char*>(output), 16).toHex(' ');
+
         float volt = -99.f;
         float temp = -99.f;
         int batt = 0;
@@ -260,13 +286,13 @@ void DeviceTheengsBM26::bleReadNotify(const QLowEnergyCharacteristic &c, const Q
         {
             temp = output[4];
             if (output[3] == 1) temp = -temp;
-            qDebug() << "(BM6) temp : " << temp;
+            qWarning() << "(BM6) temp : " << temp;
 
             batt = output[5];
-            qDebug() << "(BM6) batt : " << batt;
+            qWarning() << "(BM6) batt : " << batt;
 
             volt = static_cast<int16_t>(data[8] + (data[7] << 8)) / 10.f;
-            qDebug() << "(BM6) volt : " << volt;
+            qWarning() << "(BM6) volt : " << volt;
         }
         else if (m_deviceModel == "BM2")
         {
@@ -315,11 +341,16 @@ void DeviceTheengsBM26::bleReadNotify(const QLowEnergyCharacteristic &c, const Q
                    << c.name() << " / uuid" << c.uuid() << value.size() << "UNABLE TO DECRYPT !!!";
 #endif // ENABLE_MBEDTLS
     }
+    else
+    {
+        qWarning() << "DeviceTheengsBM26::bleReadNotify(" << m_deviceAddress << ")  UNKOWN DATA  on"
+                   << c.name() << " / uuid" << c.uuid() << value.size();
+    }
 }
 
 void DeviceTheengsBM26::bleServiceError(QLowEnergyService::ServiceError e)
 {
-    qDebug() << "DeviceTheengsBM26::bleServiceError(" << e << ")";
+    qWarning() << "DeviceTheengsBM26::bleServiceError(" << e << ")";
 }
 
 /* ************************************************************************** */

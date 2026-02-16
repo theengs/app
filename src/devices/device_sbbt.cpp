@@ -92,7 +92,7 @@ void DeviceSwitchbotBlindTilt::deviceDisconnected()
 
 void DeviceSwitchbotBlindTilt::deviceErrored(QLowEnergyController::Error error)
 {
-    qDebug() << "DeviceSwitchbotBlindTilt::deviceErrored(" << error << ")";
+    qWarning() << "DeviceSwitchbotBlindTilt::deviceErrored(" << error << ")";
     Device::deviceErrored(error);
 }
 
