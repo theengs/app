@@ -235,7 +235,7 @@ qt_add_qml_module(${CMAKE_PROJECT_NAME}
 
 ################################################################################
 
-# 'Other Files" macro
+# "Other Files" macro
 function(add_other_files target)
     foreach(file IN LISTS ARGN)
         target_sources(${target} PRIVATE ${file})
