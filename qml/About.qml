@@ -189,14 +189,14 @@ Item {
                 sourceSize: 24
                 indicatorSource: "qrc:/IconLibrary/material-icons/duotone/launch.svg"
 
-                onClicked: Qt.openUrlExternally("https://github.com/theengs/decoder/releases/tag/v2.0.0")
+                onClicked: Qt.openUrlExternally("https://github.com/theengs/decoder/releases/tag/v2.1.0")
 
                 ItemBadge {
                     anchors.right: parent.right
                     anchors.rightMargin: 48
                     anchors.verticalCenter: parent.verticalCenter
 
-                    text: "2.0.0"
+                    text: "2.1.0"
                 }
             }
 
