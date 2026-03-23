@@ -16,7 +16,7 @@ Item {
     property real valueMax_p: 100
 
     property real valueMin_v: 0
-    property real valueMax_v: 15
+    property real valueMax_v: 20
     property real limitMin_v: 0
     property real limitMax_v: 0
 
