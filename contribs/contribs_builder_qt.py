@@ -36,7 +36,7 @@ print("")
 
 targets = ['linux', 'linux_x86_64', 'linux_arm64',
            'macos', 'macos_x86_64', 'macos_arm64',
-           'msvc2019', 'msvc2022',
+           'msvc2019', 'msvc2022', 'msvc2026',
            'android_armv8', 'android_armv7', 'android_x86_64', 'android_x86',
            'ios', 'ios_simulator']
 
@@ -128,7 +128,7 @@ rebuild = False
 targets_selected = []
 softwares_selected = []
 
-QT_VERSION = "6.10.1"
+QT_VERSION = "6.11.0"
 QT_DIRECTORY = ""
 
 if os.getenv('QT_DIRECTORY', ''):
@@ -224,6 +224,9 @@ if len(targets_selected):
     if "msvc2022" in targets_selected:
         MSVC_GEN_VER = "Visual Studio 17 2022"
         TARGETS.append(["windows", "x86_64", "msvc2022_64"])
+    if "msvc2026" in targets_selected:
+        MSVC_GEN_VER = "Visual Studio 18 2026"
+        TARGETS.append(["windows", "x86_64", "msvc2026_64"])
 
     if "android_armv8" in targets_selected: TARGETS.append(["android", "armv8", "android_arm64_v8a"])
     if "android_armv7" in targets_selected: TARGETS.append(["android", "armv7", "android_armv7"])
@@ -241,6 +244,8 @@ if len(TARGETS) == 0:
 
     if OS_HOST == "Linux":
         TARGETS.append(["linux", "x86_64", "gcc_64"])
+        #TARGETS.append(["linux_x86_64", "x86_64", "gcc_64"])
+        #TARGETS.append(["linux_arm64", "arm64", "gcc_arm64"])
         #TARGETS.append(["windows", "x86_64", ""]) # Windows cross compilation
 
     if OS_HOST == "Darwin":
@@ -251,8 +256,14 @@ if len(TARGETS) == 0:
         if "16.0" in os.getenv('VisualStudioVersion', ''):
             MSVC_GEN_VER = "Visual Studio 16 2019"
             TARGETS.append(["windows", "x86_64", "msvc2019_64"])
-        else: # if "17.0" in os.getenv('VisualStudioVersion', ''):
+        elif "17.0" in os.getenv('VisualStudioVersion', ''):
             MSVC_GEN_VER = "Visual Studio 17 2022"
+            TARGETS.append(["windows", "x86_64", "msvc2022_64"])
+        elif "18.0" in os.getenv('VisualStudioVersion', ''):
+            MSVC_GEN_VER = "Visual Studio 18 2026"
+            TARGETS.append(["windows", "x86_64", "msvc2026_64"])
+        else:
+            MSVC_GEN_VER = "Visual Studio 17 2022" # DEFAULT
             TARGETS.append(["windows", "x86_64", "msvc2022_64"])
 
     if ANDROID_NDK_ROOT: # Android cross compilation
@@ -271,29 +282,7 @@ print("SOFTWARES selected:\n" + str(softwares_selected) + "\n")
 
 ## DOWNLOAD TOOLS ##############################################################
 
-## Android OpenSSL (version: git)
-for TARGET in TARGETS:
-    if TARGET[0] == "android":
-        FILE_androidopenssl = "android_openssl-master.zip"
-        DIR_androidopenssl = "android_openssl"
-
-        if not os.path.exists(src_dir + FILE_androidopenssl):
-            print("> Downloading " + FILE_androidopenssl + "...")
-            urllib.request.urlretrieve("https://github.com/KDAB/android_openssl/archive/master.zip", src_dir + FILE_androidopenssl)
-        if not os.path.isdir("env/" + DIR_androidopenssl):
-            zipSSL = zipfile.ZipFile(src_dir + FILE_androidopenssl)
-            zipSSL.extractall("env/")
-
-## linuxdeploy (version: git)
-for TARGET in TARGETS:
-    if TARGET[0] == "linux":
-        FILE_linuxdeploy = "linuxdeploy-x86_64.AppImage"
-        if not os.path.exists(deploy_dir + FILE_linuxdeploy):
-            print("> Downloading " + FILE_linuxdeploy + "...")
-            urllib.request.urlretrieve("https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/" + FILE_linuxdeploy, deploy_dir + FILE_linuxdeploy)
-            urllib.request.urlretrieve("https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage", deploy_dir + "linuxdeploy-plugin-appimage-x86_64.AppImage")
-            urllib.request.urlretrieve("https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage", deploy_dir + "linuxdeploy-plugin-qt-x86_64.AppImage")
-            urllib.request.urlretrieve("https://raw.githubusercontent.com/linuxdeploy/linuxdeploy-plugin-gstreamer/master/linuxdeploy-plugin-gstreamer.sh", deploy_dir + "linuxdeploy-plugin-gstreamer.sh")
+# NOT FOR THE Qt CONTRIBS BUILDER
 
 ## DOWNLOAD SOFTWARES ##########################################################
 
@@ -442,6 +431,11 @@ for TARGET in TARGETS:
     build_static = "OFF"
 
     if OS_HOST == "Linux":
+        if OS_TARGET == "linux":
+            if ARCH_TARGET == "x86_64":
+                CMAKE_cmd = ["cmake"]
+            elif ARCH_TARGET == "arm64":
+                CMAKE_cmd = ["cmake"]
         if OS_TARGET == "windows":
             if ARCH_TARGET == "i686":
                 CMAKE_cmd = ["i686-w64-mingw32-cmake"]
@@ -542,7 +536,7 @@ for TARGET in TARGETS:
         #pathToQtInstall = build_dir + DIR_maplibre + "/install" # test
 
         print("> Building maplibre-native-qt")
-        subprocess.check_call(CMAKE_qt_cmd + [src_dir + DIR_maplibre, "-GNinja", "-DCMAKE_BUILD_TYPE=Release", "-DMLN_QT_WITH_INTERNAL_ICU=ON", "-DCMAKE_INSTALL_PREFIX=" + pathToQtInstall], cwd=build_dir + DIR_maplibre + "/build")
+        subprocess.check_call(CMAKE_qt_cmd + [src_dir + DIR_maplibre, "-GNinja", "-DCMAKE_BUILD_TYPE=Release", "-DMLN_WITH_OPENGL=ON",  "-DMLN_QT_WITH_INTERNAL_ICU=ON", "-DCMAKE_INSTALL_PREFIX=" + pathToQtInstall], cwd=build_dir + DIR_maplibre + "/build")
         subprocess.check_call(["ninja"], cwd=build_dir + DIR_maplibre + "/build")
         subprocess.check_call(["ninja", "install"], cwd=build_dir + DIR_maplibre + "/build")
 

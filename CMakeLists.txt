@@ -248,7 +248,6 @@ add_other_files(${CMAKE_PROJECT_NAME}
     deploy_linux.sh deploy_macos.sh deploy_windows.sh
     .github/workflows/builds_desktop.yml
     .github/workflows/builds_mobile.yml
-    .github/workflows/flatpak.yml
     .gitignore
 )
 

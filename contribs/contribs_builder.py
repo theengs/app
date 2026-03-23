@@ -36,7 +36,7 @@ print("")
 
 targets = ['linux', 'linux_x86_64', 'linux_arm64',
            'macos', 'macos_x86_64', 'macos_arm64',
-           'msvc2019', 'msvc2022',
+           'msvc2019', 'msvc2022', 'msvc2026',
            'android_armv8', 'android_armv7', 'android_x86_64', 'android_x86',
            'ios', 'ios_simulator']
 
@@ -54,10 +54,14 @@ print(str(softwares))
 ## linux:
 # python3 cmake ninja libtool automake m4
 # sudo apt-get install gcc g++ libxcb-cursor0 libxcb-cursor-dev libgl1-mesa-dev
+# libudev-dev (for ?)
 
 ## macOS:
 # brew install python cmake automake ninja
 # brew install libtool pkg-config
+# brew install libudev utf8cpp (for libusb)
+# brew install iconv gettext (for libexif)
+# brew link --force gettext (for libexif)
 # xcode (13+)
 
 ## Windows:
@@ -123,7 +127,7 @@ rebuild = False
 targets_selected = []
 softwares_selected = []
 
-QT_VERSION = "6.10.1"
+QT_VERSION = "6.11.0"
 QT_DIRECTORY = ""
 
 if os.getenv('QT_DIRECTORY', ''):
@@ -219,6 +223,9 @@ if len(targets_selected):
     if "msvc2022" in targets_selected:
         MSVC_GEN_VER = "Visual Studio 17 2022"
         TARGETS.append(["windows", "x86_64", "msvc2022_64"])
+    if "msvc2026" in targets_selected:
+        MSVC_GEN_VER = "Visual Studio 18 2026"
+        TARGETS.append(["windows", "x86_64", "msvc2026_64"])
 
     if "android_armv8" in targets_selected: TARGETS.append(["android", "armv8", "android_arm64_v8a"])
     if "android_armv7" in targets_selected: TARGETS.append(["android", "armv7", "android_armv7"])
@@ -246,8 +253,14 @@ if len(TARGETS) == 0:
         if "16.0" in os.getenv('VisualStudioVersion', ''):
             MSVC_GEN_VER = "Visual Studio 16 2019"
             TARGETS.append(["windows", "x86_64", "msvc2019_64"])
-        else: # if "17.0" in os.getenv('VisualStudioVersion', ''):
+        elif "17.0" in os.getenv('VisualStudioVersion', ''):
             MSVC_GEN_VER = "Visual Studio 17 2022"
+            TARGETS.append(["windows", "x86_64", "msvc2022_64"])
+        elif "18.0" in os.getenv('VisualStudioVersion', ''):
+            MSVC_GEN_VER = "Visual Studio 18 2026"
+            TARGETS.append(["windows", "x86_64", "msvc2026_64"])
+        else:
+            MSVC_GEN_VER = "Visual Studio 17 2022" # DEFAULT
             TARGETS.append(["windows", "x86_64", "msvc2022_64"])
 
     if ANDROID_NDK_ROOT: # Android cross compilation
@@ -303,6 +316,53 @@ if "mbedtls" in softwares_selected:
         print("> Downloading " + FILE_mbedtls + "...")
         urllib.request.urlretrieve("https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-" + VERSION_mbedtls + "/" + FILE_mbedtls, src_dir + FILE_mbedtls)
 
+## libUSB (version: git) (1.0.29+)
+FILE_libusb = "libusb-master.tar.gz"
+DIR_libusb = "libusb-master"
+## libMTP (version: git) (1.1.23+)
+FILE_libmtp = "libmtp-master.tar.gz"
+DIR_libmtp = "libmtp-master"
+
+if {"libusb", "libmtp"} & set(softwares_selected):
+    if not os.path.exists(src_dir + FILE_libusb):
+        print("> Downloading " + FILE_libusb)
+        urllib.request.urlretrieve("https://github.com/libusb/libusb/archive/master.zip", src_dir + FILE_libusb)
+    if not os.path.exists(src_dir + FILE_libmtp):
+        print("> Downloading " + FILE_libmtp)
+        urllib.request.urlretrieve("https://github.com/libmtp/libmtp/archive/master.zip", src_dir + FILE_libmtp)
+
+## libexif (custom) (version: git) (0.6.25+)
+FILE_libexif = "libexif-master.zip"
+DIR_libexif = "libexif-master"
+
+if "libexif" in softwares_selected:
+    if not os.path.exists(src_dir + FILE_libexif):
+        print("> Downloading " + FILE_libexif + "...")
+        urllib.request.urlretrieve("https://github.com/emericg/libexif/archive/master.zip", src_dir + FILE_libexif)
+
+## taglib (version: git) (2.1+)
+FILE_taglib = "taglib-master.zip"
+FILE_taglib_utfcpp = "utfcpp-v4.0.8.zip"
+DIR_taglib = "taglib-master"
+DIR_taglib_utfcpp = DIR_taglib + "/3rdparty/utfcpp"
+
+if "taglib" in softwares_selected:
+    if not os.path.exists(src_dir + FILE_taglib):
+        print("> Downloading " + FILE_taglib + "...")
+        urllib.request.urlretrieve("https://github.com/taglib/taglib/archive/master.zip", src_dir + FILE_taglib)
+    if not os.path.exists(src_dir + FILE_taglib_utfcpp):
+        print("> Downloading " + FILE_taglib_utfcpp + "...")
+        urllib.request.urlretrieve("https://github.com/nemtrif/utfcpp/archive/refs/tags/v4.0.8.zip", src_dir + FILE_taglib_utfcpp)
+
+## minivideo (version: git) (0.15+)
+FILE_minivideo = "minivideo-master.zip"
+DIR_minivideo = "MiniVideo-master"
+
+if "minivideo" in softwares_selected:
+    if not os.path.exists(src_dir + FILE_minivideo):
+        print("> Downloading " + FILE_minivideo + "...")
+        urllib.request.urlretrieve("https://github.com/emericg/MiniVideo/archive/master.zip", src_dir + FILE_minivideo)
+
 ## BUILD SOFTWARES #############################################################
 
 for TARGET in TARGETS:
@@ -329,26 +389,6 @@ for TARGET in TARGETS:
     print("- qt6_dir : " + qt6_dir)
     print("- qt6_bin_dir : " + qt6_bin_dir)
 
-    ## PREPARE Qt modules build
-    if OS_HOST == "Windows":
-        QT_CONF_MODULE_cmd = qt6_bin_dir + "qt-configure-module.bat"
-        CMAKE_qt_cmd = [qt6_bin_dir + "qt-cmake.bat"]
-        #VCVARS_cwd = "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/"
-        #VCVARS_cwd = "C:/Program Files (x86)/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/"
-        #VCVARS_cmd = VCVARS_cwd + "vcvarsall.bat"
-        #subprocess.check_call([VCVARS_cmd, "x86_amd64"], cwd=VCVARS_cwd)
-    else:
-        QT_CONF_MODULE_cmd = qt6_bin_dir + "qt-configure-module"
-        CMAKE_qt_cmd = [qt6_bin_dir + "qt-cmake"]
-        if OS_TARGET == "android" or OS_TARGET == "iOS":
-            # HACK # GitHub CI + aqt + Qt cross compilation
-            if (OS_HOST == "Linux"): os.environ["QT_HOST_PATH"] = str(QT_DIRECTORY + "/" + QT_VERSION + "/gcc_64/")
-            if (OS_HOST == "Darwin"): os.environ["QT_HOST_PATH"] = str(QT_DIRECTORY + "/" + QT_VERSION + "/macos/")
-        if OS_TARGET == "android":
-            # HACK # env variables?
-            os.environ["ANDROID_SDK_ROOT"] = str(ANDROID_SDK_ROOT)
-            os.environ["ANDROID_NDK_ROOT"] = str(ANDROID_NDK_ROOT)
-
     ## CMAKE command selection
     CMAKE_cmd = ["cmake"]
     CMAKE_gen = "Ninja"
@@ -356,6 +396,11 @@ for TARGET in TARGETS:
     build_static = "OFF"
 
     if OS_HOST == "Linux":
+        if OS_TARGET == "linux":
+            if ARCH_TARGET == "x86_64":
+                CMAKE_cmd = ["cmake"]
+            elif ARCH_TARGET == "arm64":
+                CMAKE_cmd = ["cmake"]
         if OS_TARGET == "windows":
             if ARCH_TARGET == "i686":
                 CMAKE_cmd = ["i686-w64-mingw32-cmake"]
@@ -372,7 +417,7 @@ for TARGET in TARGETS:
                 CMAKE_cmd = ["cmake", "-DCMAKE_OSX_ARCHITECTURE=arm64"]
         if OS_TARGET == "iOS":
             CMAKE_gen = "Xcode"
-            #IOS_DEPLOYMENT_TARGET="13.0"
+            #IOS_DEPLOYMENT_TARGET="16.0"
             build_shared = "OFF"
             build_static = "ON"
             if ARCH_TARGET == "unified":
@@ -409,7 +454,7 @@ for TARGET in TARGETS:
             CMAKE_cmd = ["cmake", "-DCMAKE_TOOLCHAIN_FILE=" + ANDROID_NDK_ROOT + "/build/cmake/android.toolchain.cmake", "-DANDROID_ABI=arm64-v8a", "-DANDROID_PLATFORM=android-23"]
 
     print("- CMAKE_cmd : " + str(CMAKE_cmd))
-    print("- CMAKE_qt_cmd : " + str(CMAKE_qt_cmd))
+    #print("- CMAKE_qt_cmd : " + str(CMAKE_qt_cmd))
     print("")
 
     #### EXTRACT, BUILD & INSTALL ####
@@ -432,3 +477,73 @@ for TARGET in TARGETS:
             subprocess.check_call(["cmake", "--build", ".", "--target", "all"], cwd=build_dir + DIR_mbedtls + "/build")
             subprocess.check_call(["ninja", "install"], cwd=build_dir + DIR_mbedtls + "/build") # Qt BUG 91647
 
+    ## libusb & libmtp
+    if {"libusb", "libmtp"} & set(softwares_selected):
+        if OS_HOST != "Windows":
+            if not os.path.isdir(build_dir + DIR_libusb):
+                zipUSB = zipfile.ZipFile(src_dir + FILE_libusb)
+                zipUSB.extractall(build_dir)
+            if not os.path.isdir(build_dir + DIR_libmtp):
+                zipMTP = zipfile.ZipFile(src_dir + FILE_libmtp)
+                zipMTP.extractall(build_dir)
+
+            print("> Building libUSB")
+            os.chdir(build_dir + DIR_libusb)
+            os.chmod("bootstrap.sh", 509)
+            os.system("./bootstrap.sh")
+            os.system("./configure --prefix=" + env_dir + "/usr")
+            os.system("make -j" + str(CPU_COUNT))
+            os.system("make install")
+
+            print("> Building libMTP")
+            os.chdir(build_dir + DIR_libmtp)
+            os.chmod("autogen.sh", 509)
+            os.system("./autogen.sh << \"y\"")
+            os.system("./configure --disable-mtpz --prefix=" + env_dir + "/usr --with-udev=" + env_dir + "/usr/lib/udev")
+            os.system("make -j" + str(CPU_COUNT))
+            os.system("make install")
+
+    ## libexif
+    if "libexif" in softwares_selected:
+        if not os.path.isdir(build_dir + DIR_libexif):
+            zipEX = zipfile.ZipFile(src_dir + FILE_libexif)
+            zipEX.extractall(build_dir)
+
+        print("> Building libexif")
+        subprocess.check_call(CMAKE_cmd + ["-G", CMAKE_gen, "-DCMAKE_BUILD_TYPE=Release", "-DBUILD_SHARED_LIBS:BOOL=" + build_shared, "-DBUILD_STATIC_LIBS:BOOL=" + build_static, "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=TRUE", "-DCMAKE_INSTALL_PREFIX=" + env_dir + "/usr", ".."], cwd=build_dir + DIR_libexif + "/build")
+        subprocess.check_call(["cmake", "--build", ".", "--config", "Release"], cwd=build_dir + DIR_libexif + "/build")
+        subprocess.check_call(["cmake", "--build", ".", "--target", "install", "--config", "Release"], cwd=build_dir + DIR_libexif + "/build")
+
+    ## taglib
+    if "taglib" in softwares_selected:
+        if not os.path.isdir(build_dir + DIR_taglib):
+            zipTL = zipfile.ZipFile(src_dir + FILE_taglib)
+            zipTL.extractall(build_dir)
+            os.rmdir(build_dir + DIR_taglib + "/3rdparty/utfcpp/")
+            os.makedirs(build_dir + DIR_taglib + "/build")
+        if not os.path.isdir(build_dir + DIR_taglib_utfcpp):
+            zipUTFCPP = zipfile.ZipFile(src_dir + FILE_taglib_utfcpp)
+            zipUTFCPP.extractall(build_dir+ DIR_taglib + "/3rdparty/")
+            os.rename(build_dir + DIR_taglib + "/3rdparty/utfcpp-4.0.8/", build_dir + DIR_taglib_utfcpp)
+            os.makedirs(build_dir + DIR_taglib_utfcpp + "/build")
+
+        print("> Building utfcpp")
+        subprocess.check_call(CMAKE_cmd + ["-G", CMAKE_gen, "-DCMAKE_BUILD_TYPE=Release", "-DBUILD_SHARED_LIBS:BOOL=" + build_shared, "-DBUILD_STATIC_LIBS:BOOL=" + build_static, "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=TRUE", "-DCMAKE_INSTALL_PREFIX=" + env_dir + "/usr", ".."], cwd=build_dir + DIR_taglib_utfcpp + "/build")
+        subprocess.check_call(["cmake", "--build", ".", "--config", "Release"], cwd=build_dir + DIR_taglib_utfcpp + "/build")
+        subprocess.check_call(["cmake", "--build", ".", "--target", "install", "--config", "Release"], cwd=build_dir + DIR_taglib_utfcpp + "/build")
+
+        print("> Building taglib")
+        subprocess.check_call(CMAKE_cmd + ["-G", CMAKE_gen, "-DCMAKE_BUILD_TYPE=Release", "-DBUILD_SHARED_LIBS:BOOL=" + build_shared, "-DBUILD_STATIC_LIBS:BOOL=" + build_static, "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=TRUE", "-Dutf8cpp_INCLUDE_DIR=" + env_dir + "/usr/include/utf8cpp", "-DCMAKE_INSTALL_PREFIX=" + env_dir + "/usr", ".."], cwd=build_dir + DIR_taglib + "/build")
+        subprocess.check_call(["cmake", "--build", ".", "--config", "Release"], cwd=build_dir + DIR_taglib + "/build")
+        subprocess.check_call(["cmake", "--build", ".", "--target", "install", "--config", "Release"], cwd=build_dir + DIR_taglib + "/build")
+
+    ## minivideo
+    if "minivideo" in softwares_selected:
+        if not os.path.isdir(build_dir + DIR_minivideo):
+            zipMV = zipfile.ZipFile(src_dir + FILE_minivideo)
+            zipMV.extractall(build_dir)
+
+        print("> Building minivideo")
+        subprocess.check_call(CMAKE_cmd + ["-G", CMAKE_gen, "-DCMAKE_BUILD_TYPE=Release", "-DBUILD_SHARED_LIBS:BOOL=" + build_shared, "-DBUILD_STATIC_LIBS:BOOL=" + build_static, "-DCMAKE_INSTALL_PREFIX=" + env_dir + "/usr", ".."], cwd=build_dir + DIR_minivideo + "/minivideo/build")
+        subprocess.check_call(["cmake", "--build", ".", "--config", "Release"], cwd=build_dir + DIR_minivideo + "/minivideo/build")
+        subprocess.check_call(["cmake", "--build", ".", "--target", "install", "--config", "Release"], cwd=build_dir + DIR_minivideo + "/minivideo/build")
