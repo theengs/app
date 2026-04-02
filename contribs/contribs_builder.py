@@ -127,7 +127,7 @@ rebuild = False
 targets_selected = []
 softwares_selected = []
 
-QT_VERSION = "6.11.0"
+QT_VERSION = "6.10.3"
 QT_DIRECTORY = ""
 
 if os.getenv('QT_DIRECTORY', ''):
