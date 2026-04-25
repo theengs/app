@@ -429,6 +429,13 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android")
     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Qt::CorePrivate)
 endif()
 
+## Apple platforms (iOS/macOS): CoreBluetooth doesn't expose hardware MACs, so the
+## TheengsDecoder needs to use its `conditionnomac` rules to identify devices by
+## name + adv data instead of by MAC. NO_MAC_ADDR enables that fallback.
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR CMAKE_SYSTEM_NAME STREQUAL "iOS")
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE NO_MAC_ADDR)
+endif()
+
 ## macOS
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     #set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64")
