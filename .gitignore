@@ -1,5 +1,7 @@
 # Binaries and build artifacts
 build/*
+build-tests/*
+build-test-app/*
 build_ios/*
 build_macos/*
 build_android/*
@@ -41,5 +43,8 @@ assets/macos/macos_signature.pri
 stash/*
 .DS_Store
 
-# VuePress
+# VitePress
 node_modules/
+docs/.vitepress/dist/
+docs/.vitepress/cache/
+docs/.vitepress/public/commonConfig.js
