@@ -34,5 +34,8 @@ asset_catalog_compiler.Info.plist
 stash/*
 .DS_Store
 
-# VuePress
+# VitePress
 node_modules/
+docs/.vitepress/dist/
+docs/.vitepress/cache/
+docs/.vitepress/public/commonConfig.js
