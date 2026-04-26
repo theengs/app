@@ -15,6 +15,23 @@ Item {
     property bool hugeMode: (!isHdpi || (isTablet && width >= 480))
     property bool listMode: false
 
+    // HIL accessibility hooks: surface this row to Qt's a11y bridge so
+    // uiautomator on the bench can find it by resource-id and read its
+    // current name + summary values from content-desc. Without these,
+    // Qt-on-Android renders the whole app as one opaque SurfaceView.
+    objectName: "hil-device-row-" + (boxDevice ? boxDevice.deviceAddress : "unknown")
+    Accessible.role: Accessible.ListItem
+    Accessible.name: {
+        var parts = [textTitle.text]
+        var t = boxDevice ? boxDevice.temperature : undefined
+        if (typeof t === "number" && t > -40) parts.push(t.toFixed(1) + "°")
+        var h = boxDevice ? boxDevice.humidity : undefined
+        if (typeof h === "number" && h > 0) parts.push(h.toFixed(0) + "%")
+        var b = boxDevice ? boxDevice.deviceBattery : undefined
+        if (typeof b === "number" && b >= 0) parts.push("batt" + b + "%")
+        return parts.join(" ")
+    }
+
     Connections {
         target: boxDevice
         function onSensorUpdated() { initBoxData() }
