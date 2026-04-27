@@ -16,21 +16,24 @@ Item {
     property bool listMode: false
 
     // HIL accessibility hooks: surface this row to Qt's a11y bridge so
-    // uiautomator on the bench can find it by resource-id and read its
-    // current name + summary values from content-desc. Without these,
-    // Qt-on-Android renders the whole app as one opaque SurfaceView.
+    // uiautomator on the bench can find it by resource-id, and read its
+    // *rendered* values from the children. Each value-bearing Text in
+    // this file (textTitle, the inline Texts in componentText_1l/_2l/_3l,
+    // gaugeLegend in componentEnvironmentalGauge / componentBM, legend
+    // in componentActuator / componentActuatorWindow) is also annotated
+    // ``Accessible.role: Accessible.StaticText`` so it shows up as a
+    // child node — see hil.ui_tree on the bench side for the parser
+    // that collects them per row.
+    //
+    // We deliberately keep ``Accessible.name`` minimal here: the
+    // synthetic temp/hum/batt summary the previous version emitted only
+    // worked for thermometers, and silently lied for probes (multi-
+    // channel temperatures), battery monitors (voltage instead of
+    // percent), scales, etc. The per-Text annotations report what's
+    // actually on screen, which is what the test should verify.
     objectName: "hil-device-row-" + (boxDevice ? boxDevice.deviceAddress : "unknown")
     Accessible.role: Accessible.ListItem
-    Accessible.name: {
-        var parts = [textTitle.text]
-        var t = boxDevice ? boxDevice.temperature : undefined
-        if (typeof t === "number" && t > -40) parts.push(t.toFixed(1) + "°")
-        var h = boxDevice ? boxDevice.humidity : undefined
-        if (typeof h === "number" && h > 0) parts.push(h.toFixed(0) + "%")
-        var b = boxDevice ? boxDevice.deviceBattery : undefined
-        if (typeof b === "number" && b >= 0) parts.push("batt" + b + "%")
-        return parts.join(" ")
-    }
+    Accessible.name: textTitle.text
 
     Connections {
         target: boxDevice
@@ -363,6 +366,11 @@ Item {
                     //font.capitalization: Font.Capitalize
                     verticalAlignment: Text.AlignVCenter
                     elide: Text.ElideRight
+
+                    // HIL: surface the rendered title text as its own a11y
+                    // node so uiautomator dumps see the user-visible string.
+                    Accessible.role: Accessible.StaticText
+                    Accessible.name: text
                 }
 
                 Text {
@@ -659,6 +667,9 @@ Item {
                 color: Theme.colorText
                 font.letterSpacing: -1.4
                 font.pixelSize: hugeMode ? 28 : 24
+
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
             }
             Text {
                 id: unit
@@ -668,6 +679,9 @@ Item {
                 color: Theme.colorSubText
                 font.letterSpacing: -1.4
                 font.pixelSize: hugeMode ? 24 : 20
+
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
             }
         }
     }
@@ -730,6 +744,9 @@ Item {
                 color: Theme.colorText
                 font.letterSpacing: -1.4
                 font.pixelSize: hugeMode ? 32 : 28
+
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
             }
 
             Text {
@@ -739,6 +756,9 @@ Item {
                 textFormat: Text.PlainText
                 color: Theme.colorSubText
                 font.pixelSize: hugeMode ? 26 : 22
+
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
             }
         }
     }
@@ -763,6 +783,7 @@ Item {
                 visible: boxDevice.hasTemperature1
 
                 Text {
+                    id: probeTempA
                     width: 48
                     text: {
                         if (boxDevice.temperature1 > -40)
@@ -773,8 +794,11 @@ Item {
                     color: Theme.colorSubText
                     font.pixelSize: 22
                     horizontalAlignment: Text.AlignHCenter
+                    Accessible.role: Accessible.StaticText
+                    Accessible.name: text
                 }
                 Text {
+                    id: probeTempB
                     width: 48
                     text: {
                         if (boxDevice.temperature2 > -40)
@@ -785,6 +809,8 @@ Item {
                     color: Theme.colorSubText
                     font.pixelSize: 22
                     horizontalAlignment: Text.AlignHCenter
+                    Accessible.role: Accessible.StaticText
+                    Accessible.name: text
                 }
             }
             Row {
@@ -793,6 +819,7 @@ Item {
                 visible: boxDevice.hasTemperature3
 
                 Text {
+                    id: probeTempC
                     width: 48
                     text: {
                         if (boxDevice.temperature3 > -40)
@@ -803,8 +830,11 @@ Item {
                     color: Theme.colorSubText
                     font.pixelSize: 22
                     horizontalAlignment: Text.AlignHCenter
+                    Accessible.role: Accessible.StaticText
+                    Accessible.name: text
                 }
                 Text {
+                    id: probeTempD
                     width: 48
                     text: {
                         if (boxDevice.temperature4 > -40)
@@ -815,6 +845,8 @@ Item {
                     color: Theme.colorSubText
                     font.pixelSize: 22
                     horizontalAlignment: Text.AlignHCenter
+                    Accessible.role: Accessible.StaticText
+                    Accessible.name: text
                 }
             }
             Row {
@@ -823,6 +855,7 @@ Item {
                 visible: boxDevice.hasTemperature5
 
                 Text {
+                    id: probeTempE
                     width: 48
                     text: {
                         if (boxDevice.temperature5 > -40)
@@ -833,8 +866,11 @@ Item {
                     color: Theme.colorSubText
                     font.pixelSize: 22
                     horizontalAlignment: Text.AlignHCenter
+                    Accessible.role: Accessible.StaticText
+                    Accessible.name: text
                 }
                 Text {
+                    id: probeTempF
                     width: 48
                     text: {
                         if (boxDevice.temperature6 > -40)
@@ -845,6 +881,8 @@ Item {
                     color: Theme.colorSubText
                     font.pixelSize: 22
                     horizontalAlignment: Text.AlignHCenter
+                    Accessible.role: Accessible.StaticText
+                    Accessible.name: text
                 }
             }
         }
@@ -1017,6 +1055,9 @@ Item {
                 textFormat: Text.PlainText
                 font.pixelSize: Theme.fontSizeContent
                 color: Theme.colorSubText
+
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
             }
 
             ProgressArc {
@@ -1097,6 +1138,9 @@ Item {
                 textFormat: Text.PlainText
                 font.pixelSize: Theme.fontSizeContent
                 color: Theme.colorSubText
+
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
             }
 
             ProgressArc {
@@ -1167,6 +1211,9 @@ Item {
                 textFormat: Text.PlainText
                 font.pixelSize: Theme.fontSizeContent
                 color: Theme.colorSubText
+
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
             }
         }
     }
@@ -1231,6 +1278,9 @@ Item {
                 textFormat: Text.PlainText
                 font.pixelSize: Theme.fontSizeContent
                 color: Theme.colorSubText
+
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
             }
         }
     }
