@@ -317,6 +317,15 @@ Loader {
                         height: 72
                         color: Theme.colorForeground
 
+                        // HIL: each generic-data row is its own
+                        // ListItem in the a11y tree, keyed by the
+                        // decoder's field name so uiautomator dumps
+                        // can find e.g. ``hil-detail-field-pressure``
+                        // and read the rendered value below.
+                        objectName: "hil-detail-field-" + (modelData.key || "")
+                        Accessible.role: Accessible.ListItem
+                        Accessible.name: modelData.name
+
                         Column {
                             anchors.left: parent.left
                             anchors.leftMargin: 12
@@ -329,6 +338,9 @@ Loader {
                                 color: Theme.colorText
                                 font.pixelSize: Theme.fontSizeContentBig
                                 font.capitalization: Font.Capitalize
+
+                                Accessible.role: Accessible.StaticText
+                                Accessible.name: text
                             }
                             Row {
                                 spacing: 4
@@ -340,12 +352,18 @@ Loader {
                                     textFormat: Text.PlainText
                                     color: Theme.colorText
                                     font.pixelSize: Theme.fontSizeContentBig
+
+                                    Accessible.role: Accessible.StaticText
+                                    Accessible.name: text
                                 }
                                 Text {
                                     text: modelData.unit
                                     textFormat: Text.PlainText
                                     color: Theme.colorSubText
                                     font.pixelSize: Theme.fontSizeContent
+
+                                    Accessible.role: Accessible.StaticText
+                                    Accessible.name: text
                                 }
                             }
                         }

@@ -701,6 +701,7 @@ Loader {
 
                                 ItemEnvBox {
                                     id: pm1
+                                    key: "pm1"
                                     width: airFlow.www
                                     visible: currentDevice.hasPM1Sensor
 
@@ -713,6 +714,7 @@ Loader {
 
                                 ItemEnvBox {
                                     id: pm25
+                                    key: "pm25"
                                     width: airFlow.www
                                     visible: currentDevice.hasPM25Sensor
 
@@ -727,6 +729,7 @@ Loader {
 
                                 ItemEnvBox {
                                     id: pm100
+                                    key: "pm10"
                                     width: airFlow.www
                                     visible: currentDevice.hasPM10Sensor
 
@@ -741,6 +744,7 @@ Loader {
 
                                 ItemEnvBox {
                                     id: voc
+                                    key: "tvoc"
                                     width: airFlow.www
                                     visible: currentDevice.hasVocSensor
 
@@ -755,6 +759,7 @@ Loader {
 
                                 ItemEnvBox {
                                     id: hcho
+                                    key: "hcho"
                                     width: airFlow.www
                                     visible: currentDevice.hasHchoSensor
 
@@ -781,6 +786,7 @@ Loader {
 
                                 ItemEnvBox {
                                     id: o3
+                                    key: "o3"
                                     width: airFlow.www
                                     visible: currentDevice.hasO3Sensor
 
@@ -793,6 +799,7 @@ Loader {
 
                                 ItemEnvBox {
                                     id: so2
+                                    key: "so2"
                                     width: airFlow.www
                                     visible: currentDevice.hasSo2Sensor
 
@@ -805,6 +812,7 @@ Loader {
 
                                 ItemEnvBox {
                                     id: no2
+                                    key: "no2"
                                     width: airFlow.www
                                     visible: currentDevice.hasNo2Sensor
 
@@ -817,6 +825,7 @@ Loader {
 
                                 ItemEnvBox {
                                     id: co
+                                    key: "co"
                                     width: airFlow.www
                                     visible: currentDevice.hasCoSensor
 
@@ -829,6 +838,7 @@ Loader {
 */
                                 ItemEnvBox {
                                     id: co2
+                                    key: "co2"
                                     width: airFlow.www
                                     visible: currentDevice.hasCo2Sensor
 
@@ -972,6 +982,7 @@ Loader {
 
                                 ItemWeatherBox {
                                     id: temp
+                                    key: "tempc"
                                     visible: currentDevice.hasTemperatureSensor
                                     sz: weatherFlow.www
                                     duo: false
@@ -985,6 +996,7 @@ Loader {
                                 }
                                 ItemWeatherBox {
                                     id: humi
+                                    key: "hum"
                                     visible: currentDevice.hasHumiditySensor
                                     sz: weatherFlow.www
                                     duo: false
@@ -998,6 +1010,7 @@ Loader {
                                 }
                                 ItemWeatherBox {
                                     id: pres
+                                    key: "pres"
                                     visible: currentDevice.hasPressureSensor
                                     sz: weatherFlow.www
                                     duo: false
@@ -1011,6 +1024,7 @@ Loader {
 
                                 ItemWeatherBox {
                                     id: light
+                                    key: "lux"
                                     visible: currentDevice.hasLuminositySensor
                                     sz: weatherFlow.www
 
@@ -1022,6 +1036,7 @@ Loader {
                                 }
                                 ItemWeatherBox {
                                     id: uv
+                                    key: "uv"
                                     visible: currentDevice.hasUvSensor
                                     sz: weatherFlow.www
 

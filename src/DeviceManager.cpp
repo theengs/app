@@ -1796,7 +1796,7 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
         info.name() == "LYWSD02" || info.name() == "MHO-C303" ||
         info.name() == "LYWSD03MMC" || info.name() == "MHO-C401" ||
         info.name() == "XMWSDJO4MMC" || info.name() == "MJWSD05MMC" ||
-        info.name() == "ClearGrass Temp & RH" || info.name() == "Qingping Temp & RH M" ||
+        info.name() == "Qingping Temp & RH M" ||
         info.name() == "Qingping Temp RH Lite" ||
         info.name() == "Qingping Temp RH Barometer" ||
         info.name() == "Qingping Alarm Clock" ||
@@ -1820,7 +1820,7 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
         else if (info.name() == "LYWSD03MMC" || info.name() == "MHO-C401" ||
                  info.name() == "XMWSDJO4MMC" || info.name() == "MJWSD05MMC")
             d = new DeviceHygrotempSquare(info, this);
-        else if (info.name() == "ClearGrass Temp & RH" || info.name() == "Qingping Temp & RH M")
+        else if (info.name() == "Qingping Temp & RH M")
             d = new DeviceHygrotempCGG1(info, this);
         else if (info.name() == "Qingping Temp RH Lite")
             d = new DeviceHygrotempCGDK2(info, this);

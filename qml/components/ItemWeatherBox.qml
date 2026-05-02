@@ -20,6 +20,17 @@ Rectangle {
     property real limit_high
     property int precision: 1
 
+    // HIL: optional decoder field key (e.g. "tempc", "hum",
+    // "pressure"). When set, expose the rendered value via Qt's
+    // a11y bridge so the ui-matrix probe can read it from a
+    // uiautomator dump and verify it against the catalog's
+    // expected value. Qt only propagates objectName onto children's
+    // resource-id if the parent itself has an Accessible.role.
+    property string key: ""
+    objectName: key ? "hil-detail-field-" + key : ""
+    Accessible.role: key ? Accessible.Grouping : Accessible.NoRole
+    Accessible.name: title
+
     signal sensorSelection()
 
     color: Theme.colorForeground
@@ -79,6 +90,10 @@ Rectangle {
                 text: (itemWeatherBox.value > -99) ? itemWeatherBox.value.toFixed(itemWeatherBox.precision) : "?"
                 color: Theme.colorText
                 font.bold: false
+
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
+
                 font.pixelSize: {
                     if (itemWeatherBox.value >= 10000)
                         return isDesktop ? 20 : 18

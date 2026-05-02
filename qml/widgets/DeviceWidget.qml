@@ -106,6 +106,21 @@ Item {
                 loaderIndicators.sourceComponent = componentActuator
             } else if (boxDevice.isActuatorWindow) {
                 loaderIndicators.sourceComponent = componentActuatorWindow
+            } else if (boxDevice.isGenericDevice) {
+                // DEVICE_THEENGS_GENERIC: ACEL trackers / beacons that
+                // happen to expose temperature + humidity (K9, KSensor,
+                // RuuviTag, RDL52832) reuse the compact thermometer
+                // row layout. Devices without those (buttons, energy
+                // meters, water-level sensors, toothbrushes) render
+                // title-only on the row by design — their long-tail
+                // generic-data fields live in the detail screen, not
+                // in the list view (a Row of 5+ values overruns the
+                // row's column allowance and pushes the title off-
+                // screen).
+                if (boxDevice.hasTemperatureSensor && boxDevice.hasHumiditySensor)
+                    loaderIndicators.sourceComponent = componentText_2l
+                else if (boxDevice.hasTemperatureSensor)
+                    loaderIndicators.sourceComponent = componentText_1l
             }
 
             if (loaderIndicators.item) {
@@ -383,6 +398,9 @@ Item {
                     //font.capitalization: Font.Capitalize
                     verticalAlignment: Text.AlignVCenter
                     elide: Text.ElideRight
+
+                    Accessible.role: Accessible.StaticText
+                    Accessible.name: text
                 }
 
                 Row {
@@ -411,6 +429,9 @@ Item {
                         textFormat: Text.PlainText
                         color: Theme.colorGreen
                         font.pixelSize: hugeMode ? 16 : 15
+
+                        Accessible.role: Accessible.StaticText
+                        Accessible.name: text
 
                         SequentialAnimation on opacity {
                             id: opa
@@ -646,21 +667,32 @@ Item {
 
             function updateData() {
                 if (boxDevice.isThermometer) {
-                    text.text = boxDevice.temperature.toFixed(1)
-                    unit.text = "°"
+                    valueText.text = boxDevice.temperature.toFixed(1)
+                    unitText.text = "°"
                 } else if (boxDevice.isEnvironmentalSensor) {
                     if (boxDevice.hasGeigerCounter) {
-                        text.text = boxDevice.radioactivityH.toFixed(2)
-                        unit.text = qsTr("µSv/h")
+                        valueText.text = boxDevice.radioactivityH.toFixed(2)
+                        unitText.text = qsTr("µSv/h")
                     }
                 } else if (boxDevice.isScale) {
-                    text.text = (settingsManager.tempUnit === 'C') ? boxDevice.weight.toFixed(1) : (boxDevice.weight * 2.20462).toFixed(1)
-                    unit.text = (settingsManager.tempUnit === 'C') ? qsTr("kg") : qsTr("lb")
+                    valueText.text = (settingsManager.tempUnit === 'C') ? boxDevice.weight.toFixed(1) : (boxDevice.weight * 2.20462).toFixed(1)
+                    unitText.text = (settingsManager.tempUnit === 'C') ? qsTr("kg") : qsTr("lb")
+                } else if (boxDevice.isGenericDevice) {
+                    valueText.text = boxDevice.temperature.toFixed(1)
+                    unitText.text = "°"
                 }
             }
 
+            // ids renamed from ``text``/``unit`` to ``valueText``/``unitText``
+            // because the original names shadowed the Text element's own
+            // ``text`` property — ``Accessible.name: text`` then resolved
+            // to the *element* (id reference takes precedence over the
+            // property in QML scoping), surfacing the row as bare
+            // ``"QQuickText(0x...)"`` placeholders to uiautomator/TalkBack
+            // instead of the rendered string. Affected SE_TEMP, IBS-P02B,
+            // M1017, VICTSBS, Mi Smart Scale (~25 catalog vectors).
             Text {
-                id: text
+                id: valueText
                 anchors.verticalCenter: parent.verticalCenter
 
                 textFormat: Text.PlainText
@@ -672,7 +704,7 @@ Item {
                 Accessible.name: text
             }
             Text {
-                id: unit
+                id: unitText
                 anchors.verticalCenter: parent.verticalCenter
 
                 textFormat: Text.PlainText
@@ -1055,6 +1087,25 @@ Item {
                 textFormat: Text.PlainText
                 font.pixelSize: Theme.fontSizeContent
                 color: Theme.colorSubText
+
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
+            }
+
+            // Transparent overlay Text mirroring the gauge's numeric
+            // value so the accessibility bridge has something to surface —
+            // ``gaugeValue`` is a ProgressArc whose reading lives only as
+            // an arc length, invisible to screen readers and uiautomator.
+            // ``visible: false`` would also hide it from the a11y tree, so
+            // we keep the Item in layout with ``opacity: 0`` (and zero
+            // size) instead. Sighted users still see the arc + legend
+            // unchanged; TalkBack and the HIL probe gain the numeric
+            // reading.
+            Text {
+                id: gaugeValueA11y
+                width: 0; height: 0
+                opacity: 0.0
+                text: gaugeValue.value.toFixed(0) + " " + gaugeLegend.text
 
                 Accessible.role: Accessible.StaticText
                 Accessible.name: text

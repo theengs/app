@@ -15,6 +15,19 @@ Item {
     property real limit_high
     property int precision: 1
 
+    // HIL: optional decoder field key (e.g. "pm25", "co2"). When set,
+    // expose the rendered value via Qt's a11y bridge so the
+    // ui-matrix probe can read it from a uiautomator dump and
+    // verify it against the catalog's expected value. Qt's a11y
+    // bridge only propagates objectName onto children's resource-id
+    // when the parent itself has an Accessible.role — so add a
+    // Grouping role + name. Without it, the inner value Text gets
+    // an opaque resource-id and the probe can't tie it back to a key.
+    property string key: ""
+    objectName: key ? "hil-detail-field-" + key : ""
+    Accessible.role: key ? Accessible.Grouping : Accessible.NoRole
+    Accessible.name: title
+
     property string color: {
         if (limit_mid && limit_high) {
             if (value > limit_high)
@@ -78,6 +91,9 @@ Item {
             color: Theme.colorSubText
             font.bold: false
             font.pixelSize: isPhone ? 24 : 26
+
+            Accessible.role: Accessible.StaticText
+            Accessible.name: text
         }
     }
 }

@@ -297,6 +297,15 @@ Loader {
                         font.bold: false
                         font.pixelSize: isPhone ? 44 : 48
                         color: cccc
+
+                        // HIL: expose temp value via a11y so the
+                        // ui-matrix probe can verify it from the
+                        // detail screen. Text carries unit suffix
+                        // (e.g. "21.4°C"); the probe extracts the
+                        // leading numeric.
+                        objectName: "hil-detail-field-tempc"
+                        Accessible.role: Accessible.StaticText
+                        Accessible.name: text
                     }
 
                     Text {
@@ -316,6 +325,13 @@ Loader {
                         font.pixelSize: isPhone ? 22 : 24
                         color: cccc
                         opacity: 0.8
+
+                        // HIL: expose humidity via a11y. Text format
+                        // is "45% humidity"; probe extracts leading
+                        // numeric.
+                        objectName: "hil-detail-field-hum"
+                        Accessible.role: Accessible.StaticText
+                        Accessible.name: text
                     }
 
                     IconSvg {
