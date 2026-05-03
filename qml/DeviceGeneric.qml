@@ -346,6 +346,9 @@ Loader {
                                 spacing: 4
                                 Text {
                                     text: {
+                                        if (modelData.isString) return modelData.value_s
+                                        if (modelData.isBool) return modelData.value_b ? qsTr("true") : qsTr("false")
+                                        if (modelData.unit === "int") return modelData.value_f > -99 ? modelData.value_f.toFixed(0) : modelData.value
                                         if (modelData.value_f > -99) return modelData.value_f.toFixed(2)
                                         return modelData.value
                                     }
@@ -357,7 +360,14 @@ Loader {
                                     Accessible.name: text
                                 }
                                 Text {
-                                    text: modelData.unit
+                                    visible: text.length > 0
+                                    text: {
+                                        if (modelData.unit === "int" ||
+                                            modelData.unit === "string" ||
+                                            modelData.unit === "status" ||
+                                            modelData.unit === "id") return ""
+                                        return modelData.unit
+                                    }
                                     textFormat: Text.PlainText
                                     color: Theme.colorSubText
                                     font.pixelSize: Theme.fontSizeContent

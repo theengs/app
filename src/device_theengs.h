@@ -40,12 +40,20 @@ class TheengsGenericData: public QObject
     Q_PROPERTY(QVariant value READ getData NOTIFY up)
     Q_PROPERTY(int value_i READ getData_i NOTIFY up)
     Q_PROPERTY(float value_f READ getData_f NOTIFY up)
+    Q_PROPERTY(QString value_s READ getData_s NOTIFY up)
+    Q_PROPERTY(bool value_b READ getData_b NOTIFY up)
+    Q_PROPERTY(bool isBool READ getIsBool NOTIFY up)
+    Q_PROPERTY(bool isString READ getIsString NOTIFY up)
 
     QString key;
     QString name;
     QString unit;
     int data_i = -99;
     float data_f = -99.f;
+    QString data_s;
+    bool data_b = false;
+    bool is_bool = false;
+    bool is_string = false;
 
 Q_SIGNALS:
     void up();
@@ -64,15 +72,30 @@ public:
 
     int getData_i() { return data_i; }
     float getData_f() { return data_f; }
+    QString getData_s() { return data_s; }
+    bool getData_b() { return data_b; }
+    bool getIsBool() { return is_bool; }
+    bool getIsString() { return is_string; }
     QVariant getData() {
+        if (is_string) return data_s;
+        if (is_bool) return data_b;
         if (data_i > -99) return data_i;
         if (data_f > -99.f) return data_f;
         return 0;
     }
     void setData(const QJsonValue &v) {
-        if (v.isDouble()) data_f = v.toDouble();
-        else if (v.isBool()) data_i = v.toBool();
-        else if (v.isBool()) data_i = v.toInt();
+        is_bool = false;
+        is_string = false;
+        if (v.isBool()) {
+            data_b = v.toBool();
+            data_i = data_b ? 1 : 0;
+            is_bool = true;
+        } else if (v.isDouble()) {
+            data_f = v.toDouble();
+        } else if (v.isString()) {
+            data_s = v.toString();
+            is_string = true;
+        }
         Q_EMIT up();
     }
 };
