@@ -31,6 +31,41 @@
 
 /* ************************************************************************** */
 
+// On Android, ``QBluetoothDeviceInfo::address()`` may surface a privacy-
+// rotated random address rather than the BLE peer's actual public MAC.
+// Several Theengs decoder rules (TPMS, VCH6003, IBT-2X(S), MB/SW, ...) require
+// the BLE source MAC to equal a MAC embedded in the advertisement payload
+// (``mac@index`` / ``revmac@index`` conditions). When the OS rewrites the
+// source address, those equality checks fail and the decoder rejects an
+// otherwise-valid frame, so the App publishes nothing — even though OMG
+// (NimBLE on ESP32) decodes the same vector fine.
+//
+// Rather than touch the vendored decoder (shared with OMG), retry the decode
+// with each plausible 6-byte (12-hex-char) window of the manufacturer data
+// substituted in as ``id``. The decoder still has to satisfy all of the
+// rule's other conditions (manufacturer-data length, fixed tag bytes, ...),
+// so the only window that can win is the one the rule's ``mac@index`` /
+// ``revmac@index`` already points at — i.e. the actual embedded MAC.
+//
+// The proper upstream fix lives in the decoder rules themselves (accept
+// payload-extracted MAC when source MAC is privacy-rotated). Once that
+// lands, this call-site retry can be removed.
+static QString hex_window_to_mac_qstr(const std::string &hex, int byte_off)
+{
+    // hex is lowercase hex chars, 2 per byte. byte_off is the byte offset.
+    if (hex.size() < (size_t)(byte_off * 2 + 12)) return QString();
+    QString mac;
+    mac.reserve(17);
+    for (int b = 0; b < 6; ++b) {
+        mac.append(QChar(hex[byte_off * 2 + b * 2]));
+        mac.append(QChar(hex[byte_off * 2 + b * 2 + 1]));
+        if (b < 5) mac.append(':');
+    }
+    return mac.toUpper();
+}
+
+/* ************************************************************************** */
+
 void DeviceManager::bleDevice_discovered(const QBluetoothDeviceInfo &info)
 {
     //qDebug() << "bleDevice_discovered() " << info.name() << info.address(); // << info.deviceUuid();
@@ -256,61 +291,98 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoo
 
         for (int i = 0; i < maxLoop; i++)
         {
-            ArduinoJson::DynamicJsonDocument doc(4096);
-            doc["id"] = mac_qstr.toStdString();
-            doc["name"] = info.name().toStdString();
-            doc["rssi"] = info.rssi();
+            std::string mfg_hex;
+            std::string svc_hex;
+            std::string svc_uuid;
 
             if (manufacturerIds.size() > i)
             {
                 const auto id = manufacturerIds.at(i);
-                doc["manufacturerdata"] = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + info.manufacturerData(id).toHex().toStdString();
+                mfg_hex = QByteArray::number(endian_flip_16(id), 16).rightJustified(4, '0').toStdString() + info.manufacturerData(id).toHex().toStdString();
             }
-
             if (serviceIds.size() > i)
             {
                 const auto id = serviceIds.at(i);
-                doc["servicedata"] = info.serviceData(id).toHex().toStdString();
-                doc["servicedatauuid"] = QByteArray::number(id.toUInt16(), 16).rightJustified(4, '0').toStdString();
+                svc_hex = info.serviceData(id).toHex().toStdString();
+                svc_uuid = QByteArray::number(id.toUInt16(), 16).rightJustified(4, '0').toStdString();
             }
 
-            TheengsDecoder decoder;
-            ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
-            if (decoder.decodeBLEJson(obj) >= 0)
+            // Build the list of candidate ``id`` values to try against the
+            // decoder. We always start with the OS-reported BLE address; if
+            // that fails (likely because Android privacy-rotated the address),
+            // we retry with each 6-byte window of the manufacturer data so
+            // that ``mac@index`` / ``revmac@index`` rules can still match
+            // against the payload-embedded MAC.
+            QList<QString> id_candidates;
+            id_candidates.append(mac_qstr);
+            for (size_t off = 0; off + 6 <= mfg_hex.size() / 2; ++off) {
+                QString cand = hex_window_to_mac_qstr(mfg_hex, (int)off);
+                if (!cand.isEmpty() && cand != mac_qstr) id_candidates.append(cand);
+            }
+
+            bool decoded = false;
+            for (int attempt = 0; attempt < id_candidates.size() && !decoded; ++attempt)
             {
+                ArduinoJson::DynamicJsonDocument doc(4096);
+                doc["id"] = id_candidates.at(attempt).toStdString();
+                doc["name"] = info.name().toStdString();
+                doc["rssi"] = info.rssi();
+                if (!mfg_hex.empty()) doc["manufacturerdata"] = mfg_hex;
+                if (!svc_hex.empty()) {
+                    doc["servicedata"] = svc_hex;
+                    doc["servicedatauuid"] = svc_uuid;
+                }
+
+                TheengsDecoder decoder;
+                ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
+                if (decoder.decodeBLEJson(obj) < 0) continue;
+
+                decoded = true;
+
                 // Do not process devices with random macs
-                if (!(doc["type"] == "RMAC" || doc["prmac"]))
+                if (doc["type"] == "RMAC" || doc["prmac"]) break;
+
+                obj.remove("manufacturerdata");
+                obj.remove("servicedata");
+                obj.remove("servicedatauuid");
+
+                std::string output;
+                serializeJson(obj, output);
+                //qDebug() << "decodeBLEJson(unknown) output:" << output.c_str();
+
+                // Publish under the OS-reported MAC by default, matching
+                // pre-existing behavior so Home Assistant topic subscriptions
+                // stay stable across upgrades. HIL_BENCH_MODE prefers the
+                // decoder-extracted embedded MAC instead — needed on the bench
+                // because the brute-force candidate above may have decoded
+                // under a synthetic id (the OS MAC didn't match the rule), and
+                // because it stabilizes topics across Android privacy-address
+                // rotations on the bench phone.
+                QString publish_mac_clean = mac_qstr_clean;
+#ifdef HIL_BENCH_MODE
+                if (obj.containsKey("mac")) {
+                    QString embedded = QString::fromStdString(obj["mac"].as<std::string>());
+                    QString embedded_clean = embedded;
+                    embedded_clean.remove(':');
+                    if (!embedded_clean.isEmpty()) publish_mac_clean = embedded_clean;
+                }
+#endif
+
+                // MQTT send
+                SettingsManager *sm = SettingsManager::getInstance();
+                MqttManager *mq = MqttManager::getInstance();
+                if (sm && mq && !publish_mac_clean.isEmpty())
                 {
-                    obj.remove("manufacturerdata");
-                    obj.remove("servicedata");
-                    obj.remove("servicedatauuid");
-
-                    std::string output;
-                    serializeJson(obj, output);
-                    //qDebug() << "decodeBLEJson(unknown) output:" << output.c_str();
-
-                    // We need a valid MAC address, so if needed use the one from the decoder
-                    if (mac_qstr.isEmpty() && obj.containsKey("mac"))
+                    QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + publish_mac_clean;
+                    bool status_mqtt = mq->publishData(topic, QString::fromStdString(output));
+                    if (!status_mqtt)
                     {
-                        mac_qstr = QString::fromStdString(obj["mac"]);
-                        mac_qstr_clean = mac_qstr.remove(':');
-                    }
-
-                    // MQTT send
-                    SettingsManager *sm = SettingsManager::getInstance();
-                    MqttManager *mq = MqttManager::getInstance();
-                    if (sm && mq && !mac_qstr_clean.isEmpty())
-                    {
-                        QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB() + "/BTtoMQTT/" + mac_qstr_clean;
-                        bool status_mqtt = mq->publishData(topic, QString::fromStdString(output));
-                        if (!status_mqtt)
-                        {
-                            //qWarning() << "MQTT publishData(" << topic << ")  FAILED  >> " << output;
-                        }
+                        //qWarning() << "MQTT publishData(" << topic << ")  FAILED  >> " << output;
                     }
                 }
             }
-            else
+
+            if (!decoded)
             {
                 //std::string output;
                 //serializeJson(doc, output);
