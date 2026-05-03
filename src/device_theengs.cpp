@@ -30,6 +30,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QSet>
 
 #include <QDateTime>
 #include <QDebug>
@@ -500,6 +501,30 @@ bool DeviceTheengs::createDiscoveryMQTT(const QString &deviceAddr, const QString
         deviceObject.insert("name", QJsonValue::fromVariant(deviceName));
         deviceObject.insert("via_device", QJsonValue::fromVariant(appAddrClean));
 
+        // Valid Home Assistant sensor device_class values. When a property's
+        // name isn't in this set we still publish the entity but omit
+        // device_class so HA doesn't reject the discovery payload.
+        static const QSet<QString> availableHASSClasses = {
+            "apparent_power", "aqi", "atmospheric_pressure", "battery",
+            "carbon_dioxide", "carbon_monoxide", "current", "data_rate",
+            "data_size", "date", "distance", "duration", "energy",
+            "energy_storage", "frequency", "gas", "humidity", "illuminance",
+            "irradiance", "moisture", "monetary", "nitrogen_dioxide",
+            "nitrogen_monoxide", "nitrous_oxide", "ozone", "ph", "pm1",
+            "pm10", "pm25", "power", "power_factor", "precipitation",
+            "precipitation_intensity", "pressure", "reactive_power",
+            "signal_strength", "sound_pressure", "speed", "sulphur_dioxide",
+            "temperature", "timestamp", "volatile_organic_compounds",
+            "voltage", "volume", "volume_flow_rate", "volume_storage",
+            "water", "weight", "wind_speed",
+        };
+
+        // Non-numeric property units used by the decoder. These aren't sensor
+        // measurements, so skip them entirely.
+        static const QSet<QString> nonMeasurementUnits = {
+            "string", "status", "id",
+        };
+
         QJsonObject prop = QJsonDocument::fromJson(devicePropsJson.toUtf8()).object()["properties"].toObject();
         for (auto it = prop.begin(), end = prop.end(); it != end; ++it)
         {
@@ -511,8 +536,7 @@ bool DeviceTheengs::createDiscoveryMQTT(const QString &deviceAddr, const QString
             if (prop_value.contains("name")) value_name = prop_value["name"].toString();
             if (prop_value.contains("unit")) value_unit = prop_value["unit"].toString();
 
-            //if (!availableHASSClasses.contains(value_name)) continue;
-            //if (!availableHASSUnits.contains(value_unit)) continue;
+            if (nonMeasurementUnits.contains(value_unit)) continue;
 
             // create discovery object
             QJsonObject discovery;
@@ -522,14 +546,16 @@ bool DeviceTheengs::createDiscoveryMQTT(const QString &deviceAddr, const QString
 
             discovery.insert("name", deviceModel + "-" + prop_key);
             discovery.insert("unique_id", deviceAddrClean + "-" + prop_key);
-            discovery.insert("device_class", value_name);
-            discovery.insert("unit_of_measurement", value_unit);
+            if (availableHASSClasses.contains(value_name))
+                discovery.insert("device_class", value_name);
+            if (!value_unit.isEmpty())
+                discovery.insert("unit_of_measurement", value_unit);
             discovery.insert("value_template", "{{ value_json." + prop_key + " | is_defined }}");
 
             QString mqtt_topic = "homeassistant/sensor/" + deviceAddrClean + "-" + prop_key + "/config";
             QString str_out(QJsonDocument(discovery).toJson(QJsonDocument::Compact));
 
-            status = mqtt->publishConfig(mqtt_topic, str_out);
+            if (mqtt->publishConfig(mqtt_topic, str_out)) status = true;
         }
     }
 
