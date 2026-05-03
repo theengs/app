@@ -911,7 +911,17 @@ void DeviceManager::deviceDiscoveryFinished()
         Q_EMIT scanningNearbyChanged();
     }
 
+#ifdef HIL_BENCH_MODE
+    // hil-bench HIL builds: keep the BLE radio in active-scan mode so
+    // freshly-broadcast peripherals (jukebox replays of catalog vectors)
+    // get added to m_devices_model via addBleDevice and start publishing
+    // through the KNOWN-DEVICES path. Normal builds fall back to
+    // listenDevices_start (passive observation of already-persisted
+    // devices) — see DeviceManager_advertisement.cpp:91-237.
+    scanDevices_start();
+#else
     listenDevices_start();
+#endif
 }
 
 void DeviceManager::deviceDiscoveryStopped()
