@@ -33,6 +33,7 @@
 
 #include <QDateTime>
 #include <QDebug>
+#include <QSysInfo>
 
 /* ************************************************************************** */
 
@@ -533,6 +534,50 @@ bool DeviceTheengs::createDiscoveryMQTT(const QString &deviceAddr, const QString
     }
 
     return status;
+}
+
+/* ************************************************************************** */
+
+bool DeviceTheengs::createGatewayDiscoveryMQTT(const QString &appAddr)
+{
+    SettingsManager *sm = SettingsManager::getInstance();
+    MqttManager *mqtt = MqttManager::getInstance();
+
+    if (!sm || !sm->getMqttDiscovery() || !mqtt || !mqtt->getStatus()) return false;
+
+    QString appAddrClean = appAddr;
+    appAddrClean.remove(':');
+    if (appAddrClean.isEmpty()) return false;
+
+    QString hostname = QSysInfo::machineHostName();
+    QString product = QSysInfo::prettyProductName();
+    QString gatewayName = QStringLiteral("Theengs App");
+    if (!hostname.isEmpty() && hostname.compare("localhost", Qt::CaseInsensitive) != 0)
+        gatewayName += " (" + hostname + ")";
+    else if (!product.isEmpty())
+        gatewayName += " (" + product + ")";
+
+    QJsonArray idarr;
+    idarr.push_back(QJsonValue::fromVariant(appAddrClean));
+
+    QJsonObject deviceObject;
+    deviceObject.insert("identifiers", idarr);
+    deviceObject.insert("manufacturer", QStringLiteral("Theengs"));
+    deviceObject.insert("model", QStringLiteral("Theengs App"));
+    deviceObject.insert("name", gatewayName);
+    deviceObject.insert("sw_version", QString::fromLatin1(APP_VERSION));
+
+    QJsonObject discovery;
+    discovery.insert("name", QStringLiteral("Version"));
+    discovery.insert("unique_id", "theengs_app_" + appAddrClean + "_version");
+    discovery.insert("state_topic", QStringLiteral("+/+/version"));
+    discovery.insert("entity_category", QStringLiteral("diagnostic"));
+    discovery.insert("device", deviceObject);
+
+    QString mqtt_topic = "homeassistant/sensor/theengs_app_" + appAddrClean + "/version/config";
+    QString str_out(QJsonDocument(discovery).toJson(QJsonDocument::Compact));
+
+    return mqtt->publishConfig(mqtt_topic, str_out);
 }
 
 /* ************************************************************************** */

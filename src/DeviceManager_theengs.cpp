@@ -421,6 +421,12 @@ void DeviceManager::discoverTheengsDevices()
 {
     //qDebug() << "discoverTheengsDevices()";
 
+    QString appAddr = m_bluetoothAdapter->address().toString();
+
+    // Gateway discovery (so the per-device via_device resolves to a named device in HA).
+    // Always publish, even with no saved devices — HA needs the device entry first.
+    DeviceTheengs::createGatewayDiscoveryMQTT(appAddr);
+
     // Load saved devices and sent discovery requests to the MQTT broker
     QSqlQuery queryDevices;
     if (queryDevices.exec("SELECT deviceName, deviceModel, deviceAddr, deviceAddrMAC FROM devices"))
@@ -438,7 +444,7 @@ void DeviceManager::discoverTheengsDevices()
 
             DeviceTheengs::createDiscoveryMQTT(deviceAddr, deviceName, deviceModel_theengs,
                                                deviceManufacturer_theengs, device_props,
-                                               m_bluetoothAdapter->address().toString());
+                                               appAddr);
         }
     }
 }

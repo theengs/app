@@ -325,6 +325,8 @@ public:
     static bool createDiscoveryMQTT(const QString &deviceAddr, const QString &deviceName,
                                     const QString &deviceModel, const QString &deviceManufacturer,
                                     const QString &devicePropsJson, const QString &appAddr);
+
+    static bool createGatewayDiscoveryMQTT(const QString &appAddr);
 };
 
 /* ************************************************************************** */

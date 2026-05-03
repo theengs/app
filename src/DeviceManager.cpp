@@ -1885,11 +1885,15 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
             QString deviceManufacturer_theengs = getDeviceBrandTheengs(deviceModel_theengs);
             QString deviceAddr = d->getAddressMAC();
             QString device_props = getDevicePropsTheengs(deviceModel_theengs);
+            QString appAddr = m_bluetoothAdapter->address().toString();
+
+            // Gateway discovery (so the per-device via_device resolves to a named device in HA)
+            DeviceTheengs::createGatewayDiscoveryMQTT(appAddr);
 
             // Device discovery
             DeviceTheengs::createDiscoveryMQTT(deviceAddr, deviceName, deviceModel_theengs,
                                                deviceManufacturer_theengs, device_props,
-                                               m_bluetoothAdapter->address().toString());
+                                               appAddr);
         }
 
         // Connect and handle update
