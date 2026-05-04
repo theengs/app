@@ -78,6 +78,9 @@ class SettingsManager: public QObject
     Q_PROPERTY(QString mqttPassword READ getMqttPassword WRITE setMqttPassword NOTIFY mqttChanged)
     Q_PROPERTY(QString mqttTopicA READ getMqttTopicA WRITE setMqttTopicA NOTIFY mqttChanged)
     Q_PROPERTY(QString mqttTopicB READ getMqttTopicB WRITE setMqttTopicB NOTIFY mqttChanged)
+    Q_PROPERTY(bool mqttTls READ getMqttTls WRITE setMqttTls NOTIFY mqttChanged)
+    Q_PROPERTY(QString mqttTlsCaPath READ getMqttTlsCaPath WRITE setMqttTlsCaPath NOTIFY mqttChanged)
+    Q_PROPERTY(bool mqttTlsInsecure READ getMqttTlsInsecure WRITE setMqttTlsInsecure NOTIFY mqttChanged)
 
     bool m_firstlaunch = true;
 
@@ -132,6 +135,9 @@ class SettingsManager: public QObject
     QString m_mqttPassword = "theengs";
     QString m_mqttTopicA = "home";
     QString m_mqttTopicB = "TheengsApp";
+    bool m_mqttTls = false;
+    QString m_mqttTlsCaPath;
+    bool m_mqttTlsInsecure = false;
 
     // Singleton
     static SettingsManager *instance;
@@ -302,6 +308,21 @@ public:
 
     QString getMqttTopicB() const { return m_mqttTopicB; }
     void setMqttTopicB(const QString &value);
+
+    bool getMqttTls() const { return m_mqttTls; }
+    void setMqttTls(const bool value);
+
+    QString getMqttTlsCaPath() const { return m_mqttTlsCaPath; }
+    void setMqttTlsCaPath(const QString &value);
+
+    bool getMqttTlsInsecure() const { return m_mqttTlsInsecure; }
+    void setMqttTlsInsecure(const bool value);
+
+    // Apply runtime-only overrides for MQTT TLS (no QSettings write). Used
+    // by main.cpp to honor --mqtt-ca / --mqtt-port / --mqtt-tls-insecure
+    // CLI args without mutating the user's persisted broker config.
+    // Pass port <= 0 to leave the port untouched.
+    void applyMqttCliOverrides(bool tls, const QString &caPath, int port, bool insecure);
 
     // Utils
     Q_INVOKABLE void reloadSettings();

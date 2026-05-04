@@ -144,6 +144,28 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+    // Runtime-only CLI overrides for MQTT TLS. ``--mqtt-ca <path>`` forces
+    // TLS on and sets the CA cert path; ``--mqtt-port <int>`` overrides
+    // the port; ``--mqtt-tls-insecure`` skips peer verification (needed
+    // when the bench broker's cert doesn't match the connected hostname).
+    // All bypass QSettings write so the user's persisted broker config
+    // is preserved across launches. Used by
+    // hil-bench/tests/test_theengs_ios/test_tls_publish.py.
+    {
+        const QStringList args = QCoreApplication::arguments();
+        const int caIdx = args.indexOf("--mqtt-ca");
+        if (caIdx >= 0 && caIdx + 1 < args.size())
+        {
+            const QString caPath = args.at(caIdx + 1);
+            int port = -1;
+            const int portIdx = args.indexOf("--mqtt-port");
+            if (portIdx >= 0 && portIdx + 1 < args.size())
+                port = args.at(portIdx + 1).toInt();
+            const bool insecure = args.contains("--mqtt-tls-insecure");
+            sm->applyMqttCliOverrides(/*tls=*/true, caPath, port, insecure);
+        }
+    }
+
     // Start MQTT
     if (sm->getMQTT())
     {

@@ -282,6 +282,20 @@ if(ENABLE_MQTT)
     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Qt6::Mqtt)
     target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE ENABLE_MQTT)
 
+    # Bench-only: bundle a TLS CA cert as a Qt resource at :/certs/bench-ca.pem
+    # so HIL tests can run TLS handshakes against the bench's self-signed
+    # mosquitto. Triggered by passing -DHIL_BENCH_CA_PEM=<path> at configure
+    # time (see hil-bench/scripts/build-theengs-ios.sh). Production builds
+    # don't pass this flag and ship without the resource.
+    if(HIL_BENCH_CA_PEM AND EXISTS "${HIL_BENCH_CA_PEM}")
+        configure_file("${HIL_BENCH_CA_PEM}" "${CMAKE_BINARY_DIR}/bench-ca.pem" COPYONLY)
+        qt_add_resources(${CMAKE_PROJECT_NAME} "bench_ca"
+            PREFIX "/certs"
+            BASE "${CMAKE_BINARY_DIR}"
+            FILES "${CMAKE_BINARY_DIR}/bench-ca.pem"
+        )
+        message(STATUS "TheengsApp: bundling bench CA cert ${HIL_BENCH_CA_PEM} as :/certs/bench-ca.pem")
+    endif()
 endif()
 
 if(ENABLE_MBEDTLS)

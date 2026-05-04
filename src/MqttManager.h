@@ -125,6 +125,12 @@ private slots:
     void brokerConnected();
     void brokerDisconnected();
 
+private:
+    // Prepend a timestamped line to m_mqttLog (newest on top) and emit
+    // logChanged so the QML broker panel re-renders. Called from the
+    // state-change / error / TLS handlers.
+    void logLine(const QString &msg);
+
 public:
     static MqttManager *getInstance();
 

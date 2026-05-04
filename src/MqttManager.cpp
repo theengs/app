@@ -23,6 +23,15 @@
 #include <QtMqtt/QtMqtt>
 #endif
 
+#ifndef QT_NO_SSL
+#include <QSslConfiguration>
+#include <QSslCertificate>
+#include <QSslSocket>
+#endif
+
+#include <QFile>
+#include <QTime>
+
 /* ************************************************************************** */
 
 MqttManager *MqttManager::instance = nullptr;
@@ -73,6 +82,10 @@ bool MqttManager::connect()
         QObject::connect(m_mqttclient, &QMqttClient::stateChanged, this, &MqttManager::updateStateChange);
         QObject::connect(m_mqttclient, &QMqttClient::connected, this, &MqttManager::brokerConnected);
         QObject::connect(m_mqttclient, &QMqttClient::disconnected, this, &MqttManager::brokerDisconnected);
+        QObject::connect(m_mqttclient, &QMqttClient::errorChanged, this,
+                         [this](QMqttClient::ClientError e) {
+                             logLine(QString("error: %1").arg(int(e)));
+                         });
     }
 
     if (m_mqttclient)
@@ -85,15 +98,37 @@ bool MqttManager::connect()
         m_mqttclient->setUsername(sm->getMqttUser());
         m_mqttclient->setPassword(sm->getMqttPassword());
 
-        // TODO // handle SSL certificats
-        //QSslCertificate cert = QSslCertificate(todo);
-        //QSslConfiguration conf;
-        //conf.setCaCertificates({cert});
-        //conf.setPrivateKey(todo);
-        //QSslConfiguration::setDefaultConfiguration(conf);
-
+#ifndef QT_NO_SSL
+        if (sm->getMqttTls())
+        {
+            QSslConfiguration sslConf = QSslConfiguration::defaultConfiguration();
+            const QString caPath = sm->getMqttTlsCaPath();
+            if (!caPath.isEmpty())
+            {
+                if (caPath.startsWith(":/") || QFile::exists(caPath))
+                {
+                    QList<QSslCertificate> caList = sslConf.caCertificates();
+                    caList.append(QSslCertificate::fromPath(caPath, QSsl::Pem));
+                    sslConf.setCaCertificates(caList);
+                }
+                else
+                {
+                    qWarning() << "MQTT TLS CA path not found, falling back to system store:" << caPath;
+                }
+            }
+            if (sm->getMqttTlsInsecure())
+            {
+                sslConf.setPeerVerifyMode(QSslSocket::VerifyNone);
+            }
+            m_mqttclient->connectToHostEncrypted(sslConf);
+        }
+        else
+        {
+            m_mqttclient->connectToHost();
+        }
+#else
         m_mqttclient->connectToHost();
-        //m_mqttclient->connectToHostEncrypted();
+#endif
     }
 #endif
 
@@ -245,10 +280,9 @@ void MqttManager::updateStateChange()
         //qDebug() << "MqttManager::updateStateChange()" << m_mqttclient->state();
         Q_EMIT statusChanged();
 
-        //if (m_mqttclient->state() == QMqttClient::Disconnected) m_mqttLog.push_front("status: disconnected \n");
-        //if (m_mqttclient->state() == QMqttClient::Connecting) m_mqttLog.push_front("status: connecting \n");
-        //if (m_mqttclient->state() == QMqttClient::Connected) m_mqttLog.push_front("status: connected \n");
-        //Q_EMIT logChanged();
+        if (m_mqttclient->state() == QMqttClient::Disconnected) logLine("status: disconnected");
+        else if (m_mqttclient->state() == QMqttClient::Connecting) logLine("status: connecting");
+        else if (m_mqttclient->state() == QMqttClient::Connected) logLine("status: connected");
     }
 
 #endif
@@ -306,6 +340,12 @@ void MqttManager::brokerDisconnected()
 void MqttManager::handleMessage(/*const QMqttMessage &qmsg*/)
 {
     //qDebug() << "MqttManager::handleMessage()" << qmsg.topic();
+}
+
+void MqttManager::logLine(const QString &msg)
+{
+    m_mqttLog.prepend("[" + QTime::currentTime().toString("HH:mm:ss") + "] " + msg + "\n");
+    Q_EMIT logChanged();
 }
 
 /* ************************************************************************** */

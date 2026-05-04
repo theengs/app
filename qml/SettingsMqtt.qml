@@ -1,11 +1,39 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Dialogs
 
 import ComponentLibrary
 
 Item {
     id: settingsMqtt
     anchors.fill: parent
+
+    ////////////////////////////////////////////////////////////////////////////
+
+    // Native file picker for the MQTT TLS CA cert. On iOS this surfaces
+    // UIDocumentPickerViewController (Files app + iCloud Drive); on
+    // Android the Storage Access Framework; on desktop the native open
+    // dialog. The selected URL is converted to a local path before
+    // saving — Qt's QSslCertificate::fromPath wants a filesystem path.
+    FileDialog {
+        id: caFilePicker
+        title: qsTr("Select MQTT TLS CA certificate")
+        nameFilters: [qsTr("Certificate files (*.pem *.crt *.cer *.der)"),
+                      qsTr("All files (*)")]
+        fileMode: FileDialog.OpenFile
+
+        onAccepted: {
+            // selectedFile is a QUrl ("file:///abs/path"); strip the
+            // scheme to a filesystem path that QSslCertificate::fromPath
+            // accepts. Works on iOS (Files-app picks return file://),
+            // Android SAF, and desktop native dialogs alike.
+            const path = String(selectedFile).replace(/^file:\/\//, "")
+            if (settingsManager.mqttTlsCaPath !== path) {
+                settingsManager.mqttTlsCaPath = path
+                mqttManager.reconnect_forced()
+            }
+        }
+    }
 
     ////////////////////////////////////////////////////////////////////////////
 
@@ -435,6 +463,8 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 16
 
+                spacing: 8
+
                 Row {
                     spacing: 8
 
@@ -452,6 +482,103 @@ Item {
                         checked: settingsManager.mqttDiscovery
                         onClicked: settingsManager.mqttDiscovery = checked
                     }
+                }
+
+                Row {
+                    spacing: 8
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        text: qsTr("Use TLS")
+                        textFormat: Text.PlainText
+                        font.pixelSize: Theme.componentFontSize
+                        color: Theme.colorText
+                    }
+
+                    SwitchThemed {
+                        text: settingsManager.mqttTls ? qsTr("Enabled") : qsTr("Disabled")
+                        checked: settingsManager.mqttTls
+                        onClicked: {
+                            settingsManager.mqttTls = checked
+                            mqttManager.reconnect_forced()
+                        }
+                    }
+                }
+
+                Row {
+                    visible: settingsManager.mqttTls
+                    width: parent.width
+                    spacing: 8
+
+                    TextFieldThemed {
+                        id: tf_mqtt_tls_ca
+                        width: parent.width - browseCaButton.width - parent.spacing
+                        height: 36
+
+                        selectByMouse: true
+                        placeholderText: qsTr("Custom CA cert path (optional)")
+                        text: settingsManager.mqttTlsCaPath
+
+                        onEditingFinished: {
+                            if (settingsManager.mqttTlsCaPath !== text) {
+                                settingsManager.mqttTlsCaPath = text
+                                mqttManager.reconnect_forced()
+                            }
+                        }
+
+                        IconSvg {
+                            width: 20; height: 20;
+                            anchors.right: parent.right
+                            anchors.rightMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            color: Theme.colorSubText
+                            source: "qrc:/IconLibrary/material-symbols/lock.svg"
+                        }
+                    }
+
+                    ButtonSolid {
+                        id: browseCaButton
+                        height: 36
+
+                        text: qsTr("Browse")
+                        onClicked: caFilePicker.open()
+                    }
+                }
+
+                Row {
+                    visible: settingsManager.mqttTls
+                    spacing: 8
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        text: qsTr("Skip certificate validation")
+                        textFormat: Text.PlainText
+                        font.pixelSize: Theme.componentFontSize
+                        color: Theme.colorText
+                    }
+
+                    SwitchThemed {
+                        text: settingsManager.mqttTlsInsecure ? qsTr("Enabled") : qsTr("Disabled")
+                        checked: settingsManager.mqttTlsInsecure
+                        onClicked: {
+                            settingsManager.mqttTlsInsecure = checked
+                            mqttManager.reconnect_forced()
+                        }
+                    }
+                }
+
+                Text {
+                    visible: settingsManager.mqttTls && settingsManager.mqttTlsInsecure
+                    width: parent.width
+
+                    text: qsTr("Disables MITM protection — use only with trusted private brokers.")
+                    textFormat: Text.PlainText
+                    wrapMode: Text.WordWrap
+                    color: Theme.colorRed
+                    font.pixelSize: Theme.fontSizeContentSmall
                 }
             }
 

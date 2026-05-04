@@ -205,6 +205,12 @@ bool SettingsManager::readSettings()
             m_mqttTopicA = settings.value("mqtt/topic_a").toString();
         if (settings.contains("mqtt/topic_b"))
             m_mqttTopicB = settings.value("mqtt/topic_b").toString();
+        if (settings.contains("mqtt/tls"))
+            m_mqttTls = settings.value("mqtt/tls").toBool();
+        if (settings.contains("mqtt/tls_ca_path"))
+            m_mqttTlsCaPath = settings.value("mqtt/tls_ca_path").toString();
+        if (settings.contains("mqtt/tls_insecure"))
+            m_mqttTlsInsecure = settings.value("mqtt/tls_insecure").toBool();
 
         status = true;
     }
@@ -264,6 +270,9 @@ bool SettingsManager::writeSettings()
         settings.setValue("mqtt/password", m_mqttPassword);
         settings.setValue("mqtt/topic_a", m_mqttTopicA);
         settings.setValue("mqtt/topic_b", m_mqttTopicB);
+        settings.setValue("mqtt/tls", m_mqttTls);
+        settings.setValue("mqtt/tls_ca_path", m_mqttTlsCaPath);
+        settings.setValue("mqtt/tls_insecure", m_mqttTlsInsecure);
 
         if (settings.status() == QSettings::NoError)
         {
@@ -361,6 +370,9 @@ void SettingsManager::resetSettings()
     m_mqttPassword = "theengs";
     m_mqttTopicA = "home";
     m_mqttTopicB = "TheengsApp";
+    m_mqttTls = false;
+    m_mqttTlsCaPath = "";
+    m_mqttTlsInsecure = false;
     Q_EMIT mqttChanged();
 }
 
@@ -735,6 +747,46 @@ void SettingsManager::setMqttTopicB(const QString &value)
         writeSettings();
         Q_EMIT mqttChanged();
     }
+}
+
+void SettingsManager::setMqttTls(const bool value)
+{
+    if (m_mqttTls != value)
+    {
+        m_mqttTls = value;
+        writeSettings();
+        Q_EMIT mqttChanged();
+    }
+}
+
+void SettingsManager::setMqttTlsCaPath(const QString &value)
+{
+    if (m_mqttTlsCaPath != value)
+    {
+        m_mqttTlsCaPath = value;
+        writeSettings();
+        Q_EMIT mqttChanged();
+    }
+}
+
+void SettingsManager::setMqttTlsInsecure(const bool value)
+{
+    if (m_mqttTlsInsecure != value)
+    {
+        m_mqttTlsInsecure = value;
+        writeSettings();
+        Q_EMIT mqttChanged();
+    }
+}
+
+void SettingsManager::applyMqttCliOverrides(bool tls, const QString &caPath, int port, bool insecure)
+{
+    m_mqttTls = tls;
+    m_mqttTlsCaPath = caPath;
+    m_mqttTlsInsecure = insecure;
+    if (port > 0) m_mqttPort = port;
+    Q_EMIT mqttChanged();
+    // Intentionally no writeSettings() — CLI overrides are runtime-only.
 }
 
 /* ************************************************************************** */
