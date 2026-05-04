@@ -8,6 +8,12 @@ Item {
     id: settingsMqtt
     anchors.fill: parent
 
+    // Whether the always-visible "MITM disabled" warning text under the
+    // Skip-validation toggle is expanded. Default: shown when insecure
+    // is on (so the user sees it the first time they enable). User can
+    // collapse via the (?) info icon next to the toggle.
+    property bool tlsWarningExpanded: settingsManager.mqttTlsInsecure
+
     ////////////////////////////////////////////////////////////////////////////
 
     // Native file picker for the MQTT TLS CA cert. On iOS this surfaces
@@ -506,94 +512,228 @@ Item {
                     }
                 }
 
+                // Hint when TLS is on but the user is still pointing at the
+                // plaintext default port — frequent foot-gun for HiveMQ
+                // Cloud / mosquitto-tls users.
+                Text {
+                    visible: settingsManager.mqttTls && settingsManager.mqttPort === 1883
+                    width: parent.width
+
+                    text: qsTr("TLS brokers typically listen on port 8883.")
+                    textFormat: Text.PlainText
+                    wrapMode: Text.WordWrap
+                    color: Theme.colorSubText
+                    font.pixelSize: Theme.fontSizeContentSmall
+                }
+
+                // TLS sub-options: visually grouped under "Use TLS" via a
+                // left rule so they read as children, not peers, of the
+                // parent toggle.
                 Row {
                     visible: settingsManager.mqttTls
                     width: parent.width
-                    spacing: 8
+                    spacing: 12
 
-                    TextFieldThemed {
-                        id: tf_mqtt_tls_ca
-                        width: parent.width - browseCaButton.width - parent.spacing
-                        height: 36
+                    Rectangle {
+                        width: 2
+                        height: tlsSubColumn.height
+                        color: Theme.colorSeparator
+                    }
 
-                        selectByMouse: true
-                        placeholderText: qsTr("Custom CA cert path (optional)")
-                        text: settingsManager.mqttTlsCaPath
+                    Column {
+                        id: tlsSubColumn
+                        width: parent.width - 14   // 2 (rule) + 12 (spacing)
+                        spacing: 6
 
-                        onEditingFinished: {
-                            if (settingsManager.mqttTlsCaPath !== text) {
-                                settingsManager.mqttTlsCaPath = text
-                                mqttManager.reconnect_forced()
+                        Text {
+                            text: qsTr("Custom CA certificate")
+                            textFormat: Text.PlainText
+                            color: Theme.colorSubText
+                            font.pixelSize: Theme.fontSizeContent
+                        }
+
+                        TextFieldThemed {
+                            id: tf_mqtt_tls_ca
+                            width: parent.width
+                            height: 36
+
+                            selectByMouse: true
+                            placeholderText: qsTr("Path (tap folder icon to browse)")
+                            text: settingsManager.mqttTlsCaPath
+
+                            onEditingFinished: {
+                                if (settingsManager.mqttTlsCaPath !== text) {
+                                    settingsManager.mqttTlsCaPath = text
+                                    mqttManager.reconnect_forced()
+                                }
+                            }
+
+                            // Tappable folder icon inside the field opens
+                            // the native file picker. Replaces the
+                            // separate Browse button and consolidates the
+                            // pattern with the other broker fields' icons.
+                            Item {
+                                width: 36; height: 36
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                IconSvg {
+                                    anchors.centerIn: parent
+                                    width: 22; height: 22
+                                    color: caFolderArea.pressed ? Theme.colorPrimary : Theme.colorSubText
+                                    source: "qrc:/IconLibrary/material-symbols/folder_open.svg"
+                                }
+
+                                MouseArea {
+                                    id: caFolderArea
+                                    anchors.fill: parent
+                                    onClicked: caFilePicker.open()
+                                }
                             }
                         }
 
-                        IconSvg {
-                            width: 20; height: 20;
-                            anchors.right: parent.right
-                            anchors.rightMargin: 12
-                            anchors.verticalCenter: parent.verticalCenter
+                        // Skip-validation toggle + (?) info icon +
+                        // collapsible warning. (?) toggles the warning
+                        // visibility so it doesn't permanently eat 2 lines
+                        // of vertical space after the user has acked it.
+                        Row {
+                            spacing: 8
 
-                            color: Theme.colorSubText
-                            source: "qrc:/IconLibrary/material-symbols/lock.svg"
+                            Text {
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                text: qsTr("Skip validation")
+                                textFormat: Text.PlainText
+                                font.pixelSize: Theme.componentFontSize
+                                color: Theme.colorText
+                            }
+
+                            SwitchThemed {
+                                text: settingsManager.mqttTlsInsecure ? qsTr("Enabled") : qsTr("Disabled")
+                                checked: settingsManager.mqttTlsInsecure
+                                onClicked: {
+                                    settingsManager.mqttTlsInsecure = checked
+                                    if (checked) settingsMqtt.tlsWarningExpanded = true
+                                    mqttManager.reconnect_forced()
+                                }
+                            }
+
+                            Item {
+                                visible: settingsManager.mqttTlsInsecure
+                                width: 28; height: 28
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                IconSvg {
+                                    anchors.centerIn: parent
+                                    width: 18; height: 18
+                                    color: settingsMqtt.tlsWarningExpanded ? Theme.colorRed : Theme.colorSubText
+                                    source: "qrc:/IconLibrary/material-symbols/info.svg"
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: settingsMqtt.tlsWarningExpanded = !settingsMqtt.tlsWarningExpanded
+                                }
+                            }
+                        }
+
+                        Text {
+                            visible: settingsManager.mqttTlsInsecure && settingsMqtt.tlsWarningExpanded
+                            width: parent.width
+
+                            text: qsTr("Disables MITM protection — use only with trusted private brokers.")
+                            textFormat: Text.PlainText
+                            wrapMode: Text.WordWrap
+                            color: Theme.colorRed
+                            font.pixelSize: Theme.fontSizeContentSmall
                         }
                     }
-
-                    ButtonSolid {
-                        id: browseCaButton
-                        height: 36
-
-                        text: qsTr("Browse")
-                        onClicked: caFilePicker.open()
-                    }
-                }
-
-                Row {
-                    visible: settingsManager.mqttTls
-                    spacing: 8
-
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        text: qsTr("Skip certificate validation")
-                        textFormat: Text.PlainText
-                        font.pixelSize: Theme.componentFontSize
-                        color: Theme.colorText
-                    }
-
-                    SwitchThemed {
-                        text: settingsManager.mqttTlsInsecure ? qsTr("Enabled") : qsTr("Disabled")
-                        checked: settingsManager.mqttTlsInsecure
-                        onClicked: {
-                            settingsManager.mqttTlsInsecure = checked
-                            mqttManager.reconnect_forced()
-                        }
-                    }
-                }
-
-                Text {
-                    visible: settingsManager.mqttTls && settingsManager.mqttTlsInsecure
-                    width: parent.width
-
-                    text: qsTr("Disables MITM protection — use only with trusted private brokers.")
-                    textFormat: Text.PlainText
-                    wrapMode: Text.WordWrap
-                    color: Theme.colorRed
-                    font.pixelSize: Theme.fontSizeContentSmall
                 }
             }
 
             ////////
 
             Text {
+                height: Theme.componentHeight
                 anchors.left: parent.left
                 anchors.leftMargin: 16
                 anchors.right: parent.right
                 anchors.rightMargin: 16
 
-                text: mqttManager.log
+                text: qsTr("Activity")
                 textFormat: Text.PlainText
                 wrapMode: Text.WordWrap
                 color: Theme.colorSubText
+                font.pixelSize: Theme.fontSizeContentBig
+                verticalAlignment: Text.AlignBottom
+            }
+
+            ////////
+
+            // Bounded log viewer. Cap at ~200px; older entries scroll into
+            // view without pushing the rest of the form off-screen.
+            // Stays mounted even when empty so the user keeps a visual
+            // anchor after tapping Clear (and so future entries
+            // re-populate in place rather than reflowing the form).
+            // Lines are color-coded by severity (parsed from the message
+            // text the C++ side prepends).
+            Rectangle {
+                anchors.left: parent.left
+                anchors.leftMargin: 16
+                anchors.right: parent.right
+                anchors.rightMargin: 16
+
+                height: 200
+                color: Theme.colorComponentBackground
+                radius: 6
+                border.width: 1
+                border.color: Theme.colorSeparator
+
+                Text {
+                    anchors.centerIn: parent
+                    visible: mqttManager.log.length === 0
+
+                    text: qsTr("No activity yet — events will appear here.")
+                    textFormat: Text.PlainText
+                    color: Theme.colorSubText
+                    font.pixelSize: Theme.fontSizeContentSmall
+                    font.italic: true
+                }
+
+                ScrollView {
+                    anchors.fill: parent
+                    anchors.margins: 8
+                    clip: true
+                    visible: mqttManager.log.length > 0
+
+                    Column {
+                        width: parent.width
+                        spacing: 2
+
+                        Repeater {
+                            // Newest is at the start of mqttManager.log
+                            // (prepend order); the C++ cap keeps this at
+                            // ≤100 lines so split() is cheap.
+                            model: mqttManager.log.split("\n").filter(function(l) { return l.length > 0 })
+
+                            delegate: Text {
+                                width: parent.width
+                                text: modelData
+                                textFormat: Text.PlainText
+                                wrapMode: Text.WrapAnywhere
+                                font.family: "Menlo"
+                                font.pixelSize: Theme.fontSizeContentSmall
+                                color: {
+                                    if (modelData.indexOf("error") >= 0) return Theme.colorRed
+                                    if (modelData.indexOf("disconnected") >= 0) return Theme.colorWarning
+                                    if (modelData.indexOf("connecting") >= 0) return Theme.colorSubText
+                                    if (modelData.indexOf("connected") >= 0) return Theme.colorGreen
+                                    return Theme.colorText
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             ////////

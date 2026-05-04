@@ -345,6 +345,16 @@ void MqttManager::handleMessage(/*const QMqttMessage &qmsg*/)
 void MqttManager::logLine(const QString &msg)
 {
     m_mqttLog.prepend("[" + QTime::currentTime().toString("HH:mm:ss") + "] " + msg + "\n");
+
+    // Cap at 100 most-recent lines (newest are at the start). Long-running
+    // sessions otherwise grow the buffer unbounded.
+    QStringList lines = m_mqttLog.split('\n', Qt::SkipEmptyParts);
+    if (lines.size() > 100)
+    {
+        lines = lines.mid(0, 100);
+        m_mqttLog = lines.join('\n') + '\n';
+    }
+
     Q_EMIT logChanged();
 }
 

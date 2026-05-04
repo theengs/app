@@ -96,6 +96,17 @@ Once done click on the MQTT switch to activate the integration, if the app can c
   Your browser does not support the video tag.
 </video>
 
+### TLS-encrypted brokers
+
+Theengs app can connect to MQTT brokers over TLS, including HiveMQ Cloud and other public-CA brokers as well as private brokers with self-signed certificates. From the Integration screen, in the **Options** section:
+
+* Toggle **Use TLS** on. The default port `1883` is plaintext — TLS brokers usually listen on port `8883`, the app shows an inline hint to change it when needed.
+* For brokers using a public CA (HiveMQ Cloud, AWS IoT, etc.) leave the **Custom CA certificate** field empty — the system root CA store is used automatically.
+* For private / self-signed brokers, tap the folder icon in the **Custom CA certificate** field to browse and pick a CA `.pem` (or `.crt`/`.cer`/`.der`) file from Files / iCloud Drive (iOS) or local storage (Android/desktop).
+* If the broker uses a self-signed cert that doesn't match its hostname and you trust the network, toggle **Skip validation** on. A red warning is shown when this is enabled — only use it with brokers you control. Tap the (i) icon next to the toggle to collapse the warning once acked.
+
+The bottom **Activity** panel shows timestamped status changes and TLS handshake errors so you can diagnose connection problems. The buffer is capped at the 100 most-recent entries.
+
 ### iOS specificity
 
 If you want to push data to an MQTT broker you will need to manually enter a MAC address for the sensor, this is done from the sensor page see below:
