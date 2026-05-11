@@ -19,6 +19,10 @@
 #include "SettingsManager.h"
 #include "SystrayManager.h"
 
+#if defined(Q_OS_ANDROID)
+#include "AndroidService.h"
+#endif
+
 #include <QCoreApplication>
 #include <QSettings>
 #include <QLocale>
@@ -383,9 +387,7 @@ void SettingsManager::setSysTray(const bool value)
 {
     if (m_systrayEnabled != value)
     {
-#if !defined(Q_OS_ANDROID) && !defined(Q_OS_IOS)
         bool trayEnable_saved = m_systrayEnabled;
-#endif
         m_systrayEnabled = value;
         writeSettings();
 
@@ -403,6 +405,22 @@ void SettingsManager::setSysTray(const bool value)
                 st->installSystray();
                 Q_EMIT systrayChanged();
             }
+        }
+#endif
+
+#if defined(Q_OS_ANDROID)
+        // Start / stop the foreground BLE-scan service so the tray
+        // notification appears and disappears in lockstep with the
+        // "Enable background updates" toggle.
+        if (trayEnable_saved == true && m_systrayEnabled == false)
+        {
+            AndroidService::service_stop();
+            Q_EMIT systrayChanged();
+        }
+        else if (trayEnable_saved == false && m_systrayEnabled == true)
+        {
+            AndroidService::service_start();
+            Q_EMIT systrayChanged();
         }
 #endif
     }
