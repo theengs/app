@@ -54,6 +54,10 @@ jobs:
              cmake --version
              ninja --version
 
+      # Derive marketing version from tag (no-op on non-tag pushes)
+      - name: Resolve version from tag
+        run: bash scripts/ci-resolve-version.sh linux
+
       # Build dependencies (from contribs script)
       - name: Build dependencies (from contribs script)
         run: |
@@ -128,6 +132,10 @@ jobs:
             security list-keychains -s build.keychain "$(security list-keychains | tr -d '\"')"
             security default-keychain -s build.keychain
 
+      # Derive marketing version from tag (no-op on non-tag pushes)
+      - name: Resolve version from tag
+        run: bash scripts/ci-resolve-version.sh macos
+
       # Build dependencies (from contribs script)
       - name: Build dependencies (from contribs script)
         run: |
@@ -192,6 +200,11 @@ jobs:
         run: |
              qmake --version
              cmake --version
+
+      # Derive marketing version from tag (no-op on non-tag pushes)
+      - name: Resolve version from tag
+        shell: bash
+        run: bash scripts/ci-resolve-version.sh windows
 
       # Build dependencies (from contribs script)
       - name: Build dependencies (from contribs script)
