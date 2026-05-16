@@ -142,7 +142,7 @@ jobs:
         run: |
              # Re-register sensitive values for the runner's log-masking filter
              # so they get redacted in every subsequent step's stdout/stderr,
-             # not just steps that consume them via ${{ secrets.* }} interpolation.
+             # not just steps that consume them via the secrets context.
              echo "::add-mask::$ANDROID_KEYSTORE_PASSWORD"
              echo "::add-mask::$ANDROID_KEY_PASSWORD"
              echo "::add-mask::$ANDROID_KEY_ALIAS"
