@@ -63,5 +63,7 @@
 	<string>Allow notifications alerts while on the sensor screen.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Allow the application to know what wifi network its currently connected to.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Allow the application to know what wifi network its currently connected to.</string>
 </dict>
 </plist>
