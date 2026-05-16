@@ -112,6 +112,17 @@ public class TheengsAndroidService extends QtService {
         }
         Intent launch =
             getPackageManager().getLaunchIntentForPackage(getPackageName());
+        // FLAG_ACTIVITY_CLEAR_TOP + FLAG_ACTIVITY_SINGLE_TOP: bring the existing
+        // QtActivity instance to the foreground (delivering onNewIntent) instead
+        // of letting Android spin up a fresh ActivityRecord every time the user
+        // taps the notification. Combined with launchMode="singleTask" on the
+        // activity, this prevents the "black screen + activity pause/destroy
+        // timeout" failure mode where rapid relaunches on a slow device
+        // (observed on LG V30 / Android 9) deadlock the Qt main thread and
+        // SurfaceFlinger never receives a BufferLayer for the new task.
+        launch.addFlags(
+            Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP
+        );
         PendingIntent pi = PendingIntent.getActivity(
             this, 0, launch,
             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
