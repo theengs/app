@@ -140,6 +140,12 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
+             # Re-register sensitive values for the runner's log-masking filter
+             # so they get redacted in every subsequent step's stdout/stderr,
+             # not just steps that consume them via ${{ secrets.* }} interpolation.
+             echo "::add-mask::$ANDROID_KEYSTORE_PASSWORD"
+             echo "::add-mask::$ANDROID_KEY_PASSWORD"
+             echo "::add-mask::$ANDROID_KEY_ALIAS"
              echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.keystore"
              {
                echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/upload.keystore"
@@ -148,10 +154,22 @@ jobs:
                echo "ANDROID_KEY_PASSWORD=$ANDROID_KEY_PASSWORD"
              } >> "$GITHUB_ENV"
 
-      # Build application (compile-only for PRs, AAB for release branch / tags)
+      # Build application (compile-only for PRs, AAB for release branch / tags).
+      # On release-track runs, pass QT_ANDROID_KEYSTORE_* so Qt's androiddeployqt
+      # injects --sign into the gradle invocation it spawns. Do NOT mirror this
+      # with a gradle signingConfigs block — Qt expects to own the signing.
       - name: Build application
         run: |
              "${QT_TARGET_PATH}/bin/qt-cmake" --version
+             SIGN_ARGS=()
+             if [ "$DISTRIBUTE" = "true" ]; then
+               SIGN_ARGS=(
+                 -DQT_ANDROID_KEYSTORE_PATH="${ANDROID_KEYSTORE_PATH}"
+                 -DQT_ANDROID_KEYSTORE_ALIAS="${ANDROID_KEY_ALIAS}"
+                 -DQT_ANDROID_KEYSTORE_STORE_PASS="${ANDROID_KEYSTORE_PASSWORD}"
+                 -DQT_ANDROID_KEYSTORE_KEY_PASS="${ANDROID_KEY_PASSWORD}"
+               )
+             fi
              "${QT_TARGET_PATH}/bin/qt-cmake" -B build/ -G Ninja \
                -DCMAKE_SYSTEM_NAME=Android \
                -DCMAKE_BUILD_TYPE=Release \
@@ -162,12 +180,31 @@ jobs:
                -DANDROID_PLATFORM=android-28 \
                -DQT_HOST_PATH:PATH="${QT_HOST_PATH}" \
                -DQT_ANDROID_BUILD_ALL_ABIS=OFF \
-               -DQT_ANDROID_ABIS="arm64-v8a;x86_64"
+               -DQT_ANDROID_ABIS="arm64-v8a;x86_64" \
+               "${SIGN_ARGS[@]}"
              if [ "$DISTRIBUTE" = "true" ]; then
                cmake --build build/ --target aab
              else
                cmake --build build/ --config Release
              fi
+
+      # Post-mortem if the AAB target failed: list outputs and surface any
+      # extra log files androiddeployqt may have produced (silent exit-20 case).
+      - name: Diagnose Android build failure
+        if: failure()
+        run: |
+             echo "===== build/android-build/build/outputs/ ====="
+             find build/android-build/build/outputs/ -type f 2>&1 | head -50 || true
+             echo
+             echo "===== AAB internal structure (if any) ====="
+             for aab in build/android-build/build/outputs/bundle/release/*.aab; do
+               [ -f "$aab" ] || continue
+               echo "--- $aab ---"
+               unzip -l "$aab" | head -50
+             done || true
+             echo
+             echo "===== gradle reports (if any errors) ====="
+             find build/android-build/build/reports/ -type f -name '*.html' 2>&1 | head -10 || true
 
       # Upload AAB to Play Console (Internal testing track)
       - name: Upload AAB to Play Console
