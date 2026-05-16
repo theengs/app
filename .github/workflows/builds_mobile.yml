@@ -221,8 +221,13 @@ jobs:
                -storepass:env ANDROID_KEYSTORE_PASSWORD \
                -keypass:env ANDROID_KEY_PASSWORD \
                "$AAB" "$ANDROID_KEY_ALIAS"
+             # Verify the signature. Do NOT use -strict: Android upload keys
+             # are self-signed by design, and -strict treats self-signed certs
+             # plus the missing TSA timestamp as errors. "jar verified" without
+             # a non-zero exit is what we need; the self-signed / no-timestamp
+             # warnings are expected and benign for Play Console uploads.
              echo "Verifying signature..."
-             jarsigner -verify -strict "$AAB"
+             jarsigner -verify "$AAB"
 
       # Upload AAB to Play Console (Internal testing track)
       - name: Upload AAB to Play Console
