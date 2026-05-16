@@ -41,6 +41,7 @@
 
     <!-- Application -->
     <application android:name="org.qtproject.qt.android.bindings.QtApplication"
+                 android:debuggable="true"
                  android:hardwareAccelerated="true" android:allowNativeHeapPointerTagging="false"
                  android:theme="@style/AppTheme" android:roundIcon="@mipmap/ic_launcher_round" android:icon="@mipmap/ic_launcher"
                  android:label="Theengs BLE">
@@ -48,7 +49,7 @@
         <!-- Activity -->
         <activity android:name="org.qtproject.qt.android.bindings.QtActivity"
                   android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
-                  android:screenOrientation="unspecified" android:windowSoftInputMode="adjustPan" android:launchMode="singleTop" android:exported="true"
+                  android:screenOrientation="unspecified" android:windowSoftInputMode="adjustPan" android:launchMode="singleTask" android:exported="true"
                   android:label="Theengs">
 
             <intent-filter>
