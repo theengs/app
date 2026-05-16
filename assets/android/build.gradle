@@ -80,26 +80,6 @@ android {
         noCompress 'rcc'
     }
 
-    signingConfigs {
-        release {
-            def ksPath = System.getenv("ANDROID_KEYSTORE_PATH")
-            if (ksPath) {
-                storeFile file(ksPath)
-                storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
-                keyAlias System.getenv("ANDROID_KEY_ALIAS")
-                keyPassword System.getenv("ANDROID_KEY_PASSWORD")
-            }
-        }
-    }
-
-    buildTypes {
-        release {
-            if (System.getenv("ANDROID_KEYSTORE_PATH")) {
-                signingConfig signingConfigs.release
-            }
-        }
-    }
-
     defaultConfig {
         resConfig "en"
         minSdkVersion 23
