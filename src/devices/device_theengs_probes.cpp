@@ -213,12 +213,33 @@ void DeviceTheengsProbes::parseTheengsAdvertisement(const QString &json)
     }
     else // temperature probes
     {
-        m_temperature1 = -99.f;
-        m_temperature2 = -99.f;
-        m_temperature3 = -99.f;
-        m_temperature4 = -99.f;
-        m_temperature5 = -99.f;
-        m_temperature6 = -99.f;
+        // The H5055 is the only currently-supported probe that broadcasts
+        // one probe pair at a time (1&2, 3&4, or 5&6, gated by bits 2-3 of
+        // manufacturerdata[10] in H5055_json.h). Wiping all six slots on
+        // every advertisement would erase the previous pair's values before
+        // they can be merged with the new pair's, leaving only the most
+        // recent pair "live" — every probe outside that pair appears as
+        // disconnected ("-") even though it was just reported. See
+        // theengs/decoder#92 (AJolly's "App still thinks the thermometer is
+        // offline" report). Other probe devices (Inkbird IBT-2X/4XS/6XS,
+        // Xiaomi pressure monitors) include every probe in every broadcast
+        // and rely on the wipe-then-set pattern to surface disconnected
+        // probes — keep their behavior untouched.
+        //
+        // Match m_deviceModel exactly against the Theengs Decoder model_id
+        // ("H5055" — see thirdparty/TheengsDecoder/src/devices/H5055_json.h),
+        // mirroring how DeviceManager_theengs.cpp branches on deviceModelID
+        // (== "BM2", == "X1", == "W270160X", …). Substring would loose-match
+        // hypothetical variants ("H5055X") that may not share the quirk.
+        if (m_deviceModel != "H5055")
+        {
+            m_temperature1 = -99.f;
+            m_temperature2 = -99.f;
+            m_temperature3 = -99.f;
+            m_temperature4 = -99.f;
+            m_temperature5 = -99.f;
+            m_temperature6 = -99.f;
+        }
 
         QDateTime ts = QDateTime::currentDateTime();
 
