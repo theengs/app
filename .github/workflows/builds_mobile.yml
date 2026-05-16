@@ -8,6 +8,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 #-------------------------------------------------------------------------------
 # Define application name & version
 #-------------------------------------------------------------------------------
@@ -26,6 +30,9 @@ jobs:
   build-android:
     name: "Android CI build"
     runs-on: ubuntu-24.04
+    env:
+      DISTRIBUTE: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/tags/v')) && github.repository == 'theengs/app' }}
+      REPO_NAME: ${{ github.event.repository.name }}
     steps:
       # Checkout repository (and submodules)
       - name: Checkout repository (and submodules)
@@ -49,8 +56,8 @@ jobs:
              sdkmanager "ndk;28.2.13676358"
              sdkmanager "build-tools;36.1.0"
 
-      # Install Qt (desktop & Android)
-      - name: Install Qt (desktop & Android)
+      # Install Qt (desktop + Android arm64-v8a, armeabi-v7a, x86_64)
+      - name: Install Qt (desktop & Android arm64-v8a)
         uses: jurplel/install-qt-action@v4
         with:
           version: ${{env.QT_VERSION}}
@@ -60,6 +67,26 @@ jobs:
           modules: qtconnectivity qtwebsockets qtcharts
           extra: '--autodesktop'
 
+      # Add x86_64 (for Chromebooks / Play Store on x86 devices) via aqtinstall.
+      # Note: armv7 (32-bit ARM) was attempted but Qt 6.10.3's prebuilt
+      # android_armv7 package consistently breaks qt-configure-module for
+      # downstream modules (qtmqtt) regardless of install method. 32-bit-only
+      # devices are <1% of the Play Store install base today, so we ship
+      # arm64-v8a + x86_64 only.
+      - name: Install Qt (Android x86_64) via aqtinstall
+        run: |
+             python3 -m pip install --upgrade aqtinstall
+             QT_PARENT="/home/runner/work/${REPO_NAME}/Qt"
+             aqt install-qt linux android "${QT_VERSION}" android_x86_64 \
+               -m qtconnectivity qtwebsockets qtcharts \
+               -O "${QT_PARENT}"
+             # Normalise +x across every Android arch's tools (aqt usually
+             # preserves perms, but install-qt-action's arm64 install did not).
+             for d in "${QT_PARENT}/${QT_VERSION}/android_"*; do
+               [ -d "$d/bin" ] && chmod -R +x "$d/bin"
+               [ -d "$d/libexec" ] && chmod -R +x "$d/libexec"
+             done
+
       # Install dependencies (from package manager)
       - name: Install dependencies (from package manager)
         run: |
@@ -68,41 +95,99 @@ jobs:
       # Setup env
       - name: Setup env
         run: |
-             echo "QT_HOST_PATH=/home/runner/work/${{github.event.repository.name}}/Qt/${{env.QT_VERSION}}/gcc_64" >> $GITHUB_ENV
-             echo "QT_TARGET_PATH=/home/runner/work/${{github.event.repository.name}}/Qt/${{env.QT_VERSION}}/android_arm64_v8a" >> $GITHUB_ENV
+             echo "QT_HOST_PATH=/home/runner/work/${REPO_NAME}/Qt/${QT_VERSION}/gcc_64" >> "$GITHUB_ENV"
+             echo "QT_TARGET_PATH=/home/runner/work/${REPO_NAME}/Qt/${QT_VERSION}/android_arm64_v8a" >> "$GITHUB_ENV"
              qmake --version
              cmake --version
              ninja --version
 
-      # Build dependencies (from contribs script)
+      # Derive marketing version from tag (no-op on non-tag pushes)
+      - name: Resolve version from tag
+        run: bash scripts/ci-resolve-version.sh android
+
+      # Sanity-check each Android Qt install before contribs uses them.
+      # Surfaces "missing files" or "binary not runnable" failures with a
+      # clear error message in the workflow log instead of a silent exit 1.
+      - name: Verify Android Qt installs
+        run: |
+             QT_PARENT="/home/runner/work/${REPO_NAME}/Qt"
+             for arch in android_arm64_v8a android_x86_64; do
+               D="${QT_PARENT}/${QT_VERSION}/${arch}"
+               echo "===== ${arch} ====="
+               if [ ! -d "$D" ]; then echo "MISSING: $D"; exit 1; fi
+               echo "qt-cmake:           $(test -x "$D/bin/qt-cmake" && echo OK || echo MISSING)"
+               echo "qt-configure-module:$(test -x "$D/bin/qt-configure-module" && echo OK || echo MISSING)"
+               echo "qmake:              $(test -x "$D/bin/qmake" && echo OK || echo MISSING)"
+               echo "Qt6Config.cmake:    $(test -f "$D/lib/cmake/Qt6/Qt6Config.cmake" && echo OK || echo MISSING)"
+               echo "qtbase headers:     $(test -d "$D/include/QtCore" && echo OK || echo MISSING)"
+               "$D/bin/qmake" --version || { echo "qmake failed for ${arch}"; exit 1; }
+             done
+
+      # Build dependencies for all three Android ABIs.
+      # Run with -x so qt-configure-module stderr is visible in the workflow log.
       - name: Build dependencies (from contribs script)
         run: |
              cd contribs/
-             python3 contribs_builder_qt.py --targets=android_armv8 --software qtmqtt,qtconnectivity --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
-             python3 contribs_builder.py --targets=android_armv8 --software mbedtls --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
+             python3 contribs_builder_qt.py --targets=android_armv8,android_x86_64 --software qtmqtt,qtconnectivity --qt-directory "${QT_ROOT_DIR}/../.." --qt-version "${QT_VERSION}"
+             python3 contribs_builder.py --targets=android_armv8,android_x86_64 --software mbedtls --qt-directory "${QT_ROOT_DIR}/../.." --qt-version "${QT_VERSION}"
 
-      # Build application
+      # Decode signing keystore (release-track runs only)
+      - name: Decode signing keystore
+        if: env.DISTRIBUTE == 'true'
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+             echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.keystore"
+             {
+               echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/upload.keystore"
+               echo "ANDROID_KEYSTORE_PASSWORD=$ANDROID_KEYSTORE_PASSWORD"
+               echo "ANDROID_KEY_ALIAS=$ANDROID_KEY_ALIAS"
+               echo "ANDROID_KEY_PASSWORD=$ANDROID_KEY_PASSWORD"
+             } >> "$GITHUB_ENV"
+
+      # Build application (compile-only for PRs, AAB for release branch / tags)
       - name: Build application
         run: |
-             ${{env.QT_TARGET_PATH}}/bin/qt-cmake --version
-             ${{env.QT_TARGET_PATH}}/bin/qt-cmake -B build/ -G Ninja \
+             "${QT_TARGET_PATH}/bin/qt-cmake" --version
+             "${QT_TARGET_PATH}/bin/qt-cmake" -B build/ -G Ninja \
                -DCMAKE_SYSTEM_NAME=Android \
                -DCMAKE_BUILD_TYPE=Release \
-               -DCMAKE_FIND_ROOT_PATH:PATH=${{env.QT_TARGET_PATH}} \
-               -DCMAKE_PREFIX_PATH:PATH=${{env.QT_TARGET_PATH}} \
-               -DANDROID_SDK_ROOT=$ANDROID_SDK_ROOT \
-               -DANDROID_NDK_ROOT=$ANDROID_NDK_ROOT \
+               -DCMAKE_FIND_ROOT_PATH:PATH="${QT_TARGET_PATH}" \
+               -DCMAKE_PREFIX_PATH:PATH="${QT_TARGET_PATH}" \
+               -DANDROID_SDK_ROOT="$ANDROID_SDK_ROOT" \
+               -DANDROID_NDK_ROOT="$ANDROID_NDK_ROOT" \
                -DANDROID_PLATFORM=android-28 \
-               -DANDROID_ABI="arm64-v8a" \
-               -DQT_HOST_PATH:PATH=${{env.QT_HOST_PATH}} \
+               -DQT_HOST_PATH:PATH="${QT_HOST_PATH}" \
                -DQT_ANDROID_BUILD_ALL_ABIS=OFF \
-               -DQT_ANDROID_ABIS="arm64-v8a"
-             cmake --build build/ --config Release
+               -DQT_ANDROID_ABIS="arm64-v8a;x86_64"
+             if [ "$DISTRIBUTE" = "true" ]; then
+               cmake --build build/ --target aab
+             else
+               cmake --build build/ --config Release
+             fi
+
+      # Upload AAB to Play Console (Internal testing track)
+      - name: Upload AAB to Play Console
+        if: env.DISTRIBUTE == 'true'
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.theengs.app
+          releaseFiles: build/android-build/build/outputs/bundle/release/*.aab
+          track: internal
+          status: completed
+          whatsNewDirectory: distribution/whatsnew
 
   ## iOS build #################################################################
   build-ios:
     name: "iOS CI build"
     runs-on: macos-15
+    env:
+      DISTRIBUTE: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/tags/v')) && github.repository == 'theengs/app' }}
+      REPO_NAME: ${{ github.event.repository.name }}
     steps:
       # Checkout repository (and submodules)
       - name: Checkout repository (and submodules)
@@ -128,27 +213,117 @@ jobs:
       # Setup env
       - name: Setup env
         run: |
-             echo "QT_HOST_PATH=/Users/runner/work/${{github.event.repository.name}}/Qt/${{env.QT_VERSION}}/macos" >> $GITHUB_ENV
-             echo "QT_TARGET_PATH=/Users/runner/work/${{github.event.repository.name}}/Qt/${{env.QT_VERSION}}/ios" >> $GITHUB_ENV
+             echo "QT_HOST_PATH=/Users/runner/work/${REPO_NAME}/Qt/${QT_VERSION}/macos" >> "$GITHUB_ENV"
+             echo "QT_TARGET_PATH=/Users/runner/work/${REPO_NAME}/Qt/${QT_VERSION}/ios" >> "$GITHUB_ENV"
              qmake --version
              cmake --version
              ninja --version
+
+      # Derive marketing version from tag (no-op on non-tag pushes)
+      - name: Resolve version from tag
+        run: bash scripts/ci-resolve-version.sh ios
 
       # Build dependencies (from contribs script)
       - name: Build dependencies (from contribs script)
         run: |
              cd contribs/
-             python3 contribs_builder_qt.py --targets=ios_armv8 --software qtmqtt --qt-directory ${{env.QT_ROOT_DIR}}/../.. --qt-version ${{env.QT_VERSION}}
+             python3 contribs_builder_qt.py --targets=ios_armv8 --software qtmqtt --qt-directory "${QT_ROOT_DIR}/../.." --qt-version "${QT_VERSION}"
 
-      # Build application
-      - name: Build application
+      # Patch CFBundleVersion to a monotonic value that strictly exceeds the
+      # previously published build (Info.plist ships with 01050001). Using a
+      # YYMMDDHHMM timestamp gives ~10-digit values like 2605110830 — always
+      # higher than any prior, always increasing, always unique per run.
+      - name: Patch iOS build number
+        if: env.DISTRIBUTE == 'true'
         run: |
-             ${{env.QT_TARGET_PATH}}/bin/qt-cmake --version
-             ${{env.QT_TARGET_PATH}}/bin/qt-cmake -B build/ -G Xcode \
-               -DCMAKE_SYSTEM_NAME=iOS \
-               -DCMAKE_BUILD_TYPE=Release \
-               -DCMAKE_FIND_ROOT_PATH:PATH=${{env.QT_TARGET_PATH}} \
-               -DCMAKE_PREFIX_PATH:PATH=${{env.QT_TARGET_PATH}} \
-               -DQT_HOST_PATH:PATH=${{env.QT_HOST_PATH}} \
-               -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED="NO"
-             cmake --build build/ --config Release -- CODE_SIGNING_ALLOWED=NO
+             NEW_BUILD=$(date +%y%m%d%H%M)
+             /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${NEW_BUILD}" assets/ios/Info.plist
+             /usr/libexec/PlistBuddy -c "Print :CFBundleVersion" assets/ios/Info.plist
+
+      # Import App Store distribution signing certificate
+      - name: Import signing certificate
+        if: env.DISTRIBUTE == 'true'
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.APPLE_DIST_CERT_P12_BASE64 }}
+          p12-password: ${{ secrets.APPLE_DIST_CERT_PASSWORD }}
+
+      # Download App Store provisioning profile via App Store Connect API
+      - name: Download provisioning profile
+        if: env.DISTRIBUTE == 'true'
+        id: provisioning
+        uses: apple-actions/download-provisioning-profiles@v4
+        with:
+          bundle-id: com.theengs.app
+          profile-type: IOS_APP_STORE
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+
+      # Configure the Xcode project (signing only for release-track runs)
+      - name: Configure project
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+             if [ "$DISTRIBUTE" = "true" ]; then
+               "${QT_TARGET_PATH}/bin/qt-cmake" -B build/ -G Xcode \
+                 -DCMAKE_SYSTEM_NAME=iOS \
+                 -DCMAKE_BUILD_TYPE=Release \
+                 -DCMAKE_FIND_ROOT_PATH:PATH="${QT_TARGET_PATH}" \
+                 -DCMAKE_PREFIX_PATH:PATH="${QT_TARGET_PATH}" \
+                 -DQT_HOST_PATH:PATH="${QT_HOST_PATH}" \
+                 -DCMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM="${APPLE_TEAM_ID}" \
+                 -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_STYLE=Manual
+             else
+               "${QT_TARGET_PATH}/bin/qt-cmake" -B build/ -G Xcode \
+                 -DCMAKE_SYSTEM_NAME=iOS \
+                 -DCMAKE_BUILD_TYPE=Release \
+                 -DCMAKE_FIND_ROOT_PATH:PATH="${QT_TARGET_PATH}" \
+                 -DCMAKE_PREFIX_PATH:PATH="${QT_TARGET_PATH}" \
+                 -DQT_HOST_PATH:PATH="${QT_HOST_PATH}" \
+                 -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED="NO"
+             fi
+
+      # Compile-only path (PRs / forks / non-release branches)
+      - name: Build application (compile only)
+        if: env.DISTRIBUTE != 'true'
+        run: cmake --build build/ --config Release -- CODE_SIGNING_ALLOWED=NO
+
+      # Archive + export IPA (release-track runs only)
+      - name: Archive and export IPA
+        if: env.DISTRIBUTE == 'true'
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+             # Resolve the profile NAME from the downloaded .mobileprovision file.
+             PROFILE_FILE=$(ls -1 "$HOME/Library/MobileDevice/Provisioning Profiles/"*.mobileprovision | head -n1)
+             security cms -D -i "$PROFILE_FILE" > /tmp/profile.plist
+             PROFILE_NAME=$(/usr/libexec/PlistBuddy -c "Print :Name" /tmp/profile.plist)
+             echo "Using provisioning profile: $PROFILE_NAME"
+
+             # Materialise ExportOptions.plist with concrete values
+             sed -e "s/__TEAM_ID__/${APPLE_TEAM_ID}/g" \
+                 -e "s|__PROFILE_NAME__|${PROFILE_NAME}|g" \
+                 distribution/ios/ExportOptions.plist > build/ExportOptions.plist
+
+             xcodebuild -project build/Theengs.xcodeproj \
+                        -scheme Theengs \
+                        -configuration Release \
+                        -destination 'generic/platform=iOS' \
+                        -archivePath build/Theengs.xcarchive \
+                        -allowProvisioningUpdates \
+                        archive
+
+             xcodebuild -exportArchive \
+                        -archivePath build/Theengs.xcarchive \
+                        -exportPath build/ipa \
+                        -exportOptionsPlist build/ExportOptions.plist
+
+      - name: Upload to TestFlight
+        if: env.DISTRIBUTE == 'true'
+        uses: apple-actions/upload-testflight-build@v3
+        with:
+          app-path: build/ipa/Theengs.ipa
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
