@@ -41,7 +41,6 @@
 
     <!-- Application -->
     <application android:name="org.qtproject.qt.android.bindings.QtApplication"
-                 android:debuggable="true"
                  android:hardwareAccelerated="true" android:allowNativeHeapPointerTagging="false"
                  android:theme="@style/AppTheme" android:roundIcon="@mipmap/ic_launcher_round" android:icon="@mipmap/ic_launcher"
                  android:label="Theengs BLE">
