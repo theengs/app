@@ -356,7 +356,16 @@ jobs:
         if: env.DISTRIBUTE == 'true'
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+          APPSTORE_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
+          APPSTORE_PRIVATE_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY }}
         run: |
+             # Mask sensitive App Store Connect API values across all subsequent
+             # log output (defense in depth on top of GitHub's built-in masking).
+             echo "::add-mask::$APPLE_TEAM_ID"
+             echo "::add-mask::$APPSTORE_ISSUER_ID"
+             echo "::add-mask::$APPSTORE_KEY_ID"
+
              # Resolve the profile NAME from the downloaded .mobileprovision file.
              PROFILE_FILE=$(ls -1 "$HOME/Library/MobileDevice/Provisioning Profiles/"*.mobileprovision | head -n1)
              security cms -D -i "$PROFILE_FILE" > /tmp/profile.plist
@@ -368,18 +377,35 @@ jobs:
                  -e "s|__PROFILE_NAME__|${PROFILE_NAME}|g" \
                  distribution/ios/ExportOptions.plist > build/ExportOptions.plist
 
+             # Materialise the App Store Connect API private key on disk so
+             # xcodebuild can authenticate during -exportArchive. Without this,
+             # exportArchive fails with "Failed to Use Accounts" because no
+             # Apple ID is signed into the runner.
+             ASC_KEY_DIR="$RUNNER_TEMP/asc-keys"
+             mkdir -p "$ASC_KEY_DIR"
+             ASC_KEY_PATH="$ASC_KEY_DIR/AuthKey_${APPSTORE_KEY_ID}.p8"
+             printf '%s' "$APPSTORE_PRIVATE_KEY" > "$ASC_KEY_PATH"
+             chmod 600 "$ASC_KEY_PATH"
+
              xcodebuild -project build/Theengs.xcodeproj \
                         -scheme Theengs \
                         -configuration Release \
                         -destination 'generic/platform=iOS' \
                         -archivePath build/Theengs.xcarchive \
                         -allowProvisioningUpdates \
+                        -authenticationKeyID "$APPSTORE_KEY_ID" \
+                        -authenticationKeyIssuerID "$APPSTORE_ISSUER_ID" \
+                        -authenticationKeyPath "$ASC_KEY_PATH" \
                         archive
 
              xcodebuild -exportArchive \
                         -archivePath build/Theengs.xcarchive \
                         -exportPath build/ipa \
-                        -exportOptionsPlist build/ExportOptions.plist
+                        -exportOptionsPlist build/ExportOptions.plist \
+                        -allowProvisioningUpdates \
+                        -authenticationKeyID "$APPSTORE_KEY_ID" \
+                        -authenticationKeyIssuerID "$APPSTORE_ISSUER_ID" \
+                        -authenticationKeyPath "$ASC_KEY_PATH"
 
       - name: Upload to TestFlight
         if: env.DISTRIBUTE == 'true'
