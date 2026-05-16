@@ -206,6 +206,24 @@ jobs:
              echo "===== gradle reports (if any errors) ====="
              find build/android-build/build/reports/ -type f -name '*.html' 2>&1 | head -10 || true
 
+      # Sign the AAB with jarsigner. Qt's QT_ANDROID_KEYSTORE_* CMake vars are
+      # read as target properties (not variables), so the -D flags we pass to
+      # qt-cmake don't propagate into androiddeployqt's --sign injection, and
+      # the AAB lands at outputs/bundle/release/ unsigned. Sign it ourselves
+      # using -storepass:env / -keypass:env so passwords never appear on argv.
+      - name: Sign AAB with jarsigner
+        if: env.DISTRIBUTE == 'true'
+        run: |
+             AAB=$(ls build/android-build/build/outputs/bundle/release/*.aab | head -n1)
+             echo "Signing: $AAB"
+             jarsigner -sigalg SHA256withRSA -digestalg SHA-256 \
+               -keystore "$ANDROID_KEYSTORE_PATH" \
+               -storepass:env ANDROID_KEYSTORE_PASSWORD \
+               -keypass:env ANDROID_KEY_PASSWORD \
+               "$AAB" "$ANDROID_KEY_ALIAS"
+             echo "Verifying signature..."
+             jarsigner -verify -strict "$AAB"
+
       # Upload AAB to Play Console (Internal testing track)
       - name: Upload AAB to Play Console
         if: env.DISTRIBUTE == 'true'
