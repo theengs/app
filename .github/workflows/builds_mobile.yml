@@ -333,7 +333,9 @@ jobs:
                  -DCMAKE_PREFIX_PATH:PATH="${QT_TARGET_PATH}" \
                  -DQT_HOST_PATH:PATH="${QT_HOST_PATH}" \
                  -DCMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM="${APPLE_TEAM_ID}" \
-                 -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_STYLE=Manual
+                 -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_STYLE=Manual \
+                 -DCMAKE_XCODE_ATTRIBUTE_PROVISIONING_PROFILE_SPECIFIER="Theengs App Store" \
+                 -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY="Apple Distribution"
              else
                "${QT_TARGET_PATH}/bin/qt-cmake" -B build/ -G Xcode \
                  -DCMAKE_SYSTEM_NAME=iOS \
