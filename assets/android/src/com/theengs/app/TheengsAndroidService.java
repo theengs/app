@@ -19,16 +19,26 @@
 package com.theengs.app;
 
 import java.lang.String;
-import android.util.Log;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.BroadcastReceiver;
+import android.content.pm.ServiceInfo;
+import android.os.Build;
+import android.util.Log;
 
 import org.qtproject.qt.android.bindings.QtService;
 
 public class TheengsAndroidService extends QtService {
 
     private static final String TAG = "TheengsAndroidService";
+    // Foreground-service notification id + channel. Fixed per-process so
+    // startForeground/stopForeground refer to the same notification.
+    private static final int NOTIFICATION_ID = 1001;
+    private static final String CHANNEL_ID = "TheengsForegroundService";
 
     @Override
     public void onCreate() {
@@ -45,14 +55,80 @@ public class TheengsAndroidService extends QtService {
 
     @Override
     public void onDestroy() {
+        // Clear the foreground notification on stopService() so it doesn't
+        // linger in the tray after the user toggles off background scanning.
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                stopForeground(STOP_FOREGROUND_REMOVE);
+            } else {
+                stopForeground(true);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "stopForeground failed", e);
+        }
         super.onDestroy();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        // Promote to foreground BEFORE delegating to QtService. Android
+        // ANRs / kills the service if startForeground() isn't called
+        // within 5 s of startForegroundService(). Typed as
+        // FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE because the service
+        // exists to keep BLE scan callbacks alive while the screen is off.
+        startInForeground();
         int ret = super.onStartCommand(intent, flags, startId);
-
         return START_STICKY;
+    }
+
+    private void startInForeground() {
+        try {
+            Notification notification = buildNotification();
+            if (Build.VERSION.SDK_INT >= 34) {
+                startForeground(
+                    NOTIFICATION_ID,
+                    notification,
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE
+                );
+            } else {
+                startForeground(NOTIFICATION_ID, notification);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "startForeground failed", e);
+        }
+    }
+
+    private Notification buildNotification() {
+        NotificationManager nm =
+            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel ch = new NotificationChannel(
+                CHANNEL_ID,
+                "Theengs background service",
+                NotificationManager.IMPORTANCE_LOW
+            );
+            ch.setDescription("Keeps the BLE scan running while the app is in the background");
+            nm.createNotificationChannel(ch);
+        }
+        Intent launch =
+            getPackageManager().getLaunchIntentForPackage(getPackageName());
+        PendingIntent pi = PendingIntent.getActivity(
+            this, 0, launch,
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+        Notification.Builder b;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            b = new Notification.Builder(this, CHANNEL_ID);
+        } else {
+            b = new Notification.Builder(this);
+        }
+        b.setSmallIcon(R.drawable.ic_stat_logo)
+         .setContentTitle("Theengs")
+         .setContentText("Scanning for sensors")
+         .setContentIntent(pi)
+         .setOngoing(true)
+         .setOnlyAlertOnce(true);
+        return b.build();
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -60,7 +136,14 @@ public class TheengsAndroidService extends QtService {
     public static void serviceStart(android.content.Context context) {
         android.content.Intent pQtAndroidService = new android.content.Intent(context, TheengsAndroidService.class);
         pQtAndroidService.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startService(pQtAndroidService);
+        // startForegroundService() is required since API 26 for the manifest's
+        // foregroundServiceType to take effect. onStartCommand() above promotes
+        // the service to foreground within the 5 s window Android allows.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(pQtAndroidService);
+        } else {
+            context.startService(pQtAndroidService);
+        }
     }
 
     public static void serviceStop(android.content.Context context) {

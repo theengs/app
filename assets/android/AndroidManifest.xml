@@ -17,6 +17,13 @@
     <!-- Service -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" android:minSdkVersion="29" />
+    <!-- Foreground-service permissions so the BLE-scan service can keep scanning
+         past the screen-off cliff. FOREGROUND_SERVICE is required since API 28;
+         the typed FOREGROUND_SERVICE_CONNECTED_DEVICE is required since API 34
+         for BLE / companion-device services. Without these, startForegroundService()
+         throws SecurityException and the service never runs. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" android:minSdkVersion="34" />
 
     <!-- MQTT -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -64,7 +71,8 @@
             </intent-filter>
         </receiver>
 
-        <service android:process=":qt_service" android:name=".TheengsAndroidService">
+        <service android:process=":qt_service" android:name=".TheengsAndroidService"
+                 android:foregroundServiceType="connectedDevice">
             <meta-data android:name="android.app.background_running" android:value="true" />
             <meta-data android:name="android.app.lib_name" android:value="-- %%INSERT_APP_LIB_NAME%% --" />
             <meta-data android:name="android.app.arguments" android:value="--service" />
