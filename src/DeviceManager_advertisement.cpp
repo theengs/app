@@ -197,10 +197,15 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoo
                 ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
                 if (decoder.decodeBLEJson(obj) >= 0)
                 {
+                    // iBeacon packets overlap with the real device adv (e.g. Govee thermometers
+                    // broadcast both); skip without updating model_id so a later iteration on the
+                    // device-specific mfg/service data can label it correctly.
+                    if (doc["model_id"] == "IBEACON") continue;
+
                     dd->setTheengsModelId(QString::fromStdString(doc["model"]), QString::fromStdString(doc["model_id"]));
 
-                    // Do not process devices with random macs or IBEACONS packets
-                    if (doc["type"] == "RMAC" || doc["prmac"] || doc["model_id"] == "IBEACON") break;
+                    // Do not process devices with random macs
+                    if (doc["type"] == "RMAC" || doc["prmac"]) break;
 
                     obj.remove("manufacturerdata");
                     obj.remove("servicedata");
