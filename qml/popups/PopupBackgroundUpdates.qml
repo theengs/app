@@ -87,7 +87,7 @@ Popup {
                     Text {
                         width: parent.width
 
-                        text: qsTr("To use the background update feature, the <b>background location permission</b> is required, otherwise Theengs can't scan for Bluetooth Low Energy sensors and can't update data when the app is closed.")
+                        text: qsTr("To scan for Bluetooth Low Energy sensors in the background, Android requires the <b>background location permission</b> — this is an OS-level requirement that applies to all BLE apps. Theengs only reads sensor advertisements; it does <b>not</b> track your location.<br><br>While scanning, an ongoing notification appears in your status bar so you always know Theengs is active. Tap <b>Stop</b> there to turn it off at any time.")
                         textFormat: Text.StyledText
                         font.pixelSize: Theme.fontSizeContent
                         color: Theme.colorSubText
@@ -170,8 +170,7 @@ Popup {
 
                     Text {
                         width: parent.width
-                        text: qsTr("Your phone will do its best to prevent this application from running in the background.") + "<br>" +
-                              qsTr("Some settings need to be switched <b>manually</b> from the Android <b>application info panel</b>:")
+                        text: qsTr("Some Android phones aggressively pause background apps to save battery, which can interrupt sensor scanning. For reliable updates, you may need to adjust a few settings from the Android <b>app info</b> screen:")
                         textFormat: Text.StyledText
                         font.pixelSize: Theme.fontSizeContent
                         color: Theme.colorSubText
@@ -180,8 +179,8 @@ Popup {
 
                     Text {
                         width: parent.width
-                        text: qsTr("- autolaunch will need to be <b>enabled</b>") + "<br>" +
-                              qsTr("- battery saving feature(s) will need to be <b>disabled</b>")
+                        text: qsTr("- exclude Theengs from <b>battery optimisation</b>") + "<br>" +
+                              qsTr("- on some devices (Xiaomi, OPPO, Huawei…), <b>autolaunch</b> must also be enabled")
                         textFormat: Text.StyledText
                         font.pixelSize: Theme.fontSizeContent
                         color: Theme.colorSubText

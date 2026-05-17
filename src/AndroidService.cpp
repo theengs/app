@@ -25,6 +25,7 @@
 #include "DeviceManager.h"
 #include "MqttManager.h"
 #include "NotificationManager.h"
+#include "ForegroundNotifier.h"
 
 #include <QtCore/private/qandroidextras_p.h>
 #include <QCoreApplication>
@@ -42,6 +43,10 @@ AndroidService::AndroidService(QObject *parent) : QObject(parent)
 
     //m_notificationManager = NotificationManager::getInstance(); // DEBUG
     //m_notificationManager->setNotification("AndroidService starting", QDateTime::currentDateTime().toString());
+
+    // Pushes live BLE-reading content into the foreground-service
+    // notification owned by the :qt_service process.
+    m_foregroundNotifier = new ForegroundNotifier(this);
 
     // Configure update timer
     connect(&m_workTimer, &QTimer::timeout, this, &AndroidService::gotowork);
@@ -75,6 +80,11 @@ void AndroidService::gotowork()
         // Reload the device manager, a new scan might have occured
         if (m_deviceManager) delete m_deviceManager;
         m_deviceManager = new DeviceManager(true);
+
+        // Hand the fresh DeviceManager to the foreground-service notifier so
+        // it re-attaches to the per-Device dataUpdated() signals (the old
+        // manager's Devices were destroyed with it).
+        if (m_foregroundNotifier) m_foregroundNotifier->attachDeviceManager(m_deviceManager);
 
         // Device manager is operational?
         if (m_deviceManager &&

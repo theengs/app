@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Foreground-service notification (BLE scanning bridge) -->
+    <string name="fgs_channel_name">Theengs background service</string>
+    <string name="fgs_channel_description">Keeps the BLE scan running while the app is in the background.</string>
+    <string name="fgs_title_default">Theengs \u00b7 Scanning Bluetooth sensors</string>
+    <string name="fgs_body_default">Listening for BLE sensor advertisements\u2026</string>
+    <string name="fgs_action_stop">Stop</string>
+</resources>

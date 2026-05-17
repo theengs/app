@@ -104,6 +104,7 @@ if(IOS OR ANDROID)
     set(QAPPLICATION_CLASS QGuiApplication)
     set(SOURCES_MOBILE
         src/AndroidService.cpp src/AndroidService.h
+        src/ForegroundNotifier.cpp src/ForegroundNotifier.h
     )
 endif()
 
