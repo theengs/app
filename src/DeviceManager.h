@@ -298,6 +298,7 @@ public:
     int getDeviceCount() const { return m_devices_model->getDeviceCount(); }
     DeviceFilter *getDevicesFiltered() const { return m_devices_filter; }
     DeviceFilter *getDevicesNearby() const { return m_devices_nearby_filter; }
+    const QList<Device *> &getDeviceList() const { return m_devices_model->m_devices; }
 
     // Gateway management
     Q_INVOKABLE void removeGateway(const QString &address);

@@ -436,10 +436,10 @@ Item {
 
                     visible: (Qt.platform.os === "android")
 
-                    text: qsTr("experimental")
-                    colorHighlight: Theme.colorRed
-                    colorBorder: Theme.colorRed
-                    colorText: Theme.colorRed
+                    text: qsTr("Beta")
+                    colorHighlight: Theme.colorPrimary
+                    colorBorder: Theme.colorPrimary
+                    colorText: Theme.colorPrimary
 
                     onClicked: popupBackgroundUpdates.open()
                 }
@@ -520,8 +520,8 @@ Item {
 
                 visible: (Qt.platform.os === "android") // && (settingsManager.systray && element_worker.visible)
 
-                text: qsTr("Wake up at a predefined interval to refresh sensor data. Only if Bluetooth (or Bluetooth control) is enabled.")
-                textFormat: Text.PlainText
+                text: qsTr("Theengs keeps scanning for sensors when the app is closed, and refreshes their values on a regular interval. An ongoing notification appears while scanning — tap <b>Stop</b> there to turn it off at any time. Requires Bluetooth to be on.")
+                textFormat: Text.StyledText
                 wrapMode: Text.WordWrap
                 color: Theme.colorSubText
                 font.pixelSize: Theme.fontSizeContentSmall

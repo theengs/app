@@ -27,6 +27,7 @@
 class DeviceManager;
 class SettingsManager;
 class NotificationManager;
+class ForegroundNotifier;
 
 #if defined(Q_OS_ANDROID)
 /* ************************************************************************** */
@@ -44,6 +45,7 @@ class AndroidService: public QObject
     DeviceManager *m_deviceManager = nullptr;
     SettingsManager *m_settingsManager = nullptr;
     NotificationManager *m_notificationManager = nullptr;
+    ForegroundNotifier *m_foregroundNotifier = nullptr;
 
 private slots:
     void gotowork();
