@@ -236,7 +236,7 @@ Device * DeviceManager::createTheengsDevice_fromAdv(const QBluetoothDeviceInfo &
 
         if (!deviceModelID.isEmpty() && // Do not process unkown devices
             !deviceProps.isEmpty() && // Do not process devices with empty properties
-            !(deviceTypes == "RMAC" || doc["prmac"])) // Do not process devices with random macs
+            !(deviceTypes == "RMAC" || doc["prmac"] || deviceModelID == "IBEACON")) // Random-MAC or iBeacon-only packets (e.g. Govee thermometers also broadcast iBeacon) — let the next iteration try the device-specific adv
         {
             int deviceType = DeviceTheengs::getTheengsTypeFromTag(deviceTags, deviceTypes);
 
