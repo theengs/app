@@ -67,25 +67,72 @@ jobs:
           modules: qtconnectivity qtwebsockets qtcharts
           extra: '--autodesktop'
 
-      # Add x86_64 (for Chromebooks / Play Store on x86 devices) via aqtinstall.
-      # Note: armv7 (32-bit ARM) was attempted but Qt 6.10.3's prebuilt
-      # android_armv7 package consistently breaks qt-configure-module for
-      # downstream modules (qtmqtt) regardless of install method. 32-bit-only
-      # devices are <1% of the Play Store install base today, so we ship
-      # arm64-v8a + x86_64 only.
-      - name: Install Qt (Android x86_64) via aqtinstall
+      # Add x86_64 (for Chromebooks / Play Store on x86 devices) and armv7
+      # (32-bit ARM, for the long tail of old phones repurposed as BLE→MQTT
+      # gateways) via aqtinstall.
+      - name: Install Qt (Android x86_64 & armv7) via aqtinstall
         run: |
              python3 -m pip install --upgrade aqtinstall
              QT_PARENT="/home/runner/work/${REPO_NAME}/Qt"
-             aqt install-qt linux android "${QT_VERSION}" android_x86_64 \
-               -m qtconnectivity qtwebsockets qtcharts \
-               -O "${QT_PARENT}"
+             for arch in android_x86_64 android_armv7; do
+               aqt install-qt linux android "${QT_VERSION}" "${arch}" \
+                 -m qtconnectivity qtwebsockets qtcharts \
+                 -O "${QT_PARENT}"
+             done
              # Normalise +x across every Android arch's tools (aqt usually
              # preserves perms, but install-qt-action's arm64 install did not).
              for d in "${QT_PARENT}/${QT_VERSION}/android_"*; do
                [ -d "$d/bin" ] && chmod -R +x "$d/bin"
                [ -d "$d/libexec" ] && chmod -R +x "$d/libexec"
              done
+
+      # Qt 6.10.3's prebuilt android_armv7 package was assembled on a
+      # Windows host (target_qt.conf records HostSpec=win32-g++ and
+      # Prefix=C:/Qt/Qt-6.10.3). Two classes of cross-host bug leak into
+      # downstream module configures on Linux:
+      #   1. Unix shell scripts in bin/ and libexec/ (qt-configure-module,
+      #      qt-cmake, libexec/qt-cmake-private) have backslash path
+      #      separators baked in by file(TO_NATIVE_PATH) during the
+      #      upstream build — bash treats `\lib` as a literal, not as
+      #      `/lib`, so qt-configure-module fails with "Not a file".
+      #   2. The Windows install Prefix `C:/Qt/Qt-6.10.3` is hardcoded in
+      #      target_qt.conf and in QtBuildInternalsExtra.cmake. On Linux
+      #      `C:/...` is not absolute, so file(RELATIVE_PATH) rejects it
+      #      when downstream modules (qtmqtt, qtconnectivity) compute
+      #      their own install destinations.
+      # Both are fixed by in-place text rewrites; arm64-v8a and x86_64
+      # prebuilts don't carry either defect so they need no patching.
+      - name: Patch Qt android_armv7 Windows-host artefacts
+        run: |
+             QT_ARMV7="/home/runner/work/${REPO_NAME}/Qt/${QT_VERSION}/android_armv7"
+             # (1) Backslash path separators in Unix wrapper scripts.
+             # PCRE pattern: literal `\` followed by a Qt path component.
+             # Replacement targets only `\<letter>` so bash line
+             # continuations (`\` + newline) survive — clobbering those
+             # would break qt-configure-module's qt-cmake-private call.
+             mapfile -t bad_files < <(
+               grep -rlP '\\(lib|bin|libexec|include|share|mkspecs)' \
+                 "${QT_ARMV7}/bin" "${QT_ARMV7}/libexec" "${QT_ARMV7}/lib/cmake" \
+                 2>/dev/null || true
+             )
+             echo "Normalising backslashes in ${#bad_files[@]} file(s):"
+             printf '  %s\n' "${bad_files[@]}"
+             for f in "${bad_files[@]}"; do
+               sed -i 's|\\\([a-zA-Z]\)|/\1|g' "$f"
+             done
+             # (2) Windows install Prefix in target_qt.conf + every other
+             # file that recorded it. Rewrite to the actual Linux install
+             # dir of this Qt prebuilt.
+             mapfile -t cqt_files < <(
+               grep -rlF "C:/Qt/Qt-${QT_VERSION}" "$QT_ARMV7" 2>/dev/null || true
+             )
+             echo "Rewriting Windows install Prefix in ${#cqt_files[@]} file(s):"
+             printf '  %s\n' "${cqt_files[@]}"
+             for f in "${cqt_files[@]}"; do
+               sed -i "s|C:/Qt/Qt-${QT_VERSION}|${QT_ARMV7}|g" "$f"
+             done
+             remaining=$(grep -rlF "C:/Qt/Qt-${QT_VERSION}" "$QT_ARMV7" 2>/dev/null | wc -l)
+             [ "$remaining" -eq 0 ] || { echo "ERROR: ${remaining} file(s) still contain C:/Qt/Qt-${QT_VERSION}"; exit 1; }
 
       # Install dependencies (from package manager)
       - name: Install dependencies (from package manager)
@@ -111,7 +158,7 @@ jobs:
       - name: Verify Android Qt installs
         run: |
              QT_PARENT="/home/runner/work/${REPO_NAME}/Qt"
-             for arch in android_arm64_v8a android_x86_64; do
+             for arch in android_arm64_v8a android_armv7 android_x86_64; do
                D="${QT_PARENT}/${QT_VERSION}/${arch}"
                echo "===== ${arch} ====="
                if [ ! -d "$D" ]; then echo "MISSING: $D"; exit 1; fi
@@ -128,8 +175,8 @@ jobs:
       - name: Build dependencies (from contribs script)
         run: |
              cd contribs/
-             python3 contribs_builder_qt.py --targets=android_armv8,android_x86_64 --software qtmqtt,qtconnectivity --qt-directory "${QT_ROOT_DIR}/../.." --qt-version "${QT_VERSION}"
-             python3 contribs_builder.py --targets=android_armv8,android_x86_64 --software mbedtls --qt-directory "${QT_ROOT_DIR}/../.." --qt-version "${QT_VERSION}"
+             python3 contribs_builder_qt.py --targets=android_armv8,android_armv7,android_x86_64 --software qtmqtt,qtconnectivity --qt-directory "${QT_ROOT_DIR}/../.." --qt-version "${QT_VERSION}"
+             python3 contribs_builder.py --targets=android_armv8,android_armv7,android_x86_64 --software mbedtls --qt-directory "${QT_ROOT_DIR}/../.." --qt-version "${QT_VERSION}"
 
       # Decode signing keystore (release-track runs only)
       - name: Decode signing keystore
@@ -180,7 +227,7 @@ jobs:
                -DANDROID_PLATFORM=android-28 \
                -DQT_HOST_PATH:PATH="${QT_HOST_PATH}" \
                -DQT_ANDROID_BUILD_ALL_ABIS=OFF \
-               -DQT_ANDROID_ABIS="arm64-v8a;x86_64" \
+               -DQT_ANDROID_ABIS="arm64-v8a;armeabi-v7a;x86_64" \
                "${SIGN_ARGS[@]}"
              if [ "$DISTRIBUTE" = "true" ]; then
                cmake --build build/ --target aab
@@ -244,10 +291,7 @@ jobs:
   ## iOS build #################################################################
   build-ios:
     name: "iOS CI build"
-    # macos-latest tracks GitHub's current macOS image and ships the most recent
-    # Xcode. App Store Connect now requires builds against the iOS 26 SDK
-    # (Xcode 26+); macos-15 with Xcode 16.x is rejected at upload validation.
-    runs-on: macos-latest
+    runs-on: macos-15
     env:
       DISTRIBUTE: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/tags/v')) && github.repository == 'theengs/app' }}
       REPO_NAME: ${{ github.event.repository.name }}
@@ -257,14 +301,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-
-      # Pin Xcode to the latest stable version available on the runner so
-      # builds are reproducible and we get the iOS 26+ SDK that App Store
-      # Connect now requires for uploads.
-      - name: Select latest Xcode
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: latest-stable
 
       # Install Qt (desktop & iOS)
       - name: Install Qt (desktop & iOS)
