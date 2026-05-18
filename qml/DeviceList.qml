@@ -228,6 +228,71 @@ Item {
 
         ////////////////
 
+        // MQTT-down banner. Only shown when the user has MQTT enabled but the
+        // client is not connected — silences the broker badge for users who
+        // never configured MQTT in the first place. Auto-collapses on reconnect.
+        Rectangle {
+            id: rectangleMqttStatus
+            anchors.left: parent.left
+            anchors.right: parent.right
+
+            readonly property bool mqttDown: (settingsManager.mqtt && !mqttManager.status)
+            height: mqttDown ? 48 : 0
+            Behavior on height { NumberAnimation { duration: 133 } }
+
+            clip: true
+            visible: (height > 0)
+            color: Theme.colorActionbar
+
+            // prevent clicks below this area
+            MouseArea { anchors.fill: parent; acceptedButtons: Qt.AllButtons }
+
+            Text {
+                id: textMqttStatus
+                anchors.left: parent.left
+                anchors.leftMargin: 16
+                anchors.right: buttonMqttStatus.left
+                anchors.rightMargin: 8
+                anchors.verticalCenter: parent.verticalCenter
+
+                color: Theme.colorActionbarContent
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignLeft
+                elide: Text.ElideRight
+                font.bold: isDesktop ? true : false
+                font.pixelSize: Theme.componentFontSize
+
+                // Re-evaluate whenever drop counter or status moves.
+                text: {
+                    let n = mqttManager.droppedSinceDisconnect
+                    let since = mqttManager.disconnectedSince
+                    let sinceStr = (since && since.getTime && since.getTime() > 0)
+                                   ? Qt.formatTime(since, "HH:mm") : ""
+                    if (n > 0 && sinceStr) {
+                        return qsTr("MQTT not connected — %1 readings lost since %2")
+                               .arg(n).arg(sinceStr)
+                    } else if (sinceStr) {
+                        return qsTr("MQTT not connected since %1").arg(sinceStr)
+                    }
+                    return qsTr("MQTT not connected")
+                }
+            }
+
+            ButtonSolid {
+                id: buttonMqttStatus
+                anchors.right: parent.right
+                anchors.rightMargin: 16
+                anchors.verticalCenter: parent.verticalCenter
+                height: 32
+
+                color: Theme.colorActionbarHighlight
+                text: qsTr("Retry")
+                onClicked: mqttManager.reconnect_forced()
+            }
+        }
+
+        ////////////////
+
         Rectangle {
             id: rectangleActions
             anchors.left: parent.left

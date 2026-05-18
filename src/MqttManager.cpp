@@ -238,6 +238,18 @@ bool MqttManager::publishData(QString topic, QString str)
         m_mqttclient->publish(t, m);
         return true;
     }
+
+    // Track drops while disconnected so the UI can surface "MQTT down — N
+    // readings lost since HH:MM". Only count when MQTT is *configured* on,
+    // otherwise an opted-out user would see scary counters.
+    SettingsManager *sm = SettingsManager::getInstance();
+    if (sm && sm->getMQTT())
+    {
+        ++m_droppedSinceDisconnect;
+        Q_EMIT droppedChanged();
+    }
+#else
+    Q_UNUSED(topic) Q_UNUSED(str)
 #endif
 
     return false;
@@ -296,6 +308,19 @@ void MqttManager::brokerConnected()
 
     if (m_mqttclient)
     {
+        // Clear drop bookkeeping: the banner/notification hides automatically
+        // once droppedSinceDisconnect == 0 and disconnectedSince is invalid.
+        if (m_droppedSinceDisconnect != 0)
+        {
+            m_droppedSinceDisconnect = 0;
+            Q_EMIT droppedChanged();
+        }
+        if (m_disconnectedSince.isValid())
+        {
+            m_disconnectedSince = QDateTime();
+            // statusChanged already emitted by updateStateChange().
+        }
+
         Q_EMIT connected();
 
         SettingsManager *sm = SettingsManager::getInstance();
@@ -335,6 +360,13 @@ void MqttManager::brokerConnected()
 void MqttManager::brokerDisconnected()
 {
     //qDebug() << "MqttManager::brokerDisconnected()";
+
+    // Stamp the moment the link went down so UI can show "since HH:MM".
+    // updateStateChange() will fire statusChanged separately.
+    if (!m_disconnectedSince.isValid())
+    {
+        m_disconnectedSince = QDateTime::currentDateTime();
+    }
 }
 
 void MqttManager::handleMessage(/*const QMqttMessage &qmsg*/)

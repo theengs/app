@@ -24,6 +24,7 @@
 #include <QString>
 #include <QVariant>
 #include <QList>
+#include <QDateTime>
 
 #if defined(ENABLE_MQTT)
 #include <QtMqtt/QtMqtt>
@@ -95,6 +96,12 @@ class MqttManager: public QObject
 
     Q_PROPERTY(bool status READ getStatus NOTIFY statusChanged)
 
+    // Count of publishData() calls dropped because the client wasn't Connected.
+    // Resets to 0 when the broker comes back. Surfaced in the device list and
+    // foreground notification so users know data is being lost.
+    Q_PROPERTY(qint64 droppedSinceDisconnect READ getDroppedSinceDisconnect NOTIFY droppedChanged)
+    Q_PROPERTY(QDateTime disconnectedSince READ getDisconnectedSince NOTIFY statusChanged)
+
     Q_PROPERTY(QString log READ getLog NOTIFY logChanged) // DEBUG
 
     Q_PROPERTY(QVariant brokersAvailable READ getBrokersAvailable NOTIFY brokersUpdated)
@@ -104,6 +111,10 @@ class MqttManager: public QObject
 #endif
 
     QString m_mqttLog; // DEBUG
+
+    // Dropped-message bookkeeping. Updated from publishData() / state handlers.
+    qint64 m_droppedSinceDisconnect = 0;
+    QDateTime m_disconnectedSince;
 
     QList <Broker *> m_brokersAvailable;
     QVariant getBrokersAvailable() const { return QVariant::fromValue(m_brokersAvailable); }
@@ -116,6 +127,7 @@ class MqttManager: public QObject
 Q_SIGNALS:
     void brokersUpdated();
     void statusChanged();
+    void droppedChanged();
     void logChanged();
     void connected();
 
@@ -144,6 +156,8 @@ public:
     bool subscribe(QString topic);
 
     bool getStatus() const;
+    qint64 getDroppedSinceDisconnect() const { return m_droppedSinceDisconnect; }
+    QDateTime getDisconnectedSince() const { return m_disconnectedSince; }
 
     QString getLog() const { return m_mqttLog; }
 };
