@@ -49,8 +49,8 @@ export default defineConfig({
     ],
     search: { provider: 'local' },
     footer: {
-      message: 'GPLv3 Licensed',
-      copyright: 'Copyright © 2024 Theengs'
+      message: '<a href="https://github.com/theengs/home/blob/main/LICENSE">GPLv3 Licensed</a>',
+      copyright: 'Copyright © 2026 Theengs'
     }
   },
   sitemap: { hostname: 'https://app.theengs.io' },
