@@ -344,8 +344,12 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoo
 
                 decoded = true;
 
-                // Do not process devices with random macs
-                if (doc["type"] == "RMAC" || doc["prmac"]) break;
+                // Drop random-MAC frames AND iBeacon broadcasts. The known-
+                // device path filters all three at line 203; keep them in
+                // sync here so the unknown branch can't quietly republish
+                // iBeacon adverts to MQTT.
+                if (doc["type"] == "RMAC" || doc["prmac"] ||
+                    doc["model_id"] == "IBEACON") break;
 
                 obj.remove("manufacturerdata");
                 obj.remove("servicedata");
