@@ -665,9 +665,14 @@ Item {
 
             function initData() { }
 
+            // Device subclasses default temperature/humidity to -99 to mean
+            // "no reading yet" (see device_sensor.h). The list-row rendered
+            // raw, so transient/just-discovered devices showed "-99.0°" until
+            // a real frame arrived. Guard with the same -40 threshold the
+            // detail screens use.
             function updateData() {
                 if (boxDevice.isThermometer) {
-                    valueText.text = boxDevice.temperature.toFixed(1)
+                    valueText.text = (boxDevice.temperature > -40) ? boxDevice.temperature.toFixed(1) : "—"
                     unitText.text = "°"
                 } else if (boxDevice.isEnvironmentalSensor) {
                     if (boxDevice.hasGeigerCounter) {
@@ -678,7 +683,7 @@ Item {
                     valueText.text = (settingsManager.tempUnit === 'C') ? boxDevice.weight.toFixed(1) : (boxDevice.weight * 2.20462).toFixed(1)
                     unitText.text = (settingsManager.tempUnit === 'C') ? qsTr("kg") : qsTr("lb")
                 } else if (boxDevice.isGenericDevice) {
-                    valueText.text = boxDevice.temperature.toFixed(1)
+                    valueText.text = (boxDevice.temperature > -40) ? boxDevice.temperature.toFixed(1) : "—"
                     unitText.text = "°"
                 }
             }
@@ -731,8 +736,9 @@ Item {
 
             function updateData() {
                 if (boxDevice.isThermometer) {
-                    textOne.text = boxDevice.temperature.toFixed(1) + "°"
+                    textOne.text = (boxDevice.temperature > -40) ? (boxDevice.temperature.toFixed(1) + "°") : "—"
                     if (boxDevice.humidity > 0) textTwo.text = boxDevice.humidity.toFixed(0) + "%"
+                    else textTwo.text = ""
                 } else if (boxDevice.isEnvironmentalSensor) {
                     //
                 } else if (boxDevice.isScale) {
@@ -763,8 +769,8 @@ Item {
                 } else if (boxDevice.isProbe) {
                     //
                 } else {
-                    textOne.text = boxDevice.temperature.toFixed(1) + "°"
-                    textTwo.text = boxDevice.humidity.toFixed(0) + "%"
+                    textOne.text = (boxDevice.temperature > -40) ? (boxDevice.temperature.toFixed(1) + "°") : "—"
+                    textTwo.text = (boxDevice.humidity > 0) ? (boxDevice.humidity.toFixed(0) + "%") : ""
                 }
             }
 

@@ -1111,7 +1111,8 @@ Loader {
                         Loader {
                             id: chartEnvLoader
                             width: parent.width
-                            height: (sensorFlick.height - airBoxes.height - weatherBoxes.height)
+                            height: (sensorFlick.height - airBoxes.height - weatherBoxes.height
+                                     - envSamplingCaption.implicitHeight)
                             //height: singleColumn ? 360 : (sensorFlick.height - airBox.height - weatherBox.height)
 
                             asynchronous: true
@@ -1119,6 +1120,12 @@ Loader {
                                 historyChart.loadGraph()
                                 historyChart.updateGraph()
                             }
+                        }
+
+                        ItemSamplingCaption {
+                            id: envSamplingCaption
+                            width: parent.width
+                            intervalMin: settingsManager.updateIntervalEnv
                         }
 
                         ////////////////////////////////////////////////////

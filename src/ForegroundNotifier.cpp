@@ -23,6 +23,8 @@
 #include "DeviceManager.h"
 #include "DeviceFilter.h"
 #include "device.h"
+#include "MqttManager.h"
+#include "SettingsManager.h"
 
 #include <QJniObject>
 #include <QStringList>
@@ -75,6 +77,14 @@ ForegroundNotifier::ForegroundNotifier(QObject *parent) : QObject(parent)
     m_refresh.setInterval(kRefreshMs);
     connect(&m_refresh, &QTimer::timeout, this, &ForegroundNotifier::flush);
     m_refresh.start();
+
+    // Repaint the notification immediately on MQTT state/drop changes so the
+    // "MQTT down — N lost" annotation appears without waiting for the 10 s
+    // refresh tick. MqttManager is a per-process singleton in :qt_service.
+    if (MqttManager *mq = MqttManager::getInstance()) {
+        connect(mq, &MqttManager::statusChanged,  this, &ForegroundNotifier::flush);
+        connect(mq, &MqttManager::droppedChanged, this, &ForegroundNotifier::flush);
+    }
 }
 
 ForegroundNotifier::~ForegroundNotifier() = default;
@@ -214,6 +224,25 @@ void ForegroundNotifier::pushUpdate()
     if (active < 1) active = m_recent.size();
 
     const QDateTime &mostRecent = m_recent.first().when;
+
+    // MQTT-down annotation: only when the user actually opted into MQTT but
+    // the broker link is down. Silent for users who never configured MQTT.
+    QString mqttSuffix;
+    {
+        SettingsManager *sm = SettingsManager::getInstance();
+        MqttManager *mq = MqttManager::getInstance();
+        if (sm && sm->getMQTT() && mq && !mq->getStatus())
+        {
+            const qint64 dropped = mq->getDroppedSinceDisconnect();
+            if (dropped > 0) {
+                mqttSuffix = QStringLiteral(" \u00b7 ") +
+                             tr("MQTT down \u2013 %1 lost").arg(dropped);
+            } else {
+                mqttSuffix = QStringLiteral(" \u00b7 ") + tr("MQTT down");
+            }
+        }
+    }
+
     const QString title = tr("Theengs \u00b7 Scanning Bluetooth sensors");
     // Qt's tr("%n …", n) plural form only switches catalogues when one is
     // loaded; with no Android-side translation catalog, %n leaves "(s)"
@@ -222,7 +251,7 @@ void ForegroundNotifier::pushUpdate()
     const QString body = tr("%1 %2 active \u00b7 last reading %3")
                          .arg(active)
                          .arg(sensorWord)
-                         .arg(relativeAge(mostRecent, now));
+                         .arg(relativeAge(mostRecent, now)) + mqttSuffix;
 
     QStringList lines;
     lines.reserve(m_recent.size());

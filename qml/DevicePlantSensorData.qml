@@ -437,7 +437,10 @@ Item {
 
             Loader {
                 id: chartAioLoader
-                anchors.fill: parent
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: samplingCaption.top
 
                 opacity: 0
                 Behavior on opacity { OpacityAnimator { duration: 133 } }
@@ -449,6 +452,14 @@ Item {
                     dataChart.updateGraph()
                     chartAioLoader.opacity = 1
                 }
+            }
+
+            ItemSamplingCaption {
+                id: samplingCaption
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                intervalMin: settingsManager.updateIntervalPlant
             }
         }
     }
