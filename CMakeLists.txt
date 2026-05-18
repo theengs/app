@@ -201,6 +201,7 @@ qt_add_qml_module(${CMAKE_PROJECT_NAME}
         qml/components/ItemNoBluetooth.qml
         qml/components/ItemNoPermissions.qml
         qml/components/ItemNoData.qml
+        qml/components/ItemSamplingCaption.qml
         qml/components/ItemNoDevice.qml
         qml/components/ItemNoDeviceNearby.qml
         qml/components/ItemNoGateway.qml

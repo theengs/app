@@ -504,7 +504,7 @@ Loader {
                     anchors.top: bannersync.bottom
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    anchors.bottom: parent.bottom
+                    anchors.bottom: samplingCaption.top
 
                     active: deviceThermometer.visible
                     asynchronous: true
@@ -515,6 +515,14 @@ Loader {
                         graphLoader.opacity = 1
                         noDataIndicator.visible = (currentDevice.countDataNamed("temperature", thermoChart.daysVisible) < 1)
                     }
+                }
+
+                ItemSamplingCaption {
+                    id: samplingCaption
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    intervalMin: settingsManager.updateIntervalThermo
                 }
             }
         }
