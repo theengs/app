@@ -4,12 +4,15 @@ import QtQuick.Controls
 import ComponentLibrary
 
 // Small footer caption shown under in-app history charts. Reminds the user
-// that what the chart shows is sampled at the per-category interval from
-// Settings, so the HA/broker timeseries (every advert) may differ. Tapping
-// the text takes them to Settings.
+// that what the chart shows is sampled at the per-category interval, which
+// can diverge from the broker timeseries (every advert).
 //
 // Required property: intervalMin (uint, minutes). Pass the relevant
 // settingsManager.updateInterval{Thermo,Plant,Env} from the parent screen.
+//
+// NB: the interval setters exist in C++ (SettingsManager::setUpdateInterval*)
+// but no QML Settings control is wired to them today, so the caption is
+// purely informational — no "change in Settings" cue, which would mislead.
 
 Item {
     id: itemSamplingCaption
@@ -31,10 +34,6 @@ Item {
         font.italic: true
         horizontalAlignment: Text.AlignHCenter
 
-        text: qsTr("1 sample / %1 min \u00b7 change in Settings").arg(intervalMin)
+        text: qsTr("1 sample / %1 min").arg(intervalMin)
     }
-
-    // No MouseArea / "tap to open Settings" wiring yet — the screen-routing
-    // pattern differs between Desktop and Mobile entry points, and a passive
-    // caption beats wiring a half-working tap target.
 }
