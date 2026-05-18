@@ -53,6 +53,11 @@ class PermissionManager: public QObject
     Q_PROPERTY(bool contactsPermission READ hasContactsPermission NOTIFY contactsPermissionChanged)
     Q_PROPERTY(bool locationPermission READ hasLocationPermission NOTIFY locationPermissionChanged)
     Q_PROPERTY(bool microphonePermission READ hasMicrophonePermission NOTIFY microphonePermissionChanged)
+    // Android 13+ (API 33+) POST_NOTIFICATIONS — runtime-gated and required
+    // for the foreground service to post its persistent notification. Qt
+    // 6.10 has no typed QPermission for this, so we go through JNI (the
+    // Java side lives in TheengsAndroidService).
+    Q_PROPERTY(bool notificationPermission READ hasNotificationPermission NOTIFY notificationPermissionChanged)
 
     static PermissionManager *instance;
     PermissionManager();
@@ -67,6 +72,7 @@ class PermissionManager: public QObject
     bool m_contactsPermission = false;
     bool m_locationPermission = false;
     bool m_microphonePermission = false;
+    bool m_notificationPermission = false;
 
     void setBluetoothPermission(bool perm);
     void setCalendarPermission(bool perm);
@@ -74,6 +80,7 @@ class PermissionManager: public QObject
     void setContactsPermission(bool perm);
     void setLocationPermission(bool perm);
     void setMicrophonePermission(bool perm);
+    void setNotificationPermission(bool perm);
 
     void requestBluetoothPermission_results(const QPermission &permission);
     void requestCameraPermission_results(const QPermission &permission);
@@ -86,6 +93,7 @@ Q_SIGNALS:
     void contactsPermissionChanged();
     void locationPermissionChanged();
     void microphonePermissionChanged();
+    void notificationPermissionChanged();
 
 public:
     static PermissionManager *getInstance();
@@ -96,6 +104,7 @@ public:
     bool hasContactsPermission() const { return m_contactsPermission; }
     bool hasLocationPermission() const { return m_locationPermission; }
     bool hasMicrophonePermission() const { return m_microphonePermission; }
+    bool hasNotificationPermission() const { return m_notificationPermission; }
 
     Q_INVOKABLE bool requestBluetoothPermission();
     Q_INVOKABLE bool checkBluetoothPermission();
@@ -108,6 +117,13 @@ public:
     Q_INVOKABLE bool requestLocationPermission();
     Q_INVOKABLE bool checkLocationPermission();
     Q_INVOKABLE bool waitLocationPermission();
+
+    // POST_NOTIFICATIONS request goes through JNI (no typed QPermission
+    // class for it in Qt 6.10). No ``wait`` variant — the dialog is
+    // fire-and-forget and the FGS picks up the grant on its next post
+    // attempt; QML can re-check via the property when the activity resumes.
+    Q_INVOKABLE bool requestNotificationPermission();
+    Q_INVOKABLE bool checkNotificationPermission();
 };
 
 /* ************************************************************************** */

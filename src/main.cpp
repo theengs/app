@@ -144,6 +144,17 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+#if defined(Q_OS_ANDROID)
+    // Android 13 (API 33) reclassified POST_NOTIFICATIONS as a runtime
+    // permission. Without it the foreground-service notification is
+    // silently dropped (dumpsys reports numPostedByApp=0 despite the FGS
+    // running), so the user can't see / dismiss the App. The helper
+    // no-ops on pre-API-33 phones via Build.VERSION.SDK_INT, so this is
+    // a single unconditional call here. Fire-and-forget — the dialog is
+    // asynchronous and QML re-reads the property on activity resume.
+    pm->requestNotificationPermission();
+#endif
+
     // Runtime-only CLI overrides for MQTT TLS. ``--mqtt-ca <path>`` forces
     // TLS on and sets the CA cert path; ``--mqtt-port <int>`` overrides
     // the port; ``--mqtt-tls-insecure`` skips peer verification (needed
