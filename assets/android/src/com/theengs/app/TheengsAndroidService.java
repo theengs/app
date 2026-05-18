@@ -18,6 +18,8 @@
 
 package com.theengs.app;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -26,12 +28,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.ServiceCompat;
+import androidx.core.content.ContextCompat;
 
 import org.qtproject.qt.android.bindings.QtService;
 
@@ -46,6 +51,13 @@ public class TheengsAndroidService extends QtService {
     // receiver. Registered dynamically in onCreate() (RECEIVER_NOT_EXPORTED
     // on API 33+) so we don't need a manifest <receiver> entry.
     private static final String ACTION_STOP_FGS = "com.theengs.app.action.STOP_FGS";
+
+    // Request code for the POST_NOTIFICATIONS runtime-permission dialog
+    // (Android 13+). We don't observe the result here — the foreground
+    // service simply starts posting once Android records the grant — but
+    // the value must be stable so a redelivered onRequestPermissionsResult
+    // wouldn't be mistaken for some other in-flight request.
+    private static final int REQUEST_CODE_POST_NOTIFICATIONS = 1101;
 
     // Live notification content fed from C++ via updateNotification().
     // volatile because the static setter is called from the Qt main thread of
@@ -223,6 +235,43 @@ public class TheengsAndroidService extends QtService {
         } catch (Exception e) {
             Log.e(TAG, "updateNotification failed", e);
         }
+    }
+
+    /**
+     * True when POST_NOTIFICATIONS has been granted (or the OS doesn't gate
+     * it — pre-Android-13 / API &lt; 33 — in which case the manifest
+     * declaration is sufficient and this always returns true).
+     *
+     * Called from C++ (PermissionManager) via JNI auto-linking.
+     */
+    public static boolean isPostNotificationsGranted(Context ctx) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            return true;
+        }
+        return ContextCompat.checkSelfPermission(ctx,
+            Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    /**
+     * Trigger the system runtime-permission dialog for POST_NOTIFICATIONS.
+     * No-op on Android &lt; 13 (API 33), where the manifest declaration is
+     * sufficient; also no-op when the permission is already granted.
+     *
+     * The dialog is asynchronous and we don't observe the result — the
+     * foreground service starts posting the moment Android records the
+     * grant. Callers that need the result should re-check via
+     * {@link #isPostNotificationsGranted(Context)} after the Activity
+     * resumes.
+     *
+     * Must be invoked with an Activity context;
+     * {@link ActivityCompat#requestPermissions} requires one.
+     */
+    public static void requestPostNotifications(Activity activity) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return;
+        if (isPostNotificationsGranted(activity)) return;
+        ActivityCompat.requestPermissions(activity,
+            new String[]{Manifest.permission.POST_NOTIFICATIONS},
+            REQUEST_CODE_POST_NOTIFICATIONS);
     }
 
     ////////////////////////////////////////////////////////////////////////////

@@ -24,6 +24,11 @@
 #include <QPermission>
 #include <QThread>
 
+#if defined(Q_OS_ANDROID)
+#include <QJniObject>
+#include <QCoreApplication>
+#endif
+
 /* ************************************************************************** */
 /* ************************************************************************** */
 
@@ -104,6 +109,15 @@ void PermissionManager::setMicrophonePermission(bool perm)
     {
         m_microphonePermission = perm;
         Q_EMIT microphonePermissionChanged();
+    }
+}
+
+void PermissionManager::setNotificationPermission(bool perm)
+{
+    if (m_notificationPermission != perm)
+    {
+        m_notificationPermission = perm;
+        Q_EMIT notificationPermissionChanged();
     }
 }
 
@@ -394,6 +408,66 @@ bool PermissionManager::waitLocationPermission()
     }
 
     return m_locationPermission;
+}
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+
+bool PermissionManager::checkNotificationPermission()
+{
+#if defined(Q_OS_ANDROID)
+    // The Java helper handles the SDK_INT < 33 short-circuit and the
+    // ContextCompat.checkSelfPermission call. We only need to thread a
+    // Context across the JNI boundary.
+    QJniObject context = QNativeInterface::QAndroidApplication::context();
+    if (!context.isValid())
+    {
+        setNotificationPermission(false);
+        return m_notificationPermission;
+    }
+
+    jboolean granted = QJniObject::callStaticMethod<jboolean>(
+        "com/theengs/app/TheengsAndroidService",
+        "isPostNotificationsGranted",
+        "(Landroid/content/Context;)Z",
+        context.object<jobject>());
+    setNotificationPermission(granted == JNI_TRUE);
+    return m_notificationPermission;
+#else
+    // No runtime gate on desktop / iOS — the manifest / Info.plist (or
+    // platform defaults) decides; tracking it as ``granted`` keeps QML
+    // bindings uniform across platforms.
+    setNotificationPermission(true);
+    return m_notificationPermission;
+#endif
+}
+
+bool PermissionManager::requestNotificationPermission()
+{
+#if defined(Q_OS_ANDROID)
+    // Skip the round-trip if Android already says yes (covers both
+    // pre-API-33 phones via the helper's SDK_INT check, and any later
+    // call after the user has already granted).
+    if (checkNotificationPermission()) return true;
+
+    QJniObject activity = QNativeInterface::QAndroidApplication::context();
+    if (!activity.isValid()) return false;
+
+    // Asynchronous. The system dialog appears once the Activity is in a
+    // resumed state; the result lands on onRequestPermissionsResult and
+    // the FGS notification starts being painted on the next post. QML
+    // observers re-read the property after Qt.ApplicationActive.
+    qDebug() << "Requesting POST_NOTIFICATIONS permission...";
+    QJniObject::callStaticMethod<void>(
+        "com/theengs/app/TheengsAndroidService",
+        "requestPostNotifications",
+        "(Landroid/app/Activity;)V",
+        activity.object<jobject>());
+    return m_notificationPermission;
+#else
+    setNotificationPermission(true);
+    return m_notificationPermission;
+#endif
 }
 
 /* ************************************************************************** */
