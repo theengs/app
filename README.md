@@ -1,5 +1,5 @@
 **Theengs app** is a multi platforms, multi devices application and BLE to MQTT gateway that leverages the [Theengs Decoder library](https://github.com/theengs/decoder).
-It retrieves data from a wide range of [BLE sensors](https://app.theengs.io/prerequisites/devices.html); LYWSD03MMC, CGD1, CGP1W, H5072, H5075, H5102, TH1, TH2, BBQ, CGH1, CGDK2, CGPR1, RuuviTag, WS02, WS08, TPMS, MiScale, LYWSD02, LYWSDCGQ, MiFlora... and enables to read the advertised data from these sensors. It also translates this information into a readable JSON format and pushes those to an MQTT broker if you need.
+It retrieves data from a wide range of [BLE sensors](https://app.theengs.io/prerequisites/devices.html); environmental sensors (LYWSD03MMC, CGD1, CGP1W, H5072, H5075, H5102, CGH1, CGDK2, CGPR1, RuuviTag, LYWSD02, LYWSDCGQ...), plant sensors (MiFlora), BBQ probes (Inkbird IBT, Govee H5055, SOLIS_6), scales, tire-pressure monitors (TPMS), battery monitors (BM2, BM6) and more, and enables to read the advertised data from these sensors. It can also **control SwitchBot actuators** over BLE — Bot S1 (`SBS1`), Curtain 2/3 (`SBCU`), Blind Tilt (`SBBT`). It also translates the sensor information into a readable JSON format and pushes those to an MQTT broker (plaintext or TLS) if you need.
 
 The app uses the bluetooth component of your Phone/Tablet to read the sensor data.
 

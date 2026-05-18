@@ -11,7 +11,7 @@ There are many choices of brokers, here are some of the most popular:
 * Embedded MQTT brokers (Home Assistant and OpenHAB)
 
 ::: tip Note
-MQTT broker should be installed on a local network or accessed through a VPN as Theengs app only support unencrypted connexion on port 1883 for now.
+Theengs App can connect to MQTT brokers either in plaintext (default port `1883`) or over TLS (typically port `8883`), including HiveMQ Cloud and other public-CA brokers as well as private brokers with self-signed certificates. See the [MQTT integration section](/use/use#mqtt-integration) for the TLS setup.
 :::
 
 This [wikipedia list](https://en.wikipedia.org/wiki/Comparison_of_MQTT_implementations) gives you more details about the different choices you have.

@@ -1,4 +1,8 @@
-New internal build from CI.
-
-See the commit history for changes:
-https://github.com/theengs/app/commits/development
+1.5.0
+- New: control SwitchBot Bot S1, Curtain 2/3 and Blind Tilt over BLE
+- New: BM2 & BM6 battery monitors with live voltage chart and presets
+- New: MQTT over TLS, public CA or custom .pem
+- New: foreground BLE-scan service to keep updating when the screen is off
+- New: Home Assistant auto-discovery for the gateway itself
+- Improved: H5055 multi-probe, Govee labels, TPMS decoding on Android
+- Updated: Theengs Decoder v2.1.0

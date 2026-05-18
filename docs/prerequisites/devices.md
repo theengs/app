@@ -5,6 +5,10 @@ pageClass: table-generated-page
 
 Here is the list of supported devices by the app, more details in the Compatible Devices section of the top nav bar.
 
+::: tip Note
+Since Theengs Decoder v2.1.0 some `model_id` strings are consolidated when several products share an advertisement format — for example `H5072` and `H5075` are reported as `H5072/75`, and `IBT-6XS` / `SOLIS-6` as `IBT-6XS/SOLIS-6`. Both legacy and merged IDs continue to be recognised by the app; the table below keeps the legacy names for searchability.
+:::
+
 |Model_Id|Mobile App|
 |-|-|
 |ABTemp|✅|
@@ -22,6 +26,8 @@ Here is the list of supported devices by the app, more details in the Compatible
 |CGP1W|✅|
 |CGPR1|✅|
 |F525|✅|
+|BM2|✅|
+|BM6|✅|
 |H5055|✅|
 |H5072|✅|
 |H5074|✅|
@@ -54,8 +60,10 @@ Here is the list of supported devices by the app, more details in the Compatible
 |RDL52832|✅|
 |RuuviTag_RAWv1|✅|
 |RuuviTag_RAWv2|✅|
+|SBBT (W270160X)|✅|
+|SBCU (W070160X)|✅|
+|SBS1 (X1)|✅|
 |W120150X|✅|
-|W070160X|✅|
 |W110150X|✅|
 |THX1(W230150X)|✅|
 |SDLS|✅|

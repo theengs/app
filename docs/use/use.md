@@ -1,10 +1,10 @@
 # Use
 
 ## Features comparison between Operating Systems
-| OS | Real time data | BBQ monitoring |MQTT integration | Running in background | Home Assistant Auto Discovery |
-|:-:|:-:|:-:|:-:|:-:|:-:|
-|iOS|☑️|☑️|☑️||☑️|
-|Android|☑️|☑️|☑️|☑️ *experimental*|☑️|
+| OS | Real time data | BBQ monitoring | Battery monitors | SwitchBot control | MQTT integration (incl. TLS) | Running in background | Home Assistant Auto Discovery |
+|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+|iOS|☑️|☑️|☑️|☑️|☑️||☑️|
+|Android|☑️|☑️|☑️|☑️|☑️|☑️ *(foreground service)*|☑️|
 
 ## Overview
 
@@ -17,6 +17,8 @@
 The app enables to retrieve BLE sensor real time data, to add new sensors tap "Search for new sensors" in the hamburger menu.
 
 To refresh the sensor data tap "Refresh sensor data" in the hamburger menu.
+
+History charts on each device screen show the sampling interval used for the displayed data as a caption underneath the chart, so values from sparsely-broadcasting sensors can be interpreted at a glance.
 
 ::: tip Note
 Why does Theengs App needs the location permission?
@@ -73,6 +75,43 @@ Set temperature thresholds based on your meal. When the sensor detects temperatu
 ::: tip Note
 For continuous monitoring and notifications, you must keep the app open on the BBQ sensor screen.
 Update frequency and real-time responsiveness depend on your smartphone’s processing capabilities, not the app. For best results, close unnecessary apps and ensure you are not far from the sensor.
+:::
+
+## Battery monitors
+
+Theengs App supports a dedicated **Battery monitor** device class for 12 V lead-acid / LiFePO4 monitoring dongles:
+
+* **BM2** — voltage broadcast on advertisement, plus connection-based history retrieval.
+* **BM6** — voltage, temperature, and state-of-charge.
+
+The battery-monitor screen shows the live voltage with a 0–20 V scale, a rolling chart, and configurable **battery presets** (chemistry / nominal voltage / warning thresholds) reachable from the hamburger menu — similar to BBQ threshold presets.
+
+::: tip Note
+On iOS the BM6 requires a one-time detection handshake. The app handles this automatically the first time the device is added; just keep the dongle in range.
+:::
+
+## SwitchBot control
+
+Beyond reading sensors, Theengs App can **control** several SwitchBot actuators over BLE. Control is connection-based: the app pairs to the device on demand, sends the action, then releases the link.
+
+### Supported SwitchBot devices
+
+| Device | Model ID | Actions |
+|---|---|---|
+| SwitchBot Bot S1 / SmartSwitch | `SBS1` (alias `X1`) | On, Off, Push-Pull, with selectable **Press** / **Switch** mode, inverted-direction toggle, and configurable press duration |
+| SwitchBot Curtain 2 / Curtain 3 | `SBCU` (alias `W070160X`) | Open, Close, Stop, move to position (0–100 %), High / Low speed |
+| SwitchBot Blind Tilt | `SBBT` (alias `W270160X`) | Open, Close up, Close down, Stop, tilt to position (-100…100 %) |
+
+### How to use
+
+1. Wake the device once (press the button on the Bot, or the sync button under the Curtain / Blind Tilt) so it advertises.
+2. In Theengs App, **Search for new sensors** — the SwitchBot device appears as an actuator with a dedicated screen.
+3. Tap the device tile to open the control screen and use the dedicated buttons or position slider.
+
+The Bot S1 lets you switch between **Press** mode (one-shot push) and **Switch** mode (latching on/off) from the same screen, and supports an *invert direction* toggle if your physical setup expects the opposite movement.
+
+::: tip Note
+Each control requires a brief BLE connection to the SwitchBot device, so the action may take a second or two. Battery level is read back from advertisements when available.
 :::
 
 ## MQTT integration
@@ -155,23 +194,23 @@ You can now use the application. If you want to run the application in the backg
 * Select "Allow only while using the app", if you want the app to update sensors data only when the app is running at the front
 * Enable "Use precise location" if you have this option
 
-#### Running in the background (experimental)
-If you want the app to retrieve data in the background you will need to do the following steps:
+#### Running in the background (foreground service)
+
+To keep scanning when the screen is off, Theengs App starts a **foreground BLE-scan service** with a persistent notification. The notification doubles as a live status panel: it shows the most recent reading and, if MQTT is enabled, the connection state and a drop counter when publishes fail.
+
+To enable it:
+
 * Click on "Permissions"
-* Click on "Location"
-* Select "Allow all the time" if you want to update the sensors data in the background
-* Enable "Use precise location" if you have this option
+* Click on "Location" → "Allow all the time", and enable "Use precise location"
 
 ![location](./../img/Theengs-app-location-permission.png)
 
-* Go back
-* Click on "Nearby devices"
-* Click on "Allow"
+* Go back, click on "Nearby devices" → "Allow"
 
 ![nearby](./../img/Theengs-app-nearby-permission.png)
 
-* Go back 2 times
-* Deactivate "Remove permissions if app is unused"
+* On first launch the app will request the **Notifications** permission — accept it; the foreground service relies on the persistent notification being visible.
+* Go back twice and deactivate "Remove permissions if app is unused"
 
 ![unused](./../img/Theengs-app-unused-permission.png)
 
@@ -183,13 +222,12 @@ If you want the app to retrieve data in the background you will need to do the f
 
 ![unrestricted](./../img/Theengs-app-battery-unrestricted.png)
 
-* And finally go into the app settings and toggle "Enable background updates"
+* Finally, in the app settings, toggle "Enable background updates"
 
 ![background](./../img/Theengs-app-background-updates.png)
 
 Some devices also require the GPS to be turned on while scanning for new sensors.
 
 ::: tip Note
-Android has drastically reduced the capabilities of apps to run in the background, as a consequence the Update interval set into the app may not be followed by the operating system.
-You may also have more regular results when the device is charging.
+Even with the foreground service, Android may still throttle scanning when the device is in deep doze. Results are most consistent when the phone is charging or the screen is on. The notification is required by Android for any long-running BLE foreground task; dismissing it stops the background scan.
 :::
