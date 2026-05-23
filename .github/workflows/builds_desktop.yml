@@ -39,6 +39,7 @@ jobs:
              sudo apt-get install libgl1-mesa-dev libxkbcommon-x11-dev libx11-xcb-dev libzstd-dev -y;
              sudo apt-get install cmake ninja-build pkgconf libtool -y;
              sudo apt-get install libfuse2 appstream -y;
+             sudo apt-get install libsecret-1-dev -y;   # QtKeychain Linux backend (secure storage)
 
       # Install Qt
       - name: Install Qt
