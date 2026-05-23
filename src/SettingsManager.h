@@ -123,16 +123,16 @@ class SettingsManager: public QObject
     QString m_mysqlHost;
     int m_mysqlPort = 3306;
     QString m_mysqlName = "theengs";
-    QString m_mysqlUser = "theengs";
-    QString m_mysqlPassword = "theengs";
+    QString m_mysqlUser;        //!< no shipped default: empty == "not configured"
+    QString m_mysqlPassword;    //!< no shipped default; resolved from secure storage at runtime
 
     bool m_mqtt = false;
     bool m_mqttDiscovery = true;
     QString m_mqttHost;
     int m_mqttPort = 1883;
     QString m_mqttName = "theengs";
-    QString m_mqttUser = "theengs";
-    QString m_mqttPassword = "theengs";
+    QString m_mqttUser;         //!< no shipped default: empty == anonymous / "not configured"
+    QString m_mqttPassword;     //!< no shipped default; resolved from secure storage at runtime
     QString m_mqttTopicA = "home";
     QString m_mqttTopicB = "TheengsApp";
     bool m_mqttTls = false;

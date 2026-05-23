@@ -19,6 +19,13 @@
 #include "SettingsManager.h"
 #include "SystrayManager.h"
 
+#ifdef ENABLE_SECURE_STORAGE
+#include "utils/SecretStore.h"
+//! Keys under which broker/database passwords live in the OS secure store.
+static const QString kMqttPasswordKey = QStringLiteral("mqtt_password");
+static const QString kMysqlPasswordKey = QStringLiteral("mysql_password");
+#endif
+
 #if defined(Q_OS_ANDROID)
 #include "AndroidService.h"
 #endif
@@ -188,8 +195,21 @@ bool SettingsManager::readSettings()
             m_mysqlName = settings.value("database/name").toString();
         if (settings.contains("database/user"))
             m_mysqlUser = settings.value("database/user").toString();
+#ifdef ENABLE_SECURE_STORAGE
+        // Password lives in the OS secure store, never in QSettings. Migrate any
+        // legacy plaintext value written by older versions, then purge it.
+        m_mysqlPassword = SecretStore::readSync(kMysqlPasswordKey);
+        if (m_mysqlPassword.isEmpty() && settings.contains("database/password"))
+        {
+            m_mysqlPassword = settings.value("database/password").toString();
+            if (!m_mysqlPassword.isEmpty())
+                SecretStore::write(kMysqlPasswordKey, m_mysqlPassword);
+        }
+        settings.remove("database/password");
+#else
         if (settings.contains("database/password"))
             m_mysqlPassword = settings.value("database/password").toString();
+#endif
 
         if (settings.contains("mqtt/enabled"))
             m_mqtt = settings.value("mqtt/enabled").toBool();
@@ -203,8 +223,21 @@ bool SettingsManager::readSettings()
             m_mqttName = settings.value("mqtt/name").toString();
         if (settings.contains("mqtt/user"))
             m_mqttUser = settings.value("mqtt/user").toString();
+#ifdef ENABLE_SECURE_STORAGE
+        // Password lives in the OS secure store, never in QSettings. Migrate any
+        // legacy plaintext value written by older versions, then purge it.
+        m_mqttPassword = SecretStore::readSync(kMqttPasswordKey);
+        if (m_mqttPassword.isEmpty() && settings.contains("mqtt/password"))
+        {
+            m_mqttPassword = settings.value("mqtt/password").toString();
+            if (!m_mqttPassword.isEmpty())
+                SecretStore::write(kMqttPasswordKey, m_mqttPassword);
+        }
+        settings.remove("mqtt/password");
+#else
         if (settings.contains("mqtt/password"))
             m_mqttPassword = settings.value("mqtt/password").toString();
+#endif
         if (settings.contains("mqtt/topic_a"))
             m_mqttTopicA = settings.value("mqtt/topic_a").toString();
         if (settings.contains("mqtt/topic_b"))
@@ -263,7 +296,9 @@ bool SettingsManager::writeSettings()
         settings.setValue("database/port", m_mysqlPort);
         settings.setValue("database/name", m_mysqlName);
         settings.setValue("database/user", m_mysqlUser);
+#ifndef ENABLE_SECURE_STORAGE
         settings.setValue("database/password", m_mysqlPassword);
+#endif
 
         settings.setValue("mqtt/enabled", m_mqtt);
         settings.setValue("mqtt/discovery", m_mqttDiscovery);
@@ -271,7 +306,9 @@ bool SettingsManager::writeSettings()
         settings.setValue("mqtt/port", m_mqttPort);
         settings.setValue("mqtt/name", m_mqttName);
         settings.setValue("mqtt/user", m_mqttUser);
+#ifndef ENABLE_SECURE_STORAGE
         settings.setValue("mqtt/password", m_mqttPassword);
+#endif
         settings.setValue("mqtt/topic_a", m_mqttTopicA);
         settings.setValue("mqtt/topic_b", m_mqttTopicB);
         settings.setValue("mqtt/tls", m_mqttTls);
@@ -361,8 +398,8 @@ void SettingsManager::resetSettings()
     m_mysqlHost = "";
     m_mysqlPort = 3306;
     m_mysqlName = "theengs";
-    m_mysqlUser = "theengs";
-    m_mysqlPassword = "theengs";
+    m_mysqlUser = "";
+    m_mysqlPassword = "";
     Q_EMIT mysqlChanged();
 
     m_mqtt = false;
@@ -370,8 +407,8 @@ void SettingsManager::resetSettings()
     m_mqttHost = "";
     m_mqttPort = 1883;
     m_mqttName = "theengs";
-    m_mqttUser = "theengs";
-    m_mqttPassword = "theengs";
+    m_mqttUser = "";
+    m_mqttPassword = "";
     m_mqttTopicA = "home";
     m_mqttTopicB = "TheengsApp";
     m_mqttTls = false;
@@ -682,7 +719,12 @@ void SettingsManager::setMysqlPassword(const QString &value)
     if (m_mysqlPassword != value)
     {
         m_mysqlPassword = value;
+#ifdef ENABLE_SECURE_STORAGE
+        if (value.isEmpty()) SecretStore::remove(kMysqlPasswordKey);
+        else SecretStore::write(kMysqlPasswordKey, value);
+#else
         writeSettings();
+#endif
         Q_EMIT mysqlChanged();
     }
 }
@@ -742,7 +784,12 @@ void SettingsManager::setMqttPassword(const QString &value)
     if (m_mqttPassword != value)
     {
         m_mqttPassword = value;
+#ifdef ENABLE_SECURE_STORAGE
+        if (value.isEmpty()) SecretStore::remove(kMqttPasswordKey);
+        else SecretStore::write(kMqttPasswordKey, value);
+#else
         writeSettings();
+#endif
         Q_EMIT mqttChanged();
     }
 }

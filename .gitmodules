@@ -1,3 +1,6 @@
 [submodule "thirdparty/TheengsDecoder"]
 	path = thirdparty/TheengsDecoder
 	url = git@github.com:theengs/decoder.git
+[submodule "thirdparty/qtkeychain"]
+	path = thirdparty/qtkeychain
+	url = https://github.com/frankosterfeld/qtkeychain.git
