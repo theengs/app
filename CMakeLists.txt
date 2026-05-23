@@ -332,6 +332,7 @@ if(ENABLE_SECURE_STORAGE)
     # NOTE: Linux build hosts need libsecret headers (e.g. libsecret-1-dev) for the
     # Linux backend; not required on Android (Keystore) or Apple (Keychain).
     set(BUILD_WITH_QT6 ON CACHE BOOL "" FORCE)          # qtkeychain builds against Qt5 unless this is set
+    set(BUILD_TESTING OFF CACHE BOOL "" FORCE)          # skip qtkeychain's autotest (fails to link on iOS)
     set(BUILD_TEST_APPLICATION OFF CACHE BOOL "" FORCE)
     set(BUILD_TRANSLATIONS OFF CACHE BOOL "" FORCE)
     set(QTKEYCHAIN_STATIC ON CACHE BOOL "" FORCE)       # static; scopes BUILD_SHARED_LIBS to the subdir
