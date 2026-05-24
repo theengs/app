@@ -14,6 +14,7 @@ set(APP_VERSION ${CMAKE_PROJECT_VERSION})
 option(ENABLE_MQTT "MQTT broker support" ON)
 option(ENABLE_OPENSSL "OpenSSL for various encryption needs" ON)
 option(ENABLE_MBEDTLS "mbedTLS for various encryption needs" ON)
+option(ENABLE_SECURE_STORAGE "Store MQTT/MySQL passwords in the OS secure store via QtKeychain" ON)
 
 ################################################################################
 
@@ -316,6 +317,31 @@ if(ENABLE_MBEDTLS)
     #set(MbedTLS_DIR ${CMAKE_SOURCE_DIR}/contribs/env/${CONTRIBS_ARCH}/usr/lib/cmake/MbedTLS)
     #find_package(MbedTLS REQUIRED)
     #target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE MbedTLS::mbedtls)
+endif()
+
+if(ENABLE_SECURE_STORAGE)
+    # QtKeychain: stores credentials in the OS secure store rather than plaintext
+    # QSettings. Backends: Keychain (macOS/iOS), Credential Store (Windows),
+    # libsecret/KWallet (Linux), Android Keystore (Android). Bundled as a submodule.
+    #
+    # Pinned to qtkeychain 0.15.0 (earliest release that builds on Qt 6.8+ Android;
+    # 0.14.0's keychain_android.cpp fails to cast QtJniTypes::Context to jobject).
+    # Android Keystore is implemented in C++/JNI so no extra Java/Gradle glue is
+    # needed. The target propagates its own (build-tree) include dir; headers are
+    # included as <qtkeychain/keychain.h>.
+    # NOTE: Linux build hosts need libsecret headers (e.g. libsecret-1-dev) for the
+    # Linux backend; not required on Android (Keystore) or Apple (Keychain).
+    set(BUILD_WITH_QT6 ON CACHE BOOL "" FORCE)          # qtkeychain builds against Qt5 unless this is set
+    set(BUILD_TESTING OFF CACHE BOOL "" FORCE)          # skip qtkeychain's autotest (fails to link on iOS)
+    set(BUILD_TEST_APPLICATION OFF CACHE BOOL "" FORCE)
+    set(BUILD_TRANSLATIONS OFF CACHE BOOL "" FORCE)
+    set(QTKEYCHAIN_STATIC ON CACHE BOOL "" FORCE)       # static; scopes BUILD_SHARED_LIBS to the subdir
+    add_subdirectory(thirdparty/qtkeychain)
+
+    target_sources(${CMAKE_PROJECT_NAME} PRIVATE
+        src/utils/SecretStore.cpp src/utils/SecretStore.h)
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE qt6keychain)
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE ENABLE_SECURE_STORAGE)
 endif()
 
 ################################################################################
