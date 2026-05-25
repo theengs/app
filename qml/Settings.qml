@@ -520,7 +520,7 @@ Item {
 
                 visible: (Qt.platform.os === "android") // && (settingsManager.systray && element_worker.visible)
 
-                text: qsTr("Theengs keeps scanning for sensors when the app is closed, and refreshes their values on a regular interval. An ongoing notification appears while scanning — tap <b>Stop</b> there to turn it off at any time. Requires Bluetooth to be on.")
+                text: qsTr("Theengs keeps scanning for sensors when the app is closed, and refreshes their values at the interval set below. An ongoing notification appears while scanning — tap <b>Stop</b> there to turn it off at any time. Requires Bluetooth to be on.")
                 textFormat: Text.StyledText
                 wrapMode: Text.WordWrap
                 color: Theme.colorSubText
@@ -537,7 +537,7 @@ Item {
 
                 visible: isDesktop // && (settingsManager.systray && element_worker.visible)
 
-                text: (Qt.platform.os !== "osx") ? qsTr("Theengs will remain active in the system tray, and will wake up at a regular interval to refresh sensor data.") : qsTr("Theengs will refresh sensor data at a regular interval.")
+                text: (Qt.platform.os !== "osx") ? qsTr("Theengs stays active in the system tray and keeps refreshing sensor data while running.") : qsTr("Theengs keeps refreshing sensor data while running.")
                 textFormat: Text.PlainText
                 wrapMode: Text.WordWrap
                 color: Theme.colorSubText
@@ -554,8 +554,10 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: screenPaddingRight
 
-                // every platforms except iOS
-                visible: (Qt.platform.os !== "ios")
+                // Android only: the interval drives the background scan cadence
+                // (AndroidService work timer). Desktop scans continuously while
+                // in the system tray and ignores this value, so it is hidden there.
+                visible: (Qt.platform.os === "android")
 
                 IconSvg {
                     id: image_update_background
