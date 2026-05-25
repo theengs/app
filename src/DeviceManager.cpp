@@ -920,7 +920,14 @@ void DeviceManager::deviceDiscoveryFinished()
     // devices) — see DeviceManager_advertisement.cpp:91-237.
     scanDevices_start();
 #else
-    listenDevices_start();
+    // In the Android background service (daemon mode), do NOT self-restart the
+    // listen loop. AndroidService::gotowork() starts one listen window every
+    // updateIntervalBackground minutes (via refreshDevices_background), so the
+    // radio idles between windows and the user's "Update interval" setting
+    // actually governs the background scan cadence. The foreground UI manager
+    // (m_daemonMode == false, on both mobile and desktop) keeps re-arming for
+    // a responsive live view / continuous system-tray scanning.
+    if (!m_daemonMode) listenDevices_start();
 #endif
 }
 
