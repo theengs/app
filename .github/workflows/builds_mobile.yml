@@ -85,6 +85,27 @@ jobs:
                [ -d "$d/bin" ] && chmod -R +x "$d/bin"
                [ -d "$d/libexec" ] && chmod -R +x "$d/libexec"
              done
+             # Qt 6.10's Android executable finalizer
+             # (_qt_internal_android_create_runner_wrapper in
+             # Qt6AndroidMacros.cmake) configure_file()s a runner-wrapper
+             # template, lib/cmake/Qt6Core/Qt6CoreConfigureFileTemplate.in.
+             # The arm64-v8a prebuilt installed by install-qt-action ships
+             # it, but the raw `aqt install-qt` x86_64/armv7 prebuilts omit
+             # it, so the secondary-ABI configure dies with
+             #   Qt6AndroidMacros.cmake:... (configure_file): No such file or directory
+             # Backfill it from arm64-v8a (template is host/arch-agnostic).
+             ARM64_CORE="${QT_PARENT}/${QT_VERSION}/android_arm64_v8a/lib/cmake/Qt6Core"
+             TEMPLATE="${ARM64_CORE}/Qt6CoreConfigureFileTemplate.in"
+             if [ ! -f "$TEMPLATE" ]; then
+               echo "ERROR: reference template missing at $TEMPLATE"; exit 1
+             fi
+             for arch in android_x86_64 android_armv7; do
+               DEST="${QT_PARENT}/${QT_VERSION}/${arch}/lib/cmake/Qt6Core"
+               if [ ! -f "${DEST}/Qt6CoreConfigureFileTemplate.in" ]; then
+                 echo "Backfilling Qt6CoreConfigureFileTemplate.in into ${arch}"
+                 cp -v "$TEMPLATE" "${DEST}/"
+               fi
+             done
 
       # Qt 6.10.3's prebuilt android_armv7 package was assembled on a
       # Windows host (target_qt.conf records HostSpec=win32-g++ and
@@ -167,6 +188,15 @@ jobs:
                echo "qmake:              $(test -x "$D/bin/qmake" && echo OK || echo MISSING)"
                echo "Qt6Config.cmake:    $(test -f "$D/lib/cmake/Qt6/Qt6Config.cmake" && echo OK || echo MISSING)"
                echo "qtbase headers:     $(test -d "$D/include/QtCore" && echo OK || echo MISSING)"
+               # Android executable finalizer template; aqt prebuilts can
+               # omit it (backfilled in the install step). Missing here =>
+               # secondary-ABI configure will fail, so fail loudly now.
+               TPL="$D/lib/cmake/Qt6Core/Qt6CoreConfigureFileTemplate.in"
+               if [ -f "$TPL" ]; then
+                 echo "runner-wrapper tmpl: OK"
+               else
+                 echo "runner-wrapper tmpl: MISSING ($TPL)"; exit 1
+               fi
                "$D/bin/qmake" --version || { echo "qmake failed for ${arch}"; exit 1; }
              done
 
