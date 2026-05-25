@@ -53,10 +53,10 @@ public class TheengsAndroidService extends QtService {
     // receiver. Registered dynamically in onCreate() (RECEIVER_NOT_EXPORTED
     // on API 33+) so we don't need a manifest <receiver> entry.
     private static final String ACTION_STOP_FGS = "com.theengs.app.action.STOP_FGS";
-    // Background-work alarm (PROTOTYPE feat/background-alarm-doze): an
-    // AllowWhileIdle AlarmManager alarm drives gotowork() so the background
-    // refresh interval is honoured through deep doze, where the old C++
-    // QTimer (a non-wakeup timerfd) was deferred to maintenance windows.
+    // Background-work alarm: an (exact) AllowWhileIdle AlarmManager alarm drives
+    // gotowork() so the background refresh interval is honoured through deep
+    // doze, where the old C++ QTimer (a non-wakeup timerfd) was deferred to doze
+    // maintenance windows (device-measured ~1-3 h gaps).
     private static final String ACTION_WORK = "com.theengs.app.action.WORK";
     private static final int REQUEST_CODE_WORK = 1102;
 
@@ -332,11 +332,16 @@ public class TheengsAndroidService extends QtService {
     /**
      * Schedule the next background-work tick via an AllowWhileIdle alarm.
      * Called from C++ (AndroidService::scheduleNextWork) at startup and at the
-     * end of every gotowork(). setAndAllowWhileIdle fires through doze (and,
-     * because the app is battery-"Unrestricted"/doze-whitelisted, without the
-     * ~9-min allow-while-idle throttle that would otherwise apply). PROTOTYPE:
-     * production should consider setExactAndAllowWhileIdle + USE_EXACT_ALARM
-     * for precise (non-batched) timing.
+     * end of every gotowork().
+     *
+     * Prefers {@code setExactAndAllowWhileIdle}: it fires at the requested time
+     * even in deep doze, so the user's "Update interval" is honoured precisely.
+     * That needs SCHEDULE_EXACT_ALARM — auto-granted on API 31-32, user-grantable
+     * on 33+. When it isn't granted (canScheduleExactAlarms() == false, or a
+     * race throws SecurityException) we degrade to {@code setAndAllowWhileIdle}:
+     * still fires through doze, but Android batches it so the effective interval
+     * runs longer (measured ~+50%). Either way the alarm pierces doze, unlike a
+     * non-wakeup timer which is deferred to maintenance windows.
      */
     public static void scheduleWork(int delayMillis) {
         TheengsAndroidService self = sInstance;
@@ -344,13 +349,28 @@ public class TheengsAndroidService extends QtService {
         AlarmManager am = (AlarmManager) self.getSystemService(Context.ALARM_SERVICE);
         if (am == null) return;
         long at = System.currentTimeMillis() + Math.max(0, delayMillis);
+        PendingIntent pi = workPendingIntent(self);
+        // canScheduleExactAlarms() is API 31+; below that exact alarms are
+        // always permitted (minSdk is 23, so setExactAndAllowWhileIdle exists).
+        boolean canExact = Build.VERSION.SDK_INT < Build.VERSION_CODES.S
+                           || am.canScheduleExactAlarms();
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, workPendingIntent(self));
+            if (canExact) {
+                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi);
+                Log.i(TAG, "scheduled EXACT work alarm in " + delayMillis + "ms");
             } else {
-                am.set(AlarmManager.RTC_WAKEUP, at, workPendingIntent(self));
+                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi);
+                Log.i(TAG, "scheduled inexact work alarm in " + delayMillis
+                        + "ms (SCHEDULE_EXACT_ALARM not granted)");
             }
-            Log.i(TAG, "scheduled work alarm in " + delayMillis + "ms");
+        } catch (SecurityException se) {
+            // Exact permission revoked between the check and the call.
+            try {
+                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi);
+                Log.w(TAG, "exact alarm denied, fell back to inexact", se);
+            } catch (Exception e) {
+                Log.e(TAG, "scheduleWork fallback failed", e);
+            }
         } catch (Exception e) {
             Log.e(TAG, "scheduleWork failed", e);
         }

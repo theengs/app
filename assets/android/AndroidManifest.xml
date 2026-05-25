@@ -19,6 +19,11 @@
     <!-- Held briefly when the AllowWhileIdle work alarm fires, so the CPU
          stays awake through the background scan window in deep doze. -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- Lets the background-work alarm fire at the user's exact "Update
+         interval" through doze (setExactAndAllowWhileIdle). Auto-granted on
+         API 31-32, user-grantable on 33+; scheduleWork() degrades to an inexact
+         AllowWhileIdle alarm when it isn't granted. -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" android:minSdkVersion="29" />
     <!-- Foreground-service permissions so the BLE-scan service can keep scanning
          past the screen-off cliff. FOREGROUND_SERVICE is required since API 28;
