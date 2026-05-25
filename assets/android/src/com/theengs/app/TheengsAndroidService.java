@@ -20,6 +20,7 @@ package com.theengs.app;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -31,6 +32,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
+import android.os.PowerManager;
 import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
@@ -51,6 +53,12 @@ public class TheengsAndroidService extends QtService {
     // receiver. Registered dynamically in onCreate() (RECEIVER_NOT_EXPORTED
     // on API 33+) so we don't need a manifest <receiver> entry.
     private static final String ACTION_STOP_FGS = "com.theengs.app.action.STOP_FGS";
+    // Background-work alarm (PROTOTYPE feat/background-alarm-doze): an
+    // AllowWhileIdle AlarmManager alarm drives gotowork() so the background
+    // refresh interval is honoured through deep doze, where the old C++
+    // QTimer (a non-wakeup timerfd) was deferred to maintenance windows.
+    private static final String ACTION_WORK = "com.theengs.app.action.WORK";
+    private static final int REQUEST_CODE_WORK = 1102;
 
     // Request code for the POST_NOTIFICATIONS runtime-permission dialog
     // (Android 13+). We don't observe the result here — the foreground
@@ -76,18 +84,54 @@ public class TheengsAndroidService extends QtService {
         }
     };
 
+    // Fired by the AllowWhileIdle alarm. Hands control to C++ (gotowork()),
+    // which does the scan + reschedules the next alarm via scheduleWork().
+    private final BroadcastReceiver mWorkReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "Work alarm fired");
+            // Hold a timed partial wakelock so the CPU stays awake through the
+            // ~60s background scan window that gotowork() kicks off; otherwise
+            // the broadcast wakelock is released the moment onReceive returns
+            // and the device re-suspends mid-scan (nothing gets decoded).
+            // Auto-releases at the timeout, so no explicit release needed.
+            try {
+                PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+                if (pm != null) {
+                    PowerManager.WakeLock wl = pm.newWakeLock(
+                        PowerManager.PARTIAL_WAKE_LOCK, "theengs:work");
+                    wl.setReferenceCounted(false);
+                    wl.acquire(65_000);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "work wakelock failed", e);
+            }
+            try {
+                nativeOnWorkAlarm();
+            } catch (Throwable t) {
+                Log.e(TAG, "nativeOnWorkAlarm failed", t);
+            }
+        }
+    };
+
+    // Implemented in C++ (AndroidService), registered via
+    // QJniEnvironment::registerNativeMethods. Posts gotowork() onto the Qt
+    // service thread.
+    private static native void nativeOnWorkAlarm();
+
     @Override
     public void onCreate() {
         super.onCreate();
         sInstance = this;
-        IntentFilter filter = new IntentFilter(ACTION_STOP_FGS);
         try {
             // RECEIVER_NOT_EXPORTED is required on API 34+ for unprotected
             // dynamically-registered receivers; harmless flag on 33.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                registerReceiver(mStopReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+                registerReceiver(mStopReceiver, new IntentFilter(ACTION_STOP_FGS), Context.RECEIVER_NOT_EXPORTED);
+                registerReceiver(mWorkReceiver, new IntentFilter(ACTION_WORK), Context.RECEIVER_NOT_EXPORTED);
             } else {
-                registerReceiver(mStopReceiver, filter);
+                registerReceiver(mStopReceiver, new IntentFilter(ACTION_STOP_FGS));
+                registerReceiver(mWorkReceiver, new IntentFilter(ACTION_WORK));
             }
         } catch (Exception e) {
             Log.e(TAG, "registerReceiver failed", e);
@@ -105,8 +149,10 @@ public class TheengsAndroidService extends QtService {
     @Override
     public void onDestroy() {
         sInstance = null;
+        cancelWork();
         try {
             unregisterReceiver(mStopReceiver);
+            unregisterReceiver(mWorkReceiver);
         } catch (Exception e) {
             // Swallow: receiver may not have registered if onCreate threw.
         }
@@ -275,6 +321,49 @@ public class TheengsAndroidService extends QtService {
     }
 
     ////////////////////////////////////////////////////////////////////////////
+
+    private static PendingIntent workPendingIntent(Context ctx) {
+        Intent i = new Intent(ACTION_WORK).setPackage(ctx.getPackageName());
+        return PendingIntent.getBroadcast(
+            ctx, REQUEST_CODE_WORK, i,
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+    }
+
+    /**
+     * Schedule the next background-work tick via an AllowWhileIdle alarm.
+     * Called from C++ (AndroidService::scheduleNextWork) at startup and at the
+     * end of every gotowork(). setAndAllowWhileIdle fires through doze (and,
+     * because the app is battery-"Unrestricted"/doze-whitelisted, without the
+     * ~9-min allow-while-idle throttle that would otherwise apply). PROTOTYPE:
+     * production should consider setExactAndAllowWhileIdle + USE_EXACT_ALARM
+     * for precise (non-batched) timing.
+     */
+    public static void scheduleWork(int delayMillis) {
+        TheengsAndroidService self = sInstance;
+        if (self == null) return;
+        AlarmManager am = (AlarmManager) self.getSystemService(Context.ALARM_SERVICE);
+        if (am == null) return;
+        long at = System.currentTimeMillis() + Math.max(0, delayMillis);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, workPendingIntent(self));
+            } else {
+                am.set(AlarmManager.RTC_WAKEUP, at, workPendingIntent(self));
+            }
+            Log.i(TAG, "scheduled work alarm in " + delayMillis + "ms");
+        } catch (Exception e) {
+            Log.e(TAG, "scheduleWork failed", e);
+        }
+    }
+
+    public static void cancelWork() {
+        TheengsAndroidService self = sInstance;
+        if (self == null) return;
+        AlarmManager am = (AlarmManager) self.getSystemService(Context.ALARM_SERVICE);
+        if (am != null) {
+            try { am.cancel(workPendingIntent(self)); } catch (Exception e) { /* ignore */ }
+        }
+    }
 
     public static void serviceStart(android.content.Context context) {
         android.content.Intent pQtAndroidService = new android.content.Intent(context, TheengsAndroidService.class);
