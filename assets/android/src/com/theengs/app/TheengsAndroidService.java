@@ -31,6 +31,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.util.Log;
@@ -318,6 +319,40 @@ public class TheengsAndroidService extends QtService {
         ActivityCompat.requestPermissions(activity,
             new String[]{Manifest.permission.POST_NOTIFICATIONS},
             REQUEST_CODE_POST_NOTIFICATIONS);
+    }
+
+    /**
+     * True when the app may schedule exact alarms. Always true below API 31
+     * (exact alarms are unrestricted there); on 31+ reflects
+     * AlarmManager.canScheduleExactAlarms() — auto-granted on 31-33, denied by
+     * default on 34+. Called from C++ (PermissionManager) via JNI.
+     */
+    public static boolean canScheduleExactAlarms(Context ctx) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return true;
+        AlarmManager am = (AlarmManager) ctx.getSystemService(Context.ALARM_SERVICE);
+        return am != null && am.canScheduleExactAlarms();
+    }
+
+    /**
+     * Open Settings → Alarms & reminders for this app so the user can grant
+     * SCHEDULE_EXACT_ALARM (needed for precise interval timing on API 34+).
+     * No-op below API 31 or when already granted. Asynchronous — re-check via
+     * {@link #canScheduleExactAlarms(Context)} when the activity resumes.
+     */
+    public static void requestScheduleExactAlarms(Context ctx) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return;
+        if (canScheduleExactAlarms(ctx)) return;
+        try {
+            // Literal value of AlarmManager.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+            // (API 31) — used directly so it compiles regardless of the build's
+            // android.jar; gated by SDK_INT >= S above so it only runs on 31+.
+            Intent i = new Intent("android.app.action.REQUEST_SCHEDULE_EXACT_ALARM")
+                .setData(Uri.parse("package:" + ctx.getPackageName()))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            ctx.startActivity(i);
+        } catch (Exception e) {
+            Log.e(TAG, "requestScheduleExactAlarms failed", e);
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////

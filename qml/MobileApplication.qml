@@ -272,6 +272,10 @@ Window {
                     // MQTT
                     mqttManager.reconnect()
 
+                    // Re-check exact-alarm grant (user may have toggled it in
+                    // Settings → Alarms & reminders); updates the Settings prompt.
+                    permissionManager.checkExactAlarmPermission()
+
                     if (appContent.state === "DeviceBrowser") {
                         // Restart the device browser
                         deviceManager.scanNearby_start()

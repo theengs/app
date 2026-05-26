@@ -121,6 +121,15 @@ void PermissionManager::setNotificationPermission(bool perm)
     }
 }
 
+void PermissionManager::setExactAlarmPermission(bool perm)
+{
+    if (m_exactAlarmPermission != perm)
+    {
+        m_exactAlarmPermission = perm;
+        Q_EMIT exactAlarmPermissionChanged();
+    }
+}
+
 /* ************************************************************************** */
 /* ************************************************************************** */
 
@@ -467,6 +476,57 @@ bool PermissionManager::requestNotificationPermission()
 #else
     setNotificationPermission(true);
     return m_notificationPermission;
+#endif
+}
+
+/* ************************************************************************** */
+
+bool PermissionManager::checkExactAlarmPermission()
+{
+#if defined(Q_OS_ANDROID)
+    // The Java helper short-circuits to true below API 31 and otherwise
+    // returns AlarmManager.canScheduleExactAlarms().
+    QJniObject context = QNativeInterface::QAndroidApplication::context();
+    if (!context.isValid())
+    {
+        setExactAlarmPermission(false);
+        return m_exactAlarmPermission;
+    }
+
+    jboolean granted = QJniObject::callStaticMethod<jboolean>(
+        "com/theengs/app/TheengsAndroidService",
+        "canScheduleExactAlarms",
+        "(Landroid/content/Context;)Z",
+        context.object<jobject>());
+    setExactAlarmPermission(granted == JNI_TRUE);
+    return m_exactAlarmPermission;
+#else
+    setExactAlarmPermission(true);
+    return m_exactAlarmPermission;
+#endif
+}
+
+bool PermissionManager::requestExactAlarmPermission()
+{
+#if defined(Q_OS_ANDROID)
+    // Already granted (or pre-API-31, or 31-33 auto-grant) — nothing to do.
+    if (checkExactAlarmPermission()) return true;
+
+    QJniObject context = QNativeInterface::QAndroidApplication::context();
+    if (!context.isValid()) return false;
+
+    // Opens Settings → Alarms & reminders for this app. Asynchronous; the
+    // user grants out-of-app and we re-check the property on resume.
+    qDebug() << "Requesting SCHEDULE_EXACT_ALARM (opening settings)...";
+    QJniObject::callStaticMethod<void>(
+        "com/theengs/app/TheengsAndroidService",
+        "requestScheduleExactAlarms",
+        "(Landroid/content/Context;)V",
+        context.object<jobject>());
+    return m_exactAlarmPermission;
+#else
+    setExactAlarmPermission(true);
+    return m_exactAlarmPermission;
 #endif
 }
 
