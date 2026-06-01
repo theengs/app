@@ -22,7 +22,6 @@
 
 #include <QtGlobal>
 #include <QObject>
-#include <QTimer>
 
 class DeviceManager;
 class SettingsManager;
@@ -39,8 +38,12 @@ class AndroidService: public QObject
 {
     Q_OBJECT
 
-    QTimer m_workTimer;
-    void setWorkTimer(int workInterval_mins = 5);
+    // Background work is driven by an AllowWhileIdle AlarmManager alarm (Java
+    // side), not a QTimer: a non-wakeup QTimer is deferred to doze maintenance
+    // windows (device-measured ~1-3h gaps), so the user's "Update interval"
+    // was not honoured in deep doze. scheduleNextWork() asks Java to set the
+    // next alarm; the alarm fires nativeOnWorkAlarm() -> gotowork().
+    void scheduleNextWork(int workInterval_mins);
 
     DeviceManager *m_deviceManager = nullptr;
     SettingsManager *m_settingsManager = nullptr;
@@ -53,6 +56,10 @@ private slots:
 public:
     AndroidService(QObject *parent = nullptr);
     ~AndroidService();
+
+    // Set in the ctor; used by the alarm JNI callback to post gotowork() onto
+    // this object's (Qt service) thread.
+    static AndroidService *s_instance;
 
     static void service_start();
     static void service_stop();

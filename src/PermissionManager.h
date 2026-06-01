@@ -58,6 +58,16 @@ class PermissionManager: public QObject
     // 6.10 has no typed QPermission for this, so we go through JNI (the
     // Java side lives in TheengsAndroidService).
     Q_PROPERTY(bool notificationPermission READ hasNotificationPermission NOTIFY notificationPermissionChanged)
+    // Android 12+ (API 31+) SCHEDULE_EXACT_ALARM — lets the background-work
+    // alarm fire at the exact "Update interval" through doze. Auto-granted on
+    // API 31-33, but DENIED by default on API 34+ (the user must grant it in
+    // Settings → Alarms & reminders). True on older Android / non-Android.
+    Q_PROPERTY(bool exactAlarmPermission READ hasExactAlarmPermission NOTIFY exactAlarmPermissionChanged)
+    // Android 6+ (API 23+) battery-optimization exemption. False when the app
+    // is still optimized (Doze/app-standby can defer its background-work
+    // alarms); the user grants it through a one-tap system dialog. True on
+    // older Android / non-Android.
+    Q_PROPERTY(bool batteryOptimizationPermission READ hasBatteryOptimizationPermission NOTIFY batteryOptimizationPermissionChanged)
 
     static PermissionManager *instance;
     PermissionManager();
@@ -73,6 +83,8 @@ class PermissionManager: public QObject
     bool m_locationPermission = false;
     bool m_microphonePermission = false;
     bool m_notificationPermission = false;
+    bool m_exactAlarmPermission = true; // default true: only Android 12+ can deny it
+    bool m_batteryOptimizationPermission = true; // default true: only Android 6+ can deny it
 
     void setBluetoothPermission(bool perm);
     void setCalendarPermission(bool perm);
@@ -81,6 +93,8 @@ class PermissionManager: public QObject
     void setLocationPermission(bool perm);
     void setMicrophonePermission(bool perm);
     void setNotificationPermission(bool perm);
+    void setExactAlarmPermission(bool perm);
+    void setBatteryOptimizationPermission(bool perm);
 
     void requestBluetoothPermission_results(const QPermission &permission);
     void requestCameraPermission_results(const QPermission &permission);
@@ -94,6 +108,8 @@ Q_SIGNALS:
     void locationPermissionChanged();
     void microphonePermissionChanged();
     void notificationPermissionChanged();
+    void exactAlarmPermissionChanged();
+    void batteryOptimizationPermissionChanged();
 
 public:
     static PermissionManager *getInstance();
@@ -105,6 +121,8 @@ public:
     bool hasLocationPermission() const { return m_locationPermission; }
     bool hasMicrophonePermission() const { return m_microphonePermission; }
     bool hasNotificationPermission() const { return m_notificationPermission; }
+    bool hasExactAlarmPermission() const { return m_exactAlarmPermission; }
+    bool hasBatteryOptimizationPermission() const { return m_batteryOptimizationPermission; }
 
     Q_INVOKABLE bool requestBluetoothPermission();
     Q_INVOKABLE bool checkBluetoothPermission();
@@ -124,6 +142,19 @@ public:
     // attempt; QML can re-check via the property when the activity resumes.
     Q_INVOKABLE bool requestNotificationPermission();
     Q_INVOKABLE bool checkNotificationPermission();
+
+    // SCHEDULE_EXACT_ALARM (Android 12+). check returns current state;
+    // request opens Settings → Alarms & reminders (ACTION_REQUEST_SCHEDULE_
+    // EXACT_ALARM) on API 31+. No-op / always-granted elsewhere. Like the
+    // notification one, fire-and-forget: re-check the property on resume.
+    Q_INVOKABLE bool requestExactAlarmPermission();
+    Q_INVOKABLE bool checkExactAlarmPermission();
+
+    // REQUEST_IGNORE_BATTERY_OPTIMIZATIONS (Android 6+). check returns current
+    // exemption state; request shows the system one-tap dialog. No-op /
+    // always-granted elsewhere. Fire-and-forget: re-check on resume.
+    Q_INVOKABLE bool requestBatteryOptimizationPermission();
+    Q_INVOKABLE bool checkBatteryOptimizationPermission();
 };
 
 /* ************************************************************************** */

@@ -30,13 +30,29 @@
 #include <QtCore/private/qandroidextras_p.h>
 #include <QCoreApplication>
 #include <QDateTime>
-#include <QTimer>
+#include <QMetaObject>
 #include <QDebug>
+#include <jni.h>
+
+/* ************************************************************************** */
+
+AndroidService *AndroidService::s_instance = nullptr;
+
+// Called by TheengsAndroidService.mWorkReceiver when the AllowWhileIdle alarm
+// fires (on the service's Java/Binder thread). Marshal onto the Qt service
+// thread so gotowork() touches DeviceManager/QObjects safely.
+static void jni_onWorkAlarm(JNIEnv *, jclass)
+{
+    if (AndroidService::s_instance)
+        QMetaObject::invokeMethod(AndroidService::s_instance, "gotowork", Qt::QueuedConnection);
+}
 
 /* ************************************************************************** */
 
 AndroidService::AndroidService(QObject *parent) : QObject(parent)
 {
+    s_instance = this;
+
     DatabaseManager::getInstance();
 
     m_settingsManager = SettingsManager::getInstance();
@@ -44,26 +60,40 @@ AndroidService::AndroidService(QObject *parent) : QObject(parent)
     //m_notificationManager = NotificationManager::getInstance(); // DEBUG
     //m_notificationManager->setNotification("AndroidService starting", QDateTime::currentDateTime().toString());
 
+    // Bind the Java `nativeOnWorkAlarm()` declaration to jni_onWorkAlarm above
+    // so the alarm broadcast can re-enter C++.
+    {
+        QJniEnvironment env;
+        const JNINativeMethod m = {
+            const_cast<char *>("nativeOnWorkAlarm"),
+            const_cast<char *>("()V"),
+            reinterpret_cast<void *>(jni_onWorkAlarm)
+        };
+        if (!env.registerNativeMethods("com/theengs/app/TheengsAndroidService", &m, 1))
+            qWarning() << "AndroidService: registerNativeMethods(nativeOnWorkAlarm) failed";
+    }
+
     // Pushes live BLE-reading content into the foreground-service
     // notification owned by the :qt_service process.
     m_foregroundNotifier = new ForegroundNotifier(this);
 
-    // Configure update timer
-    connect(&m_workTimer, &QTimer::timeout, this, &AndroidService::gotowork);
-    setWorkTimer(3);
+    // First background tick in 3 min (matches the prior QTimer(3) startup
+    // behaviour); gotowork() then reschedules at updateIntervalBackground.
+    scheduleNextWork(3);
 }
 
 AndroidService::~AndroidService()
 {
-    //
+    if (s_instance == this) s_instance = nullptr;
 }
 
 /* ************************************************************************** */
 
-void AndroidService::setWorkTimer(int workInterval_mins)
+void AndroidService::scheduleNextWork(int workInterval_mins)
 {
-    m_workTimer.setInterval(workInterval_mins*60*1000);
-    m_workTimer.start();
+    QJniObject::callStaticMethod<void>("com.theengs.app.TheengsAndroidService",
+                                       "scheduleWork", "(I)V",
+                                       static_cast<jint>(workInterval_mins * 60 * 1000));
 }
 
 void AndroidService::gotowork()
@@ -103,8 +133,8 @@ void AndroidService::gotowork()
         }
     }
 
-    // Restart timer
-    setWorkTimer(m_settingsManager->getUpdateIntervalBackground());
+    // Schedule the next tick (AllowWhileIdle alarm — fires through deep doze).
+    scheduleNextWork(m_settingsManager->getUpdateIntervalBackground());
 }
 
 /* ************************************************************************** */

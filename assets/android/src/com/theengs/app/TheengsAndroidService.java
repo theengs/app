@@ -20,6 +20,7 @@ package com.theengs.app;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -30,7 +31,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
+import android.net.Uri;
 import android.os.Build;
+import android.os.PowerManager;
 import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
@@ -51,6 +54,12 @@ public class TheengsAndroidService extends QtService {
     // receiver. Registered dynamically in onCreate() (RECEIVER_NOT_EXPORTED
     // on API 33+) so we don't need a manifest <receiver> entry.
     private static final String ACTION_STOP_FGS = "com.theengs.app.action.STOP_FGS";
+    // Background-work alarm: an (exact) AllowWhileIdle AlarmManager alarm drives
+    // gotowork() so the background refresh interval is honoured through deep
+    // doze, where the old C++ QTimer (a non-wakeup timerfd) was deferred to doze
+    // maintenance windows (device-measured ~1-3 h gaps).
+    private static final String ACTION_WORK = "com.theengs.app.action.WORK";
+    private static final int REQUEST_CODE_WORK = 1102;
 
     // Request code for the POST_NOTIFICATIONS runtime-permission dialog
     // (Android 13+). We don't observe the result here — the foreground
@@ -76,18 +85,54 @@ public class TheengsAndroidService extends QtService {
         }
     };
 
+    // Fired by the AllowWhileIdle alarm. Hands control to C++ (gotowork()),
+    // which does the scan + reschedules the next alarm via scheduleWork().
+    private final BroadcastReceiver mWorkReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "Work alarm fired");
+            // Hold a timed partial wakelock so the CPU stays awake through the
+            // ~60s background scan window that gotowork() kicks off; otherwise
+            // the broadcast wakelock is released the moment onReceive returns
+            // and the device re-suspends mid-scan (nothing gets decoded).
+            // Auto-releases at the timeout, so no explicit release needed.
+            try {
+                PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+                if (pm != null) {
+                    PowerManager.WakeLock wl = pm.newWakeLock(
+                        PowerManager.PARTIAL_WAKE_LOCK, "theengs:work");
+                    wl.setReferenceCounted(false);
+                    wl.acquire(65_000);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "work wakelock failed", e);
+            }
+            try {
+                nativeOnWorkAlarm();
+            } catch (Throwable t) {
+                Log.e(TAG, "nativeOnWorkAlarm failed", t);
+            }
+        }
+    };
+
+    // Implemented in C++ (AndroidService), registered via
+    // QJniEnvironment::registerNativeMethods. Posts gotowork() onto the Qt
+    // service thread.
+    private static native void nativeOnWorkAlarm();
+
     @Override
     public void onCreate() {
         super.onCreate();
         sInstance = this;
-        IntentFilter filter = new IntentFilter(ACTION_STOP_FGS);
         try {
             // RECEIVER_NOT_EXPORTED is required on API 34+ for unprotected
             // dynamically-registered receivers; harmless flag on 33.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                registerReceiver(mStopReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+                registerReceiver(mStopReceiver, new IntentFilter(ACTION_STOP_FGS), Context.RECEIVER_NOT_EXPORTED);
+                registerReceiver(mWorkReceiver, new IntentFilter(ACTION_WORK), Context.RECEIVER_NOT_EXPORTED);
             } else {
-                registerReceiver(mStopReceiver, filter);
+                registerReceiver(mStopReceiver, new IntentFilter(ACTION_STOP_FGS));
+                registerReceiver(mWorkReceiver, new IntentFilter(ACTION_WORK));
             }
         } catch (Exception e) {
             Log.e(TAG, "registerReceiver failed", e);
@@ -105,8 +150,10 @@ public class TheengsAndroidService extends QtService {
     @Override
     public void onDestroy() {
         sInstance = null;
+        cancelWork();
         try {
             unregisterReceiver(mStopReceiver);
+            unregisterReceiver(mWorkReceiver);
         } catch (Exception e) {
             // Swallow: receiver may not have registered if onCreate threw.
         }
@@ -274,7 +321,135 @@ public class TheengsAndroidService extends QtService {
             REQUEST_CODE_POST_NOTIFICATIONS);
     }
 
+    /**
+     * True when the app may schedule exact alarms. Always true below API 31
+     * (exact alarms are unrestricted there); on 31+ reflects
+     * AlarmManager.canScheduleExactAlarms() — auto-granted on 31-33, denied by
+     * default on 34+. Called from C++ (PermissionManager) via JNI.
+     */
+    public static boolean canScheduleExactAlarms(Context ctx) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return true;
+        AlarmManager am = (AlarmManager) ctx.getSystemService(Context.ALARM_SERVICE);
+        return am != null && am.canScheduleExactAlarms();
+    }
+
+    /**
+     * Open Settings → Alarms & reminders for this app so the user can grant
+     * SCHEDULE_EXACT_ALARM (needed for precise interval timing on API 34+).
+     * No-op below API 31 or when already granted. Asynchronous — re-check via
+     * {@link #canScheduleExactAlarms(Context)} when the activity resumes.
+     */
+    public static void requestScheduleExactAlarms(Context ctx) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return;
+        if (canScheduleExactAlarms(ctx)) return;
+        try {
+            // Literal value of Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+            // (API 31) — used directly so it compiles regardless of the build's
+            // android.jar; gated by SDK_INT >= S above so it only runs on 31+.
+            Intent i = new Intent("android.settings.REQUEST_SCHEDULE_EXACT_ALARM")
+                .setData(Uri.parse("package:" + ctx.getPackageName()))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            ctx.startActivity(i);
+        } catch (Exception e) {
+            Log.e(TAG, "requestScheduleExactAlarms failed", e);
+        }
+    }
+
+    /**
+     * True when the app is exempt from battery optimizations, so Doze /
+     * app-standby won't defer its background-work alarms. Always true below
+     * API 23. Called from C++ (PermissionManager) via JNI.
+     */
+    public static boolean isIgnoringBatteryOptimizations(Context ctx) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true;
+        PowerManager pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
+        return pm != null && pm.isIgnoringBatteryOptimizations(ctx.getPackageName());
+    }
+
+    /**
+     * Show the system "ignore battery optimizations" dialog for this app.
+     * No-op below API 23 or when already exempt. Requires the
+     * REQUEST_IGNORE_BATTERY_OPTIMIZATIONS manifest permission. Asynchronous —
+     * re-check via {@link #isIgnoringBatteryOptimizations(Context)} on resume.
+     */
+    public static void requestIgnoreBatteryOptimizations(Context ctx) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return;
+        if (isIgnoringBatteryOptimizations(ctx)) return;
+        try {
+            // Literal value of Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS.
+            Intent i = new Intent("android.settings.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS")
+                .setData(Uri.parse("package:" + ctx.getPackageName()))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            ctx.startActivity(i);
+        } catch (Exception e) {
+            Log.e(TAG, "requestIgnoreBatteryOptimizations failed", e);
+        }
+    }
+
     ////////////////////////////////////////////////////////////////////////////
+
+    private static PendingIntent workPendingIntent(Context ctx) {
+        Intent i = new Intent(ACTION_WORK).setPackage(ctx.getPackageName());
+        return PendingIntent.getBroadcast(
+            ctx, REQUEST_CODE_WORK, i,
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+    }
+
+    /**
+     * Schedule the next background-work tick via an AllowWhileIdle alarm.
+     * Called from C++ (AndroidService::scheduleNextWork) at startup and at the
+     * end of every gotowork().
+     *
+     * Prefers {@code setExactAndAllowWhileIdle}: it fires at the requested time
+     * even in deep doze, so the user's "Update interval" is honoured precisely.
+     * That needs SCHEDULE_EXACT_ALARM — auto-granted on API 31-32, user-grantable
+     * on 33+. When it isn't granted (canScheduleExactAlarms() == false, or a
+     * race throws SecurityException) we degrade to {@code setAndAllowWhileIdle}:
+     * still fires through doze, but Android batches it so the effective interval
+     * runs longer (measured ~+50%). Either way the alarm pierces doze, unlike a
+     * non-wakeup timer which is deferred to maintenance windows.
+     */
+    public static void scheduleWork(int delayMillis) {
+        TheengsAndroidService self = sInstance;
+        if (self == null) return;
+        AlarmManager am = (AlarmManager) self.getSystemService(Context.ALARM_SERVICE);
+        if (am == null) return;
+        long at = System.currentTimeMillis() + Math.max(0, delayMillis);
+        PendingIntent pi = workPendingIntent(self);
+        // canScheduleExactAlarms() is API 31+; below that exact alarms are
+        // always permitted (minSdk is 23, so setExactAndAllowWhileIdle exists).
+        boolean canExact = Build.VERSION.SDK_INT < Build.VERSION_CODES.S
+                           || am.canScheduleExactAlarms();
+        try {
+            if (canExact) {
+                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi);
+                Log.i(TAG, "scheduled EXACT work alarm in " + delayMillis + "ms");
+            } else {
+                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi);
+                Log.i(TAG, "scheduled inexact work alarm in " + delayMillis
+                        + "ms (SCHEDULE_EXACT_ALARM not granted)");
+            }
+        } catch (SecurityException se) {
+            // Exact permission revoked between the check and the call.
+            try {
+                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi);
+                Log.w(TAG, "exact alarm denied, fell back to inexact", se);
+            } catch (Exception e) {
+                Log.e(TAG, "scheduleWork fallback failed", e);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "scheduleWork failed", e);
+        }
+    }
+
+    public static void cancelWork() {
+        TheengsAndroidService self = sInstance;
+        if (self == null) return;
+        AlarmManager am = (AlarmManager) self.getSystemService(Context.ALARM_SERVICE);
+        if (am != null) {
+            try { am.cancel(workPendingIntent(self)); } catch (Exception e) { /* ignore */ }
+        }
+    }
 
     public static void serviceStart(android.content.Context context) {
         android.content.Intent pQtAndroidService = new android.content.Intent(context, TheengsAndroidService.class);

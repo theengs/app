@@ -9,17 +9,6 @@ Item {
 
     ////////////////////////////////////////////////////////////////////////////
 
-    PopupBackgroundUpdates {
-        id: popupBackgroundUpdates
-
-        onClosed: {
-            settingsManager.systray = utilsApp.checkMobileBackgroundLocationPermission()
-            switch_worker.checked = settingsManager.systray
-        }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-
     Flickable {
         anchors.fill: parent
 
@@ -441,7 +430,7 @@ Item {
                     colorBorder: Theme.colorPrimary
                     colorText: Theme.colorPrimary
 
-                    onClicked: popupBackgroundUpdates.open()
+                    onClicked: screenBackgroundPermissions.loadScreenFrom("Settings")
                 }
             }
 
@@ -499,12 +488,24 @@ Item {
                         if (isMobile) {
                             if (checked) {
                                 checked = false
-                                popupBackgroundUpdates.open()
+                                screenBackgroundPermissions.loadScreenFrom("Settings")
                             } else {
                                 settingsManager.systray = false
                             }
                         } else {
                             settingsManager.systray = checked
+                        }
+                    }
+
+                    // Tapping the switch (and SwitchThemed's own toggle) assigns
+                    // `checked` imperatively, which severs the `checked: …systray`
+                    // binding above. Re-sync it whenever systray changes — most
+                    // importantly when the background-updates permission page
+                    // grants background location and flips systray on.
+                    Connections {
+                        target: settingsManager
+                        function onSystrayChanged() {
+                            switch_worker.checked = settingsManager.systray
                         }
                     }
                 }
