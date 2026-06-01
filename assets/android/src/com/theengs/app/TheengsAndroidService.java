@@ -355,6 +355,37 @@ public class TheengsAndroidService extends QtService {
         }
     }
 
+    /**
+     * True when the app is exempt from battery optimizations, so Doze /
+     * app-standby won't defer its background-work alarms. Always true below
+     * API 23. Called from C++ (PermissionManager) via JNI.
+     */
+    public static boolean isIgnoringBatteryOptimizations(Context ctx) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true;
+        PowerManager pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
+        return pm != null && pm.isIgnoringBatteryOptimizations(ctx.getPackageName());
+    }
+
+    /**
+     * Show the system "ignore battery optimizations" dialog for this app.
+     * No-op below API 23 or when already exempt. Requires the
+     * REQUEST_IGNORE_BATTERY_OPTIMIZATIONS manifest permission. Asynchronous —
+     * re-check via {@link #isIgnoringBatteryOptimizations(Context)} on resume.
+     */
+    public static void requestIgnoreBatteryOptimizations(Context ctx) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return;
+        if (isIgnoringBatteryOptimizations(ctx)) return;
+        try {
+            // Literal value of Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS.
+            Intent i = new Intent("android.settings.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS")
+                .setData(Uri.parse("package:" + ctx.getPackageName()))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            ctx.startActivity(i);
+        } catch (Exception e) {
+            Log.e(TAG, "requestIgnoreBatteryOptimizations failed", e);
+        }
+    }
+
     ////////////////////////////////////////////////////////////////////////////
 
     private static PendingIntent workPendingIntent(Context ctx) {

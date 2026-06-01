@@ -63,6 +63,11 @@ class PermissionManager: public QObject
     // API 31-33, but DENIED by default on API 34+ (the user must grant it in
     // Settings → Alarms & reminders). True on older Android / non-Android.
     Q_PROPERTY(bool exactAlarmPermission READ hasExactAlarmPermission NOTIFY exactAlarmPermissionChanged)
+    // Android 6+ (API 23+) battery-optimization exemption. False when the app
+    // is still optimized (Doze/app-standby can defer its background-work
+    // alarms); the user grants it through a one-tap system dialog. True on
+    // older Android / non-Android.
+    Q_PROPERTY(bool batteryOptimizationPermission READ hasBatteryOptimizationPermission NOTIFY batteryOptimizationPermissionChanged)
 
     static PermissionManager *instance;
     PermissionManager();
@@ -79,6 +84,7 @@ class PermissionManager: public QObject
     bool m_microphonePermission = false;
     bool m_notificationPermission = false;
     bool m_exactAlarmPermission = true; // default true: only Android 12+ can deny it
+    bool m_batteryOptimizationPermission = true; // default true: only Android 6+ can deny it
 
     void setBluetoothPermission(bool perm);
     void setCalendarPermission(bool perm);
@@ -88,6 +94,7 @@ class PermissionManager: public QObject
     void setMicrophonePermission(bool perm);
     void setNotificationPermission(bool perm);
     void setExactAlarmPermission(bool perm);
+    void setBatteryOptimizationPermission(bool perm);
 
     void requestBluetoothPermission_results(const QPermission &permission);
     void requestCameraPermission_results(const QPermission &permission);
@@ -102,6 +109,7 @@ Q_SIGNALS:
     void microphonePermissionChanged();
     void notificationPermissionChanged();
     void exactAlarmPermissionChanged();
+    void batteryOptimizationPermissionChanged();
 
 public:
     static PermissionManager *getInstance();
@@ -114,6 +122,7 @@ public:
     bool hasMicrophonePermission() const { return m_microphonePermission; }
     bool hasNotificationPermission() const { return m_notificationPermission; }
     bool hasExactAlarmPermission() const { return m_exactAlarmPermission; }
+    bool hasBatteryOptimizationPermission() const { return m_batteryOptimizationPermission; }
 
     Q_INVOKABLE bool requestBluetoothPermission();
     Q_INVOKABLE bool checkBluetoothPermission();
@@ -140,6 +149,12 @@ public:
     // notification one, fire-and-forget: re-check the property on resume.
     Q_INVOKABLE bool requestExactAlarmPermission();
     Q_INVOKABLE bool checkExactAlarmPermission();
+
+    // REQUEST_IGNORE_BATTERY_OPTIMIZATIONS (Android 6+). check returns current
+    // exemption state; request shows the system one-tap dialog. No-op /
+    // always-granted elsewhere. Fire-and-forget: re-check on resume.
+    Q_INVOKABLE bool requestBatteryOptimizationPermission();
+    Q_INVOKABLE bool checkBatteryOptimizationPermission();
 };
 
 /* ************************************************************************** */

@@ -130,6 +130,15 @@ void PermissionManager::setExactAlarmPermission(bool perm)
     }
 }
 
+void PermissionManager::setBatteryOptimizationPermission(bool perm)
+{
+    if (m_batteryOptimizationPermission != perm)
+    {
+        m_batteryOptimizationPermission = perm;
+        Q_EMIT batteryOptimizationPermissionChanged();
+    }
+}
+
 /* ************************************************************************** */
 /* ************************************************************************** */
 
@@ -527,6 +536,57 @@ bool PermissionManager::requestExactAlarmPermission()
 #else
     setExactAlarmPermission(true);
     return m_exactAlarmPermission;
+#endif
+}
+
+/* ************************************************************************** */
+
+bool PermissionManager::checkBatteryOptimizationPermission()
+{
+#if defined(Q_OS_ANDROID)
+    // The Java helper short-circuits to true below API 23 and otherwise
+    // returns PowerManager.isIgnoringBatteryOptimizations().
+    QJniObject context = QNativeInterface::QAndroidApplication::context();
+    if (!context.isValid())
+    {
+        setBatteryOptimizationPermission(false);
+        return m_batteryOptimizationPermission;
+    }
+
+    jboolean granted = QJniObject::callStaticMethod<jboolean>(
+        "com/theengs/app/TheengsAndroidService",
+        "isIgnoringBatteryOptimizations",
+        "(Landroid/content/Context;)Z",
+        context.object<jobject>());
+    setBatteryOptimizationPermission(granted == JNI_TRUE);
+    return m_batteryOptimizationPermission;
+#else
+    setBatteryOptimizationPermission(true);
+    return m_batteryOptimizationPermission;
+#endif
+}
+
+bool PermissionManager::requestBatteryOptimizationPermission()
+{
+#if defined(Q_OS_ANDROID)
+    // Already exempt (or pre-API-23) — nothing to do.
+    if (checkBatteryOptimizationPermission()) return true;
+
+    QJniObject context = QNativeInterface::QAndroidApplication::context();
+    if (!context.isValid()) return false;
+
+    // Shows the system "ignore battery optimizations" dialog. Asynchronous; the
+    // user grants out-of-app and we re-check the property on resume.
+    qDebug() << "Requesting REQUEST_IGNORE_BATTERY_OPTIMIZATIONS (showing dialog)...";
+    QJniObject::callStaticMethod<void>(
+        "com/theengs/app/TheengsAndroidService",
+        "requestIgnoreBatteryOptimizations",
+        "(Landroid/content/Context;)V",
+        context.object<jobject>());
+    return m_batteryOptimizationPermission;
+#else
+    setBatteryOptimizationPermission(true);
+    return m_batteryOptimizationPermission;
 #endif
 }
 

@@ -24,6 +24,11 @@
          API 31-32, user-grantable on 33+; scheduleWork() degrades to an inexact
          AllowWhileIdle alarm when it isn't granted. -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!-- Lets the user exempt Theengs from battery optimizations via a one-tap
+         system dialog, so Doze / app-standby won't defer the background-work
+         alarms. NOTE: Google Play treats this as a policy-sensitive permission
+         and may require a Play Console declaration for the listing. -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" android:minSdkVersion="29" />
     <!-- Foreground-service permissions so the BLE-scan service can keep scanning
          past the screen-off cliff. FOREGROUND_SERVICE is required since API 28;

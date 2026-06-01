@@ -143,6 +143,7 @@ qt_add_qml_module(${CMAKE_PROJECT_NAME}
         qml/MobileHeader.qml
         qml/MobileDrawer.qml
         qml/MobilePermissions.qml
+        qml/BackgroundPermissions.qml
         qml/MobileMenu.qml
 
         qml/DesktopApplication.qml
@@ -207,7 +208,6 @@ qt_add_qml_module(${CMAKE_PROJECT_NAME}
         qml/components/ItemNoDeviceNearby.qml
         qml/components/ItemNoGateway.qml
 
-        qml/popups/PopupBackgroundUpdates.qml
         qml/popups/PopupBlacklistDevice.qml
         qml/popups/PopupCalibration.qml
         qml/popups/PopupDeleteData.qml

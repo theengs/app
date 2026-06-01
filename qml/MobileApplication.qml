@@ -272,9 +272,11 @@ Window {
                     // MQTT
                     mqttManager.reconnect()
 
-                    // Re-check exact-alarm grant (user may have toggled it in
-                    // Settings → Alarms & reminders); updates the Settings prompt.
+                    // Re-check exact-alarm + battery-optimization grants (the
+                    // user may have changed them out-of-app); updates the
+                    // background-updates permissions page when it's showing.
                     permissionManager.checkExactAlarmPermission()
+                    permissionManager.checkBatteryOptimizationPermission()
 
                     if (appContent.state === "DeviceBrowser") {
                         // Restart the device browser
@@ -337,6 +339,8 @@ Window {
             screenSettingsMqtt.backAction()
         } else if (appContent.state === "AboutPermissions") {
             appContent.state = screenAboutPermissions.entryPoint
+        } else if (appContent.state === "BackgroundPermissions") {
+            screenBackgroundPermissions.backAction()
         } else {
             appContent.state = "DeviceList"
         }
@@ -487,6 +491,12 @@ Window {
             id: screenAboutPermissions
             anchors.fill: parent
             anchors.bottomMargin: mobileMenu.hhv
+        }
+        BackgroundPermissions {
+            id: screenBackgroundPermissions
+            anchors.fill: parent
+            anchors.bottomMargin: mobileMenu.hhv
+            visible: false
         }
 
         // Initial state
@@ -922,6 +932,30 @@ Window {
                 PropertyChanges { target: screenSettings; visible: false; }
                 PropertyChanges { target: screenAbout; visible: false; }
                 PropertyChanges { target: screenAboutPermissions; visible: true; }
+            },
+            State {
+                name: "BackgroundPermissions"
+                PropertyChanges { target: appHeader; headerTitle: qsTr("Background updates"); }
+                PropertyChanges { target: screenDeviceList; visible: false; }
+                PropertyChanges { target: screenDevicePlantSensor; visible: false; }
+                PropertyChanges { target: screenDeviceThermometer; visible: false; }
+                PropertyChanges { target: screenDeviceEnvironmental; visible: false; }
+                PropertyChanges { target: screenDeviceProbe; visible: false; }
+                PropertyChanges { target: screenDeviceScale; visible: false; }
+                PropertyChanges { target: screenDeviceMotionSensor; visible: false; }
+                PropertyChanges { target: screenDeviceActuator; visible: false; }
+                PropertyChanges { target: screenDeviceActuatorWindow; visible: false; }
+                PropertyChanges { target: screenDeviceBatteryMonitor; visible: false; }
+                PropertyChanges { target: screenDeviceGeneric; visible: false; }
+                PropertyChanges { target: screenDeviceBrowser; visible: false; }
+                PropertyChanges { target: screenGatewayList; visible: false; }
+                PropertyChanges { target: screenGatewayDevice; visible: false; }
+                PropertyChanges { target: screenPresetsList; visible: false; }
+                PropertyChanges { target: screenSettingsMqtt; visible: false; }
+                PropertyChanges { target: screenSettings; visible: false; }
+                PropertyChanges { target: screenAbout; visible: false; }
+                PropertyChanges { target: screenAboutPermissions; visible: false; }
+                PropertyChanges { target: screenBackgroundPermissions; visible: true; }
             },
             State {
                 name: "DeviceBrowser"

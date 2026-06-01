@@ -7,21 +7,6 @@ Item {
     id: settingsScreen
     anchors.fill: parent
 
-    // Refresh the exact-alarm grant state so the prompt below reflects reality
-    // when Settings opens (the property defaults to granted until checked).
-    Component.onCompleted: permissionManager.checkExactAlarmPermission()
-
-    ////////////////////////////////////////////////////////////////////////////
-
-    PopupBackgroundUpdates {
-        id: popupBackgroundUpdates
-
-        onClosed: {
-            settingsManager.systray = utilsApp.checkMobileBackgroundLocationPermission()
-            switch_worker.checked = settingsManager.systray
-        }
-    }
-
     ////////////////////////////////////////////////////////////////////////////
 
     Flickable {
@@ -445,7 +430,7 @@ Item {
                     colorBorder: Theme.colorPrimary
                     colorText: Theme.colorPrimary
 
-                    onClicked: popupBackgroundUpdates.open()
+                    onClicked: screenBackgroundPermissions.loadScreenFrom("Settings")
                 }
             }
 
@@ -503,12 +488,24 @@ Item {
                         if (isMobile) {
                             if (checked) {
                                 checked = false
-                                popupBackgroundUpdates.open()
+                                screenBackgroundPermissions.loadScreenFrom("Settings")
                             } else {
                                 settingsManager.systray = false
                             }
                         } else {
                             settingsManager.systray = checked
+                        }
+                    }
+
+                    // Tapping the switch (and SwitchThemed's own toggle) assigns
+                    // `checked` imperatively, which severs the `checked: …systray`
+                    // binding above. Re-sync it whenever systray changes — most
+                    // importantly when the background-updates permission page
+                    // grants background location and flips systray on.
+                    Connections {
+                        target: settingsManager
+                        function onSystrayChanged() {
+                            switch_worker.checked = settingsManager.systray
                         }
                     }
                 }
@@ -612,65 +609,6 @@ Item {
 
                     value: settingsManager.updateIntervalBackground
                     onValueModified: settingsManager.updateIntervalBackground = value
-                }
-            }
-
-            ////////////////
-
-            Item {
-                id: element_exact_alarm
-                height: 48
-                anchors.left: parent.left
-                anchors.leftMargin: screenPaddingLeft
-                anchors.right: parent.right
-                anchors.rightMargin: screenPaddingRight
-
-                // Android 12+ only, shown when background updates are on but the
-                // app can't schedule exact alarms (denied by default on Android
-                // 14+). Without it the interval is only approximated in deep doze.
-                visible: (Qt.platform.os === "android" && settingsManager.systray
-                          && !permissionManager.exactAlarmPermission)
-
-                IconSvg {
-                    id: image_exact_alarm
-                    width: 24
-                    height: 24
-                    anchors.left: parent.left
-                    anchors.leftMargin: 16
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    color: Theme.colorSubText
-                    source: "qrc:/IconLibrary/material-icons/duotone/timer.svg"
-                }
-
-                Text {
-                    anchors.left: image_exact_alarm.right
-                    anchors.leftMargin: 24
-                    anchors.right: button_exact_alarm.left
-                    anchors.rightMargin: 16
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: qsTr("Allow exact alarms so updates fire on time")
-                    textFormat: Text.PlainText
-                    font.pixelSize: Theme.fontSizeContentSmall
-                    color: Theme.colorSubText
-                    wrapMode: Text.WordWrap
-                    verticalAlignment: Text.AlignVCenter
-                }
-
-                ButtonWireframe {
-                    id: button_exact_alarm
-                    anchors.right: parent.right
-                    anchors.rightMargin: 16
-                    anchors.verticalCenter: parent.verticalCenter
-                    height: 32
-
-                    text: qsTr("Allow")
-                    colorHighlight: Theme.colorPrimary
-                    colorBorder: Theme.colorPrimary
-                    colorText: Theme.colorPrimary
-
-                    onClicked: permissionManager.requestExactAlarmPermission()
                 }
             }
 
