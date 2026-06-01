@@ -343,10 +343,10 @@ public class TheengsAndroidService extends QtService {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return;
         if (canScheduleExactAlarms(ctx)) return;
         try {
-            // Literal value of AlarmManager.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+            // Literal value of Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
             // (API 31) — used directly so it compiles regardless of the build's
             // android.jar; gated by SDK_INT >= S above so it only runs on 31+.
-            Intent i = new Intent("android.app.action.REQUEST_SCHEDULE_EXACT_ALARM")
+            Intent i = new Intent("android.settings.REQUEST_SCHEDULE_EXACT_ALARM")
                 .setData(Uri.parse("package:" + ctx.getPackageName()))
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             ctx.startActivity(i);
