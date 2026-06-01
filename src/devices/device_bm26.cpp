@@ -181,14 +181,16 @@ void DeviceTheengsBM26::serviceDetailsDiscovered_volt(QLowEnergyService::Service
 
                 const uint8_t data[16] = { 0xd1, 0x55, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00,
                                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-                uint8_t output[16];
+                uint8_t output[16] = {};
                 uint8_t iv[16] = { };
 
+#if defined(ENABLE_MBEDTLS)
                 mbedtls_aes_context aes;
                 mbedtls_aes_init(&aes);
                 mbedtls_aes_setkey_enc(&aes, m_key_bm6, 128);
                 mbedtls_aes_crypt_cbc(&aes, MBEDTLS_AES_ENCRYPT, 16, iv, data, output);
                 mbedtls_aes_free(&aes);
+#endif
 
                 // Characteristic "write"
                 m_charWrite = m_serviceVolt->characteristic(uuid_volt_char_write);
