@@ -6,7 +6,7 @@ Theengs App is built with **CMake** (≥ 3.20) and **Qt 6.8+**. The qmake projec
 
 You will need a C++17 compiler and Qt 6.8 or newer.
 
-* **Linux** — GCC 11+ or Clang 14+
+* **Linux** — GCC 11+ or Clang 14+, plus `libsecret-1-dev` for keychain-backed credential storage
 * **macOS / iOS** — Xcode 15+ (Xcode with the iOS 26 SDK is required for App Store submissions)
 * **Windows** — MSVC 2019+
 * **Android** — JDK 17, Android SDK 36, NDK 26+. The build environment can be customised through `assets/android/gradle.properties`.
@@ -76,6 +76,7 @@ cmake --build build/ --config Release
 | `ENABLE_MQTT` | `ON` | Build the MQTT bridge (requires QtMqtt). |
 | `ENABLE_OPENSSL` | `ON` | Use OpenSSL for TLS / payload decryption. |
 | `ENABLE_MBEDTLS` | `ON` | Bundle mbedTLS 3.6.5 (used by some encrypted-advertisement decoders). |
+| `ENABLE_SECURE_STORAGE` | `ON` | Store MQTT / MySQL passwords in the OS keychain (Apple Keychain, Windows Credential Store, libsecret / KWallet on Linux, Android Keystore) via the bundled QtKeychain 0.15.0 submodule at `thirdparty/qtkeychain`. |
 
 Disable MQTT-related work with `-DENABLE_MQTT=OFF` if you don't need the bridge.
 

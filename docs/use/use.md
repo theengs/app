@@ -20,6 +20,8 @@ To refresh the sensor data tap "Refresh sensor data" in the hamburger menu.
 
 History charts on each device screen show the sampling interval used for the displayed data as a caption underneath the chart, so values from sparsely-broadcasting sensors can be interpreted at a glance.
 
+When MQTT is enabled and the broker link is down, the device list shows a collapsing banner — "MQTT not connected — N readings lost since HH:MM" with a Retry button — so a publish gap is visible at a glance instead of silently piling up readings.
+
 ::: tip Note
 Why does Theengs App needs the location permission?
 
@@ -198,36 +200,30 @@ You can now use the application. If you want to run the application in the backg
 
 To keep scanning when the screen is off, Theengs App starts a **foreground BLE-scan service** with a persistent notification. The notification doubles as a live status panel: it shows the most recent reading and, if MQTT is enabled, the connection state and a drop counter when publishes fail.
 
-To enable it:
+On first launch the app will request the **Notifications** permission — accept it; the foreground service relies on the persistent notification being visible.
 
-* Click on "Permissions"
-* Click on "Location" → "Allow all the time", and enable "Use precise location"
+To enable background updates, in the app settings toggle **Enable background updates**. The app then opens a dedicated **Background updates** screen that walks you through every permission needed for reliable refresh:
 
-![location](./../img/Theengs-app-location-permission.png)
+* **Background location** — Android requires this to scan BLE while the app is closed. Tap the row to trigger the runtime dialog and pick "Allow all the time" with "Use precise location" enabled.
+* **Exact alarms** *(Android 12+)* — lets the next scan window fire on time even during deep doze. Tap the row to open the system "Alarms & reminders" screen and allow the app.
+* **Battery optimisation** — one-tap dialog that opts Theengs out of Doze / app-standby deferral so the background-work alarm is not held back. Tap the row to accept.
 
-* Go back, click on "Nearby devices" → "Allow"
-
-![nearby](./../img/Theengs-app-nearby-permission.png)
-
-* On first launch the app will request the **Notifications** permission — accept it; the foreground service relies on the persistent notification being visible.
-* Go back twice and deactivate "Remove permissions if app is unused"
-
-![unused](./../img/Theengs-app-unused-permission.png)
-
-* Click on battery
-
-![battery](./../img/Theengs-app-battery.png)
-
-* Select unrestricted
-
-![unrestricted](./../img/Theengs-app-battery-unrestricted.png)
-
-* Finally, in the app settings, toggle "Enable background updates"
+Each row shows a live ✓ / ✗ indicator and updates as soon as you return from the system screen, so you can see at a glance which step is still pending.
 
 ![background](./../img/Theengs-app-background-updates.png)
 
-Some devices also require the GPS to be turned on while scanning for new sensors.
+Two more Android-level toggles are worth setting from the app's system page (long-press the icon → (i)):
+
+* Disable "Remove permissions if app is unused".
+* Ensure "Nearby devices" is allowed.
+
+![unused](./../img/Theengs-app-unused-permission.png)
+![nearby](./../img/Theengs-app-nearby-permission.png)
+
+Some devices also require GPS to be turned on while scanning for new sensors.
+
+The **Update interval** in app settings now drives the background scan cadence on Android: at each interval the foreground service opens one ~60-second listen window, then idles until the next tick. A 5-minute interval scans for ~60 s every 5 minutes, a 10-minute interval scans every 10 minutes, and so on. The desktop build scans continuously while the app is running and hides this picker.
 
 ::: tip Note
-Even with the foreground service, Android may still throttle scanning when the device is in deep doze. Results are most consistent when the phone is charging or the screen is on. The notification is required by Android for any long-running BLE foreground task; dismissing it stops the background scan.
+Background work is scheduled via an exact AllowWhileIdle alarm so the service wakes through deep doze when "Exact alarms" and "Battery optimisation" are granted; without them, Android may still defer the next window. The notification is required by Android for any long-running BLE foreground task — dismissing it stops the background scan.
 :::

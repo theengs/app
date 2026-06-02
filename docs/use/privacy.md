@@ -1,13 +1,13 @@
 # Privacy policy
 
 This privacy policy governs your use of the software application Theengs.
-This privacy policy was last updated on May 18, 2026. This privacy policy may change from time to time, for any reason. If you have any questions or concerns about this privacy policy, feel free to contact Theengs at any time (support@theengs.io).
+This privacy policy was last updated on June 2, 2026. This privacy policy may change from time to time, for any reason. If you have any questions or concerns about this privacy policy, feel free to contact Theengs at any time (support@theengs.io).
 
 **What information does Theengs App obtain and how is it used?**
 
 Theengs App does not collect or transmit any personal information about you, such as your name, address, phone number or email address.
 
-When the **MQTT integration** is enabled, sensor readings and device metadata are published to the MQTT broker you configure. The destination, transport (plaintext or TLS), and credentials are entirely under your control — Theengs does not operate or proxy any broker.
+When the **MQTT integration** is enabled, sensor readings and device metadata are published to the MQTT broker you configure. The destination, transport (plaintext or TLS), and credentials are entirely under your control — Theengs does not operate or proxy any broker. Broker credentials are stored in your device's OS-managed secure store (Keychain on Apple, Credential Store on Windows, libsecret / KWallet on Linux, Android Keystore on Android) rather than in the application's plaintext settings file.
 
 **How do you handle location data?**
 
