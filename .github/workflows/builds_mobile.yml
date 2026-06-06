@@ -36,7 +36,7 @@ jobs:
     steps:
       # Checkout repository (and submodules)
       - name: Checkout repository (and submodules)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
 
@@ -49,7 +49,7 @@ jobs:
 
       # Android environment
       - name: Setup Android environment
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
       - name: Install Android SDK / NDK / tools
         run: |
              sdkmanager "platforms;android-36"
@@ -284,7 +284,7 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: com.theengs.app
           releaseFiles: build/android-build/build/outputs/bundle/release/*.aab
-          track: internal
+          tracks: internal
           status: completed
           whatsNewDirectory: distribution/whatsnew
 
@@ -301,7 +301,7 @@ jobs:
     steps:
       # Checkout repository (and submodules)
       - name: Checkout repository (and submodules)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
 
@@ -361,7 +361,7 @@ jobs:
       # Import App Store distribution signing certificate
       - name: Import signing certificate
         if: env.DISTRIBUTE == 'true'
-        uses: apple-actions/import-codesign-certs@v3
+        uses: apple-actions/import-codesign-certs@v7
         with:
           p12-file-base64: ${{ secrets.APPLE_DIST_CERT_P12_BASE64 }}
           p12-password: ${{ secrets.APPLE_DIST_CERT_PASSWORD }}
@@ -370,7 +370,7 @@ jobs:
       - name: Download provisioning profile
         if: env.DISTRIBUTE == 'true'
         id: provisioning
-        uses: apple-actions/download-provisioning-profiles@v4
+        uses: apple-actions/download-provisioning-profiles@v6
         with:
           bundle-id: com.theengs.app
           profile-type: IOS_APP_STORE
@@ -467,7 +467,7 @@ jobs:
 
       - name: Upload to TestFlight
         if: env.DISTRIBUTE == 'true'
-        uses: apple-actions/upload-testflight-build@v3
+        uses: apple-actions/upload-testflight-build@v5
         with:
           app-path: build/ipa/Theengs.ipa
           issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
