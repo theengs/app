@@ -62,7 +62,12 @@ Item {
                         }
                         Text {
                             color: Theme.colorSubText
-                            text: qsTr("version %1 %2").arg(utilsApp.appVersion()).arg(utilsApp.appBuildMode())
+                            text: {
+                                var bn = utilsApp.appBuildNumber()
+                                return bn.length > 0
+                                    ? qsTr("%1 (%2) %3").arg(utilsApp.appVersion()).arg(bn).arg(utilsApp.appBuildMode())
+                                    : qsTr("%1 %2").arg(utilsApp.appVersion()).arg(utilsApp.appBuildMode())
+                            }
                             font.pixelSize: Theme.fontSizeContentBig
                         }
                     }
@@ -173,7 +178,7 @@ Item {
                     anchors.rightMargin: 48
                     anchors.verticalCenter: parent.verticalCenter
 
-                    text: "1.5"
+                    text: utilsApp.appVersion()
                 }
             }
 
@@ -189,14 +194,19 @@ Item {
                 sourceSize: 24
                 indicatorSource: "qrc:/IconLibrary/material-icons/duotone/launch.svg"
 
-                onClicked: Qt.openUrlExternally("https://github.com/theengs/decoder/releases/tag/v2.1.0")
+                onClicked: {
+                    var v = utilsApp.theengsDecoderVersion()
+                    Qt.openUrlExternally(v === "unknown"
+                        ? "https://github.com/theengs/decoder/releases"
+                        : "https://github.com/theengs/decoder/releases/tag/v" + v)
+                }
 
                 ItemBadge {
                     anchors.right: parent.right
                     anchors.rightMargin: 48
                     anchors.verticalCenter: parent.verticalCenter
 
-                    text: "2.1.0"
+                    text: utilsApp.theengsDecoderVersion()
                 }
             }
 
@@ -269,7 +279,7 @@ Item {
 
                     Repeater {
                         model: [
-                            "Theengs decoder (LGPL v3)",
+                            "Theengs decoder " + utilsApp.theengsDecoderVersion() + " (GPL v3)",
                             "Qt6 (LGPL v3)",
                             "QtMqtt (GPL v3)",
                             "Mbed TLS (Apache 2.0)",
@@ -322,6 +332,8 @@ Item {
                             var txt = ""
                             txt += "App name: %1".arg(utilsApp.appName()) + "\n"
                             txt += "App version: %1".arg(utilsApp.appVersion()) + "\n"
+                            txt += "Build number: %1".arg(utilsApp.appBuildNumber()) + "\n"
+                            txt += "Theengs Decoder: %1".arg(utilsApp.theengsDecoderVersion()) + "\n"
                             txt += "Build mode: %1".arg(utilsApp.appBuildModeFull()) + "\n"
                             txt += "Build architecture: %1".arg(utilsApp.qtArchitecture()) + "\n"
                             txt += "Build date: %1".arg(utilsApp.appBuildDateTime()) + "\n"
@@ -349,6 +361,19 @@ Item {
                         Text {
                             color: Theme.colorSubText
                             text: "App version: %1".arg(utilsApp.appVersion())
+                            textFormat: Text.PlainText
+                            font.pixelSize: Theme.fontSizeContent
+                        }
+                        Text {
+                            color: Theme.colorSubText
+                            text: "Build number: %1".arg(utilsApp.appBuildNumber())
+                            textFormat: Text.PlainText
+                            font.pixelSize: Theme.fontSizeContent
+                            visible: utilsApp.appBuildNumber().length > 0
+                        }
+                        Text {
+                            color: Theme.colorSubText
+                            text: "Theengs Decoder: %1".arg(utilsApp.theengsDecoderVersion())
                             textFormat: Text.PlainText
                             font.pixelSize: Theme.fontSizeContent
                         }
