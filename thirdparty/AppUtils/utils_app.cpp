@@ -91,6 +91,26 @@ QString UtilsApp::appVersion()
     return QString::fromLatin1(APP_VERSION);
 }
 
+QString UtilsApp::appBuildNumber()
+{
+#if defined(Q_OS_ANDROID)
+    return UtilsAndroid::getVersionCode();
+#elif defined(Q_OS_IOS)
+    return UtilsIOS::getBundleVersion();
+#else
+    return QString();
+#endif
+}
+
+QString UtilsApp::theengsDecoderVersion()
+{
+#ifdef THEENGS_DECODER_VERSION
+    return QString::fromLatin1(THEENGS_DECODER_VERSION);
+#else
+    return QStringLiteral("unknown");
+#endif
+}
+
 QString UtilsApp::appBuildDate()
 {
     return QString::fromLatin1(__DATE__);

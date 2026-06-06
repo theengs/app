@@ -55,6 +55,13 @@ public:
     static Q_INVOKABLE QString appName();
     static Q_INVOKABLE QString appVersion();
 
+    // Platform-native store build number: CFBundleVersion on iOS, versionCode on Android, empty on desktop.
+    static Q_INVOKABLE QString appBuildNumber();
+
+    // Project-specific: returns the THEENGS_DECODER_VERSION macro defined by the Theengs CMake target.
+    // Other consumers of AppUtils get "unknown" since the macro is not defined for them.
+    static Q_INVOKABLE QString theengsDecoderVersion();
+
     static Q_INVOKABLE QString appBuildDate();
     static Q_INVOKABLE QString appBuildDateTime();
     static Q_INVOKABLE QString appBuildMode();

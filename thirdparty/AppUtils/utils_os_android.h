@@ -216,6 +216,13 @@ public:
      */
     static QString getDeviceSerial();
 
+    /*!
+     * \return The app's PackageInfo.versionCode (legacy 32-bit field), as a string.
+     *
+     * This is the value the Play Store uses to identify builds.
+     */
+    static QString getVersionCode();
+
     /* ********************************************************************** */
 
     /*!

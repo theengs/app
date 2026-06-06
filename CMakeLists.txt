@@ -11,6 +11,28 @@ set(CMAKE_AUTORCC ON)
 set(APP_NAME ${CMAKE_PROJECT_NAME})
 set(APP_VERSION ${CMAKE_PROJECT_VERSION})
 
+# Derive the bundled TheengsDecoder version from the submodule's latest git tag.
+# CI checkouts use fetch-depth: 0 + submodules: recursive so tags are available.
+# Tarball builds (no .git at all) leave the macro undefined and the About screen
+# renders "unknown" — same fallback AppUtils returns when consumed elsewhere.
+set(THEENGS_DECODER_VERSION "")
+find_package(Git QUIET)
+if(Git_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/thirdparty/TheengsDecoder/.git")
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} -C "${CMAKE_SOURCE_DIR}/thirdparty/TheengsDecoder" describe --tags --abbrev=0
+        OUTPUT_VARIABLE THEENGS_DECODER_VERSION_RAW
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        RESULT_VARIABLE _theengs_decoder_git_rc
+        ERROR_QUIET)
+    if(_theengs_decoder_git_rc EQUAL 0 AND THEENGS_DECODER_VERSION_RAW)
+        string(REGEX REPLACE "^v" "" THEENGS_DECODER_VERSION "${THEENGS_DECODER_VERSION_RAW}")
+    endif()
+    # Reconfigure when the submodule HEAD moves so the macro stays in sync.
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+        "${CMAKE_SOURCE_DIR}/thirdparty/TheengsDecoder/.git/HEAD")
+endif()
+message(STATUS "[PROJECT] THEENGS_DECODER_VERSION    = ${THEENGS_DECODER_VERSION}")
+
 option(ENABLE_MQTT "MQTT broker support" ON)
 option(ENABLE_OPENSSL "OpenSSL for various encryption needs" ON)
 option(ENABLE_MBEDTLS "mbedTLS for various encryption needs" ON)
@@ -134,6 +156,11 @@ qt_add_executable(${CMAKE_PROJECT_NAME}
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE src/)
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE thirdparty/TheengsDecoder/src/)
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE thirdparty/TheengsDecoder/src/arduino_json/src)
+
+if(THEENGS_DECODER_VERSION)
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
+        THEENGS_DECODER_VERSION="${THEENGS_DECODER_VERSION}")
+endif()
 
 qt_add_qml_module(${CMAKE_PROJECT_NAME}
     URI ${CMAKE_PROJECT_NAME}
@@ -363,6 +390,13 @@ set(UTILS_WIFI_ENABLED OFF CACHE BOOL "" FORCE)
 set(UTILS_NOTIFICATIONS_ENABLED ON CACHE BOOL "" FORCE)
 add_subdirectory(thirdparty/AppUtils)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE AppUtils)
+# theengsDecoderVersion() lives in utils_app.cpp (compiled into the AppUtils
+# subproject), so the macro must also be defined on this target — defining it
+# only on Theengs leaves AppUtils's TU returning "unknown".
+if(THEENGS_DECODER_VERSION)
+    target_compile_definitions(AppUtils PRIVATE
+        THEENGS_DECODER_VERSION="${THEENGS_DECODER_VERSION}")
+endif()
 
 # MobileUI
 add_subdirectory(thirdparty/MobileUI)

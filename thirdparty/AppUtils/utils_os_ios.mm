@@ -84,4 +84,13 @@ void UtilsIOS::vibrate(int ms)
 }
 
 /* ************************************************************************** */
+
+QString UtilsIOS::getBundleVersion()
+{
+    NSString *v = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+    if (v == nil) return QString();
+    return QString::fromNSString(v);
+}
+
+/* ************************************************************************** */
 #endif // Q_OS_IOS

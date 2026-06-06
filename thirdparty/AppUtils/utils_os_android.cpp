@@ -637,6 +637,28 @@ QString UtilsAndroid::getDeviceSerial()
     return device_serial;
 }
 
+QString UtilsAndroid::getVersionCode()
+{
+    QJniObject context = QNativeInterface::QAndroidApplication::context();
+    if (!context.isValid()) return QString();
+
+    QJniObject pm = context.callObjectMethod("getPackageManager",
+                                             "()Landroid/content/pm/PackageManager;");
+    QJniObject pkgName = context.callObjectMethod("getPackageName",
+                                                  "()Ljava/lang/String;");
+    if (!pm.isValid() || !pkgName.isValid()) return QString();
+
+    QJniObject info = pm.callObjectMethod("getPackageInfo",
+                                          "(Ljava/lang/String;I)Landroid/content/pm/PackageInfo;",
+                                          pkgName.object<jstring>(), 0);
+
+    QJniEnvironment env;
+    if (env.checkAndClearExceptions() || !info.isValid()) return QString();
+
+    jint code = info.getField<jint>("versionCode");
+    return QString::number(static_cast<int>(code));
+}
+
 /* ************************************************************************** */
 
 void UtilsAndroid::screenKeepOn(bool on)

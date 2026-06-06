@@ -32,6 +32,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           submodules: recursive
+          fetch-depth: 0     # needed so `git describe` can read the TheengsDecoder submodule tag
 
       # Install dependencies (from package manager)
       - name: Install dependencies (from package manager)
@@ -93,6 +94,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           submodules: recursive
+          fetch-depth: 0     # needed so `git describe` can read the TheengsDecoder submodule tag
 
       # Install dependencies (from package manager)
       #- name: Install dependencies (from package manager)
@@ -174,6 +176,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           submodules: recursive
+          fetch-depth: 0     # needed so `git describe` can read the TheengsDecoder submodule tag
 
       # Configure MSVC
       - name: Configure MSVC
