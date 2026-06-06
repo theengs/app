@@ -306,6 +306,12 @@ if(ENABLE_MBEDTLS)
     set(ENABLE_TESTING OFF CACHE BOOL "" FORCE)
     set(ENABLE_PROGRAMS OFF CACHE BOOL "" FORCE)
     set(MBEDTLS_FATAL_WARNINGS OFF CACHE BOOL "" FORCE)
+    # Force static for mbedtls and its 3rdparty deps (everest, p256m). On iOS the
+    # Qt toolchain leaves BUILD_SHARED_LIBS=ON, which produces dylibs with absolute
+    # build-tree install paths; the resulting .app then fails to load at runtime
+    # because LC_RPATH only contains the build-machine paths, not
+    # @executable_path/Frameworks.
+    set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
     add_subdirectory(thirdparty/mbedtls)
     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE MbedTLS::mbedtls)
     target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE ENABLE_MBEDTLS)
