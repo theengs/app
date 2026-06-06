@@ -29,7 +29,7 @@ jobs:
     steps:
       # Checkout repository (and submodules)
       - name: Checkout repository (and submodules)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
 
@@ -77,7 +77,7 @@ jobs:
 
       # Upload AppImage
       - name: Upload AppImage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-linux64.AppImage
           path: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-linux64.AppImage
@@ -90,7 +90,7 @@ jobs:
     steps:
       # Checkout repository (and submodules)
       - name: Checkout repository (and submodules)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
 
@@ -158,7 +158,7 @@ jobs:
 
       # Upload application bundle
       - name: Upload application bundle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-macOS.zip
           path: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-macOS.zip
@@ -171,7 +171,7 @@ jobs:
     steps:
       # Checkout repository (and submodules)
       - name: Checkout repository (and submodules)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
 
@@ -226,7 +226,7 @@ jobs:
 
       # Upload application ZIP
       - name: Upload application ZIP
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-win64.zip
           path: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-win64.zip
@@ -234,7 +234,7 @@ jobs:
 
       # Upload NSIS installer
       - name: Upload NSIS installer
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-win64.exe
           path: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-win64.exe
