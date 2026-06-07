@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 export APP_NAME="Theengs"
-export APP_VERSION=1.5.0
+export APP_VERSION=1.6.0
 export GIT_VERSION=$(git rev-parse --short HEAD)
 
 #export APP_NAME_LOWERCASE=${APP_NAME,,}  # lowercase

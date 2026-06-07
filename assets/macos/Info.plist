@@ -21,10 +21,10 @@
 	<string>Theengs.icns</string>
 
 	<key>CFBundleVersion</key>
-	<string>01050001</string>
+	<string>01060001</string>
 
 	<key>CFBundleShortVersionString</key>
-	<string>1.5.0</string>
+	<string>1.6.0</string>
 
 	<key>LSMinimumSystemVersion</key>
 	<string>11.0</string>

@@ -18,7 +18,7 @@ concurrency:
 
 env:
   APP_NAME: "Theengs"
-  APP_VERSION: "1.5.0"
+  APP_VERSION: "1.6.0"
   QT_VERSION: "6.10.3"
 
 #-------------------------------------------------------------------------------
@@ -350,7 +350,7 @@ jobs:
              python3 contribs_builder_qt.py --targets=ios_armv8 --software qtmqtt --qt-directory "${QT_ROOT_DIR}/../.." --qt-version "${QT_VERSION}"
 
       # Patch CFBundleVersion to a monotonic value that strictly exceeds the
-      # previously published build (Info.plist ships with 01050001). Using a
+      # previously published build (Info.plist ships with 01060001). Using a
       # YYMMDDHHMM timestamp gives ~10-digit values like 2605110830 — always
       # higher than any prior, always increasing, always unique per run.
       - name: Patch iOS build number
