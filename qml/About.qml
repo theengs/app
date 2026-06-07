@@ -214,6 +214,37 @@ Item {
 
             ListSeparator { visible: (Qt.platform.os === "android" || Qt.platform.os === "ios") }
 
+            ListItemClickable { // share debug log
+                width: parent.width
+                visible: (Qt.platform.os === "android" || Qt.platform.os === "ios")
+
+                text: qsTr("Share debug log")
+                source: "qrc:/IconLibrary/material-symbols/bug_report.svg"
+                sourceSize: 24
+                indicatorSource: "qrc:/IconLibrary/material-symbols/share.svg"
+
+                onClicked: {
+                    const zip = debugLogger.archive()
+                    if (!zip) return
+                    utilsShare.sendFile(zip, qsTr("Theengs debug log"), "application/zip", 0)
+                }
+
+                ItemBadge {
+                    anchors.right: parent.right
+                    anchors.rightMargin: 48
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    text: {
+                        const b = debugLogger.sizeBytes()
+                        if (b < 1024) return b + " B"
+                        if (b < 1024 * 1024) return (b / 1024).toFixed(1) + " KB"
+                        return (b / 1024 / 1024).toFixed(2) + " MB"
+                    }
+                }
+            }
+
+            ListSeparator { visible: (Qt.platform.os === "android" || Qt.platform.os === "ios") }
+
             ListItemClickable { // permissions
                 width: parent.width
                 visible: (Qt.platform.os === "android" || Qt.platform.os === "ios")

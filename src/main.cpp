@@ -24,6 +24,7 @@
 #include "MenubarManager.h"
 
 #include "MqttManager.h"
+#include "DebugLogger.h"
 #include "BatteryPresetManager.h"
 #include "BatteryPreset.h"
 #include "TempPresetManager.h"
@@ -118,6 +119,11 @@ int main(int argc, char *argv[])
     app.setApplicationDisplayName("Theengs");
     app.setOrganizationName("Theengs");
     app.setOrganizationDomain("Theengs");
+
+    // Install the file-based log handler after the org/app names are set
+    // (QStandardPaths derives its path from them) and before any manager
+    // brings up code we'd want traced.
+    DebugLogger::install();
 
 #if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
     ShareUtils *utilsShare = new ShareUtils();
@@ -218,6 +224,7 @@ int main(int argc, char *argv[])
     engine_context->setContextProperty("batteryPresetsManager", bpm);
     engine_context->setContextProperty("tempPresetsManager", tpm);
 
+    engine_context->setContextProperty("debugLogger", DebugLogger::getInstance());
     engine_context->setContextProperty("utilsApp", utilsApp);
     engine_context->setContextProperty("utilsWifi", utilsWifi);
     engine_context->setContextProperty("utilsScreen", utilsScreen);

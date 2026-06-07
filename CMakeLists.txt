@@ -71,6 +71,7 @@ set(SOURCES
     src/PermissionManager.cpp src/PermissionManager.h
     src/NotificationManager.cpp src/NotificationManager.h
     src/MqttManager.cpp src/MqttManager.h
+    src/DebugLogger.cpp src/DebugLogger.h
 
     src/DeviceManager.cpp src/DeviceManager.h
     src/DeviceManager_advertisement.cpp src/DeviceManager_gateway.cpp src/DeviceManager_nearby.cpp src/DeviceManager_theengs.cpp
