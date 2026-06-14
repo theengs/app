@@ -87,7 +87,7 @@ android {
         ndk.abiFilters = qtTargetAbiList.split(",")
 
         namespace 'com.theengs.app'
-        versionName "1.5.0"
+        versionName "1.6.0"
         versionCode timestampInt
     }
 
