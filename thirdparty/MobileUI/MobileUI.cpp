@@ -72,6 +72,10 @@ MobileUI::MobileUI(QObject *parent) : QObject(parent)
         else MobileUI::isTablet = true;
     }
 #endif
+
+    // Warm async caches so first QML reads (Component.onCompleted, then the
+    // rotateTimer chain in MobileApplication.qml) see real values, not defaults.
+    MobileUIPrivate::prefetchCaches();
 }
 
 /* ************************************************************************** */
