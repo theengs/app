@@ -48,6 +48,11 @@ public:
 
     static int getDeviceTheme();
 
+    // Warms the Android-side async caches (status/nav bar height, safe-area
+    // insets, device theme, brightness) so QML reads see real values on cold
+    // start instead of defaults. No-op on iOS/dummy.
+    static void prefetchCaches();
+
     static void refreshUI_async();
 
     static void setColor_statusbar(const QColor &color);

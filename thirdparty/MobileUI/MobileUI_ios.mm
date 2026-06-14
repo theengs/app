@@ -96,6 +96,11 @@ void MobileUIPrivate::refreshUI_async()
     //QTimer::singleShot( 64, []() { updatePreferredStatusBarStyle(); }); // after a couple frames
 }
 
+void MobileUIPrivate::prefetchCaches()
+{
+    // No-op on iOS: the inset/theme getters are already non-blocking.
+}
+
 /* ************************************************************************** */
 
 void MobileUIPrivate::setColor_statusbar(const QColor &color)

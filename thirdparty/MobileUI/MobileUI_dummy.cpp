@@ -30,6 +30,11 @@ int MobileUIPrivate::getDeviceTheme()
     return MobileUI::Theme::Light;
 }
 
+void MobileUIPrivate::prefetchCaches()
+{
+    // No-op: dummy backend has no async caches to warm.
+}
+
 void MobileUIPrivate::setColor_statusbar(const QColor &color)
 {
     Q_UNUSED(color)
