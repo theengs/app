@@ -27,6 +27,8 @@
 #include <QVariant>
 #include <QList>
 #include <QTimer>
+#include <QHash>
+#include <QElapsedTimer>
 
 #include <QBluetoothLocalDevice>
 #include <QBluetoothDeviceDiscoveryAgent>
@@ -112,6 +114,25 @@ class DeviceManager: public QObject
     ////
 
     QList <QString> m_devices_blacklist;
+
+    //! Per-device advertisement throttle.
+    //!
+    //! ``bleDevice_updated()`` runs the full decode + model-update path
+    //! synchronously on the GUI thread for *every* advertisement the OS
+    //! delivers. In a dense BLE environment a single fast-beaconing device
+    //! (or hundreds of ambient ones) floods that thread with queued
+    //! ``deviceUpdated`` events; when the backlog keeps the GUI thread out
+    //! of its event loop past Android's 5 s input-dispatch deadline the app
+    //! ANRs (the IME's blocking ``getExtractedText`` round-trip can't be
+    //! serviced). We coalesce adverts to at most one decode per device per
+    //! ``BLE_ADV_THROTTLE_MS`` so the per-device processing rate — and thus
+    //! the GUI-thread backlog — is bounded at the source. The first advert
+    //! from a device is never dropped (no prior timestamp), so new devices
+    //! still appear immediately. The nearby/RSSI-finder feature uses a
+    //! separate path (``updateNearbyBleDevice``) and is unaffected.
+    static constexpr qint64 BLE_ADV_THROTTLE_MS = 1000;
+    QHash <QString, qint64> m_advert_throttle;  //!< device identifier -> last-processed monotonic ms
+    QElapsedTimer m_advert_clock;               //!< monotonic clock backing the throttle
 
     DeviceModel *m_devices_nearby_model = nullptr;
     DeviceFilter *m_devices_nearby_filter = nullptr;

@@ -90,6 +90,48 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoo
     if (m_devices_blacklist.contains(info.address().toString())) return; // device MAC is blacklisted
     if (m_devices_blacklist.contains(info.deviceUuid().toString())) return; // device UUID is blacklisted
 
+    /// PER-DEVICE THROTTLE /////////////////////////////////////////////////////
+    // Bound the per-device advertisement processing rate so a flood of
+    // adverts can't saturate the GUI thread and build a deviceUpdated
+    // backlog (the root of the IME-round-trip ANR). See the member docs in
+    // DeviceManager.h. First advert from a device always passes.
+#if !defined(DEBUG_FAKE_DEVICES)
+    {
+#if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
+        const QString throttle_key = info.deviceUuid().toString();
+#else
+        const QString throttle_key = info.address().toString();
+#endif
+        if (!throttle_key.isEmpty())
+        {
+            if (!m_advert_clock.isValid()) m_advert_clock.start();
+            const qint64 now = m_advert_clock.elapsed();
+
+            auto it = m_advert_throttle.find(throttle_key);
+            if (it != m_advert_throttle.end() && (now - it.value()) < BLE_ADV_THROTTLE_MS)
+                return; // too soon since this device was last processed
+
+            m_advert_throttle.insert(throttle_key, now);
+
+            // Opportunistic prune so devices that rotate their (random) MAC
+            // can't grow the map without bound over a long-running scan.
+            if (m_advert_throttle.size() > 1024)
+            {
+                for (auto p = m_advert_throttle.begin(); p != m_advert_throttle.end(); )
+                {
+                    if ((now - p.value()) > (30 * BLE_ADV_THROTTLE_MS)) p = m_advert_throttle.erase(p);
+                    else ++p;
+                }
+            }
+        }
+    }
+#endif
+
+    // One decoder for the whole call: TheengsDecoder holds only stable config
+    // (no per-decode state), so reusing it across the known/unknown attempts
+    // below avoids reconstructing it on every loop iteration.
+    TheengsDecoder decoder;
+
     /// KNOWN GATEWAYS /////////////////////////////////////////////////////////
 
     for (auto d: std::as_const(m_gateways_model->m_devices))
@@ -193,7 +235,6 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoo
                 }
 
                 // theengs decoding
-                TheengsDecoder decoder;
                 ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
                 if (decoder.decodeBLEJson(obj) >= 0)
                 {
@@ -338,7 +379,6 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoo
                     doc["servicedatauuid"] = svc_uuid;
                 }
 
-                TheengsDecoder decoder;
                 ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
                 if (decoder.decodeBLEJson(obj) < 0) continue;
 
