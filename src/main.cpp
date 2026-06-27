@@ -109,6 +109,18 @@ int main(int argc, char *argv[])
     qputenv("QT_QUICK_FLICKABLE_WHEEL_DECELERATION", "2500");
 #endif
 
+#if defined(Q_OS_ANDROID)
+    // The threaded Qt Quick render loop (Android default) races the SurfaceView
+    // lifecycle on background/foreground transitions: when eglCreateWindowSurface
+    // fails mid-transition, QAndroidPlatformOpenGLWindow::ensureEglSurfaceCreated()
+    // calls qFatal() and the app aborts. Still unfixed upstream (QTBUG-142195;
+    // qFatal present in qtbase v6.10.3 / 6.10 / dev), so forcing the basic
+    // (GUI-thread) render loop serializes rendering with surface events and avoids
+    // the race. Respect an explicit override if the environment already sets it.
+    if (qEnvironmentVariableIsEmpty("QSG_RENDER_LOOP"))
+        qputenv("QSG_RENDER_LOOP", "basic");
+#endif
+
     // GUI application /////////////////////////////////////////////////////////
 
     SingleApplication app(argc, argv, true);
