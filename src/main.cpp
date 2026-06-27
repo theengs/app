@@ -53,6 +53,7 @@
 #include <QSurfaceFormat>
 
 #if defined(Q_OS_ANDROID)
+#include <unistd.h> // _exit()
 #include "AndroidService.h"
 #include "private/qandroidextras_p.h" // for QAndroidService
 #endif
@@ -93,12 +94,28 @@ int main(int argc, char *argv[])
         if (sm && sm->getSysTray())
         {
             AndroidService *as = new AndroidService();
-            if (!as) return EXIT_FAILURE;
+            if (!as) _exit(EXIT_FAILURE);
 
-            return app.exec();
+            const int rc = app.exec();
+            // Terminate this Qt-hosted service process with _exit() rather than
+            // a normal return (which calls exit()). On Android, exiting via
+            // exit() runs __cxa_finalize, which tears down the ART runtime and
+            // aborts ("destroying mutex with owner or contenders") whenever
+            // another runtime thread (JIT/GC/Binder/Qt) still holds a lock at
+            // teardown — a ~8% race per service exit, observed crashing the
+            // ":qt_service" process repeatedly in the field. _exit() ends the
+            // process via exit_group without running static destructors; the
+            // process is terminating regardless, so the skipped C++/Qt cleanup
+            // is moot.
+            _exit(rc);
         }
 
-        return EXIT_SUCCESS;
+        // Background updates disabled: this service has nothing to do. Same
+        // _exit() rationale as above — the service is frequently (re)spawned by
+        // the boot receiver / OS service-restart even when idle, so avoiding
+        // the exit()/__cxa_finalize ART-teardown abort here removes the bulk of
+        // the crashes.
+        _exit(EXIT_SUCCESS);
 #endif
     }
 
