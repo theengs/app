@@ -76,14 +76,6 @@ jobs:
       - name: Deploy application
         run: ./deploy_linux.sh -p
 
-      # Upload AppImage
-      - name: Upload AppImage
-        uses: actions/upload-artifact@v6
-        with:
-          name: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-linux64.AppImage
-          path: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-linux64.AppImage
-          retention-days: 7
-
   ## macOS build ###############################################################
   build-mac:
     name: "macOS CI build"
@@ -158,14 +150,6 @@ jobs:
           MACOS_CERTIFICATE_NAME: ${{ secrets.MACOS_CERTIFICATE_NAME }}
         run: ./deploy_macos.sh -c -p
 
-      # Upload application bundle
-      - name: Upload application bundle
-        uses: actions/upload-artifact@v6
-        with:
-          name: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-macOS.zip
-          path: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-macOS.zip
-          retention-days: 7
-
   ## Windows build #############################################################
   build-windows:
     name: "Windows CI build"
@@ -226,19 +210,3 @@ jobs:
       # Deploy application
       - name: Deploy application
         run: sh deploy_windows.sh -c -p
-
-      # Upload application ZIP
-      - name: Upload application ZIP
-        uses: actions/upload-artifact@v6
-        with:
-          name: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-win64.zip
-          path: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-win64.zip
-          retention-days: 7
-
-      # Upload NSIS installer
-      - name: Upload NSIS installer
-        uses: actions/upload-artifact@v6
-        with:
-          name: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-win64.exe
-          path: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-win64.exe
-          retention-days: 7
