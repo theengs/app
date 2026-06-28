@@ -37,6 +37,7 @@ option(ENABLE_MQTT "MQTT broker support" ON)
 option(ENABLE_OPENSSL "OpenSSL for various encryption needs" ON)
 option(ENABLE_MBEDTLS "mbedTLS for various encryption needs" ON)
 option(ENABLE_SECURE_STORAGE "Store MQTT/MySQL passwords in the OS secure store via QtKeychain" ON)
+option(ENABLE_TESTS "Build the Entitlement unit tests (developer-only)" OFF)
 
 ################################################################################
 
@@ -115,6 +116,12 @@ set(SOURCES
     src/TempPreset.cpp src/TempPreset.h
     src/rc4/rc4.cpp src/rc4/rc4.h
     src/blufi/BluFiFrame.cpp src/blufi/BluFiFrame.h src/blufi/BluFiUtils.h
+
+    src/Entitlement/Entitlement.cpp src/Entitlement/Entitlement.h
+    src/Entitlement/EntitlementManager.cpp src/Entitlement/EntitlementManager.h
+    src/Entitlement/EntitlementEras.cpp src/Entitlement/EntitlementEras.h
+    src/Entitlement/Provenance.cpp src/Entitlement/Provenance.h
+    src/Entitlement/ProvenanceStore.cpp src/Entitlement/ProvenanceStore.h
 
     thirdparty/TheengsDecoder/src/decoder.cpp thirdparty/TheengsDecoder/src/decoder.h
     thirdparty/IconLibrary/IconLibrary_material.qrc
@@ -582,5 +589,14 @@ set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
 #    BUNDLE DESTINATION "${CMAKE_INSTALL_BINDIR}"
 #    BUNDLE DESTINATION "${CMAKE_SOURCE_DIR}/bin"
 #)
+
+################################################################################
+
+# Developer-only unit tests for the Entitlement module. Off by default so the
+# shipped app build is unaffected. Enable with: cmake -B build/ -DENABLE_TESTS=ON
+if(ENABLE_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
 
 ################################################################################

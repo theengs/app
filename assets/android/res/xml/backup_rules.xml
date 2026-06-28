@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    android:fullBackupContent for API < 31. Includes the QSettings file
+    under <files>/settings/Theengs/, which holds the Release A entitlement
+    provenance stamp (see src/Entitlement/). Excludes the cache directory
+    to avoid restoring stale device state.
+-->
+<full-backup-content>
+    <include domain="file" path="settings/"/>
+    <exclude domain="file" path="cache/"/>
+</full-backup-content>
