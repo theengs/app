@@ -65,6 +65,15 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
+    // AGP 8+ defaults this to false. The Entitlement module's startup stamp
+    // reads BuildConfig.VERSION_CODE via JNI to record firstSeenBuild in the
+    // provenance object (see src/Entitlement/Entitlement.cpp); without this
+    // flag the BuildConfig class is never generated and the JNI lookup fails
+    // silently, recording build=0.
+    buildFeatures {
+        buildConfig true
+    }
+
     packagingOptions {
         jniLibs {
             useLegacyPackaging true

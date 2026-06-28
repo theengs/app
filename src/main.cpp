@@ -24,6 +24,8 @@
 #include "MenubarManager.h"
 
 #include "MqttManager.h"
+#include "Entitlement/Entitlement.h"
+#include "Entitlement/EntitlementManager.h"
 #include "BatteryPresetManager.h"
 #include "BatteryPreset.h"
 #include "TempPresetManager.h"
@@ -162,6 +164,12 @@ int main(int argc, char *argv[])
     // Init components
     PermissionManager *pm = PermissionManager::getInstance();
     SettingsManager *sm = SettingsManager::getInstance();
+    // Durable buyer/entitlement stamp. Idempotent — writes once on first
+    // launch and never overwrites afterward.
+    Entitlement::stampOnceAtStartup();
+    // Read-only QML-facing view of that stamp (the single `entitlement.isPro`
+    // gate). Constructed after the stamp so it reflects the fresh record.
+    EntitlementManager *em = new EntitlementManager();
     MqttManager *mq = MqttManager::getInstance();
     BatteryPresetManager *bpm = BatteryPresetManager::getInstance();
     TempPresetManager *tpm = TempPresetManager::getInstance();
@@ -246,6 +254,7 @@ int main(int argc, char *argv[])
     engine_context->setContextProperty("notificationManager", nm);
     engine_context->setContextProperty("batteryPresetsManager", bpm);
     engine_context->setContextProperty("tempPresetsManager", tpm);
+    engine_context->setContextProperty("entitlement", em);
 
     engine_context->setContextProperty("utilsApp", utilsApp);
     engine_context->setContextProperty("utilsWifi", utilsWifi);

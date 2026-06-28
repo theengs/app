@@ -157,6 +157,23 @@ Item {
                 sourceSize: 24
             }
 
+            ListItem { // entitlement / Pro status
+                width: parent.width
+                visible: entitlement.stamped
+
+                text: entitlement.isPro ? qsTr("Theengs Pro — Active") : qsTr("Theengs Free")
+                source: "qrc:/IconLibrary/material-symbols/stars.svg"
+                sourceSize: 24
+
+                // HIL + a11y: the About screen is otherwise opaque Qt
+                // SurfaceView content; objectName + Accessible surface the
+                // entitlement state as a uiautomator-readable node
+                // (resource-id "hil-entitlement-status" + content-desc).
+                objectName: "hil-entitlement-status"
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
+            }
+
             Item { height: 4; width: 4; } // spacer
 
             ////////
