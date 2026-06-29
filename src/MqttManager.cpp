@@ -31,6 +31,7 @@
 
 #include <QFile>
 #include <QTime>
+#include <QTimer>
 
 /* ************************************************************************** */
 
@@ -92,6 +93,10 @@ bool MqttManager::connect()
     {
         //qDebug() << "MqttManager::connect()";
 
+        // We intend to stay connected from now on; an unexpected drop should
+        // arm the auto-reconnect backoff (see scheduleReconnect()).
+        m_reconnectWanted = true;
+
         SettingsManager *sm = SettingsManager::getInstance();
         m_mqttclient->setHostname(sm->getMqttHost());
         m_mqttclient->setPort(sm->getMqttPort());
@@ -139,6 +144,14 @@ void MqttManager::disconnect()
 {
 #if defined(ENABLE_MQTT)
 
+    // Explicit disconnect (user toggled MQTT off, or a forced reconnect is
+    // about to re-dial): stop wanting a connection and cancel any pending
+    // backoff so the timer doesn't re-dial behind the user's back. Reset the
+    // interval so the next session starts from the base delay.
+    m_reconnectWanted = false;
+    m_reconnectInterval = kReconnectBaseMs;
+    if (m_reconnectTimer) m_reconnectTimer->stop();
+
     if (m_mqttclient)
     {
         //qDebug() << "MqttManager::disconnect()";
@@ -179,6 +192,63 @@ void MqttManager::reconnect()
     {
         disconnect();
     }
+
+#endif
+}
+
+void MqttManager::scheduleReconnect()
+{
+#if defined(ENABLE_MQTT)
+
+    // Only re-dial if we still want to be connected and MQTT is enabled.
+    if (!m_reconnectWanted) return;
+
+    SettingsManager *sm = SettingsManager::getInstance();
+    if (!sm || !sm->getMQTT()) return;
+
+    if (!m_reconnectTimer)
+    {
+        m_reconnectTimer = new QTimer(this);
+        m_reconnectTimer->setSingleShot(true);
+        QObject::connect(m_reconnectTimer, &QTimer::timeout,
+                         this, &MqttManager::reconnectTimerFired);
+    }
+
+    // A burst of Disconnected state-changes must not stack timers or grow the
+    // backoff multiple times — one armed attempt at a time.
+    if (m_reconnectTimer->isActive()) return;
+
+    m_reconnectTimer->start(m_reconnectInterval);
+    logLine(QString("auto-reconnect in %1s").arg(m_reconnectInterval / 1000));
+
+    // Exponential backoff for the *next* attempt, capped. Reset to the base
+    // interval happens on a successful connect (brokerConnected) or an
+    // explicit disconnect().
+    m_reconnectInterval = qMin(m_reconnectInterval * 2, kReconnectMaxMs);
+
+#endif
+}
+
+void MqttManager::reconnectTimerFired()
+{
+#if defined(ENABLE_MQTT)
+
+    if (!m_reconnectWanted) return;
+
+    // Something already (re)connected us in the meantime — nothing to do.
+    if (m_mqttclient &&
+        (m_mqttclient->state() == QMqttClient::Connected ||
+         m_mqttclient->state() == QMqttClient::Connecting))
+    {
+        return;
+    }
+
+    logLine("auto-reconnect: attempting");
+    connect();
+
+    // If this attempt fails, the client transitions back to Disconnected,
+    // updateStateChange() fires scheduleReconnect() again, and the next
+    // (longer) backoff interval is armed.
 
 #endif
 }
@@ -292,7 +362,16 @@ void MqttManager::updateStateChange()
         //qDebug() << "MqttManager::updateStateChange()" << m_mqttclient->state();
         Q_EMIT statusChanged();
 
-        if (m_mqttclient->state() == QMqttClient::Disconnected) logLine("status: disconnected");
+        if (m_mqttclient->state() == QMqttClient::Disconnected)
+        {
+            logLine("status: disconnected");
+
+            // Both unexpected drops (broker restart) and failed reconnect
+            // attempts (broker still down) land here as Disconnected. Arm the
+            // backoff; scheduleReconnect() no-ops unless we still want to be
+            // connected, so an explicit disconnect() won't re-dial.
+            scheduleReconnect();
+        }
         else if (m_mqttclient->state() == QMqttClient::Connecting) logLine("status: connecting");
         else if (m_mqttclient->state() == QMqttClient::Connected) logLine("status: connected");
     }
@@ -308,6 +387,11 @@ void MqttManager::brokerConnected()
 
     if (m_mqttclient)
     {
+        // Connection re-established: cancel any pending auto-reconnect and
+        // reset the backoff so the next drop starts from the base interval.
+        m_reconnectInterval = kReconnectBaseMs;
+        if (m_reconnectTimer) m_reconnectTimer->stop();
+
         // Clear drop bookkeeping: the banner/notification hides automatically
         // once droppedSinceDisconnect == 0 and disconnectedSince is invalid.
         if (m_droppedSinceDisconnect != 0)

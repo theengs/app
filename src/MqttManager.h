@@ -30,6 +30,8 @@
 #include <QtMqtt/QtMqtt>
 #endif
 
+class QTimer;
+
 /* ************************************************************************** */
 
 class Broker: public QObject
@@ -116,6 +118,18 @@ class MqttManager: public QObject
     qint64 m_droppedSinceDisconnect = 0;
     QDateTime m_disconnectedSince;
 
+    // Auto-reconnect with exponential backoff. QtMqtt does NOT reconnect on
+    // its own, so an unexpected drop (e.g. broker restart) would otherwise
+    // strand the app on the disconnect banner until the user taps retry.
+    // m_reconnectWanted tracks intent: true while we want to stay connected,
+    // false after an explicit disconnect()/MQTT-off, so the timer never
+    // fights the user.
+    static constexpr int kReconnectBaseMs = 2000;
+    static constexpr int kReconnectMaxMs = 60000;
+    QTimer *m_reconnectTimer = nullptr;
+    int m_reconnectInterval = kReconnectBaseMs;
+    bool m_reconnectWanted = false;
+
     QList <Broker *> m_brokersAvailable;
     QVariant getBrokersAvailable() const { return QVariant::fromValue(m_brokersAvailable); }
 
@@ -136,12 +150,17 @@ private slots:
     void updateStateChange();
     void brokerConnected();
     void brokerDisconnected();
+    void reconnectTimerFired();
 
 private:
     // Prepend a timestamped line to m_mqttLog (newest on top) and emit
     // logChanged so the QML broker panel re-renders. Called from the
     // state-change / error / TLS handlers.
     void logLine(const QString &msg);
+
+    // Arm the single-shot backoff timer for the next reconnect attempt.
+    // No-op unless m_reconnectWanted (and MQTT is still enabled in settings).
+    void scheduleReconnect();
 
 public:
     static MqttManager *getInstance();
