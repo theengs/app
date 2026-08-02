@@ -98,6 +98,15 @@ DeviceManager::DeviceManager(bool daemon)
     enableBluetooth(true); // Enables adapter // ONLY if off and permission given
     connect(this, &DeviceManager::bluetoothChanged, this, &DeviceManager::bluetoothStatusChanged);
 
+    // GUI-thread responsiveness watchdog (BLE perf instrumentation). Fires on
+    // this (the GUI/qtMainLoopThread) event loop; tick lateness == how long the
+    // loop was blocked. Cheap (4 Hz); always on so it catches stalls anytime.
+    m_loop_watch.start();
+    m_loop_watchdog.setInterval(BLE_LOOP_WATCHDOG_MS);
+    m_loop_watchdog.setTimerType(Qt::CoarseTimer);
+    connect(&m_loop_watchdog, &QTimer::timeout, this, &DeviceManager::bleLoopWatchdogTick);
+    m_loop_watchdog.start();
+
     // Database
     DatabaseManager *db = DatabaseManager::getInstance();
     if (db)
