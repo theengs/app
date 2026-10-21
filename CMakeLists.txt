@@ -28,8 +28,20 @@ if(Git_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/thirdparty/TheengsDecoder/.git")
         string(REGEX REPLACE "^v" "" THEENGS_DECODER_VERSION "${THEENGS_DECODER_VERSION_RAW}")
     endif()
     # Reconfigure when the submodule HEAD moves so the macro stays in sync.
-    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
-        "${CMAKE_SOURCE_DIR}/thirdparty/TheengsDecoder/.git/HEAD")
+    # In a submodule checkout .git is a file ("gitdir: ../../.git/modules/..."),
+    # not a directory, so ask git where its HEAD actually lives; watching
+    # thirdparty/TheengsDecoder/.git/HEAD never fired and an existing build
+    # directory kept showing the previous decoder version.
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} -C "${CMAKE_SOURCE_DIR}/thirdparty/TheengsDecoder" rev-parse --absolute-git-dir
+        OUTPUT_VARIABLE _theengs_decoder_git_dir
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        RESULT_VARIABLE _theengs_decoder_git_dir_rc
+        ERROR_QUIET)
+    if(_theengs_decoder_git_dir_rc EQUAL 0 AND EXISTS "${_theengs_decoder_git_dir}/HEAD")
+        set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+            "${_theengs_decoder_git_dir}/HEAD")
+    endif()
 endif()
 message(STATUS "[PROJECT] THEENGS_DECODER_VERSION    = ${THEENGS_DECODER_VERSION}")
 
