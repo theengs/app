@@ -91,7 +91,9 @@ android {
 
     defaultConfig {
         resConfig "en"
-        minSdkVersion 23
+        // From QT_ANDROID_MIN_SDK_VERSION in CMakeLists.txt (via the
+        // qtMinSdkVersion property androiddeployqt writes to gradle.properties).
+        minSdkVersion qtMinSdkVersion
         targetSdkVersion 36
         ndk.abiFilters = qtTargetAbiList.split(",")
 
