@@ -25,6 +25,17 @@ dependencies {
 def getTimestampStr() { return new Date().format('yyyyMMddHHmmss') }
 def timestampInt = (int)(new Date().getTime() / 1000 / 1)
 
+// Play versionCode. Codes up to 1.6.0 were Unix-second timestamps (~1.79e9 by
+// late 2026), which climb ~86 400 a day towards Android's 2 100 000 000 ceiling
+// (reached mid-2036) and trip Play's "version code significantly higher"
+// error. CI builds now use a fixed base above every timestamp code already
+// issued plus the workflow run number, so each upload adds 1. Codes can never
+// go down, so never lower the base. Local builds have no run number and keep
+// the timestamp; they are never uploaded.
+def versionCodeBase = 1800000000
+def ciRunNumber = System.getenv("GITHUB_RUN_NUMBER")
+def appVersionCode = ciRunNumber ? versionCodeBase + ciRunNumber.toInteger() : timestampInt
+
 android {
     /*******************************************************
      * The following variables:
@@ -99,7 +110,7 @@ android {
 
         namespace 'com.theengs.app'
         versionName "1.6.0"
-        versionCode timestampInt
+        versionCode appVersionCode
     }
 
     packagingOptions {
