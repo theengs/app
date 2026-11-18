@@ -27,6 +27,8 @@
 #include <QVariant>
 #include <QList>
 #include <QTimer>
+#include <QHash>
+#include <QElapsedTimer>
 
 #include <QBluetoothLocalDevice>
 #include <QBluetoothDeviceDiscoveryAgent>
@@ -112,6 +114,46 @@ class DeviceManager: public QObject
     ////
 
     QList <QString> m_devices_blacklist;
+
+    //! Per-device advertisement throttle.
+    //!
+    //! ``bleDevice_updated()`` runs the full decode + model-update path
+    //! synchronously on the GUI thread for *every* advertisement the OS
+    //! delivers. In a dense BLE environment a single fast-beaconing device
+    //! (or hundreds of ambient ones) floods that thread with queued
+    //! ``deviceUpdated`` events; when the backlog keeps the GUI thread out
+    //! of its event loop past Android's 5 s input-dispatch deadline the app
+    //! ANRs (the IME's blocking ``getExtractedText`` round-trip can't be
+    //! serviced). We coalesce adverts to at most one decode per device per
+    //! ``BLE_ADV_THROTTLE_MS`` so the per-device processing rate — and thus
+    //! the GUI-thread backlog — is bounded at the source. The first advert
+    //! from a device is never dropped (no prior timestamp), so new devices
+    //! still appear immediately. The nearby/RSSI-finder feature uses a
+    //! separate path (``updateNearbyBleDevice``) and is unaffected.
+    static constexpr qint64 BLE_ADV_THROTTLE_MS = 1000;
+    QHash <QString, qint64> m_advert_throttle;  //!< device identifier -> last-processed monotonic ms
+    QElapsedTimer m_advert_clock;               //!< monotonic clock backing the throttle
+
+    //! BLE throttle / GUI-thread responsiveness instrumentation.
+    //!
+    //! Makes the per-device throttle's effect and the GUI-thread
+    //! (qtMainLoopThread) responsiveness readable on any device — the only
+    //! way to observe the throttle's *benefit*, which manifests under field
+    //! BLE density a single-radio bench can't synthesise. ``m_advert_recv`` /
+    //! ``m_advert_throttled`` give the drop rate (how often the throttle
+    //! actually binds); the watchdog measures how late its 250 ms tick fires,
+    //! i.e. how long the event loop was blocked — the ANR-relevant stall (a
+    //! blocked loop can't service the IME's ``getExtractedText`` round-trip).
+    //! Snapshot via ``bleThrottleStats()``; also logged ~every 60 s.
+    quint64 m_advert_recv = 0;          //!< adverts past the rssi/blacklist guards
+    quint64 m_advert_throttled = 0;     //!< adverts dropped by the per-device throttle
+    quint64 m_advert_recv_logged = 0;   //!< recv count at last periodic log
+    qint64  m_loop_gap_max_ms = 0;      //!< worst GUI-thread event-loop stall seen (ms)
+    int     m_loop_watch_ticks = 0;     //!< watchdog tick counter (periodic-log cadence)
+    QElapsedTimer m_loop_watch;         //!< time of last watchdog tick
+    QTimer m_loop_watchdog;             //!< fires on the GUI thread; measures tick lateness
+    static constexpr int BLE_LOOP_WATCHDOG_MS = 250;
+    void bleLoopWatchdogTick();
 
     DeviceModel *m_devices_nearby_model = nullptr;
     DeviceFilter *m_devices_nearby_filter = nullptr;
@@ -233,6 +275,10 @@ public:
     ~DeviceManager();
 
     bool isDaemon() const { return m_daemonMode; }
+
+    // BLE throttle / responsiveness instrumentation (see members above)
+    Q_INVOKABLE QString bleThrottleStats() const;  //!< one-line snapshot for the debug log / a debug screen
+    Q_INVOKABLE void resetBleStats();              //!< zero the counters + max stall to measure a fresh window
 
     // Adapters management
     Q_INVOKABLE bool areAdaptersAvailable() const { return m_bluetoothAdapters.size(); }

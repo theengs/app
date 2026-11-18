@@ -90,6 +90,52 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoo
     if (m_devices_blacklist.contains(info.address().toString())) return; // device MAC is blacklisted
     if (m_devices_blacklist.contains(info.deviceUuid().toString())) return; // device UUID is blacklisted
 
+    /// PER-DEVICE THROTTLE /////////////////////////////////////////////////////
+    // Bound the per-device advertisement processing rate so a flood of
+    // adverts can't saturate the GUI thread and build a deviceUpdated
+    // backlog (the root of the IME-round-trip ANR). See the member docs in
+    // DeviceManager.h. First advert from a device always passes.
+#if !defined(DEBUG_FAKE_DEVICES)
+    {
+#if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
+        const QString throttle_key = info.deviceUuid().toString();
+#else
+        const QString throttle_key = info.address().toString();
+#endif
+        if (!throttle_key.isEmpty())
+        {
+            m_advert_recv++; // instrumentation: adverts reaching the throttle
+            if (!m_advert_clock.isValid()) m_advert_clock.start();
+            const qint64 now = m_advert_clock.elapsed();
+
+            auto it = m_advert_throttle.find(throttle_key);
+            if (it != m_advert_throttle.end() && (now - it.value()) < BLE_ADV_THROTTLE_MS)
+            {
+                m_advert_throttled++; // instrumentation: dropped by the throttle
+                return; // too soon since this device was last processed
+            }
+
+            m_advert_throttle.insert(throttle_key, now);
+
+            // Opportunistic prune so devices that rotate their (random) MAC
+            // can't grow the map without bound over a long-running scan.
+            if (m_advert_throttle.size() > 1024)
+            {
+                for (auto p = m_advert_throttle.begin(); p != m_advert_throttle.end(); )
+                {
+                    if ((now - p.value()) > (30 * BLE_ADV_THROTTLE_MS)) p = m_advert_throttle.erase(p);
+                    else ++p;
+                }
+            }
+        }
+    }
+#endif
+
+    // One decoder for the whole call: TheengsDecoder holds only stable config
+    // (no per-decode state), so reusing it across the known/unknown attempts
+    // below avoids reconstructing it on every loop iteration.
+    TheengsDecoder decoder;
+
     /// KNOWN GATEWAYS /////////////////////////////////////////////////////////
 
     for (auto d: std::as_const(m_gateways_model->m_devices))
@@ -193,7 +239,6 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoo
                 }
 
                 // theengs decoding
-                TheengsDecoder decoder;
                 ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
                 if (decoder.decodeBLEJson(obj) >= 0)
                 {
@@ -338,7 +383,6 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoo
                     doc["servicedatauuid"] = svc_uuid;
                 }
 
-                TheengsDecoder decoder;
                 ArduinoJson::JsonObject obj = doc.as<ArduinoJson::JsonObject>();
                 if (decoder.decodeBLEJson(obj) < 0) continue;
 
@@ -415,6 +459,47 @@ void DeviceManager::bleDevice_updated(const QBluetoothDeviceInfo &info, QBluetoo
             addBleDevice(info);
         }
     }
+}
+
+/* ************************************************************************** */
+
+void DeviceManager::bleLoopWatchdogTick()
+{
+    // How late this tick fired beyond its scheduled interval == how long the
+    // GUI thread (qtMainLoopThread) was blocked out of its event loop. The max
+    // is the ANR-relevant stall: a blocked loop can't service the IME's
+    // BlockingQueued getExtractedText() round-trip -> input-dispatch ANR.
+    const qint64 elapsed = m_loop_watch.restart();
+    const qint64 gap = elapsed - BLE_LOOP_WATCHDOG_MS;
+    if (gap > m_loop_gap_max_ms) m_loop_gap_max_ms = gap;
+
+    // Periodic trend line into the (logcat-captured) debug log, ~ every 60 s,
+    // but only when adverts actually flowed since the last line (no idle spam).
+    if (++m_loop_watch_ticks >= (60000 / BLE_LOOP_WATCHDOG_MS))
+    {
+        m_loop_watch_ticks = 0;
+        if (m_advert_recv != m_advert_recv_logged)
+        {
+            m_advert_recv_logged = m_advert_recv;
+            qInfo().noquote() << "[ble-perf]" << bleThrottleStats();
+        }
+    }
+}
+
+QString DeviceManager::bleThrottleStats() const
+{
+    const double pct = m_advert_recv ? (100.0 * double(m_advert_throttled) / double(m_advert_recv)) : 0.0;
+    return QStringLiteral("adverts recv=%1 throttled=%2 (%3%) | tracked MACs=%4 | max GUI-loop stall=%5 ms")
+            .arg(m_advert_recv).arg(m_advert_throttled)
+            .arg(pct, 0, 'f', 1).arg(m_advert_throttle.size()).arg(m_loop_gap_max_ms);
+}
+
+void DeviceManager::resetBleStats()
+{
+    m_advert_recv = 0;
+    m_advert_throttled = 0;
+    m_advert_recv_logged = 0;
+    m_loop_gap_max_ms = 0;
 }
 
 /* ************************************************************************** */
