@@ -1995,6 +1995,7 @@ void DeviceManager::addBleDevice(const QBluetoothDeviceInfo &info)
 
         // Connect and handle update
         connect(d, &Device::deviceUpdated, this, &DeviceManager::refreshDevices_finished);
+        connect(d, &Device::measurementUpdated, this, &DeviceManager::publishActiveMeasurement);
         connect(d, &Device::deviceSynced, this, &DeviceManager::syncDevices_finished);
 
         if (d->hasBluetoothConnection())
