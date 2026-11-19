@@ -21,6 +21,7 @@
 #include "SettingsManager.h"
 #include "PermissionManager.h"
 #include "MqttManager.h"
+#include "device_sensor.h"
 
 #include "device.h"
 #include "device_theengs.h"
@@ -42,6 +43,8 @@
 
 #include <QCoreApplication>
 #include <QDateTime>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QList>
 #include <QDebug>
 
@@ -162,6 +165,7 @@ DeviceManager::DeviceManager(bool daemon)
             if (d)
             {
                 connect(d, &Device::deviceUpdated, this, &DeviceManager::refreshDevices_finished);
+                connect(d, &Device::measurementUpdated, this, &DeviceManager::publishActiveMeasurement);
                 connect(d, &Device::deviceSynced, this, &DeviceManager::syncDevices_finished);
 
                 m_devices_model->addDevice(d);
@@ -169,6 +173,13 @@ DeviceManager::DeviceManager(bool daemon)
             }
         }
     }
+
+    // Poll stock Xiaomi sensors without changing the existing refresh policy.
+    // The queue and refresh manager provide bounded timeouts and no overlap.
+    m_stockXiaomiPollTimer.setInterval(300000);
+    connect(&m_stockXiaomiPollTimer, &QTimer::timeout,
+            this, &DeviceManager::pollStockXiaomiDevices);
+    m_stockXiaomiPollTimer.start();
 
 #if defined(DEBUG_FAKE_DEVICES)
     fakeTheengsDevices(); // Theengs fake devices //////////////////////////////
@@ -1360,7 +1371,7 @@ void DeviceManager::refreshDevices_continue()
     {
         if (!m_devices_updating_queue.empty())
         {
-            int sim = SettingsManager::getInstance()->getBluetoothSimUpdates();
+            int sim = m_stockXiaomiPollMode ? 1 : SettingsManager::getInstance()->getBluetoothSimUpdates();
 
             while (!m_devices_updating_queue.empty() && m_devices_updating.size() < sim)
             {
@@ -1393,6 +1404,83 @@ void DeviceManager::refreshDevices_continue()
     }
 }
 
+void DeviceManager::pollStockXiaomiDevices()
+{
+    // Never overlap a scheduled poll with a user/background refresh or scan.
+    if (isUpdating() || isScanning() || !hasBluetooth())
+        return;
+
+    m_devices_updating_queue.clear();
+    m_stockXiaomiPollMode = false;
+
+    for (auto object : std::as_const(m_devices_model->m_devices))
+    {
+        Device *device = qobject_cast<Device *>(object);
+        if (!device || !device->isEnabled() || !device->hasBluetoothConnection())
+            continue;
+
+        // Stock LYWSD03MMC is the only device covered by this polling fix.
+        if (device->getName() != QStringLiteral("LYWSD03MMC"))
+            continue;
+
+        if (!m_devices_updating_queue.contains(device) && !m_devices_updating.contains(device))
+        {
+            m_devices_updating_queue.push_back(device);
+            device->refreshQueued();
+        }
+    }
+
+    if (!m_devices_updating_queue.isEmpty())
+    {
+        qInfo() << "Stock Xiaomi poll scheduled:" << m_devices_updating_queue.size() << "device(s)";
+        m_stockXiaomiPollMode = true;
+        refreshDevices_continue();
+    }
+}
+
+void DeviceManager::publishActiveMeasurement(Device *dev)
+{
+    if (!dev || dev->getName() != QStringLiteral("LYWSD03MMC"))
+        return;
+
+    DeviceSensor *sensor = qobject_cast<DeviceSensor *>(dev);
+    MqttManager *mqtt = MqttManager::getInstance();
+    SettingsManager *sm = SettingsManager::getInstance();
+    if (!sensor || !mqtt || !sm || !mqtt->getStatus())
+        return;
+
+    const float temperature = sensor->getTempC();
+    const float humidity = sensor->getHumidity();
+    if (temperature <= -99.f || humidity < 0.f || humidity > 100.f)
+        return;
+
+    QString address = dev->getAddressMAC();
+    if (address.isEmpty())
+        address = dev->getAddress();
+    const QString cleanAddress = QString(address).remove(':');
+    if (cleanAddress.isEmpty())
+        return;
+
+    QJsonObject payload;
+    payload.insert("id", address);
+    payload.insert("name", dev->getName());
+    payload.insert("model", QStringLiteral("LYWSD03MMC"));
+    payload.insert("tempc", temperature);
+    payload.insert("hum", humidity);
+    if (dev->getBatteryLevel() >= 0)
+        payload.insert("batt", dev->getBatteryLevel());
+    if (dev->getRssi() < 0)
+        payload.insert("rssi", dev->getRssi());
+    payload.insert("timestamp", QDateTime::currentDateTime().toString(Qt::ISODate));
+
+    const QString topic = sm->getMqttTopicA() + "/" + sm->getMqttTopicB()
+                        + "/BTtoMQTT/" + cleanAddress;
+    const bool published = mqtt->publishData(topic,
+        QString::fromUtf8(QJsonDocument(payload).toJson(QJsonDocument::Compact)));
+    qInfo() << "Stock Xiaomi active reading MQTT publish"
+            << (published ? "succeeded" : "failed") << address;
+}
+
 void DeviceManager::refreshDevices_finished(Device *dev)
 {
     //qDebug() << "DeviceManager::refreshDevices_finished()" << dev->getAddress();
@@ -1403,6 +1491,8 @@ void DeviceManager::refreshDevices_finished(Device *dev)
 
         // update next device in the list
         refreshDevices_continue();
+        if (m_stockXiaomiPollMode && m_devices_updating_queue.empty() && m_devices_updating.empty())
+            m_stockXiaomiPollMode = false;
     }
 }
 
