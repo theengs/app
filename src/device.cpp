@@ -667,6 +667,11 @@ void Device::refreshDataFinished(bool status, bool cached)
         // Only update data on success
         Q_EMIT dataUpdated();
 
+        // Active GATT reads need to enter the same MQTT path as advertisements.
+        // Emit only for a normal update (not cached/history data).
+        if (!cached && m_ble_action == DeviceUtils::ACTION_UPDATE)
+            Q_EMIT measurementUpdated(this);
+
         // Reset last error
         m_lastError = QDateTime();
         Q_EMIT lastUpdated();

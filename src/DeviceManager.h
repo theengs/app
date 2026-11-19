@@ -176,6 +176,10 @@ class DeviceManager: public QObject
     bool m_checking_ios_ble = false;
     QTimer m_checking_ios_timer;
 
+    // Stock Xiaomi LYWSD03MMC active-GATT polling (5 minutes, one device at a time)
+    QTimer m_stockXiaomiPollTimer;
+    bool m_stockXiaomiPollMode = false;
+
     void setLastRun();
 
     // THEENGS (debug)
@@ -271,6 +275,8 @@ public:
     Q_INVOKABLE void refreshDevices_start();        //!< Refresh every device
     void refreshDevices_continue();
     void refreshDevices_finished(Device *dev);
+    void pollStockXiaomiDevices();
+    void publishActiveMeasurement(Device *dev);
     Q_INVOKABLE void refreshDevices_stop();
 
     Q_INVOKABLE void syncDevices_check();           //!< Sync history for devices (if necessary)
