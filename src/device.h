@@ -157,6 +157,7 @@ Q_SIGNALS:
     void uptimeUpdated();
     void lastUpdated();
     void dataUpdated();
+    void measurementUpdated(Device *device); // Fresh active BLE measurement completed
     void dataAvailableUpdated();
     void advertisementUpdated();
     void refreshUpdated();  // sent when a manual refresh is successful
