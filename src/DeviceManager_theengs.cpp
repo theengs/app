@@ -44,6 +44,9 @@
 
 #include <QSqlQuery>
 
+#include <QJsonDocument>
+#include <QJsonObject>
+
 #include <QList>
 #include <QDebug>
 
@@ -411,7 +414,21 @@ QString DeviceManager::getDeviceTagTheengs(const QString &modelid)
 }
 QString DeviceManager::getDevicePropsTheengs(const QString &modelid)
 {
-    return QString::fromUtf8(TheengsDecoder().getTheengProperties(modelid.toLatin1()));
+    QString props = QString::fromUtf8(TheengsDecoder().getTheengProperties(modelid.toLatin1()));
+
+#if defined(ENABLE_MBEDTLS)
+    // BM2 / BM6 voltage comes from their encrypted advertisement, decoded by DeviceTheengsBM26, not by the decoder
+    if (modelid == "BM2" || modelid == "BM6")
+    {
+        QJsonObject root = QJsonDocument::fromJson(props.toUtf8()).object();
+        QJsonObject properties = root["properties"].toObject();
+        properties.insert("volt", QJsonObject{{"unit", "V"}, {"name", "voltage"}});
+        root.insert("properties", properties);
+        props = QString::fromUtf8(QJsonDocument(root).toJson(QJsonDocument::Compact));
+    }
+#endif
+
+    return props;
 }
 
 /* ************************************************************************** */

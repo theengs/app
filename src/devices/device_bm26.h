@@ -56,6 +56,18 @@ class DeviceTheengsBM26: public DeviceTheengsBatteryMonitors
     const uint8_t m_key_bm2[16] = { 108, 101, 97, 103, 101, 110, 100, 255, 254, 49, 56, 56, 50, 52, 54, 54, };
     const uint8_t m_key_bm6[16] = { 108, 101, 97, 103, 101, 110, 100, 255, 254, 48, 49, 48, 48, 48, 48, 57, };
 
+    // Encrypted advertisement: embedded MAC, locked on the first valid payload when
+    // the platform doesn't expose the advertiser MAC (iOS / macOS)
+    QByteArray m_advMac;
+
+    // Last data received from the encrypted advertisement. While recent, there is no need to connect
+    QDateTime m_advData_lastUpdate;
+    static const int s_advData_timeout_s = 5*60;
+    bool hasRecentAdvertisementData() const;
+
+    static void decryptBlock(const uint8_t *key, const uint8_t *input, uint8_t *output);
+    void handleVoltagePercent(const float volt, const int batt, const bool fromAdvert);
+
     void serviceScanDone();
     void addLowEnergyService(const QBluetoothUuid &uuid);
     void serviceDetailsDiscovered_volt(QLowEnergyService::ServiceState newState);
@@ -80,6 +92,10 @@ public:
                       const QString &deviceModel, const QString &devicePropsJson,
                       QObject *parent = nullptr);
     ~DeviceTheengsBM26();
+
+    void parseAdvertisementData(const uint16_t adv_mode, const uint16_t adv_id, const QByteArray &value);
+
+    void actionConnect(const bool stayConnected = false);
 
     Q_INVOKABLE void actionFakeVoltage();
     Q_INVOKABLE void actionReadVoltage();
